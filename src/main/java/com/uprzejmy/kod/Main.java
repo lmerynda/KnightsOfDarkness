@@ -2,9 +2,7 @@ package com.uprzejmy.kod;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uprzejmy.kod.gameconfig.Production;
-import com.uprzejmy.kod.gameconfig.UnitProduction;
-import com.uprzejmy.kod.kingdom.ResourceName;
+import com.uprzejmy.kod.gameconfig.SpecialBuildingCosts;
 
 public class Main
 {
@@ -12,15 +10,10 @@ public class Main
     {
         System.out.println("Hello world!");
 
-        var production = new Production(
-                new UnitProduction(10, ResourceName.gold),
-                new UnitProduction(10, ResourceName.iron),
-                new UnitProduction(10, ResourceName.food),
-                new UnitProduction(10, ResourceName.tools),
-                new UnitProduction(10, ResourceName.buildingPoints));
+        var specialBuildingCosts = new SpecialBuildingCosts(10000, 10000, 5000, 5000, 3000);
 
         var mapper = new ObjectMapper();
-        var json = mapper.writeValueAsString(production);
+        var json = mapper.writeValueAsString(specialBuildingCosts);
 
         System.out.println(json);
     }
