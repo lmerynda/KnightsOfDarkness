@@ -1,2 +1,2 @@
-rootProject.name = "KnightsOfDarkness"
+rootProject.name = "knights-of-darkness"
 
