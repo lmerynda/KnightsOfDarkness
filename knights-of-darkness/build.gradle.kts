@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("com.adarshr.test-logger") version "4.0.0"
+    id("org.sonarqube") version "4.4.1.3373"
 }
 
 group = "com.merynda"
@@ -27,4 +28,12 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+sonar {
+  properties {
+    property("sonar.projectKey", "Uprzejmy_KnightsOfDarkness")
+    property("sonar.organization", "uprzejmy")
+    property("sonar.host.url", "https://sonarcloud.io")
+  }
 }
