@@ -7,7 +7,7 @@ on:
       - master
 jobs:
   build:
-    name: Build and analyze
+    name: Analyze with SonarCloud
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -22,4 +22,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: knights-of-darkness/gradlew sonar --info
+        run: ./gradlew sonar --info
+        working-directory: /knights-of-darkness
