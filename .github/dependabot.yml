@@ -6,10 +6,10 @@
 version: 2
 updates:
   - package-ecosystem: "gradle" # See documentation for possible values
-    directory: "/knights-of-darkness-game" # Location of package manifests
+    directory: "/game" # Location of package manifests
     schedule:
       interval: "weekly"
   - package-ecosystem: "gradle" # See documentation for possible values
-    directory: "/knights-of-darkness-web" # Location of package manifests
+    directory: "/web" # Location of package manifests
     schedule:
       interval: "weekly"

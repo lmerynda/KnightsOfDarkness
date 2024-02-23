@@ -30,7 +30,7 @@ jobs:
       uses: gradle/gradle-build-action@v3
     - name: Build with Gradle
       run: ./gradlew build
-      working-directory: knights-of-darkness-game
+      working-directory: game
 
   build-web:
     runs-on: ubuntu-latest
@@ -45,4 +45,4 @@ jobs:
       uses: gradle/gradle-build-action@v3
     - name: Build with Gradle
       run: ./gradlew build
-      working-directory: knights-of-darkness-web
+      working-directory: web

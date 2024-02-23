@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation(project(":knights-of-darkness-game"))
+	implementation(project(":game"))
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
