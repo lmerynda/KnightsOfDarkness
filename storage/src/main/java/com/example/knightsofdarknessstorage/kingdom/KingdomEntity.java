@@ -1,4 +1,4 @@
-package com.example.knightsofdarknessstorage.Kingdom;
+package com.example.knightsofdarknessstorage.kingdom;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
