@@ -8,9 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import com.merynda.kod.TestGame;
 import com.merynda.kod.game.Game;
-import com.merynda.kod.market.Market;
-import com.merynda.kod.market.MarketOffer;
-import com.merynda.kod.market.MarketResource;
 import com.merynda.kod.utils.KingdomBuilder;
 
 class MarketTest {

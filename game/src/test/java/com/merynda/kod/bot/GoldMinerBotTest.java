@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.merynda.kod.TestGame;
-import com.merynda.kod.bot.GoldMinerBot;
 import com.merynda.kod.game.Game;
 import com.merynda.kod.kingdom.BuildingName;
 import com.merynda.kod.kingdom.KingdomUnits;

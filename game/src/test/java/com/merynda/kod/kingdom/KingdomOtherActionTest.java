@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.merynda.kod.kingdom.KingdomOtherAction;
-
 public class KingdomOtherActionTest {
     @Test
     void testBuyLand_101()

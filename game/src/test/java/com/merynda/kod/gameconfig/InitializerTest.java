@@ -2,8 +2,6 @@ package com.merynda.kod.gameconfig;
 
 import org.junit.jupiter.api.Test;
 
-import com.merynda.kod.gameconfig.Initializer;
-
 class InitializerTest {
     @Test
     void readGameConfig()

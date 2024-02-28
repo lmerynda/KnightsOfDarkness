@@ -9,10 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import com.merynda.kod.TestGame;
 import com.merynda.kod.game.Game;
-import com.merynda.kod.kingdom.BuildingName;
-import com.merynda.kod.kingdom.KingdomUnits;
-import com.merynda.kod.kingdom.ResourceName;
-import com.merynda.kod.kingdom.UnitName;
 import com.merynda.kod.utils.KingdomBuilder;
 
 class KingdomTrainTest {

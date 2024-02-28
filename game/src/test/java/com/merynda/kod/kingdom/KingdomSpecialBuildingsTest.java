@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import com.merynda.kod.TestGame;
 import com.merynda.kod.game.Game;
-import com.merynda.kod.kingdom.KingdomSpecialBuildings;
-import com.merynda.kod.kingdom.SpecialBuildingName;
 import com.merynda.kod.utils.KingdomBuilder;
 
 public class KingdomSpecialBuildingsTest {
