@@ -10,8 +10,10 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"vscjava.vscode-java-pack",
-				"mhutchie.git-graph"
+				"redhat.java",
+				"vscjava.vscode-java-test",
+				"vscjava.vscode-java-debug",
+				"vscjava.vscode-gradle"
 			]
 		}
 	}
