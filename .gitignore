@@ -15,7 +15,6 @@ out/
 !**/src/test/**/out/
 
 ### VS Code ###
-.vscode/
 bin/
 .settings
 .classpath
