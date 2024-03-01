@@ -1,4 +1,4 @@
-package com.example.knightsofdarknessstorage.market;
+package com.knightsofdarkness.storage.market;
 
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
