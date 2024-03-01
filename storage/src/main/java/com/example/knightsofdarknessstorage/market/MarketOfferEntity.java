@@ -1,7 +1,7 @@
 package com.example.knightsofdarknessstorage.market;
 
-import com.merynda.kod.market.MarketOffer;
-import com.merynda.kod.market.MarketResource;
+import com.knightsofdarkness.game.market.MarketOffer;
+import com.knightsofdarkness.game.market.MarketResource;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

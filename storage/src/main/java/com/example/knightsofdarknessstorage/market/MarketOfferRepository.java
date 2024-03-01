@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.merynda.kod.market.MarketOffer;
-import com.merynda.kod.storage.IMarketOfferRepository;
+import com.knightsofdarkness.game.market.MarketOffer;
+import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;

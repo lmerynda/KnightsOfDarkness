@@ -3,7 +3,7 @@ package com.merynda;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.merynda.kod.kingdom.Kingdom;
+import com.knightsofdarkness.game.kingdom.Kingdom;
 
 @RestController
 public class KingdomController {
