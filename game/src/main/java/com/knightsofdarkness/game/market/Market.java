@@ -1,13 +1,18 @@
 package com.knightsofdarkness.game.market;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 public class Market {
-    List<MarketOffer> offers = new ArrayList<>();
+    IMarketOfferRepository offers;
+
+    public Market(IMarketOfferRepository repository)
+    {
+        this.offers = repository;
+    }
 
     public MarketOffer addOffer(Kingdom kingdom, MarketResource resource, int count, int price)
     {
@@ -24,17 +29,17 @@ public class Market {
 
     public List<MarketOffer> getOffersByResource(MarketResource resource)
     {
-        return offers.stream().filter(offer -> offer.resource == resource).toList();
+        return offers.getOffersByResource(resource);
     }
 
     public Optional<MarketOffer> getCheapestOfferByResource(MarketResource resource)
     {
-        return offers.stream().filter(offer -> offer.resource == resource).sorted(Market::offerComparator).findFirst();
+        return offers.getCheapestOfferByResource(resource);
     }
 
     public List<MarketOffer> getOffersByKingdom(Kingdom kingdom)
     {
-        return offers.stream().filter(offer -> offer.kingdom == kingdom).toList();
+        return offers.getOffersByKingdomId(kingdom.getId());
     }
 
     // TODO make a LOT of tests for this
@@ -43,18 +48,17 @@ public class Market {
      */
     public int buyExistingOffer(MarketOffer offer, int amount)
     {
-        var potentialOffer = offers.stream().filter(element -> element.equals(offer)).findFirst();
-        if (!potentialOffer.isPresent())
+        var optional = offers.findById(offer.getId());
+        if (optional.isEmpty())
         {
             return 0;
         }
 
-        var sellingOffer = potentialOffer.get();
-
+        var sellingOffer = optional.get();
         var maxToSell = Math.min(sellingOffer.count, amount);
         sellingOffer.count -= maxToSell;
         var goldDue = maxToSell * sellingOffer.getPrice();
-        offer.kingdom.acceptMarketOffer(goldDue);
+        sellingOffer.kingdom.acceptMarketOffer(goldDue);
 
         if (sellingOffer.count <= 0)
         {

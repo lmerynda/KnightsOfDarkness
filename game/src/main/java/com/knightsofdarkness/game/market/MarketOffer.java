@@ -3,6 +3,7 @@ package com.knightsofdarkness.game.market;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public class MarketOffer {
+    long id;
     Kingdom kingdom;
     MarketResource resource;
     int count;
@@ -34,5 +35,10 @@ public class MarketOffer {
     public int getPrice()
     {
         return price;
+    }
+
+    public long getId()
+    {
+        return id;
     }
 }

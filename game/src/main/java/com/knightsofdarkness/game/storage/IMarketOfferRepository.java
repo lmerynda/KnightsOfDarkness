@@ -1,15 +1,21 @@
 package com.knightsofdarkness.game.storage;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.knightsofdarkness.game.market.MarketOffer;
+import com.knightsofdarkness.game.market.MarketResource;
 
 public interface IMarketOfferRepository {
-    MarketOffer save(MarketOffer marketOffer);
+    MarketOffer add(MarketOffer marketOffer);
 
-    void deleteById(long marketOfferId);
+    void remove(MarketOffer marketOffer);
 
-    MarketOffer findById(long marketOfferId);
+    List<MarketOffer> getOffersByResource(MarketResource resource);
 
-    List<MarketOffer> findAll();
+    Optional<MarketOffer> getCheapestOfferByResource(MarketResource resource);
+
+    List<MarketOffer> getOffersByKingdomId(Long kingdomId);
+
+    Optional<MarketOffer> findById(long marketOfferId);
 }
