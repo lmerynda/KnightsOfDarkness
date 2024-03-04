@@ -1,6 +1,7 @@
 eclipse.preferences.version=1
 org.eclipse.jdt.core.compiler.taskTags=
 org.eclipse.jdt.core.formatter.lineSplit=240
+org.eclipse.jdt.core.formatter.lineWrap
 org.eclipse.jdt.core.formatter.brace_position_for_annotation_type_declaration=next_line
 org.eclipse.jdt.core.formatter.brace_position_for_anonymous_type_declaration=next_line
 org.eclipse.jdt.core.formatter.brace_position_for_array_initializer=next_line
@@ -12,3 +13,4 @@ org.eclipse.jdt.core.formatter.brace_position_for_enum_declaration=next_line
 org.eclipse.jdt.core.formatter.brace_position_for_lambda_body=next_line
 org.eclipse.jdt.core.formatter.brace_position_for_method_declaration=next_line
 org.eclipse.jdt.core.formatter.brace_position_for_switch=next_line
+org.eclipse.jdt.core.formatter.comment.line_length=240
