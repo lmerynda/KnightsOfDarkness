@@ -18,9 +18,12 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation(project(":game"))
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.getByName("bootJar") {
+    enabled = false
 }

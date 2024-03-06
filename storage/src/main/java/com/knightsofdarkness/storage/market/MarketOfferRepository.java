@@ -25,7 +25,7 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     @Override
     public MarketOffer add(MarketOffer marketOffer)
     {
-        entityManager.persist((marketOffer));
+        entityManager.persist(marketOffer);
 
         return marketOffer;
     }
@@ -39,9 +39,9 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     @Override
     public List<MarketOffer> getOffersByResource(MarketResource resource)
     {
-        TypedQuery<MarketOffer> query = entityManager.createQuery("SELECT offer FROM MarketOffer offer WHERE offer.resource = :resource", MarketOffer.class);
+        TypedQuery<MarketOfferEntity> query = entityManager.createQuery("SELECT offer FROM MarketOfferEntity offer WHERE offer.resource = :resource", MarketOfferEntity.class);
         query.setParameter("resource", resource);
-        return query.getResultList();
+        return query.getResultList().stream().map(MarketOfferEntity::toDomainModel).toList();
     }
 
     @Override
