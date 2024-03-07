@@ -28,4 +28,14 @@ public class MarketOfferEntity {
     {
         return new MarketOffer(null, resource, count, price);
     }
+
+    public static MarketOffer fromDomainModel(MarketOffer offer)
+    {
+        new MarketOfferEntity();
+        return new MarketOfferEntity(null, offer.getResource(), offer.getCount(), offer.getPrice());
+    }
+
+    {
+        return new MarketOffer(null, resource, count, price);
+    }
 }

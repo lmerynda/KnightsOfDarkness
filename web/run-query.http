@@ -7,3 +7,30 @@ GET http://localhost:8080/market
 content-type: application/json
 
 ###
+
+GET http://localhost:8080/market
+content-type: application/json
+
+###
+
+# POST http://localhost:8080/market_fixtures
+# content-type: application/json
+
+# {
+#     "id": "sample",
+#     "kingdom": "Wed, 21 Oct 2015 18:27:50 GMT",
+#     "resource": "food",
+#     "amount": 100,
+#     "price": 10
+# }
+
+POST http://localhost:8080/market/add
+content-type: application/json
+
+{
+    "id": "sample",
+    "kingdom": "Wed, 21 Oct 2015 18:27:50 GMT",
+    "resource": "food",
+    "amount": 100,
+    "price": 10
+}
