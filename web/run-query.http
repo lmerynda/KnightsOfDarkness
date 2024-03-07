@@ -7,3 +7,16 @@ GET http://localhost:8080/market
 content-type: application/json
 
 ###
+
+GET http://localhost:8080/market
+content-type: application/json
+
+###
+
+POST https://miniature-space-tribble-9v65p7gwp3957-8080.app.github.dev/market_fixtures
+content-type: application/json
+
+{
+    "name": "sample",
+    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+}

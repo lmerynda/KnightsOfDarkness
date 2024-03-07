@@ -1,7 +1,9 @@
 package com.knightsofdarkness.game.market;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
+@JsonSerialize
 public class MarketOffer {
     long id;
     Kingdom kingdom;
