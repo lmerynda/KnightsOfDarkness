@@ -1,9 +1,5 @@
 package com.knightsofdarkness.game.utils;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import com.knightsofdarkness.game.game.Game;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
@@ -19,13 +15,10 @@ public class KingdomBuilder {
     private final KingdomUnits units;
     private final Game game;
     private String name;
-    private Long id;
 
     public KingdomBuilder(Game game)
     {
         this.name = "test-kingdom";
-        // TODO assign to id a number generated from this.name which is guaranteed to be unique
-        this.id = generateId(this.name);
         this.resources = new KingdomResources();
         for (var resource : ResourceName.values())
         {
@@ -49,35 +42,6 @@ public class KingdomBuilder {
         this.game = game;
     }
 
-    private Long generateId(String name)
-    {
-        try
-        {
-            // Get SHA-256 hash of the name
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] messageDigest = md.digest(name.getBytes());
-
-            // Convert byte array to BigInteger
-            BigInteger no = new BigInteger(1, messageDigest);
-
-            // Convert BigInteger to long
-            long uniqueId = no.longValue();
-
-            // Ensure non-negative unique ID
-            if (uniqueId < 0)
-            {
-                uniqueId = -uniqueId;
-            }
-
-            return uniqueId;
-        } catch (NoSuchAlgorithmException e)
-        {
-            // Handle exception
-            e.printStackTrace();
-            return 0L;
-        }
-    }
-
     public KingdomBuilder withResource(ResourceName resource, int count)
     {
         this.resources.setCount(resource, count);
@@ -99,12 +63,11 @@ public class KingdomBuilder {
     public KingdomBuilder withName(String name)
     {
         this.name = name;
-        this.id = generateId(name);
         return this;
     }
 
     public Kingdom build()
     {
-        return new Kingdom(id, name, game, new KingdomResources(resources), new KingdomBuildings(buildings), new KingdomUnits(units));
+        return new Kingdom(name, game, new KingdomResources(resources), new KingdomBuildings(buildings), new KingdomUnits(units));
     }
 }

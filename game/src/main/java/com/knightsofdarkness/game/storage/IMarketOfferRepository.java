@@ -2,6 +2,7 @@ package com.knightsofdarkness.game.storage;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
@@ -15,7 +16,7 @@ public interface IMarketOfferRepository {
 
     Optional<MarketOffer> getCheapestOfferByResource(MarketResource resource);
 
-    List<MarketOffer> getOffersByKingdomId(Long kingdomId);
+    List<MarketOffer> getOffersByKingdomId(UUID kingdomId);
 
-    Optional<MarketOffer> findById(long marketOfferId);
+    Optional<MarketOffer> findById(UUID marketOfferId);
 }

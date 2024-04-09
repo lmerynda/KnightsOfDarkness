@@ -1,7 +1,9 @@
 package com.knightsofdarkness.game.kingdom;
 
 import java.util.List;
+import java.util.UUID;
 
+import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.game.Game;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.Market;
@@ -9,7 +11,7 @@ import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 
 public class Kingdom {
-    private final Long id;
+    private final UUID id;
     private final String name;
     private final Market market;
     private final GameConfig config;
@@ -22,9 +24,9 @@ public class Kingdom {
     private final KingdomMarketAction kingdomMarketAction = new KingdomMarketAction(this);
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
 
-    public Kingdom(Long id, String name, Game game, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units)
+    public Kingdom(String name, Game game, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units)
     {
-        this.id = id;
+        this.id = Id.generate();
         this.name = name;
         this.config = game.getConfig();
         this.market = game.getMarket();
@@ -134,7 +136,7 @@ public class Kingdom {
         return name;
     }
 
-    public Long getId()
+    public UUID getId()
     {
         return this.id;
     }

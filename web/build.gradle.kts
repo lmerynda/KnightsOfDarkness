@@ -19,10 +19,13 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework:spring-context")
+	implementation("jakarta.persistence:jakarta.persistence-api")
 	implementation(project(":game"))
 	implementation(project(":storage"))
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	runtimeOnly("com.h2database:h2")
+	testImplementation("com.h2database:h2")
 }
 
 tasks.withType<Test> {

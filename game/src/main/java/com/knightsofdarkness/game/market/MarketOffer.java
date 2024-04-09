@@ -1,16 +1,26 @@
 package com.knightsofdarkness.game.market;
 
+import java.util.UUID;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
+@JsonSerialize
 public class MarketOffer {
-    long id;
+    UUID id;
     Kingdom kingdom;
     MarketResource resource;
     int count;
     int price;
 
+    public MarketOffer()
+    {
+    }
+
     public MarketOffer(Kingdom kingdom, MarketResource resource, int count, int price)
     {
+        this.id = Id.generate();
         this.kingdom = kingdom;
         this.resource = resource;
         this.count = count;
@@ -37,8 +47,19 @@ public class MarketOffer {
         return price;
     }
 
-    public long getId()
+    public UUID getId()
     {
         return id;
+    }
+
+    public String toString()
+    {
+        return "MarketOffer{" +
+                "id=" + id +
+                ", kingdom=" + kingdom +
+                ", resource=" + resource +
+                ", count=" + count +
+                ", price=" + price +
+                '}';
     }
 }
