@@ -3,6 +3,8 @@ package com.knightsofdarkness.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,8 @@ import jakarta.persistence.EntityManager;
 
 @Service
 public class MarketService {
+    private final Logger log = LoggerFactory.getLogger(MarketController.class);
+
     @Autowired
     private MarketOfferRepository marketOfferRepository;
 
@@ -24,10 +28,10 @@ public class MarketService {
     @Transactional
     public void createOffers(ArrayList<MarketOffer> offers)
     {
-        System.out.println("Creating new offers");
+        log.info("Creating new offers");
         for (var offer : offers)
         {
-            System.out.println(offer.toString());
+            log.info(offer.toString());
             marketOfferRepository.add(offer);
         }
     }
@@ -35,15 +39,13 @@ public class MarketService {
     @Transactional
     public void createOffer(MarketOffer offer)
     {
-        System.out.println(offer.toString());
+        log.info("Creating new offer" + offer.toString());
         marketOfferRepository.add(offer);
     }
 
     public List<MarketOffer> getAllOffers()
     {
-        System.out.println("Getting all offers");
-        var offers = marketOfferRepository.getOffersByResource(MarketResource.food);
-
-        return offers;
+        log.info("Getting all offers");
+        return marketOfferRepository.getOffersByResource(MarketResource.food);
     }
 }

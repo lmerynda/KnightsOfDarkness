@@ -56,11 +56,7 @@ public class WebTests {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        List<MarketOffer> offers = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOffer>>()
-        {
+        List<MarketOffer> offers = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOffer>>() {
         });
-
-        System.out.println("offers: ");
-        offers.forEach(System.out::println);
     }
 }
