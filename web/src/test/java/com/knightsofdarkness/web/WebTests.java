@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -44,19 +45,27 @@ public class WebTests {
                 .content(objectMapper.writeValueAsString(offer1)))
                 .andExpect(status().isOk());
 
-        MarketOffer offer2 = new MarketOffer(null, MarketResource.food, 30, 100);
+        MarketOffer offer2 = new MarketOffer(null, MarketResource.iron, 30, 100);
         this.mockMvc.perform(MockMvcRequestBuilders
                 .post("/market/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(offer2)))
                 .andExpect(status().isOk());
 
-        var result = this.mockMvc.perform(MockMvcRequestBuilders
-                .get("/market")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        List<MarketOffer> offers = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOffer>>() {
+        var foodResult = this.mockMvc.perform(MockMvcRequestBuilders
+                        .get("/market/food")
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
+        List<MarketOffer> foodOffers = objectMapper.readValue(foodResult.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOffer>>() {
         });
+        assertEquals(1, foodOffers.size());
+
+        var ironResult = this.mockMvc.perform(MockMvcRequestBuilders
+                        .get("/market/iron")
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
+        List<MarketOffer> ironOffers = objectMapper.readValue(ironResult.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOffer>>() {
+        });
+        assertEquals(1, ironOffers.size());
     }
 }

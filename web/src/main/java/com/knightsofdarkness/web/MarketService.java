@@ -48,4 +48,10 @@ public class MarketService {
         log.info("Getting all offers");
         return marketOfferRepository.getOffersByResource(MarketResource.food);
     }
+
+    public List<MarketOffer> getAllOffersByResource(MarketResource resource)
+    {
+        log.info("Getting all offers for " + resource);
+        return marketOfferRepository.getOffersByResource(resource);
+    }
 }
