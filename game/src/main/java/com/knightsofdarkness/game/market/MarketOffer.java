@@ -16,6 +16,7 @@ public class MarketOffer {
 
     public MarketOffer()
     {
+        this.id = Id.generate();
     }
 
     public MarketOffer(Kingdom kingdom, MarketResource resource, int count, int price)

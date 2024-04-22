@@ -28,9 +28,8 @@ POST http://localhost:8080/market/add
 content-type: application/json
 
 {
-    "id": "sample",
-    "kingdom": "Wed, 21 Oct 2015 18:27:50 GMT",
+    "kingdom": null,
     "resource": "food",
-    "amount": 100,
+    "count": 100,
     "price": 10
 }
