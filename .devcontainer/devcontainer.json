@@ -1,11 +1,11 @@
 {
-	"image": "mcr.microsoft.com/devcontainers/java:17",
+	"image": "lmerynda/knightofdarkness-devcontainer:latest",
 	"features": {
-		"ghcr.io/devcontainers/features/java:1": {
-			"installMaven": "false",
-			"installGradle": "false"
-		}
+		"ghcr.io/devcontainers/features/java:1": {},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
 	},
+	"workspaceFolder": "/workspaces/KnightsOfDarkness/backend /workspaces/KnightsOfDarkness/browser",
+	"forwardPorts": [8080],
 	"postCreateCommand": "./backend/gradlew -p ./backend build",
 	"customizations": {
 		"vscode": {
