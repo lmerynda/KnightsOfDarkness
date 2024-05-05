@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web;
+package com.knightsofdarkness.web.Market;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.game.market.MarketResource;
-import com.knightsofdarkness.web.Market.MarketOfferDto;
 
 @RestController
 public class MarketController {

@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web;
+package com.knightsofdarkness.web.Market;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

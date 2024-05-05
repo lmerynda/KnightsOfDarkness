@@ -4,6 +4,8 @@ import org.springdoc.core.SpringDocUtils;
 // import org.springdoc.EnableOpenApi;
 import org.springframework.context.annotation.Configuration;
 
+import com.knightsofdarkness.web.Market.MarketController;
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 
 @Configuration

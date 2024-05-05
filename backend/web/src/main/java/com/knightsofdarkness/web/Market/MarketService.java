@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web;
+package com.knightsofdarkness.web.Market;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.storage.market.MarketOfferRepository;
-import com.knightsofdarkness.web.Market.MarketOfferDto;
 
 import jakarta.persistence.EntityManager;
 
