@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
+import com.knightsofdarkness.web.Market.MarketOfferDto;
 
 @RestController
 public class MarketController {
@@ -19,25 +19,25 @@ public class MarketController {
     private MarketService marketService;
 
     @PostMapping("/market_fixtures")
-    void createOffers(@RequestBody ArrayList<MarketOffer> offers)
+    void createOffers(@RequestBody ArrayList<MarketOfferDto> offers)
     {
         marketService.createOffers(offers);
     }
 
     @PostMapping("/market/add")
-    void createOffer(@RequestBody MarketOffer offer)
+    void createOffer(@RequestBody MarketOfferDto offer)
     {
         marketService.createOffer(offer);
     }
 
     @GetMapping("/market")
-    List<MarketOffer> getAllOffers()
+    List<MarketOfferDto> getAllOffers()
     {
         return marketService.getAllOffers();
     }
 
     @GetMapping("/market/{resource}")
-    List<MarketOffer> getAllOffersByResource(@PathVariable MarketResource resource)
+    List<MarketOfferDto> getAllOffersByResource(@PathVariable MarketResource resource)
     {
         return marketService.getAllOffersByResource(resource);
     }

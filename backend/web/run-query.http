@@ -13,16 +13,36 @@ content-type: application/json
 
 ###
 
-# POST http://localhost:8080/market_fixtures
-# content-type: application/json
+POST http://localhost:8080/market_fixtures
+content-type: application/json
 
-# {
-#     "id": "sample",
-#     "kingdom": "Wed, 21 Oct 2015 18:27:50 GMT",
-#     "resource": "food",
-#     "amount": 100,
-#     "price": 10
-# }
+[
+    {
+        "kingdom": null,
+        "resource": "food",
+        "count": 10000,
+        "price": 10
+    },
+    {
+        "kingdom": null,
+        "resource": "food",
+        "count": 20000,
+        "price": 30
+    },
+    {
+        "kingdom": null,
+        "resource": "iron",
+        "count": 10000,
+        "price": 50
+    },
+    {
+        "kingdom": null,
+        "resource": "iron",
+        "count": 15000,
+        "price": 70
+    }
+]
+
 
 POST http://localhost:8080/market/add
 content-type: application/json

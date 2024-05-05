@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.storage.market.MarketOfferRepository;
+import com.knightsofdarkness.web.Market.MarketOfferDto;
 
 import jakarta.persistence.EntityManager;
 
@@ -26,32 +27,41 @@ public class MarketService {
     private EntityManager entityManager;
 
     @Transactional
-    public void createOffers(ArrayList<MarketOffer> offers)
+    public void createOffers(ArrayList<MarketOfferDto> offers)
     {
         log.info("Creating new offers");
         for (var offer : offers)
         {
             log.info(offer.toString());
-            marketOfferRepository.add(offer);
+            marketOfferRepository.add(offer.toDomain());
         }
     }
 
     @Transactional
-    public void createOffer(MarketOffer offer)
+    public void createOffer(MarketOfferDto offer)
     {
         log.info("Creating new offer" + offer.toString());
-        marketOfferRepository.add(offer);
+        marketOfferRepository.add(offer.toDomain());
     }
 
-    public List<MarketOffer> getAllOffers()
+    public List<MarketOfferDto> getAllOffers()
     {
         log.info("Getting all offers");
-        return marketOfferRepository.getOffersByResource(MarketResource.food);
+        var allOffers = new ArrayList<MarketOffer>();
+        allOffers.addAll(marketOfferRepository.getOffersByResource(MarketResource.food));
+        allOffers.addAll(marketOfferRepository.getOffersByResource(MarketResource.iron));
+        allOffers.addAll(marketOfferRepository.getOffersByResource(MarketResource.tools));
+        allOffers.addAll(marketOfferRepository.getOffersByResource(MarketResource.weapons));
+        log.info("Found " + allOffers.size() + " offers");
+
+        return allOffers.stream().map(MarketOfferDto::fromDomain).toList();
     }
 
-    public List<MarketOffer> getAllOffersByResource(MarketResource resource)
+    public List<MarketOfferDto> getAllOffersByResource(MarketResource resource)
     {
         log.info("Getting all offers for " + resource);
-        return marketOfferRepository.getOffersByResource(resource);
+        var allOffers = marketOfferRepository.getOffersByResource(resource).stream().map(MarketOfferDto::fromDomain).toList();
+        log.info("Found " + allOffers.size() + " offers for " + resource);
+        return allOffers;
     }
 }
