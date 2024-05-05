@@ -7,10 +7,13 @@
 		"ghcr.io/devcontainers/features/node:1": {},
 		"ghcr.io/devcontainers/features/common-utils:2": {
 			"installZsh": "true",
-			"username": "lmerynda",
 			"configureZshAsDefaultShell": true
 		}
 	},
+	"mounts": [
+		"source=${localEnv:USERPROFILE}/.gitconfig,target=/home/root/.gitconfig,type=bind,consistency=cached"
+	],
+	"remoteUser": "${env:USERNAME}",
 	"workspaceFolder": "/workspaces",
 	"forwardPorts": [8080],
 	"postCreateCommand": "./backend/gradlew -p ./backend build",
