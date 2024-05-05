@@ -2,9 +2,16 @@
 	"image": "lmerynda/knightofdarkness-devcontainer:latest",
 	"features": {
 		"ghcr.io/devcontainers/features/java:1": {},
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+		"ghcr.io/mikaello/devcontainer-features/modern-shell-utils:1": {},
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": "true",
+			"username": "lmerynda",
+			"configureZshAsDefaultShell": true
+		}
 	},
-	"workspaceFolder": "/workspaces/KnightsOfDarkness/backend /workspaces/KnightsOfDarkness/browser",
+	"workspaceFolder": "/workspaces",
 	"forwardPorts": [8080],
 	"postCreateCommand": "./backend/gradlew -p ./backend build",
 	"customizations": {
@@ -13,8 +20,15 @@
 				"redhat.java",
 				"vscjava.vscode-java-test",
 				"vscjava.vscode-java-debug",
-				"vscjava.vscode-gradle"
-			]
+				"vscjava.vscode-gradle",
+				"mhutchie.git-graph",
+				"eamodio.gitlens",
+				"humao.rest-client",
+				"alefragnani.Bookmarks"
+			],
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "zsh",
+			}
 		}
 	}
 }

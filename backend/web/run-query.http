@@ -31,5 +31,5 @@ content-type: application/json
     "kingdom": null,
     "resource": "food",
     "count": 100,
-    "price": 10
+    "price": 30
 }
