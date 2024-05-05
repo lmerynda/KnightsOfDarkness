@@ -2,6 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './css/App.css';
 import Market from './components/Market';
+import Kingdom from './components/Kingdom';
 
 function App() {
   return (
@@ -21,6 +22,9 @@ function App() {
         </a>
         <div>
           <Market />
+        </div>
+        <div>
+          <Kingdom />
         </div>
       </header>
     </div>

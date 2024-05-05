@@ -17,7 +17,7 @@ import jakarta.persistence.EntityManager;
 
 @Service
 public class MarketService {
-    private final Logger log = LoggerFactory.getLogger(MarketController.class);
+    private final Logger log = LoggerFactory.getLogger(MarketService.class);
 
     @Autowired
     private MarketOfferRepository marketOfferRepository;

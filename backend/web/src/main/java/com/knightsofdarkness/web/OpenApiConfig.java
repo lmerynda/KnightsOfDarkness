@@ -4,6 +4,7 @@ import org.springdoc.core.SpringDocUtils;
 // import org.springdoc.EnableOpenApi;
 import org.springframework.context.annotation.Configuration;
 
+import com.knightsofdarkness.web.Kingdom.KingdomController;
 import com.knightsofdarkness.web.Market.MarketController;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -16,5 +17,6 @@ class OpenApiConfig {
     void init()
     {
         SpringDocUtils.getConfig().addRestControllers(MarketController.class);
+        SpringDocUtils.getConfig().addRestControllers(KingdomController.class);
     }
 }

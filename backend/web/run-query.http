@@ -43,6 +43,16 @@ content-type: application/json
     }
 ]
 
+###
+
+POST http://localhost:8080/kingdom/add
+content-type: application/json
+
+{
+    "name": "uprzejmy"
+}
+
+###
 
 POST http://localhost:8080/market/add
 content-type: application/json

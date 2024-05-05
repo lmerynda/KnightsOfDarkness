@@ -1,27 +1,37 @@
 package com.knightsofdarkness.storage.kingdom;
 
-import jakarta.persistence.Column;
+import java.util.UUID;
+
+import com.knightsofdarkness.game.kingdom.Kingdom;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "kingdoms")
 public class KingdomEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
-    @Column(name = "name")
     private String name;
 
-    // public Kingdom toDomainModel()
-    // {
-    // Kingdom kingdom = new Kingdom();
-    // kingdom.setId(this.id);
-    // kingdom.setName(this.name);
-    // return kingdom;
-    // }
+    public KingdomEntity()
+    {
+    }
+
+    public KingdomEntity(UUID id, String name)
+    {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Kingdom toDomainModel()
+    {
+        // TODO fix
+        return new Kingdom(name, null, null, null, null);
+    }
+
+    public static KingdomEntity fromDomainModel(Kingdom kingdom)
+    {
+        return new KingdomEntity(kingdom.getId(), kingdom.getName());
+    }
 }
