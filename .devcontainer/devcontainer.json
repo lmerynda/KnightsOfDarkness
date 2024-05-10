@@ -14,12 +14,13 @@
 		}
 	},
 	"mounts": [
-		"source=${localEnv:USERPROFILE}/.gitconfig,target=/home/root/.gitconfig,type=bind,consistency=cached"
+		"source=${localEnv:USERPROFILE}/.gitconfig,target=/home/root/.gitconfig,type=bind,consistency=cached",
+		"type=bind,source=${localWorkspaceFolder},target=/workspaces"
 	],
 	"remoteUser": "${env:USERNAME}",
 	"workspaceFolder": "/workspaces",
 	"forwardPorts": [8080],
-	"postCreateCommand": "./backend/gradlew -p ./backend build",
+	"postCreateCommand": "./backend/gradlew -p ./backend build --exclude-task test",
 	"customizations": {
 		"vscode": {
 			"extensions": [
