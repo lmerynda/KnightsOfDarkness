@@ -1,5 +1,5 @@
 {
-	"image": "lmerynda/knightofdarkness-devcontainer:latest",
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
 	"features": {
 		"ghcr.io/devcontainers/features/java:1": {
 			"installMaven": "false",
@@ -13,14 +13,16 @@
 			"configureZshAsDefaultShell": true
 		}
 	},
+	"remoteUser": "vscode",
 	"mounts": [
-		"source=${localEnv:USERPROFILE}/.gitconfig,target=/home/root/.gitconfig,type=bind,consistency=cached",
-		"type=bind,source=${localWorkspaceFolder},target=/workspaces"
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached",
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.bash_aliases,target=/home/vscode/.bash_aliases,type=bind,consistency=cached"
 	],
-	"remoteUser": "${env:USERNAME}",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces,type=bind,consistency=cached",
 	"workspaceFolder": "/workspaces",
-	"forwardPorts": [8080],
-	"postCreateCommand": "./backend/gradlew -p ./backend build --exclude-task test",
+	"forwardPorts": [
+		8080
+	],
 	"customizations": {
 		"vscode": {
 			"extensions": [
