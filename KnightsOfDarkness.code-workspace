@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "browser"
+		},
+		{
+			"path": "."
 		}
 	],
 	"settings": {
@@ -22,7 +25,7 @@
 		],
 		"java.compile.nullAnalysis.mode": "automatic",
 		"java.server.launchMode": "Standard",
-		"java.settings.url": "java_extension_settings.prefs",
+		"java.settings.url": "./java_extension_settings.prefs",
 		"editor.rulers": [
 			{
 				"column": 160,
