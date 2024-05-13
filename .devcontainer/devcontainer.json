@@ -18,12 +18,22 @@
 		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached",
 		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.bash_aliases,target=/home/vscode/.bash_aliases,type=bind,consistency=cached"
 	],
-	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces,type=bind,consistency=cached",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/projects,type=bind,consistency=cached",
 	"workspaceFolder": "/workspaces",
 	"forwardPorts": [
 		8080
 	],
 	"customizations": {
+		"codespaces": {
+			"mounts": [
+				{
+					"source": ".",
+					"target": "/workspaces/projects",
+					"type": "volume",
+					"consistency": "cached"
+				}
+			]
+		},
 		"vscode": {
 			"extensions": [
 				"redhat.java",
