@@ -2,6 +2,7 @@ package com.knightsofdarkness.web.Kingdom;
 
 import java.util.UUID;
 
+import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public class KingdomDto {
@@ -23,10 +24,10 @@ public class KingdomDto {
         this.name = name;
     }
 
-    public Kingdom toDomain()
+    public Kingdom toDomain(GameConfig config)
     {
         // TODO, fix
-        return new Kingdom(name, null, null, null, null);
+        return new Kingdom(name, config, null, null, null, null);
     }
 
     public static KingdomDto fromDomain(Kingdom kingdom)

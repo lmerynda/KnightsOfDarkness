@@ -63,3 +63,11 @@ content-type: application/json
     "count": 100,
     "price": 30
 }
+
+###
+
+GET http://localhost:8080/kingdom/uprzejmy
+content-type: application/json
+
+{
+}

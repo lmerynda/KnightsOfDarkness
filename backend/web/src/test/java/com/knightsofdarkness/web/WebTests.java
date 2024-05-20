@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
+import com.knightsofdarkness.web.Market.MarketOfferDto;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -56,7 +57,7 @@ public class WebTests {
                         .get("/market/food")
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk());
-        List<MarketOffer> foodOffers = objectMapper.readValue(foodResult.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOffer>>() {
+        List<MarketOfferDto> foodOffers = objectMapper.readValue(foodResult.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOfferDto>>() {
         });
         assertEquals(1, foodOffers.size());
 
@@ -64,7 +65,7 @@ public class WebTests {
                         .get("/market/iron")
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk());
-        List<MarketOffer> ironOffers = objectMapper.readValue(ironResult.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOffer>>() {
+        List<MarketOfferDto> ironOffers = objectMapper.readValue(ironResult.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOfferDto>>() {
         });
         assertEquals(1, ironOffers.size());
     }

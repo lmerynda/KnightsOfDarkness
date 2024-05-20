@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.knightsofdarkness.game.Id;
-import com.knightsofdarkness.game.game.Game;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.Market;
 import com.knightsofdarkness.game.market.MarketOffer;
@@ -24,12 +23,12 @@ public class Kingdom {
     private final KingdomMarketAction kingdomMarketAction = new KingdomMarketAction(this);
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
 
-    public Kingdom(String name, Game game, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units)
+    public Kingdom(String name, GameConfig config, Market market, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units)
     {
         this.id = Id.generate();
         this.name = name;
-        this.config = game.getConfig();
-        this.market = game.getMarket();
+        this.config = config;
+        this.market = market;
         this.resources = resources;
         this.buildings = buildings;
         this.units = units;

@@ -27,7 +27,7 @@ public class KingdomEntity {
     public Kingdom toDomainModel()
     {
         // TODO fix
-        return new Kingdom(name, null, null, null, null);
+        return new Kingdom(name, null, null, null, null, null);
     }
 
     public static KingdomEntity fromDomainModel(Kingdom kingdom)

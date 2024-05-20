@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 
 import jakarta.persistence.EntityManager;
@@ -13,6 +14,9 @@ import jakarta.persistence.EntityManager;
 @Service
 public class KingdomService {
     private final Logger log = LoggerFactory.getLogger(KingdomService.class);
+
+    @Autowired
+    private GameConfig gameConfig;
 
     @Autowired
     private KingdomRepository kingdomRepository;
@@ -24,7 +28,7 @@ public class KingdomService {
     public void createKingdom(KingdomDto kingdom)
     {
         log.info("Creating new kingdom" + kingdom.toString());
-        kingdomRepository.add(kingdom.toDomain());
+        kingdomRepository.add(kingdom.toDomain(gameConfig));
     }
 
     public KingdomDto getKingdomByName(String name)
