@@ -5,14 +5,14 @@ import java.util.List;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.game.market.Market;
+import com.knightsofdarkness.game.market.IMarket;
 
 public class Game {
     GameConfig config;
-    Market market;
+    IMarket market;
     List<Kingdom> kingdoms = new ArrayList<>();
 
-    public Game(GameConfig config, Market market)
+    public Game(GameConfig config, IMarket market)
     {
         this.config = config;
         this.market = market;
@@ -23,7 +23,7 @@ public class Game {
         return config;
     }
 
-    public Market getMarket()
+    public IMarket getMarket()
     {
         return market;
     }

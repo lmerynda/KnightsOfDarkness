@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.web.Market.MarketOfferDto;
@@ -39,14 +40,14 @@ public class WebTests {
     @Test
     void foo() throws Exception
     {
-        MarketOffer offer1 = new MarketOffer(null, MarketResource.food, 10, 100);
+        MarketOffer offer1 = new MarketOffer(Id.generate(), null, MarketResource.food, 10, 100);
         this.mockMvc.perform(MockMvcRequestBuilders
                 .post("/market/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(offer1)))
                 .andExpect(status().isOk());
 
-        MarketOffer offer2 = new MarketOffer(null, MarketResource.iron, 30, 100);
+        MarketOffer offer2 = new MarketOffer(Id.generate(), null, MarketResource.iron, 30, 100);
         this.mockMvc.perform(MockMvcRequestBuilders
                 .post("/market/add")
                 .contentType(MediaType.APPLICATION_JSON)

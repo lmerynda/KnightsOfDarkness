@@ -2,7 +2,6 @@ package com.knightsofdarkness.game.market;
 
 import java.util.UUID;
 
-import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public class MarketOffer {
@@ -12,9 +11,9 @@ public class MarketOffer {
     int count;
     int price;
 
-    public MarketOffer(Kingdom kingdom, MarketResource resource, int count, int price)
+    public MarketOffer(UUID id, Kingdom kingdom, MarketResource resource, int count, int price)
     {
-        this.id = Id.generate();
+        this.id = id;
         this.kingdom = kingdom;
         this.resource = resource;
         this.count = count;

@@ -1,8 +1,9 @@
 package com.knightsofdarkness.game.utils;
 
+import java.util.Optional;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.knightsofdarkness.game.market.MarketOffer;
@@ -40,11 +41,10 @@ public class MarketRepository implements IMarketOfferRepository {
                 .findFirst();
     }
 
-    @Override
-    public List<MarketOffer> getOffersByKingdomId(UUID kingdomId)
+    public List<MarketOffer> getOffersByKingdomName(String name)
     {
         // TODO use kingdom repository to get kingdom by id and then get offers by kingdom
-        return offers.stream().filter(offer -> offer.getKingdom().getId().equals(kingdomId)).toList();
+        return offers.stream().filter(offer -> offer.getKingdom().getName().equals(name)).toList();
     }
 
     @Override

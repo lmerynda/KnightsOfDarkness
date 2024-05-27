@@ -1,12 +1,14 @@
 package com.knightsofdarkness.game.market;
 
-import java.util.List;
 import java.util.Optional;
 
+import java.util.List;
+
+import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
-public class Market {
+public class Market implements IMarket {
     IMarketOfferRepository offers;
 
     public Market(IMarketOfferRepository repository)
@@ -14,38 +16,49 @@ public class Market {
         this.offers = repository;
     }
 
+    @Override
     public MarketOffer addOffer(Kingdom kingdom, MarketResource resource, int count, int price)
     {
-        var offer = new MarketOffer(kingdom, resource, count, price);
+        var offer = new MarketOffer(Id.generate(), kingdom, resource, count, price);
         offers.add(offer);
 
         return offer;
     }
 
+    @Override
     public void removeOffer(MarketOffer offer)
     {
         offers.remove(offer);
     }
 
+    @Override
     public List<MarketOffer> getOffersByResource(MarketResource resource)
     {
         return offers.getOffersByResource(resource);
     }
 
+    @Override
     public Optional<MarketOffer> getCheapestOfferByResource(MarketResource resource)
     {
         return offers.getCheapestOfferByResource(resource);
     }
 
+    @Override
     public List<MarketOffer> getOffersByKingdom(Kingdom kingdom)
     {
-        return offers.getOffersByKingdomId(kingdom.getId());
+        return offers.getOffersByKingdomName(kingdom.getName());
+    }
+
+    public List<MarketOffer> getOffersByKingdomName(String name)
+    {
+        return offers.getOffersByKingdomName(name);
     }
 
     // TODO make a LOT of tests for this
     /**
      * @return amount of resource which was actually sold
      */
+    @Override
     public int buyExistingOffer(MarketOffer offer, int amount)
     {
         var optional = offers.findById(offer.getId());

@@ -1,7 +1,8 @@
 package com.knightsofdarkness.storage.market;
 
-import java.util.List;
 import java.util.Optional;
+
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     }
 
     @Override
-    public List<MarketOffer> getOffersByKingdomId(UUID kingdomId)
+    public List<MarketOffer> getOffersByKingdomName(String name)
     {
         throw new UnsupportedOperationException("Not implemented");
         // TypedQuery<MarketOffer> query = entityManager.createQuery("SELECT offer FROM MarketOffer offer WHERE offer.kingdom.id = :kingdomId", MarketOffer.class);

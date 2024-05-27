@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.Kingdom;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
+import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 
 import jakarta.persistence.EntityManager;
@@ -19,23 +22,27 @@ public class KingdomService {
     private GameConfig gameConfig;
 
     @Autowired
+    private IMarket market;
+
+    @Autowired
     private KingdomRepository kingdomRepository;
 
     @Autowired
     private EntityManager entityManager;
 
     @Transactional
-    public void createKingdom(KingdomDto kingdom)
+    public KingdomDto createKingdom(KingdomDto kingdom)
     {
-        log.info("Creating new kingdom" + kingdom.toString());
-        kingdomRepository.add(kingdom.toDomain(gameConfig));
+        log.info("Creating new kingdom " + kingdom.toString());
+
+        var createdKingdom = kingdomRepository.add(kingdom.toDomain(gameConfig, market));
+        return KingdomDto.fromDomain(createdKingdom);
     }
 
-    public KingdomDto getKingdomByName(String name)
+    public Optional<KingdomDto> getKingdomByName(String name)
     {
         log.info("Looking for a kingdom with name " + name);
         var kingdom = kingdomRepository.getKingdomByName(name);
-        log.info("Found " + kingdom);
-        return KingdomDto.fromDomain(kingdom);
+        return kingdom.isEmpty() ? Optional.empty() : Optional.of(KingdomDto.fromDomain(kingdom.get()));
     }
 }

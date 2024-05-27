@@ -37,7 +37,8 @@ public class MarketOfferEntity {
 
     public MarketOffer toDomainModel()
     {
-        return new MarketOffer(null, resource, count, price);
+        // TODO fix null kingdom
+        return new MarketOffer(id, null, resource, count, price);
     }
 
     public static MarketOfferEntity fromDomainModel(MarketOffer offer)

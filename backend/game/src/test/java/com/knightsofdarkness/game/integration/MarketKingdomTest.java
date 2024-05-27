@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.game.Game;
 import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.game.market.Market;
+import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
 public class MarketKingdomTest {
     private Game game;
-    private Market market;
+    private IMarket market;
     private Kingdom kingdom;
 
     @BeforeEach

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.game.Game;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
@@ -24,7 +25,7 @@ class MarketTest {
     void testAddOffer()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
 
         market.addOffer(kingdom, MarketResource.food, 100, 50);
 
@@ -35,7 +36,7 @@ class MarketTest {
     void testThreeOffers()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
 
         market.addOffer(kingdom, MarketResource.food, 100, 50);
         market.addOffer(kingdom, MarketResource.food, 100, 50);
@@ -50,7 +51,7 @@ class MarketTest {
     void testRemoveOffer()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
         var offer = market.addOffer(kingdom, MarketResource.food, 100, 50);
 
         market.removeOffer(offer);
@@ -62,7 +63,7 @@ class MarketTest {
     void testRemoveThreeOffers()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
         var offer1 = market.addOffer(kingdom, MarketResource.food, 100, 50);
         var offer2 = market.addOffer(kingdom, MarketResource.food, 100, 50);
         var offer3 = market.addOffer(kingdom, MarketResource.food, 100, 51);
@@ -80,9 +81,9 @@ class MarketTest {
     void buyingOffer_whenNoOffersExist_shouldNotBuyAnything()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
 
-        var offer = new MarketOffer(kingdom, MarketResource.food, 100, 100);
+        var offer = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 100);
 
         var amountBought = market.buyExistingOffer(offer, 100);
 
@@ -94,7 +95,7 @@ class MarketTest {
     void buyingOffer_whenOneOfferExistsAndHasEnoughAmount_shouldSellEntireRequestedAmountAndStillHasOfferAvailable()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
 
         market.addOffer(kingdom, MarketResource.food, 111, 100);
         var offers = market.getOffersByResource(MarketResource.food);
@@ -110,7 +111,7 @@ class MarketTest {
     void buyingOffer_whenOneOfferExistsAndHasExactlyTheSameAmount_shouldSellEntireRequestedAmountAndHasNoOffersAvailable()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
 
         market.addOffer(kingdom, MarketResource.food, 100, 100);
         var offers = market.getOffersByResource(MarketResource.food);
@@ -126,7 +127,7 @@ class MarketTest {
     void buyingOffer_whenOfferExist_shouldReduceTheAmountStillAvailableByTheAmountBought()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
 
         market.addOffer(kingdom, MarketResource.food, 100, 100);
         var offers = market.getOffersByResource(MarketResource.food);
@@ -143,7 +144,7 @@ class MarketTest {
     void buyingOffer_whenMultipleOffersExistAndBuyersTakeTheEntireOne_shouldReduceNumberOfAvailableOffersByOne()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
 
         market.addOffer(kingdom, MarketResource.food, 100, 100);
         market.addOffer(kingdom, MarketResource.food, 100, 200);
@@ -160,8 +161,8 @@ class MarketTest {
     void offerComparator_withFirstOfferHigher_shouldReturnMoreThanZero()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var offer1 = new MarketOffer(kingdom, MarketResource.food, 100, 2);
-        var offer2 = new MarketOffer(kingdom, MarketResource.food, 100, 1);
+        var offer1 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 2);
+        var offer2 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
 
         assertTrue(Market.offerComparator(offer1, offer2) > 0);
     }
@@ -170,8 +171,8 @@ class MarketTest {
     void offerComparator_withFirstOfferLower_shouldReturnLessThanZero()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var offer1 = new MarketOffer(kingdom, MarketResource.food, 100, 1);
-        var offer2 = new MarketOffer(kingdom, MarketResource.food, 100, 2);
+        var offer1 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
+        var offer2 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 2);
 
         assertTrue(Market.offerComparator(offer1, offer2) < 0);
     }
@@ -180,8 +181,8 @@ class MarketTest {
     void offerComparator_withTheSamePricedOffers_shouldReturnZero()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var offer1 = new MarketOffer(kingdom, MarketResource.food, 100, 1);
-        var offer2 = new MarketOffer(kingdom, MarketResource.food, 100, 1);
+        var offer1 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
+        var offer2 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
 
         assertEquals(0, Market.offerComparator(offer1, offer2));
     }
@@ -190,7 +191,7 @@ class MarketTest {
     void offerComparator_withTheSameOffer_shouldReturnZero()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var offer = new MarketOffer(kingdom, MarketResource.food, 100, 1);
+        var offer = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
 
         assertEquals(0, Market.offerComparator(offer, offer));
     }
@@ -198,7 +199,7 @@ class MarketTest {
     @Test
     void findCheapestOffer_withNoOffers_shouldReturnEmpty()
     {
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
 
         var emptyOffer = market.getCheapestOfferByResource(MarketResource.food);
 
@@ -209,7 +210,7 @@ class MarketTest {
     void findCheapestOffer_withOnlyOneOffer_shouldReturnThatOffer()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
         market.addOffer(kingdom, MarketResource.food, 100, 1);
 
         var onlyOffer = market.getCheapestOfferByResource(MarketResource.food);
@@ -223,7 +224,7 @@ class MarketTest {
     void findCheapestOffer_withAFewOffers_shouldReturnTheCheapestOne()
     {
         var kingdom = new KingdomBuilder(game).build();
-        var market = new MarketBuilder().build();
+        IMarket market = new MarketBuilder().build();
         market.addOffer(kingdom, MarketResource.food, 100, 2);
         market.addOffer(kingdom, MarketResource.food, 100, 2);
         market.addOffer(kingdom, MarketResource.food, 100, 3);

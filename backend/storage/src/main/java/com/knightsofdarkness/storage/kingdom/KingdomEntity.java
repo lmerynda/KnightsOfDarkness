@@ -1,26 +1,24 @@
 package com.knightsofdarkness.storage.kingdom;
 
-import java.util.UUID;
-
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 @Entity
 public class KingdomEntity {
-    @Id
-    private UUID id;
 
+    @Id
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     public KingdomEntity()
     {
     }
 
-    public KingdomEntity(UUID id, String name)
+    public KingdomEntity(String name)
     {
-        this.id = id;
         this.name = name;
     }
 
@@ -32,6 +30,6 @@ public class KingdomEntity {
 
     public static KingdomEntity fromDomainModel(Kingdom kingdom)
     {
-        return new KingdomEntity(kingdom.getId(), kingdom.getName());
+        return new KingdomEntity(kingdom.getName());
     }
 }

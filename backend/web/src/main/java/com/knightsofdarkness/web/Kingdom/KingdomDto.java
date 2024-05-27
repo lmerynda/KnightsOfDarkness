@@ -1,12 +1,10 @@
 package com.knightsofdarkness.web.Kingdom;
 
-import java.util.UUID;
-
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.game.market.IMarket;
 
 public class KingdomDto {
-    public UUID id;
     public String name;
 
     public KingdomDto()
@@ -18,28 +16,20 @@ public class KingdomDto {
         this.name = name;
     }
 
-    public KingdomDto(UUID id, String name)
+    public Kingdom toDomain(GameConfig config, IMarket market)
     {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Kingdom toDomain(GameConfig config)
-    {
-        // TODO, fix
-        return new Kingdom(name, config, null, null, null, null);
+        return new Kingdom(name, config, market, null, null, null);
     }
 
     public static KingdomDto fromDomain(Kingdom kingdom)
     {
-        return new KingdomDto(kingdom.getId(), kingdom.getName());
+        return new KingdomDto(kingdom.getName());
     }
 
     public String toString()
     {
-        return "MarketOfferDto{" +
-                "id=" + id +
-                ", name=" + name +
+        return "KingdomDto{" +
+                "name=" + name +
                 '}';
     }
 }
