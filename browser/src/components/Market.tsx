@@ -2,7 +2,7 @@ import React from 'react';
 
 type MarketData = {
     id: string;
-    kingdom: string;
+    kingdomName: string;
     resource: string;
     price: number;
     count: number;
@@ -41,7 +41,7 @@ const Market: React.FC = () => {
                 <tbody>
                     {marketData?.map((data) => (
                         <tr key={data.id}>
-                            <td>{data.kingdom}</td>
+                            <td>{data.kingdomName}</td>
                             <td>{data.resource}</td>
                             <td>{data.price}</td>
                             <td>{data.count}</td>
