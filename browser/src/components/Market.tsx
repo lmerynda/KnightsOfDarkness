@@ -28,6 +28,14 @@ const Market: React.FC = () => {
 
     return (
         <div>
+            <div className='kingdom-content-container'>
+                <div><h6>Market</h6></div>
+                <div>
+                    <div>Raz</div>
+                    <div>Dwa</div>
+                    <div>Trzy</div>
+                </div>
+            </div>
             <h1>Market</h1>
             <table>
                 <thead>
