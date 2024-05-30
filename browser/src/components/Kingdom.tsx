@@ -1,21 +1,24 @@
 import React from 'react';
 
 type KingdomData = {
-    id: string;
     name: string;
 };
 
-const Kingdom: React.FC = () => {
+export type KingdomProps = {
+    kingdomName: string;
+};
+
+const Kingdom: React.FC<KingdomProps> = (kingdomProps: KingdomProps) => {
     // react state to hold market data from the server
     const [kingdom, setKingdom] = React.useState<KingdomData>();
 
     React.useEffect(() => {
-        fetch('http://localhost:8080/kingdom')
+        fetch(`http://localhost:8080/kingdom/${kingdomProps.kingdomName}`)
             .then(response => response.json())
             .then(kingdom => {
                 setKingdom(kingdom);
             });
-    }, []);
+    }, [kingdomProps.kingdomName]);
 
     React.useEffect(() => {
         if (kingdom) {
@@ -25,22 +28,7 @@ const Kingdom: React.FC = () => {
 
     return (
         <div>
-            <h1>Kingdom</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Kingdom name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {kingdom ?
-                        <tr key={kingdom.id}>
-                            <td>{kingdom.name}</td>
-                        </tr>
-                        : ''
-                    }
-                </tbody>
-            </table>
+            <h1>Kingdom {kingdom ? kingdom.name : 'Loading...'}</h1>
         </div>
     );
 };
