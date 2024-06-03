@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
+import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 
@@ -42,7 +43,7 @@ public class KingdomService {
     public Optional<KingdomDto> getKingdomByName(String name)
     {
         log.info("Looking for a kingdom with name " + name);
-        var kingdom = kingdomRepository.getKingdomByName(name);
+        Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
         return kingdom.isEmpty() ? Optional.empty() : Optional.of(KingdomDto.fromDomain(kingdom.get()));
     }
 }

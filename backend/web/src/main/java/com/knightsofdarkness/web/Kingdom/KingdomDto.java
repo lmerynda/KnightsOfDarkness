@@ -23,6 +23,8 @@ public class KingdomDto {
 
     public static KingdomDto fromDomain(Kingdom kingdom)
     {
+        // TODO connect this to actual resources
+        var resources = kingdom.getResources();
         return new KingdomDto(kingdom.getName());
     }
 
