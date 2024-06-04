@@ -6,26 +6,26 @@ import com.knightsofdarkness.game.market.IMarket;
 
 public class KingdomDto {
     public String name;
+    public KingdomResourcesDto resources;
 
     public KingdomDto()
     {
     }
 
-    public KingdomDto(String name)
+    public KingdomDto(String name, KingdomResourcesDto resources)
     {
         this.name = name;
+        this.resources = resources;
     }
 
     public Kingdom toDomain(GameConfig config, IMarket market)
     {
-        return new Kingdom(name, config, market, null, null, null);
+        return new Kingdom(name, config, market, resources.toDomain(), null, null);
     }
 
     public static KingdomDto fromDomain(Kingdom kingdom)
     {
-        // TODO connect this to actual resources
-        var resources = kingdom.getResources();
-        return new KingdomDto(kingdom.getName());
+        return new KingdomDto(kingdom.getName(), KingdomResourcesDto.fromDomain(kingdom.getResources()));
     }
 
     public String toString()

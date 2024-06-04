@@ -44,7 +44,18 @@ public class DemoApplication {
 			// POST request to /kingdom
 			String kingdomPayload = """
 					{
-						"name": "uprzejmy"
+						"name": "uprzejmy",
+						"resources": {
+							"food": 1000,
+							"gold": 1000,
+							"iron": 100,
+							"land": 100,
+							"tools": 100,
+							"weapons": 100,
+							"buildingPoints": 10000,
+							"unemployed": 20,
+							"turns": 36
+						}
 					}
 					""";
 			HttpEntity<String> kingdomEntity = new HttpEntity<>(kingdomPayload, headers);

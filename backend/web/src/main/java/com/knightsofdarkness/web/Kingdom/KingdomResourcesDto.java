@@ -4,21 +4,21 @@ import com.knightsofdarkness.game.kingdom.KingdomResources;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 
 public class KingdomResourcesDto {
-    int land;
-    int buildingPoints;
-    int unemployed;
-    int gold;
-    int iron;
-    int food;
-    int tool;
-    int weapons;
-    int turn;
+    public int land;
+    public int buildingPoints;
+    public int unemployed;
+    public int gold;
+    public int iron;
+    public int food;
+    public int tools;
+    public int weapons;
+    public int turns;
 
     public KingdomResourcesDto()
     {
     }
 
-    public KingdomResourcesDto(int land, int buildingPoints, int unemployed, int gold, int iron, int food, int tool, int weapons, int turn)
+    public KingdomResourcesDto(int land, int buildingPoints, int unemployed, int gold, int iron, int food, int tools, int weapons, int turns)
     {
         this.land = land;
         this.buildingPoints = buildingPoints;
@@ -26,9 +26,9 @@ public class KingdomResourcesDto {
         this.gold = gold;
         this.iron = iron;
         this.food = food;
-        this.tool = tool;
+        this.tools = tools;
         this.weapons = weapons;
-        this.turn = turn;
+        this.turns = turns;
     }
 
     public KingdomResources toDomain()
@@ -40,9 +40,9 @@ public class KingdomResourcesDto {
         kingdomResources.setCount(ResourceName.gold, gold);
         kingdomResources.setCount(ResourceName.iron, iron);
         kingdomResources.setCount(ResourceName.food, food);
-        kingdomResources.setCount(ResourceName.tools, tool);
+        kingdomResources.setCount(ResourceName.tools, tools);
         kingdomResources.setCount(ResourceName.weapons, weapons);
-        kingdomResources.setCount(ResourceName.turns, turn);
+        kingdomResources.setCount(ResourceName.turns, turns);
         return kingdomResources;
     }
 
