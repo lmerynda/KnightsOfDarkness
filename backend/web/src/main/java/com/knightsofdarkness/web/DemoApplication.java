@@ -55,6 +55,19 @@ public class DemoApplication {
 							"buildingPoints": 10000,
 							"unemployed": 20,
 							"turns": 36
+						},
+						"buildings": {
+							"houses": 10,
+							"goldMines": 5,
+							"ironMines": 5,
+							"workshops": 5,
+							"farms": 5,
+							"markets": 1,
+							"barracks": 1,
+							"guardHouses": 1,
+							"spyGuilds": 0,
+							"towers": 1,
+							"castles": 0
 						}
 					}
 					""";

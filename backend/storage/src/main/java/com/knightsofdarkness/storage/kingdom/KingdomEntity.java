@@ -23,6 +23,9 @@ public class KingdomEntity {
     @Embedded
     KingdomResourcesEntity resources;
 
+    @Embedded
+    KingdomBuildingsEntity buildings;
+
     @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
     List<MarketOfferEntity> marketOffers;
 
@@ -30,21 +33,22 @@ public class KingdomEntity {
     {
     }
 
-    public KingdomEntity(String name, KingdomResourcesEntity resources, List<MarketOfferEntity> marketOffers)
+    public KingdomEntity(String name, KingdomResourcesEntity resources, KingdomBuildingsEntity buildings, List<MarketOfferEntity> marketOffers)
     {
         this.name = name;
         this.resources = resources;
+        this.buildings = buildings;
         this.marketOffers = marketOffers;
     }
 
     public Kingdom toDomainModel()
     {
         // TODO fix
-        return new Kingdom(name, null, null, resources.toDomainModel(), null, null);
+        return new Kingdom(name, null, null, resources.toDomainModel(), buildings.toDomainModel(), null);
     }
 
     public static KingdomEntity fromDomainModel(Kingdom kingdom)
     {
-        return new KingdomEntity(kingdom.getName(), KingdomResourcesEntity.frommDomainModel(kingdom.getResources()), new ArrayList<>());
+        return new KingdomEntity(kingdom.getName(), KingdomResourcesEntity.frommDomainModel(kingdom.getResources()), KingdomBuildingsEntity.frommDomainModel(kingdom.getBuildings()), new ArrayList<>());
     }
 }
