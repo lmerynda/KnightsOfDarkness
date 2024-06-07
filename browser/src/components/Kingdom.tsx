@@ -1,4 +1,4 @@
-import KingdomBuildings from "./KingdomBuildings";
+import KingdomBuildingsView from "./KingdomBuildings";
 import KingdomResourcesView from "./KingdomResources";
 import Market from "./Market";
 
@@ -14,9 +14,24 @@ export type KingdomResources = {
     turns: number;
 }
 
+export type KingdomBuildings = {
+    houses: number,
+    goldMines: number,
+    ironMines: number,
+    workshops: number,
+    farms: number,
+    markets: number,
+    barracks: number,
+    guardHouses: number,
+    spyGuilds: number,
+    towers: number,
+    castles: number
+}
+
 export type KingdomData = {
     name: string;
     resources: KingdomResources;
+    buildings: KingdomBuildings;
 };
 
 export type KingdomProps = {
@@ -29,7 +44,7 @@ const KingdomView: React.FC<KingdomProps> = ({ kingdom }) => {
             <h1>Kingdom {kingdom.name}</h1>
             <div>
                 <KingdomResourcesView {...kingdom.resources} />
-                <KingdomBuildings kingdom={kingdom} />
+                <KingdomBuildingsView {...kingdom.buildings} />
                 <Market />
             </div>
         </div>
