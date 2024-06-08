@@ -10,7 +10,7 @@ public class KingdomUnitsEntity {
     int goldMiners;
     int ironMiners;
     int farmers;
-    int blacksmith;
+    int blacksmiths;
     int builders;
     int carriers;
     int guards;
@@ -23,12 +23,12 @@ public class KingdomUnitsEntity {
     {
     }
 
-    public KingdomUnitsEntity(int goldMiners, int ironMiners, int farmers, int blacksmith, int builders, int carriers, int guards, int spies, int infantry, int bowmen, int cavalry)
+    public KingdomUnitsEntity(int goldMiners, int ironMiners, int farmers, int blacksmiths, int builders, int carriers, int guards, int spies, int infantry, int bowmen, int cavalry)
     {
         this.goldMiners = goldMiners;
         this.ironMiners = ironMiners;
         this.farmers = farmers;
-        this.blacksmith = blacksmith;
+        this.blacksmiths = blacksmiths;
         this.builders = builders;
         this.carriers = carriers;
         this.guards = guards;
@@ -44,7 +44,7 @@ public class KingdomUnitsEntity {
         kingdomUnits.setCount(UnitName.goldMiner, goldMiners);
         kingdomUnits.setCount(UnitName.ironMiner, ironMiners);
         kingdomUnits.setCount(UnitName.farmer, farmers);
-        kingdomUnits.setCount(UnitName.blacksmith, blacksmith);
+        kingdomUnits.setCount(UnitName.blacksmith, blacksmiths);
         kingdomUnits.setCount(UnitName.builder, builders);
         kingdomUnits.setCount(UnitName.carrier, carriers);
         kingdomUnits.setCount(UnitName.guard, guards);

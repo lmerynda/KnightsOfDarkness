@@ -1,5 +1,6 @@
 import KingdomBuildingsView from "./KingdomBuildings";
 import KingdomResourcesView from "./KingdomResources";
+import KingdomUnitsView from "./KingdomUnits";
 import Market from "./Market";
 
 export type KingdomResources = {
@@ -28,10 +29,25 @@ export type KingdomBuildings = {
     castles: number
 }
 
+export type KingdomUnits = {
+    goldMiners: number,
+    ironMiners: number,
+    farmers: number,
+    blacksmiths: number,
+    builders: number,
+    carriers: number,
+    guards: number,
+    spies: number,
+    infantry: number,
+    bowmen: number,
+    cavalry: number
+}
+
 export type KingdomData = {
     name: string;
     resources: KingdomResources;
     buildings: KingdomBuildings;
+    units: KingdomUnits;
 };
 
 export type KingdomProps = {
@@ -45,6 +61,7 @@ const KingdomView: React.FC<KingdomProps> = ({ kingdom }) => {
             <div>
                 <KingdomResourcesView {...kingdom.resources} />
                 <KingdomBuildingsView {...kingdom.buildings} />
+                <KingdomUnitsView {...kingdom.units} />
                 <Market />
             </div>
         </div>
