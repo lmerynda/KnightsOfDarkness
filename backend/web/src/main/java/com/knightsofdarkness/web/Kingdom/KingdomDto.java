@@ -8,26 +8,28 @@ public class KingdomDto {
     public String name;
     public KingdomResourcesDto resources;
     public KingdomBuildingsDto buildings;
+    public KingdomUnitsDto units;
 
     public KingdomDto()
     {
     }
 
-    public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings)
+    public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units)
     {
         this.name = name;
         this.resources = resources;
         this.buildings = buildings;
+        this.units = units;
     }
 
     public Kingdom toDomain(GameConfig config, IMarket market)
     {
-        return new Kingdom(name, config, market, resources.toDomain(), buildings.toDomain(), null);
+        return new Kingdom(name, config, market, resources.toDomain(), buildings.toDomain(), units.toDomain());
     }
 
     public static KingdomDto fromDomain(Kingdom kingdom)
     {
-        return new KingdomDto(kingdom.getName(), KingdomResourcesDto.fromDomain(kingdom.getResources()), KingdomBuildingsDto.fromDomain(kingdom.getBuildings()));
+        return new KingdomDto(kingdom.getName(), KingdomResourcesDto.fromDomain(kingdom.getResources()), KingdomBuildingsDto.fromDomain(kingdom.getBuildings()), KingdomUnitsDto.fromDomain(kingdom.getUnits()));
     }
 
     public String toString()
@@ -36,6 +38,7 @@ public class KingdomDto {
                 "name='" + name +
                 ", resources=" + resources +
                 ", buildings=" + buildings +
+                ", units=" + units +
                 '}';
     }
 }

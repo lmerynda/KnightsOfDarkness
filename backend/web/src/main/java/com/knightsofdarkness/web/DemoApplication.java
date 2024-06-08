@@ -68,6 +68,19 @@ public class DemoApplication {
 							"spyGuilds": 0,
 							"towers": 1,
 							"castles": 0
+						},
+						"units": {
+							"goldMiners": 5,
+							"ironMiners": 5,
+							"farmers": 5,
+							"blacksmiths": 5,
+							"builders": 5,
+							"carriers": 0,
+							"guards": 5,
+							"spies": 0,
+							"infantry": 0,
+							"bowmen": 0,
+							"cavalry": 0
 						}
 					}
 					""";
