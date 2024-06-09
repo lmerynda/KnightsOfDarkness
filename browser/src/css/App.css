@@ -13,7 +13,7 @@
   color: white;
 }
 
-.kingdom-container div {
+.kingdom-activity-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;

@@ -20,7 +20,7 @@ const App: React.FC = () => {
     <div className="App">
       <header className="App-header">
         <div>
-          Kingdom {kingdom ? <Kingdom kingdom={kingdom} /> : 'Loading...'}
+          {kingdom ? <Kingdom kingdom={kingdom} /> : 'Loading...'}
         </div>
       </header>
     </div>
