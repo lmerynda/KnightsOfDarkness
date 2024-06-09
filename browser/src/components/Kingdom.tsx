@@ -58,8 +58,8 @@ const KingdomView: React.FC<KingdomProps> = ({ kingdom }) => {
     return (
         <div className="kingdom-container">
             <h1>Kingdom {kingdom.name}</h1>
+            <div><KingdomResourcesView {...kingdom.resources} /></div>
             <div>
-                <KingdomResourcesView {...kingdom.resources} />
                 <KingdomBuildingsView {...kingdom.buildings} />
                 <KingdomUnitsView {...kingdom.units} />
                 <Market />
