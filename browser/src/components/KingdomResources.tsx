@@ -3,7 +3,7 @@ import { KingdomResources } from './Kingdom';
 
 const KingdomResourcesView: React.FC<KingdomResources> = (kingdomResources) => {
     return (
-        <div>
+        <div className="resources-container">
             <div><h6>Resources</h6></div>
             <div>
                 <span>gold: {kingdomResources.gold}</span>
