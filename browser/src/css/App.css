@@ -13,9 +13,9 @@
   color: white;
 }
 
-.kingdom-activity-container {
+.kingdom-main-container {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 4fr;
   gap: 20px;
 }
 
@@ -26,4 +26,8 @@
 
 .resources-container span {
   padding-right: 15px;
+}
+.kingdom-activity-content {
+  display: flex;
+  flex-direction: column;
 }

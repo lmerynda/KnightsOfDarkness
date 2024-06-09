@@ -27,7 +27,7 @@ const Market: React.FC = () => {
     }, [marketData]);
 
     return (
-        <div>
+        <div className='kingdom-activity-content'>
             <h1>Market</h1>
             <table>
                 <thead>
