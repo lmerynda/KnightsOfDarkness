@@ -68,4 +68,20 @@ public class KingdomBuildingsDto {
                 kingdomBuildings.getCount(BuildingName.castle));
     }
 
+    public String toString()
+    {
+        return "KingdomBuildingsDto{" +
+                "houses=" + houses +
+                ", goldMines=" + goldMines +
+                ", ironMines=" + ironMines +
+                ", workshops=" + workshops +
+                ", farms=" + farms +
+                ", markets=" + markets +
+                ", barracks=" + barracks +
+                ", guardHouses=" + guardHouses +
+                ", spyGuilds=" + spyGuilds +
+                ", towers=" + towers +
+                ", castles=" + castles +
+                '}';
+    }
 }

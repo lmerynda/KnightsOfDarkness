@@ -48,4 +48,10 @@ public class KingdomController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping("/{name}/build")
+    ResponseEntity<KingdomDto> kingdomBuild(@PathVariable String name, @RequestBody KingdomBuildingsDto buildings)
+    {
+        return kingdomService.build(name, buildings);
+    }
 }
