@@ -1,6 +1,17 @@
 import React from 'react';
 import './css/App.css';
-import Kingdom, { KingdomData } from './components/Kingdom';
+import { KingdomData } from './components/Kingdom';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { CssBaseline, Box, createTheme, ThemeProvider } from '@mui/material';
+import Sidebar from './Sidebar';
+import KingdomTabs from './KingdomTabs';
+import KingdomToolbar from './KingdomToolbar';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
 
 const kingdomName = "uprzejmy";
@@ -17,13 +28,26 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <div>
-          {kingdom ? <Kingdom kingdom={kingdom} /> : 'Loading...'}
-        </div>
-      </header>
-    </div>
+    <ThemeProvider theme={darkTheme}>
+      <Router>
+        <Box sx={{ display: 'flex' }}>
+          <CssBaseline />
+          {kingdom ? (
+            <>
+              <Sidebar {...kingdom} />
+              <Box
+                component="main"
+                sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
+              >
+                <KingdomToolbar kingdomName={kingdom.name} kingdomResources={kingdom.resources} />
+                <KingdomTabs />
+              </Box>
+            </>
+          ) : <div>Loading...</div>
+          }
+        </Box>
+      </Router>
+    </ThemeProvider>
   );
 }
 
