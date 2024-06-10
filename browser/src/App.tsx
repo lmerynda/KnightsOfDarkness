@@ -7,24 +7,31 @@ import Sidebar from './Sidebar';
 import KingdomTabs from './KingdomTabs';
 import KingdomToolbar from './KingdomToolbar';
 
+export interface KingdomReloader {
+  reloadKingdom: () => void;
+}
+
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
   },
 });
 
-
 const kingdomName = "uprzejmy";
 
 const App: React.FC = () => {
   const [kingdom, setKingdom] = React.useState<KingdomData>();
 
-  React.useEffect(() => {
+  const reloadKingdom = () => {
     fetch(`http://localhost:8080/kingdom/${kingdomName}`)
       .then(response => response.json())
       .then(kingdom => {
         setKingdom(kingdom);
       });
+  };
+
+  React.useEffect(() => {
+    reloadKingdom();
   }, []);
 
   return (
@@ -40,7 +47,7 @@ const App: React.FC = () => {
                 sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
               >
                 <KingdomToolbar kingdomName={kingdom.name} kingdomResources={kingdom.resources} />
-                <KingdomTabs />
+                <KingdomTabs reloadKingdom={reloadKingdom} />
               </Box>
             </>
           ) : <div>Loading...</div>

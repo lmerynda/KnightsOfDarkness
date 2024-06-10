@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.storage.IKingdomRepository;
 
@@ -20,6 +21,9 @@ import jakarta.persistence.TypedQuery;
 public class KingdomRepository implements IKingdomRepository {
 
     private final Logger log = LoggerFactory.getLogger(KingdomRepository.class);
+
+    @Autowired
+    private GameConfig gameConfig;
 
     @Autowired
     private EntityManager entityManager;
@@ -37,7 +41,7 @@ public class KingdomRepository implements IKingdomRepository {
         query.setParameter("name", name);
         try
         {
-            return Optional.of(query.getSingleResult().toDomainModel());
+            return Optional.of(query.getSingleResult().toDomainModel(gameConfig));
         } catch (NoResultException e)
         {
             log.warn("Kingdom with name " + name + " not found");
@@ -52,11 +56,16 @@ public class KingdomRepository implements IKingdomRepository {
         query.setParameter("id", id);
         try
         {
-            return Optional.of(query.getSingleResult().toDomainModel());
+            return Optional.of(query.getSingleResult().toDomainModel(gameConfig));
         } catch (NoResultException e)
         {
             log.warn("Kingdom with id " + id + " not found");
             return Optional.empty();
         }
+    }
+
+    public void update(Kingdom kingdom)
+    {
+        entityManager.merge(KingdomEntity.fromDomainModel(kingdom));
     }
 }

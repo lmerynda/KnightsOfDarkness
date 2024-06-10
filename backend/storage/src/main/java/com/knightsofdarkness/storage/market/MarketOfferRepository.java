@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
@@ -17,6 +18,9 @@ import jakarta.persistence.TypedQuery;
 
 @Repository
 public class MarketOfferRepository implements IMarketOfferRepository {
+
+    @Autowired
+    private GameConfig gameConfig;
 
     @Autowired
     private EntityManager entityManager;
@@ -41,7 +45,7 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     {
         TypedQuery<MarketOfferEntity> query = entityManager.createQuery("SELECT offer FROM MarketOfferEntity offer WHERE offer.resource = :resource", MarketOfferEntity.class);
         query.setParameter("resource", resource);
-        return query.getResultList().stream().map(MarketOfferEntity::toDomainModel).toList();
+        return query.getResultList().stream().map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig)).toList();
     }
 
     @Override

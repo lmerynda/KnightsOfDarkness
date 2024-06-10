@@ -1,5 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import React, { useState } from 'react';
+import { KingdomReloader } from '../App';
 
 const buildingList = [
     "houses",
@@ -15,7 +16,9 @@ const buildingList = [
     "castles"
 ];
 
-const Build: React.FC = () => {
+
+
+const Build: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
     const [buildingCounts, setBuildingCounts] = useState<{ [building: string]: number }>({});
 
     const handleCountChange = (building: string, count: number) => {
@@ -35,6 +38,9 @@ const Build: React.FC = () => {
         })
             .then((response) => {
                 // Handle response
+                if (response.ok) {
+                    reloadKingdom(); // Invoke the callback to reload the kingdom
+                }
             })
             .catch((error) => {
                 // Handle error

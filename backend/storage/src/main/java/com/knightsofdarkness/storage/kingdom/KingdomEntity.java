@@ -3,6 +3,7 @@ package com.knightsofdarkness.storage.kingdom;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.storage.market.MarketOfferEntity;
 
@@ -45,10 +46,10 @@ public class KingdomEntity {
         this.marketOffers = marketOffers;
     }
 
-    public Kingdom toDomainModel()
+    public Kingdom toDomainModel(GameConfig gameConfig)
     {
         // TODO fix nulls
-        return new Kingdom(name, null, null, resources.toDomainModel(), buildings.toDomainModel(), units.toDomainModel());
+        return new Kingdom(name, gameConfig, null, resources.toDomainModel(), buildings.toDomainModel(), units.toDomainModel());
     }
 
     public static KingdomEntity fromDomainModel(Kingdom kingdom)

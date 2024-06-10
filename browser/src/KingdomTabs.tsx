@@ -5,6 +5,7 @@ import { Route, Routes, Link, useLocation } from 'react-router-dom';
 import Build from './tabs/Build';
 import Overview from './tabs/Overview';
 import Market from './tabs/Market';
+import { KingdomReloader } from './App';
 
 
 function useRouteMatch(patterns: string[]): string | null {
@@ -18,7 +19,7 @@ function useRouteMatch(patterns: string[]): string | null {
     return null;
 }
 
-const KingdomTabs: React.FC = () => {
+const KingdomTabs: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
     const routeMatch = useRouteMatch(['/overview', '/build', '/market']);
     const currentTab = routeMatch ? routeMatch : false;
 
@@ -33,7 +34,7 @@ const KingdomTabs: React.FC = () => {
             </AppBar>
             <Routes>
                 <Route path="/Overview" element={<Overview />} />
-                <Route path="/Build" element={<Build />} />
+                <Route path="/Build" element={<Build reloadKingdom={reloadKingdom} />} />
                 <Route path="/Market" element={<Market />} />
                 <Route path="/" element={<Overview />} />
             </Routes>

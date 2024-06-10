@@ -48,8 +48,17 @@ public class KingdomService {
         return kingdom.isEmpty() ? Optional.empty() : Optional.of(KingdomDto.fromDomain(kingdom.get()));
     }
 
+    @Transactional
     public ResponseEntity<KingdomDto> build(String name, KingdomBuildingsDto buildings) {
         log.info("[" + name + "] building " + buildings.toString());
-        return null;
+        Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
+        if (kingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        kingdom.get().build(buildings.toDomain());
+        kingdomRepository.update(kingdom.get());
+        return ResponseEntity.ok(KingdomDto.fromDomain(kingdom.get()));
     }
 }
