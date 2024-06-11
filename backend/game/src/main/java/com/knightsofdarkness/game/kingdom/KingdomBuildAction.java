@@ -15,8 +15,7 @@ public class KingdomBuildAction {
      */
     public int build(KingdomBuildings buildingsToBuild)
     {
-        // by using EnumSet we make sure the names are ordered as specified in the enum
-        // declaration
+        // by using EnumSet we make sure the names are ordered as specified in the enum declaration
         var buildingNames = EnumSet.copyOf(buildingsToBuild.buildings.keySet());
         int howManyWereBuilt = 0;
         for (var buildingName : buildingNames)
