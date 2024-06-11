@@ -40,6 +40,7 @@ const Build: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                 // Handle response
                 if (response.ok) {
                     reloadKingdom(); // Invoke the callback to reload the kingdom
+                    setBuildingCounts({}); // Clear the building counts
                 }
             })
             .catch((error) => {
