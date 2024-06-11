@@ -20,7 +20,10 @@ public class KingdomBuildAction {
         int howManyWereBuilt = 0;
         for (var buildingName : buildingNames)
         {
-            howManyWereBuilt += build(buildingName, buildingsToBuild.getCount(buildingName));
+            if(buildingsToBuild.getCount(buildingName) > 0)
+            {
+                howManyWereBuilt += build(buildingName, buildingsToBuild.getCount(buildingName));
+            }
         }
 
         return howManyWereBuilt;
@@ -35,7 +38,7 @@ public class KingdomBuildAction {
         var howManyToBuild = Math.min(fullBuildings, kingdom.getUnusedLand());
         assert howManyToBuild >= 0;
         kingdom.getBuildings().addCount(building, howManyToBuild);
-        kingdom.getResources().subtractCount(ResourceName.buildingPoints, pointsToPutIntoBuilding);
+        kingdom.getResources().subtractCount(ResourceName.buildingPoints, howManyToBuild * buildingCost);
 
         return howManyToBuild;
     }
