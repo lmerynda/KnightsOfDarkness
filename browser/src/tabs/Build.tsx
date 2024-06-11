@@ -1,22 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import React, { useState } from 'react';
 import { KingdomReloader } from '../App';
-
-const buildingList = [
-    "houses",
-    "goldMines",
-    "ironMines",
-    "workshops",
-    "farms",
-    "markets",
-    "barracks",
-    "guardHouses",
-    "spyGuilds",
-    "towers",
-    "castles"
-];
-
-
+import { buildingList } from '../GameTypes';
 
 const Build: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
     const [buildingCounts, setBuildingCounts] = useState<{ [building: string]: number }>({});
@@ -37,14 +22,14 @@ const Build: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
             body: JSON.stringify(buildingCounts)
         })
             .then((response) => {
-                // Handle response
                 if (response.ok) {
-                    reloadKingdom(); // Invoke the callback to reload the kingdom
-                    setBuildingCounts({}); // Clear the building counts
+                    reloadKingdom();
+                    setBuildingCounts({});
                 }
             })
             .catch((error) => {
-                // Handle error
+                // TODO handle error
+                console.error('Error:', error);
             });
     };
 

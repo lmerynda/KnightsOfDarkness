@@ -45,3 +45,17 @@ export type KingdomData = {
     buildings: KingdomBuildings;
     units: KingdomUnits;
 };
+
+export const buildingList = [
+    "houses",
+    "goldMines",
+    "ironMines",
+    "workshops",
+    "farms",
+    "markets",
+    "barracks",
+    "guardHouses",
+    "spyGuilds",
+    "towers",
+    "castles"
+];
