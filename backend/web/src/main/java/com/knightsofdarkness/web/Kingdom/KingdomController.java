@@ -54,4 +54,10 @@ public class KingdomController {
     {
         return kingdomService.build(name, buildings);
     }
+
+    @PostMapping("/{name}/pass-turn")
+    ResponseEntity<KingdomDto> kingdomPassTurn(@PathVariable String name)
+    {
+        return kingdomService.passTurn(name);
+    }
 }

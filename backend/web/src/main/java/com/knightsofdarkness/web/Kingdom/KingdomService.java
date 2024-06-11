@@ -61,4 +61,28 @@ public class KingdomService {
         kingdomRepository.update(kingdom.get());
         return ResponseEntity.ok(KingdomDto.fromDomain(kingdom.get()));
     }
+
+    @Transactional
+    public ResponseEntity<KingdomDto> passTurn(String name)
+    {
+        log.info("[" + name + "] passing turn ");
+        Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
+        if (kingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        // TODO turn report
+        boolean isSucessful = kingdom.get().passTurn();
+        if (!isSucessful)
+        {
+            // TODO this action just failed on business logic, we should not return error
+            // probably we just just miss part of the domain? PassTurn report?
+            return ResponseEntity.notFound().build();
+        }
+
+        kingdomRepository.update(kingdom.get());
+
+        return ResponseEntity.ok(KingdomDto.fromDomain(kingdom.get()));
+    }
 }

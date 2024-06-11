@@ -33,10 +33,10 @@ const KingdomTabs: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                 </Tabs>
             </AppBar>
             <Routes>
-                <Route path="/Overview" element={<Overview />} />
+                <Route path="/Overview" element={<Overview reloadKingdom={reloadKingdom} />} />
                 <Route path="/Build" element={<Build reloadKingdom={reloadKingdom} />} />
                 <Route path="/Market" element={<Market />} />
-                <Route path="/" element={<Overview />} />
+                <Route path="/" element={<Overview reloadKingdom={reloadKingdom} />} />
             </Routes>
         </Box>
     );
