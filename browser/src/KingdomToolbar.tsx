@@ -1,6 +1,6 @@
 import React from 'react';
 import KingdomResourcesView from './components/KingdomResources';
-import { KingdomResources } from './components/Kingdom';
+import { KingdomResources } from './GameTypes';
 
 export type KingdomToolbarProps = {
     kingdomName: string;

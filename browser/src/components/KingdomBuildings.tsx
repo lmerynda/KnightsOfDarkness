@@ -1,5 +1,5 @@
 import React from 'react';
-import { KingdomBuildings } from './Kingdom';
+import { KingdomBuildings } from '../GameTypes';
 
 const KingdomBuildingsView: React.FC<KingdomBuildings> = (kingdomBuildings) => {
     return (

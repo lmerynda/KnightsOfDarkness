@@ -1,11 +1,11 @@
 import React from 'react';
 import './css/App.css';
-import { KingdomData } from './components/Kingdom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { CssBaseline, Box, createTheme, ThemeProvider } from '@mui/material';
 import Sidebar from './Sidebar';
 import KingdomTabs from './KingdomTabs';
 import KingdomToolbar from './KingdomToolbar';
+import { KingdomData } from './GameTypes';
 
 export interface KingdomReloader {
   reloadKingdom: () => void;

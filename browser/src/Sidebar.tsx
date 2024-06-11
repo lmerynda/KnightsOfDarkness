@@ -1,7 +1,7 @@
 // src/Sidebar.tsx
 import React from 'react';
 import { Drawer, Toolbar, Typography, Box } from '@mui/material';
-import { KingdomData } from './components/Kingdom';
+import { KingdomData } from './GameTypes';
 
 const Sidebar: React.FC<KingdomData> = (kingdom) => {
     return (
