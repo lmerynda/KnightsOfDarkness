@@ -9,6 +9,10 @@ const KingdomResourcesView: React.FC<KingdomResources> = (kingdomResources) => {
             <span>iron: {kingdomResources.iron}</span>
             <span>tools: {kingdomResources.tools}</span>
             <span>weapons: {kingdomResources.weapons}</span>
+            <span>land: {kingdomResources.land}</span>
+            <span>unemployed: {kingdomResources.unemployed}</span>
+            <span>buildingPoints: {kingdomResources.buildingPoints}</span>
+            <span>turns: {kingdomResources.turns}</span>
         </div>
     );
 };
