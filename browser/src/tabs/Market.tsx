@@ -9,15 +9,6 @@ type MarketData = {
     count: number;
 };
 
-// const useStyles = makeStyles({
-//     root: {
-//         margin: '20px',
-//     },
-//     table: {
-//         minWidth: 650,
-//     },
-// });
-
 const Market: React.FC = () => {
 
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
