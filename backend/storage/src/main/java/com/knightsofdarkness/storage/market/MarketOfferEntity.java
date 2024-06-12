@@ -46,13 +46,11 @@ public class MarketOfferEntity {
 
     public MarketOffer toDomainModel(GameConfig gameConfig)
     {
-        // TODO fix null kingdom
         return new MarketOffer(id, kingdom.toDomainModel(gameConfig), resource, count, price);
     }
 
     public static MarketOfferEntity fromDomainModel(MarketOffer offer)
     {
-        // TODO fix null kingdom
         return new MarketOfferEntity(offer.getId(), KingdomEntity.fromDomainModel(offer.getKingdom()), offer.getResource(), offer.getCount(), offer.getPrice());
     }
 }

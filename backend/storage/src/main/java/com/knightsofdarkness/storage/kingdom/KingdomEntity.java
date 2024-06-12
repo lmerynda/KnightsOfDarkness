@@ -7,7 +7,6 @@ import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.storage.market.MarketOfferEntity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -30,7 +29,7 @@ public class KingdomEntity {
     @Embedded
     KingdomUnitsEntity units;
 
-    @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "kingdom")
     List<MarketOfferEntity> marketOffers;
 
     public KingdomEntity()
