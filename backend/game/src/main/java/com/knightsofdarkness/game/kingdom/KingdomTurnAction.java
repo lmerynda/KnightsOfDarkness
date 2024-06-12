@@ -16,12 +16,18 @@ public class KingdomTurnAction {
         }
 
         kingdom.getResources().subtractCount(ResourceName.turns, 1);
+        resetBuildingPoints();
         double fedPeopleRatio = eatFood();
         doProduction(fedPeopleRatio);
         // TODO food production should happen before consumption
         getNewPeople();
 
         return true;
+    }
+
+    private void resetBuildingPoints()
+    {
+        kingdom.getResources().setCount(ResourceName.buildingPoints, 0);
     }
 
     /*
