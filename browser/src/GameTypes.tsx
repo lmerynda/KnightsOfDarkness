@@ -59,3 +59,17 @@ export const buildingList = [
     "towers",
     "castles"
 ];
+
+export const unitList = [
+    "builders",
+    "goldMiners",
+    "ironMiners",
+    "farmers",
+    "blacksmiths",
+    "carriers",
+    "guards",
+    "spies",
+    "infantry",
+    "bowmen",
+    "cavalry"
+];

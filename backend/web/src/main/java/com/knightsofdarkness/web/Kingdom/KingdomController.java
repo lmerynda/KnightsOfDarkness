@@ -55,6 +55,12 @@ public class KingdomController {
         return kingdomService.build(name, buildings);
     }
 
+    @PostMapping("/{name}/train")
+    ResponseEntity<KingdomDto> kingdomTrain(@PathVariable String name, @RequestBody KingdomUnitsDto unitsToTrain)
+    {
+        return kingdomService.train(name, unitsToTrain);
+    }
+
     @PostMapping("/{name}/pass-turn")
     ResponseEntity<KingdomDto> kingdomPassTurn(@PathVariable String name)
     {

@@ -63,6 +63,22 @@ public class KingdomService {
     }
 
     @Transactional
+    public ResponseEntity<KingdomDto> train(String name, KingdomUnitsDto unitsToTrain)
+    {
+        log.info("[" + name + "] training " + unitsToTrain.toString());
+        Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
+        if (kingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        kingdom.get().train(unitsToTrain.toDomain());
+        kingdomRepository.update(kingdom.get());
+
+        return ResponseEntity.ok(KingdomDto.fromDomain(kingdom.get()));
+    }
+
+    @Transactional
     public ResponseEntity<KingdomDto> passTurn(String name)
     {
         log.info("[" + name + "] passing turn ");

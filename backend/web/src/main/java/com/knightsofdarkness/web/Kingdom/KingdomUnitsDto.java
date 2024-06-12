@@ -67,4 +67,21 @@ public class KingdomUnitsDto {
                 kingdomUnits.getCount(UnitName.bowmen),
                 kingdomUnits.getCount(UnitName.cavalry));
     }
+
+    public String toString()
+    {
+        return "KingdomUnitsDto{" +
+                "goldMiners=" + goldMiners +
+                ", ironMiners=" + ironMiners +
+                ", farmers=" + farmers +
+                ", blacksmiths=" + blacksmiths +
+                ", builders=" + builders +
+                ", carriers=" + carriers +
+                ", guards=" + guards +
+                ", spies=" + spies +
+                ", infantry=" + infantry +
+                ", bowmen=" + bowmen +
+                ", cavalry=" + cavalry +
+                '}';
+    }
 }
