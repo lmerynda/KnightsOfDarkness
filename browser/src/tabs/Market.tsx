@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, Tab, TextField, Button } from '@mui/material';
 
 type MarketData = {
     id: string;
@@ -37,6 +37,7 @@ const Market: React.FC = () => {
                         <TableCell>Resource</TableCell>
                         <TableCell>Price</TableCell>
                         <TableCell>Count</TableCell>
+                        <TableCell>Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -46,6 +47,12 @@ const Market: React.FC = () => {
                             <TableCell>{data.resource}</TableCell>
                             <TableCell>{data.price}</TableCell>
                             <TableCell>{data.count}</TableCell>
+                            <TableCell>
+                                <TextField type="number" inputProps={{ min: 0 }} />
+                                <Button variant="contained">Buy Amount</Button>
+                                <Button variant="contained">Buy Price</Button>
+                                <Button variant="contained">Max</Button>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
