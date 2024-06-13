@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, TextField, Button } from '@mui/material';
 import React, { useState } from 'react';
 import { KingdomReloader } from '../App';
 import { buildingList, unitList } from '../GameTypes';
@@ -7,10 +7,12 @@ const Train: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
     const [unitCounts, setUnitsCounts] = useState<{ [unit: string]: number }>({});
 
     const handleCountChange = (unit: string, count: number) => {
-        setUnitsCounts((prevCounts) => ({
-            ...prevCounts,
-            [unit]: count
-        }));
+        if (count >= 0) {
+            setUnitsCounts((prevCounts) => ({
+                ...prevCounts,
+                [unit]: count
+            }));
+        }
     };
 
     const handleSubmit = () => {
@@ -48,17 +50,18 @@ const Train: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                         <TableRow key={unit}>
                             <TableCell>{unit}</TableCell>
                             <TableCell>
-                                <input
+                                <TextField
                                     type="number"
                                     value={unitCounts[unit] || 0}
                                     onChange={(e) => handleCountChange(unit, parseInt(e.target.value))}
+                                    inputProps={{ min: 0 }} // Add this line to set the minimum value to 0
                                 />
                             </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
-            <button onClick={handleSubmit}>Submit</button>
+            <Button variant="contained" onClick={handleSubmit}>Submit</Button>
         </div>
     );
 };

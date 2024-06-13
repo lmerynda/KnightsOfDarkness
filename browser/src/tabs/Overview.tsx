@@ -1,5 +1,6 @@
 import React from 'react';
 import { KingdomReloader } from '../App';
+import Button from '@mui/material/Button';
 
 const Overview: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
 
@@ -25,7 +26,7 @@ const Overview: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
     return (
         <div>
             <h1>Overview</h1>
-            <button onClick={handleSubmit}>Pass Turn</button>
+            <Button variant="contained" onClick={handleSubmit}>Pass Turn</Button>
         </div>
     );
 };
