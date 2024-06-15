@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.game;
+package com.knightsofdarkness.game;
 
 import java.util.ArrayList;
 import java.util.List;

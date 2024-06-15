@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.game.TestGame;
-import com.knightsofdarkness.game.game.Game;
+import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
 import com.knightsofdarkness.game.kingdom.ResourceName;

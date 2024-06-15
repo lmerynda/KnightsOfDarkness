@@ -1,6 +1,6 @@
 package com.knightsofdarkness.game.utils;
 
-import com.knightsofdarkness.game.game.Game;
+import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomBuildings;

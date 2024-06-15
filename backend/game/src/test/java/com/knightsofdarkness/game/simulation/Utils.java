@@ -1,6 +1,6 @@
 package com.knightsofdarkness.game.simulation;
 
-import com.knightsofdarkness.game.game.Game;
+import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
