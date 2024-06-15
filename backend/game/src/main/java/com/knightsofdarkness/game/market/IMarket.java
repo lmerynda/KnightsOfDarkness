@@ -1,7 +1,9 @@
 package com.knightsofdarkness.game.market;
 
-import java.util.List;
 import java.util.Optional;
+
+import java.util.List;
+import java.util.UUID;
 
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
@@ -17,9 +19,13 @@ public interface IMarket {
 
     List<MarketOffer> getOffersByKingdom(Kingdom kingdom);
 
+    Optional<MarketOffer> findOfferById(UUID id);
+
     /**
      * @return amount of resource which was actually sold
      */
     int buyExistingOffer(MarketOffer offer, int amount);
+
+    void update(MarketOffer offer);
 
 }

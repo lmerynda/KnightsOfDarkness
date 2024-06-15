@@ -6,11 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 public class MarketRepository implements IMarketOfferRepository {
+    private static final Logger log = LoggerFactory.getLogger(MarketRepository.class);
     List<MarketOffer> offers = new ArrayList<>();
 
     @Override
@@ -51,5 +55,11 @@ public class MarketRepository implements IMarketOfferRepository {
     public Optional<MarketOffer> findById(UUID marketOfferId)
     {
         return offers.stream().filter(offer -> offer.getId() == marketOfferId).findFirst();
+    }
+
+    @Override
+    public void update(MarketOffer marketOffer)
+    {
+        log.info("should update offer with id: " + marketOffer.getId());
     }
 }

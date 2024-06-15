@@ -20,4 +20,6 @@ public interface IMarketOfferRepository {
     List<MarketOffer> getOffersByKingdomName(String name);
 
     Optional<MarketOffer> findById(UUID marketOfferId);
+
+    void update(MarketOffer marketOffer);
 }

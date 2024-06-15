@@ -36,8 +36,7 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     @Override
     public void remove(MarketOffer marketOffer)
     {
-        throw new UnsupportedOperationException("Not implemented");
-        // entityManager.remove(marketOffer);
+        entityManager.remove(marketOffer);
     }
 
     @Override
@@ -71,12 +70,14 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     @Override
     public Optional<MarketOffer> findById(UUID marketOfferId)
     {
-        throw new UnsupportedOperationException("Not implemented");
-        // TypedQuery<MarketOffer> query = entityManager.createQuery("SELECT offer FROM MarketOffer offer WHERE offer.id = :id", MarketOffer.class);
-        // query.setParameter("id", marketOfferId);
-        // query.setMaxResults(1);
-        // var results = query.getResultList();
-        // return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+        TypedQuery<MarketOfferEntity> query = entityManager.createQuery("SELECT offer FROM MarketOfferEntity offer WHERE offer.id = :id", MarketOfferEntity.class);
+        query.setParameter("id", marketOfferId);
+        var offer = query.getSingleResult();
+        return Optional.ofNullable(offer).map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig));
     }
 
+    public void update(MarketOffer marketOffer)
+    {
+        entityManager.merge(MarketOfferEntity.fromDomainModel(marketOffer));
+    }
 }

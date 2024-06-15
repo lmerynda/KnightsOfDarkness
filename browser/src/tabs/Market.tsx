@@ -9,6 +9,11 @@ type MarketData = {
     count: number;
 };
 
+type OfferBuyer = {
+    buyer: string;
+    count: number;
+}
+
 const Market: React.FC = () => {
 
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
@@ -26,6 +31,28 @@ const Market: React.FC = () => {
             console.log(`Market data: ${JSON.stringify(marketData)}`);
         }
     }, [marketData]);
+
+    const handleBuyAmount = (id: string, count: number) => {
+        const offerBuyer: OfferBuyer = {
+            buyer: 'uprzejmy',
+            count: count
+        };
+        if (count <= 0) return;
+        fetch(`http://localhost:8080/market/${id}/buy`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(offerBuyer)
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response data
+            })
+            .catch(error => {
+                // Handle the error
+            });
+    };
 
     return (
         <div>
@@ -49,7 +76,7 @@ const Market: React.FC = () => {
                             <TableCell>{data.count}</TableCell>
                             <TableCell>
                                 <TextField type="number" inputProps={{ min: 0 }} />
-                                <Button variant="contained">Buy Amount</Button>
+                                <Button variant="contained" onClick={() => handleBuyAmount(data.id, data.count)}>Buy Amount</Button>
                                 <Button variant="contained">Buy Price</Button>
                                 <Button variant="contained">Max</Button>
                             </TableCell>

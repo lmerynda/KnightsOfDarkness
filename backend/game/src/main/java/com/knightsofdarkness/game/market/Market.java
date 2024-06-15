@@ -3,12 +3,17 @@ package com.knightsofdarkness.game.market;
 import java.util.Optional;
 
 import java.util.List;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 public class Market implements IMarket {
+    private static final Logger log = LoggerFactory.getLogger(Market.class);
     IMarketOfferRepository offers;
 
     public Market(IMarketOfferRepository repository)
@@ -54,6 +59,12 @@ public class Market implements IMarket {
         return offers.getOffersByKingdomName(name);
     }
 
+    @Override
+    public Optional<MarketOffer> findOfferById(UUID id)
+    {
+        return offers.findById(id);
+    }
+
     // TODO make a LOT of tests for this
     /**
      * @return amount of resource which was actually sold
@@ -75,10 +86,17 @@ public class Market implements IMarket {
 
         if (sellingOffer.count <= 0)
         {
-            offers.remove(sellingOffer);
+            // offers.remove(sellingOffer);
+            log.info("Should normally remove offer because it's empty");
         }
 
         return maxToSell;
+    }
+
+    @Override
+    public void update(MarketOffer offer)
+    {
+        offers.update(offer);
     }
 
     static int offerComparator(MarketOffer offer1, MarketOffer offer2)

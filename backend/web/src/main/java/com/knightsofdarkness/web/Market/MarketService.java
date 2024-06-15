@@ -2,10 +2,12 @@ package com.knightsofdarkness.web.Market;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,5 +82,24 @@ public class MarketService {
         var allOffers = market.getOffersByResource(resource).stream().map(MarketOfferDto::fromDomain).toList();
         log.info("Found " + allOffers.size() + " offers for " + resource);
         return allOffers;
+    }
+
+    @Transactional
+    public ResponseEntity<Object> buyOffer(UUID id, MarketBuyerDto buyerData)
+    {
+        log.info("Buying offer with id " + id + " for " + buyerData.toString());
+        var maybeOffer = market.findOfferById(id);
+        if (maybeOffer.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        MarketOffer offer = maybeOffer.get();
+        int boughtAmount = market.buyExistingOffer(offer, buyerData.count);
+        market.update(offer);
+
+        // TODO report?
+        return ResponseEntity.ok().build();
+
     }
 }
