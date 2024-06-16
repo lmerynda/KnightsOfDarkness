@@ -49,7 +49,7 @@ class KingdomResourcesEntity {
         return kingdomResources;
     }
 
-    public static KingdomResourcesEntity frommDomainModel(KingdomResources kingdomResources)
+    public static KingdomResourcesEntity fromDomainModel(KingdomResources kingdomResources)
     {
         return new KingdomResourcesEntity(
                 kingdomResources.getCount(ResourceName.land),

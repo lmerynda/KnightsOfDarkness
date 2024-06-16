@@ -54,6 +54,8 @@ const Market: React.FC = () => {
             });
     };
 
+    const [buyAmounts, setBuyAmounts] = React.useState<{ [id: string]: number }>({});
+
     return (
         <div>
             <h1>Market</h1>
@@ -75,8 +77,23 @@ const Market: React.FC = () => {
                             <TableCell>{data.price}</TableCell>
                             <TableCell>{data.count}</TableCell>
                             <TableCell>
-                                <TextField type="number" inputProps={{ min: 0 }} />
-                                <Button variant="contained" onClick={() => handleBuyAmount(data.id, data.count)}>Buy Amount</Button>
+                                <TextField
+                                    type="number"
+                                    inputProps={{ min: 0 }}
+                                    onChange={(event) => {
+                                        const value = parseInt(event.target.value);
+                                        setBuyAmounts((prevAmounts) => ({
+                                            ...prevAmounts,
+                                            [data.id]: value,
+                                        }));
+                                    }}
+                                />
+                                <Button
+                                    variant="contained"
+                                    onClick={() => handleBuyAmount(data.id, buyAmounts[data.id] || 0)}
+                                >
+                                    Buy Amount
+                                </Button>
                                 <Button variant="contained">Buy Price</Button>
                                 <Button variant="contained">Max</Button>
                             </TableCell>

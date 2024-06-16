@@ -55,7 +55,7 @@ class KingdomBuildingsEntity {
         return kingdomBuildings;
     }
 
-    public static KingdomBuildingsEntity frommDomainModel(KingdomBuildings kingdomBuildings)
+    public static KingdomBuildingsEntity fromDomainModel(KingdomBuildings kingdomBuildings)
     {
         return new KingdomBuildingsEntity(
                 kingdomBuildings.getCount(BuildingName.house),

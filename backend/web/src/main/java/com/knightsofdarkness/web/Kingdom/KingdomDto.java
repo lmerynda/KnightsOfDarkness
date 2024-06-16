@@ -1,8 +1,11 @@
 package com.knightsofdarkness.web.Kingdom;
 
+import java.util.List;
+
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.IMarket;
+import com.knightsofdarkness.game.market.MarketOffer;
 
 public class KingdomDto {
     public String name;
@@ -22,9 +25,9 @@ public class KingdomDto {
         this.units = units;
     }
 
-    public Kingdom toDomain(GameConfig config, IMarket market)
+    public Kingdom toDomain(GameConfig config, IMarket market, List<MarketOffer> marketOffers)
     {
-        return new Kingdom(name, config, market, resources.toDomain(), buildings.toDomain(), units.toDomain());
+        return new Kingdom(name, config, market, resources.toDomain(), buildings.toDomain(), units.toDomain(), marketOffers);
     }
 
     public static KingdomDto fromDomain(Kingdom kingdom)

@@ -14,18 +14,18 @@ import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 public class Market implements IMarket {
     private static final Logger log = LoggerFactory.getLogger(Market.class);
-    IMarketOfferRepository offers;
+    IMarketOfferRepository offersRepository;
 
     public Market(IMarketOfferRepository repository)
     {
-        this.offers = repository;
+        this.offersRepository = repository;
     }
 
     @Override
     public MarketOffer addOffer(Kingdom kingdom, MarketResource resource, int count, int price)
     {
         var offer = new MarketOffer(Id.generate(), kingdom, resource, count, price);
-        offers.add(offer);
+        offersRepository.add(offer);
 
         return offer;
     }
@@ -33,36 +33,36 @@ public class Market implements IMarket {
     @Override
     public void removeOffer(MarketOffer offer)
     {
-        offers.remove(offer);
+        offersRepository.remove(offer);
     }
 
     @Override
     public List<MarketOffer> getOffersByResource(MarketResource resource)
     {
-        return offers.getOffersByResource(resource);
+        return offersRepository.getOffersByResource(resource);
     }
 
     @Override
     public Optional<MarketOffer> getCheapestOfferByResource(MarketResource resource)
     {
-        return offers.getCheapestOfferByResource(resource);
+        return offersRepository.getCheapestOfferByResource(resource);
     }
 
     @Override
     public List<MarketOffer> getOffersByKingdom(Kingdom kingdom)
     {
-        return offers.getOffersByKingdomName(kingdom.getName());
+        return offersRepository.getOffersByKingdomName(kingdom.getName());
     }
 
     public List<MarketOffer> getOffersByKingdomName(String name)
     {
-        return offers.getOffersByKingdomName(name);
+        return offersRepository.getOffersByKingdomName(name);
     }
 
     @Override
     public Optional<MarketOffer> findOfferById(UUID id)
     {
-        return offers.findById(id);
+        return offersRepository.findById(id);
     }
 
     // TODO make a LOT of tests for this
@@ -72,19 +72,13 @@ public class Market implements IMarket {
     @Override
     public int buyExistingOffer(MarketOffer offer, int amount)
     {
-        var optional = offers.findById(offer.getId());
-        if (optional.isEmpty())
-        {
-            return 0;
-        }
+        var maxToSell = Math.min(offer.count, amount);
+        offer.count -= maxToSell;
+        var goldDue = maxToSell * offer.getPrice();
+        offer.kingdom.acceptMarketOffer(goldDue);
+        offersRepository.update(offer);
 
-        var sellingOffer = optional.get();
-        var maxToSell = Math.min(sellingOffer.count, amount);
-        sellingOffer.count -= maxToSell;
-        var goldDue = maxToSell * sellingOffer.getPrice();
-        sellingOffer.kingdom.acceptMarketOffer(goldDue);
-
-        if (sellingOffer.count <= 0)
+        if (offer.count <= 0)
         {
             // offers.remove(sellingOffer);
             log.info("Should normally remove offer because it's empty");
@@ -96,7 +90,7 @@ public class Market implements IMarket {
     @Override
     public void update(MarketOffer offer)
     {
-        offers.update(offer);
+        offersRepository.update(offer);
     }
 
     static int offerComparator(MarketOffer offer1, MarketOffer offer2)

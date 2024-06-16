@@ -3,6 +3,7 @@ package com.knightsofdarkness.storage.market;
 import java.util.UUID;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
+import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.storage.kingdom.KingdomEntity;
@@ -49,8 +50,18 @@ public class MarketOfferEntity {
         return new MarketOffer(id, kingdom.toDomainModel(gameConfig), resource, count, price);
     }
 
+    public MarketOffer toDomainModel(GameConfig gameConfig, Kingdom kingdom)
+    {
+        return new MarketOffer(id, kingdom, resource, count, price);
+    }
+
     public static MarketOfferEntity fromDomainModel(MarketOffer offer)
     {
         return new MarketOfferEntity(offer.getId(), KingdomEntity.fromDomainModel(offer.getKingdom()), offer.getResource(), offer.getCount(), offer.getPrice());
+    }
+
+    public static MarketOfferEntity fromDomainModel(MarketOffer offer, KingdomEntity kingdomEntity)
+    {
+        return new MarketOfferEntity(offer.getId(), kingdomEntity, offer.getResource(), offer.getCount(), offer.getPrice());
     }
 }

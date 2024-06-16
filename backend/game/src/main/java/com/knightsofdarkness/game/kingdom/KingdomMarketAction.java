@@ -1,7 +1,5 @@
 package com.knightsofdarkness.game.kingdom;
 
-import java.util.List;
-
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 
@@ -24,11 +22,6 @@ public class KingdomMarketAction {
             kingdom.getResources().subtractCount(ResourceName.from(resource), count);
         }
         // TODO test above scenarios
-    }
-
-    public List<MarketOffer> getMyOffers()
-    {
-        return kingdom.getMarket().getOffersByKingdom(kingdom);
     }
 
     public int buyMarketOffer(MarketOffer offer, int amount)

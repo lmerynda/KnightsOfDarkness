@@ -14,13 +14,14 @@ public class Kingdom {
     private final KingdomResources resources;
     private final KingdomBuildings buildings;
     private final KingdomUnits units;
+    private final List<MarketOffer> marketOffers;
     private final KingdomBuildAction kingdomBuildAction = new KingdomBuildAction(this);
     private final KingdomTrainAction kingdomTrainAction = new KingdomTrainAction(this);
     private final KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(this);
     private final KingdomMarketAction kingdomMarketAction = new KingdomMarketAction(this);
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
 
-    public Kingdom(String name, GameConfig config, IMarket market, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units)
+    public Kingdom(String name, GameConfig config, IMarket market, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units, List<MarketOffer> marketOffers)
     {
         this.name = name;
         this.config = config;
@@ -28,6 +29,7 @@ public class Kingdom {
         this.resources = resources;
         this.buildings = buildings;
         this.units = units;
+        this.marketOffers = marketOffers;
     }
 
     public int build(KingdomBuildings buildingsToBuild)
@@ -70,6 +72,11 @@ public class Kingdom {
         return kingdomOtherAction.buyLand(count);
     }
 
+    public List<MarketOffer> getMarketOffers()
+    {
+        return marketOffers;
+    }
+
     public int buyMarketOffer(MarketOffer offer, int amount)
     {
         return this.kingdomMarketAction.buyMarketOffer(offer, amount);
@@ -78,11 +85,6 @@ public class Kingdom {
     public void postMarketOffer(MarketResource resource, int count, int price)
     {
         this.kingdomMarketAction.postOffer(resource, count, price);
-    }
-
-    public List<MarketOffer> getMarketOffers()
-    {
-        return this.kingdomMarketAction.getMyOffers();
     }
 
     public void withdrawMarketOffer(MarketOffer offer)
