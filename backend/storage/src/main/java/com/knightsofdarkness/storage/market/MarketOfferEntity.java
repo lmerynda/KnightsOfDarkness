@@ -64,4 +64,9 @@ public class MarketOfferEntity {
     {
         return new MarketOfferEntity(offer.getId(), kingdomEntity, offer.getResource(), offer.getCount(), offer.getPrice());
     }
+
+    public KingdomEntity getKingdom()
+    {
+        return kingdom;
+    }
 }

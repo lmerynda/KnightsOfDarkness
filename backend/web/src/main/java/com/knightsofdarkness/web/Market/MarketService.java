@@ -96,7 +96,6 @@ public class MarketService {
 
         MarketOffer offer = maybeOffer.get();
         int boughtAmount = market.buyExistingOffer(offer, buyerData.count);
-        market.update(offer);
 
         // TODO report?
         return ResponseEntity.ok().build();

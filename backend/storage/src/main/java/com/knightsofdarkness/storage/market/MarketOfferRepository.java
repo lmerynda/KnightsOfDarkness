@@ -78,6 +78,9 @@ public class MarketOfferRepository implements IMarketOfferRepository {
 
     public void update(MarketOffer marketOffer)
     {
-        entityManager.merge(MarketOfferEntity.fromDomainModel(marketOffer));
+        var marketOfferEntity = MarketOfferEntity.fromDomainModel(marketOffer);
+        // seriously, ask MM why it cannot be the other way around - cascading issue?
+        entityManager.merge(marketOfferEntity.getKingdom());
+        entityManager.merge(marketOfferEntity);
     }
 }
