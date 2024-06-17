@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, Tab, TextField, Button } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, TextField, Button } from '@mui/material';
 
 type MarketData = {
     id: string;
@@ -15,8 +15,8 @@ type OfferBuyer = {
 }
 
 const Market: React.FC = () => {
-
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
+    const [buyAmounts, setBuyAmounts] = React.useState<{ [id: string]: number }>({});
 
     React.useEffect(() => {
         fetch('http://localhost:8080/market')
@@ -53,8 +53,6 @@ const Market: React.FC = () => {
                 // Handle the error
             });
     };
-
-    const [buyAmounts, setBuyAmounts] = React.useState<{ [id: string]: number }>({});
 
     return (
         <div>
