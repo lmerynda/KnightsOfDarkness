@@ -16,7 +16,15 @@ type OfferBuyer = {
 
 const Market: React.FC = () => {
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
-    const [buyAmounts, setBuyAmounts] = React.useState<{ [id: string]: number }>({});
+    const [buyInputs, setBuyInputs] = React.useState<{ [id: string]: number }>({});
+
+    const handleInputChange = (id: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(event.target.value);
+        setBuyInputs((prevAmounts) => ({
+            ...prevAmounts,
+            [id]: value,
+        }));
+    };
 
     React.useEffect(() => {
         fetch('http://localhost:8080/market')
@@ -31,6 +39,14 @@ const Market: React.FC = () => {
             console.log(`Market data: ${JSON.stringify(marketData)}`);
         }
     }, [marketData]);
+
+    const clearForm = (id: string) => {
+        console.log(`Clearing form for id: ${id}`);
+        setBuyInputs((prevInputs) => ({
+            ...prevInputs,
+            [id]: 0,
+        }));
+    };
 
     const handleBuyAmount = (id: string, count: number) => {
         const offerBuyer: OfferBuyer = {
@@ -47,12 +63,20 @@ const Market: React.FC = () => {
         })
             .then(response => response.json())
             .then(data => {
+                console.log(`Request successful, data: ${JSON.stringify(data)}`);
+                clearForm(id);
                 // Handle the response data
             })
             .catch(error => {
+                console.error(`Failed to buy ${count} items of id: ${id}, due to ${error || 'unknown error'}`);
                 // Handle the error
             });
     };
+
+    const handleBuyPrice = (id: string, toSpend: number, price: number) => {
+        const count = Math.floor(toSpend / price);
+        handleBuyAmount(id, count);
+    }
 
     return (
         <div>
@@ -77,22 +101,23 @@ const Market: React.FC = () => {
                             <TableCell>
                                 <TextField
                                     type="number"
+                                    id="buyAmountInput"
                                     inputProps={{ min: 0 }}
-                                    onChange={(event) => {
-                                        const value = parseInt(event.target.value);
-                                        setBuyAmounts((prevAmounts) => ({
-                                            ...prevAmounts,
-                                            [data.id]: value,
-                                        }));
-                                    }}
+                                    value={buyInputs[data.id] || 0}
+                                    onChange={handleInputChange(data.id)}
                                 />
                                 <Button
                                     variant="contained"
-                                    onClick={() => handleBuyAmount(data.id, buyAmounts[data.id] || 0)}
+                                    onClick={() => handleBuyAmount(data.id, buyInputs[data.id] || 0)}
                                 >
                                     Buy Amount
                                 </Button>
-                                <Button variant="contained">Buy Price</Button>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => handleBuyPrice(data.id, buyInputs[data.id] || 0, data.price)}
+                                >
+                                    Buy Price
+                                </Button>
                                 <Button variant="contained">Max</Button>
                             </TableCell>
                         </TableRow>

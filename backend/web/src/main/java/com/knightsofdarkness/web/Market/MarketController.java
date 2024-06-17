@@ -44,7 +44,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/{id}/buy")
-    ResponseEntity<Object> buyOffer(@PathVariable UUID id, @RequestBody MarketBuyerDto buyerData)
+    ResponseEntity<Integer> buyOffer(@PathVariable UUID id, @RequestBody MarketBuyerDto buyerData)
     {
         return marketService.buyOffer(id, buyerData);
     }

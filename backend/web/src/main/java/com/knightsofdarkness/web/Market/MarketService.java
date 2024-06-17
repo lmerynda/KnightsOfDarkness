@@ -85,7 +85,7 @@ public class MarketService {
     }
 
     @Transactional
-    public ResponseEntity<Object> buyOffer(UUID id, MarketBuyerDto buyerData)
+    public ResponseEntity<Integer> buyOffer(UUID id, MarketBuyerDto buyerData)
     {
         log.info("Buying offer with id " + id + " for " + buyerData.toString());
         var maybeOffer = market.findOfferById(id);
@@ -98,7 +98,6 @@ public class MarketService {
         int boughtAmount = market.buyExistingOffer(offer, buyerData.count);
 
         // TODO report?
-        return ResponseEntity.ok().build();
-
+        return ResponseEntity.ok(boughtAmount);
     }
 }
