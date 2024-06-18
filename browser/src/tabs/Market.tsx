@@ -27,7 +27,7 @@ const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
         }));
     };
 
-    React.useEffect(() => {
+    const reloadMarket = () => {
         fetch('http://localhost:8080/market')
             .then(response => response.json())
             .then(data => {
@@ -35,8 +35,12 @@ const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                 setMarketData(data);
             })
             .catch(error => {
-                console.error(`Failed to fetch market data due to ${error ?? 'unknown error'}`)
+                console.error(`Failed to fetch market data due to ${error ?? 'unknown error'}`);
             });
+    }
+
+    React.useEffect(() => {
+        reloadMarket();
     }, []);
 
     const clearForm = (id: string) => {
@@ -63,6 +67,7 @@ const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
             .then(response => response.json())
             .then(data => {
                 console.log(`Request successful, data: ${JSON.stringify(data)}`);
+                reloadMarket();
                 clearForm(id);
                 reloadKingdom();
             })
