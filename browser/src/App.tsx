@@ -17,6 +17,13 @@ const darkTheme = createTheme({
   },
 });
 
+export type KingdomContextType = {
+  kingdom: KingdomData;
+  reloadKingdom: () => void;
+}
+
+export const KingdomContext = React.createContext<KingdomContextType | undefined>(undefined);
+
 const kingdomName = "uprzejmy";
 
 const App: React.FC = () => {
@@ -39,10 +46,11 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={darkTheme}>
       <Router>
+
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
           {kingdom ? (
-            <>
+            <KingdomContext.Provider value={{ kingdom, reloadKingdom }}>
               <Sidebar {...kingdom} />
               <Box
                 component="main"
@@ -51,7 +59,7 @@ const App: React.FC = () => {
                 <KingdomToolbar kingdomName={kingdom.name} kingdomResources={kingdom.resources} />
                 <KingdomTabs reloadKingdom={reloadKingdom} />
               </Box>
-            </>
+            </KingdomContext.Provider>
           ) : <div>Loading...</div>
           }
         </Box>

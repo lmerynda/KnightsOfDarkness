@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, TextField, Button } from '@mui/material';
-import { KingdomReloader } from '../App';
+import { KingdomContext, KingdomReloader } from '../App';
 
 type MarketData = {
     id: string;
@@ -18,6 +18,13 @@ type OfferBuyer = {
 const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
     const [buyInputs, setBuyInputs] = React.useState<{ [id: string]: number }>({});
+    const kingdomContext = useContext(KingdomContext);
+    // ask someone how to better solve it, null object pattern?
+    if (kingdomContext === undefined) {
+        throw new Error('Kingdom context is undefined');
+    }
+
+    console.log(`Kingdom context: ${JSON.stringify(kingdomContext.kingdom.name)}`);
 
     const handleInputChange = (id: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(event.target.value);
