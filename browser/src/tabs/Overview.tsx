@@ -13,13 +13,13 @@ const Overview: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
             body: JSON.stringify({})
         })
             .then((response) => {
+                console.log(`Request successful, data: ${JSON.stringify(response.json)}`);
                 if (response.ok) {
                     reloadKingdom();
                 }
             })
             .catch((error) => {
-                // TODO handle error
-                console.error('Error:', error);
+                console.error('Error when requesting turn pass: ', error);
             });
     };
 

@@ -30,7 +30,11 @@ const Market: React.FC = () => {
         fetch('http://localhost:8080/market')
             .then(response => response.json())
             .then(data => {
+                console.log(`Request successful, data: ${JSON.stringify(data)}`);
                 setMarketData(data);
+            })
+            .catch(error => {
+                console.error(`Failed to fetch market data due to ${error ?? 'unknown error'}`)
             });
     }, []);
 

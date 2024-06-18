@@ -26,8 +26,10 @@ const App: React.FC = () => {
     fetch(`http://localhost:8080/kingdom/${kingdomName}`)
       .then(response => response.json())
       .then(kingdom => {
+        console.log(`Request successful, data: ${JSON.stringify(kingdom)}`);
         setKingdom(kingdom);
-      });
+      })
+      .catch(error => console.error('Fetching kingdom data for reload has failed:', error))
   };
 
   React.useEffect(() => {

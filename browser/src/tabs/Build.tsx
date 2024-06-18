@@ -24,14 +24,14 @@ const Build: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
             body: JSON.stringify(buildingCounts)
         })
             .then((response) => {
+                console.log(`Request successful, data: ${JSON.stringify(response.json)}`);
                 if (response.ok) {
                     reloadKingdom();
                     setBuildingCounts({});
                 }
             })
             .catch((error) => {
-                // TODO handle error
-                console.error('Error:', error);
+                console.error('Error requesting kingdom to build: ', error);
             });
     };
 
