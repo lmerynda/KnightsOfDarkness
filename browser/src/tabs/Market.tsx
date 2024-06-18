@@ -1,5 +1,6 @@
 import React from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, TextField, Button } from '@mui/material';
+import { KingdomReloader } from '../App';
 
 type MarketData = {
     id: string;
@@ -14,7 +15,7 @@ type OfferBuyer = {
     count: number;
 }
 
-const Market: React.FC = () => {
+const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
     const [buyInputs, setBuyInputs] = React.useState<{ [id: string]: number }>({});
 
@@ -37,12 +38,6 @@ const Market: React.FC = () => {
                 console.error(`Failed to fetch market data due to ${error ?? 'unknown error'}`)
             });
     }, []);
-
-    React.useEffect(() => {
-        if (marketData) {
-            console.log(`Market data: ${JSON.stringify(marketData)}`);
-        }
-    }, [marketData]);
 
     const clearForm = (id: string) => {
         console.log(`Clearing form for id: ${id}`);
@@ -69,11 +64,10 @@ const Market: React.FC = () => {
             .then(data => {
                 console.log(`Request successful, data: ${JSON.stringify(data)}`);
                 clearForm(id);
-                // Handle the response data
+                reloadKingdom();
             })
             .catch(error => {
                 console.error(`Failed to buy ${count} items of id: ${id}, due to ${error || 'unknown error'}`);
-                // Handle the error
             });
     };
 
