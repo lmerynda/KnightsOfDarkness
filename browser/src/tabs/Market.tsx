@@ -88,6 +88,20 @@ const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
         handleBuyAmount(id, count);
     }
 
+    function handleMaxInput(id: string, price: number, count: number): void {
+        if (kingdomContext === undefined) {
+            return;
+        }
+        const gold = kingdomContext.kingdom.resources.gold;
+        const maxToAfford = Math.floor(gold / price);
+        const maxToBuy = Math.min(maxToAfford, count);
+
+        setBuyInputs((prevAmounts) => ({
+            ...prevAmounts,
+            [id]: maxToBuy,
+        }));
+    }
+
     return (
         <div>
             <h1>Market</h1>
@@ -127,7 +141,12 @@ const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                                 >
                                     Buy Price
                                 </Button>
-                                <Button variant="contained">Max</Button>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => handleMaxInput(data.id, data.price, data.count)}
+                                >
+                                    Max
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
