@@ -111,7 +111,6 @@ const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                             <TableCell>
                                 <TextField
                                     type="number"
-                                    id="buyAmountInput"
                                     inputProps={{ min: 0 }}
                                     value={buyInputs[data.id] || 0}
                                     onChange={handleInputChange(data.id)}
