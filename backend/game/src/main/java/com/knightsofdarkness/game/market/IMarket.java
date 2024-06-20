@@ -24,7 +24,7 @@ public interface IMarket {
     /**
      * @return amount of resource which was actually sold
      */
-    int buyExistingOffer(MarketOffer offer, int amount);
+    int buyExistingOffer(MarketOffer offer, int amountBought);
 
     void update(MarketOffer offer);
 

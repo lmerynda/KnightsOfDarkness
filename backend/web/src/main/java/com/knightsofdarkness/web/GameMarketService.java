@@ -17,7 +17,7 @@ public class GameMarketService {
     public IMarket market()
     {
         Market market = new Market(marketOfferRepository);
-        System.err.println("Market created");
+        System.out.println("Market created");
         return market;
     }
 }
