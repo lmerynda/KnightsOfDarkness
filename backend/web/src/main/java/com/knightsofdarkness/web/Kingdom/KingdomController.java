@@ -2,7 +2,6 @@ package com.knightsofdarkness.web.Kingdom;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +17,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/kingdom")
 public class KingdomController {
-    @Autowired
-    private KingdomService kingdomService;
+    private final KingdomService kingdomService;
+
+    public KingdomController(KingdomService kingdomService)
+    {
+        this.kingdomService = kingdomService;
+    }
 
     @PostMapping("/")
     ResponseEntity<KingdomDto> createKingdom(@RequestBody KingdomDto kingdom)

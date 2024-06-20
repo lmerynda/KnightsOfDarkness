@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -22,11 +21,14 @@ public class KingdomRepository implements IKingdomRepository {
 
     private final Logger log = LoggerFactory.getLogger(KingdomRepository.class);
 
-    @Autowired
-    private GameConfig gameConfig;
+    private final GameConfig gameConfig;
 
-    @Autowired
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public KingdomRepository(GameConfig gameConfig, EntityManager entityManager) {
+        this.gameConfig = gameConfig;
+        this.entityManager = entityManager;
+    }
 
     public Kingdom add(Kingdom kingdom)
     {

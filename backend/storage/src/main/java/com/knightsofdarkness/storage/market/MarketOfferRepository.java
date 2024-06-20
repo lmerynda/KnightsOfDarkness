@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -19,11 +18,15 @@ import jakarta.persistence.TypedQuery;
 @Repository
 public class MarketOfferRepository implements IMarketOfferRepository {
 
-    @Autowired
-    private GameConfig gameConfig;
+    private final GameConfig gameConfig;
 
-    @Autowired
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public MarketOfferRepository(GameConfig gameConfig, EntityManager entityManager)
+    {
+        this.gameConfig = gameConfig;
+        this.entityManager = entityManager;
+    }
 
     @Override
     public MarketOffer add(MarketOffer marketOffer)

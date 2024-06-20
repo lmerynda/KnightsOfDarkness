@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +21,19 @@ import jakarta.persistence.EntityManager;
 public class MarketService {
     private final Logger log = LoggerFactory.getLogger(MarketService.class);
 
-    @Autowired
-    private IMarket market;
+    private final IMarket market;
 
-    @Autowired
+    final
     KingdomRepository kingdomRepository;
 
-    @Autowired
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public MarketService(IMarket market, KingdomRepository kingdomRepository, EntityManager entityManager)
+    {
+        this.market = market;
+        this.kingdomRepository = kingdomRepository;
+        this.entityManager = entityManager;
+    }
 
     @Transactional
     public void createOffers(ArrayList<MarketOfferDto> offers)

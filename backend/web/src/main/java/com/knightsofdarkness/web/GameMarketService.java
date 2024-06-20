@@ -1,6 +1,5 @@
 package com.knightsofdarkness.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +9,12 @@ import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 @Service
 public class GameMarketService {
-    @Autowired
-    private IMarketOfferRepository marketOfferRepository;
+    private final IMarketOfferRepository marketOfferRepository;
+
+    public GameMarketService(IMarketOfferRepository marketOfferRepository)
+    {
+        this.marketOfferRepository = marketOfferRepository;
+    }
 
     @Bean
     public IMarket market()

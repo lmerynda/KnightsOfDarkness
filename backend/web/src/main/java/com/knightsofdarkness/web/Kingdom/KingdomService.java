@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,17 +21,21 @@ import jakarta.persistence.EntityManager;
 public class KingdomService {
     private final Logger log = LoggerFactory.getLogger(KingdomService.class);
 
-    @Autowired
-    private GameConfig gameConfig;
+    private final GameConfig gameConfig;
 
-    @Autowired
-    private IMarket market;
+    private final IMarket market;
 
-    @Autowired
-    private KingdomRepository kingdomRepository;
+    private final KingdomRepository kingdomRepository;
 
-    @Autowired
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public KingdomService(GameConfig gameConfig, IMarket market, KingdomRepository kingdomRepository, EntityManager entityManager)
+    {
+        this.gameConfig = gameConfig;
+        this.market = market;
+        this.kingdomRepository = kingdomRepository;
+        this.entityManager = entityManager;
+    }
 
     @Transactional
     public KingdomDto createKingdom(KingdomDto kingdom)
