@@ -77,14 +77,9 @@ public class Kingdom {
         return marketOffers;
     }
 
-    public int buyMarketOffer(MarketOffer offer, int amount)
+    public int postMarketOffer(MarketResource resource, int count)
     {
-        return this.kingdomMarketAction.buyMarketOffer(offer, amount);
-    }
-
-    public void postMarketOffer(MarketResource resource, int count, int price)
-    {
-        this.kingdomMarketAction.postOffer(resource, count, price);
+        return this.kingdomMarketAction.postOffer(resource, count);
     }
 
     public void withdrawMarketOffer(MarketOffer offer)
@@ -131,5 +126,10 @@ public class Kingdom {
     public String getName()
     {
         return name;
+    }
+
+    public int reserveGoldForOffer(int price, int amount)
+    {
+        return kingdomMarketAction.reserveGoldForOffer(price, amount);
     }
 }

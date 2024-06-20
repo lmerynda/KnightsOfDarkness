@@ -100,8 +100,7 @@ public class MarketService {
             return ResponseEntity.notFound().build();
         }
 
-        MarketOffer offer = maybeOffer.get();
-        var boughtAmount = maybeBuyerKingdom.get().buyMarketOffer(offer, buyerData.count);
+        int boughtAmount = market.buyExistingOffer(maybeOffer.get(), maybeBuyerKingdom.get(), buyerData.count);
 
         // TODO report?
         return ResponseEntity.ok(boughtAmount);

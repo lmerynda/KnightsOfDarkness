@@ -5,10 +5,11 @@ import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
+import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
 
 public class BotFunctions {
-    public static int buyFoodForUpkeep(Kingdom kingdom)
+    public static int buyFoodForUpkeep(Kingdom kingdom, IMarket market)
     {
         var foodAmount = kingdom.getResources().getCount(ResourceName.food);
         var foodUpkeep = kingdom.getFoodUpkeep();
@@ -25,7 +26,7 @@ public class BotFunctions {
             }
 
             var offer = optionalOffer.get();
-            var amountBought = kingdom.buyMarketOffer(offer, amountToBuy);
+            var amountBought = market.buyExistingOffer(offer, kingdom, amountToBuy);
             if (amountBought == 0)
             {
                 // Could not afford, TODO tests
@@ -38,7 +39,7 @@ public class BotFunctions {
         return totalBought;
     }
 
-    public static int buyEnoughIronToMaintainFullProduction(Kingdom kingdom)
+    public static int buyEnoughIronToMaintainFullProduction(Kingdom kingdom, IMarket market)
     {
         var blacksmithProduction = kingdom.getUnits().getCount(UnitName.blacksmith) * kingdom.getConfig().production().getProductionRate(UnitName.blacksmith);
         var ironNeeded = blacksmithProduction;
@@ -57,7 +58,7 @@ public class BotFunctions {
             }
 
             var offer = optionalOffer.get();
-            var amountBought = kingdom.buyMarketOffer(offer, amountToBuy);
+            var amountBought = market.buyExistingOffer(offer, kingdom, amountToBuy);
             if (amountBought == 0)
             {
                 // Could not afford, TODO tests
@@ -109,7 +110,7 @@ public class BotFunctions {
         return trainedUnits.countAll();
     }
 
-    public static int buyToolsToMaintainCount(Kingdom kingdom, int count)
+    public static int buyToolsToMaintainCount(IMarket market, Kingdom kingdom, int count)
     {
         var optionalOffer = kingdom.getMarket().getCheapestOfferByResource(MarketResource.tools);
         if (optionalOffer.isEmpty())
@@ -118,7 +119,7 @@ public class BotFunctions {
         }
 
         var offer = optionalOffer.get();
-        return kingdom.buyMarketOffer(offer, count);
+        return market.buyExistingOffer(offer, kingdom, count);
     }
 
     public static int trainBuilders(Kingdom kingdom, int count, double desiredBuilderToSpecialistRatio)

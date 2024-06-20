@@ -21,32 +21,33 @@ public class BotGame {
     void simulateTenTurnsTest()
     {
         var game = new TestGame().get();
+        var market = game.getMarket();
         var bots = new ArrayList<Bot>();
         var numberOfTurns = 10;
         var kingdomBuilder = Utils.setupKingdomStartConfiguration(new KingdomBuilder(game), game).withResource(ResourceName.turns, numberOfTurns);
 
         var farmerKingdom = kingdomBuilder.withName("FarmerBot").build();
-        Bot farmerBot = new FarmerBot(farmerKingdom);
+        Bot farmerBot = new FarmerBot(farmerKingdom, market);
         game.addKingdom(farmerKingdom);
         bots.add(farmerBot);
 
         var ironMinerKingdom = kingdomBuilder.withName("IronMinerBot").build();
-        Bot ironMinerBot = new IronMinerBot(ironMinerKingdom);
+        Bot ironMinerBot = new IronMinerBot(ironMinerKingdom, market);
         game.addKingdom(ironMinerKingdom);
         bots.add(ironMinerBot);
 
         var blacksmithKingdom = kingdomBuilder.withName("BlacksmithBot").build();
-        Bot blacksmithBot = new BlacksmithBot(blacksmithKingdom);
+        Bot blacksmithBot = new BlacksmithBot(blacksmithKingdom, market);
         game.addKingdom(blacksmithKingdom);
         bots.add(blacksmithBot);
 
         var goldMinerKingdom1 = kingdomBuilder.withName("GoldMinerBot1").build();
-        Bot goldMinerBot1 = new GoldMinerBot(goldMinerKingdom1);
+        Bot goldMinerBot1 = new GoldMinerBot(goldMinerKingdom1, market);
         game.addKingdom(goldMinerKingdom1);
         bots.add(goldMinerBot1);
 
         var goldMinerKingdom2 = kingdomBuilder.withName("GoldMinerBot2").build();
-        Bot goldMinerBot2 = new GoldMinerBot(goldMinerKingdom2);
+        Bot goldMinerBot2 = new GoldMinerBot(goldMinerKingdom2, market);
         game.addKingdom(goldMinerKingdom2);
         bots.add(goldMinerBot2);
 

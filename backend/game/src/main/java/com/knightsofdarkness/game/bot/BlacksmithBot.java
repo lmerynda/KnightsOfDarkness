@@ -4,16 +4,19 @@ import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
+import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
 
 public class BlacksmithBot implements Bot {
     private final Kingdom kingdom;
+    private final IMarket market;
     private final double builderToSpecialistRatio = 0.1;
     private final double housesToSpecialistBuildingRatio = 0.6;
 
-    public BlacksmithBot(Kingdom kingdom)
+    public BlacksmithBot(Kingdom kingdom, IMarket market)
     {
         this.kingdom = kingdom;
+        this.market = market;
     }
 
     @Override
@@ -31,8 +34,8 @@ public class BlacksmithBot implements Bot {
     private boolean doActionCycle()
     {
         int actionResultsAggregate = 0;
-        actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom);
-        actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom);
+        actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom, market);
+        actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
         withdrawToolsOffer();
         actionResultsAggregate += BotFunctions.trainUnits(kingdom, UnitName.blacksmith, 3);
         actionResultsAggregate += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
@@ -41,7 +44,7 @@ public class BlacksmithBot implements Bot {
         actionResultsAggregate += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.workshop, 1);
         actionResultsAggregate += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
         postToolsOffer();
-        actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom);
+        actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
 
         boolean hasAnythingHappen = actionResultsAggregate > 0;
         return hasAnythingHappen;
@@ -65,7 +68,7 @@ public class BlacksmithBot implements Bot {
 
         if (toolsAmount > 0)
         {
-            kingdom.postMarketOffer(MarketResource.tools, toolsAmount, 140);
+            market.addOffer(kingdom, MarketResource.tools, toolsAmount, 140);
         }
 
         return toolsAmount;

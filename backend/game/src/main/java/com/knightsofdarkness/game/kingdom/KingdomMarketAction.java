@@ -11,30 +11,17 @@ public class KingdomMarketAction {
         this.kingdom = kingdom;
     }
 
-    public void postOffer(MarketResource resource, int count, int price)
+    public int postOffer(MarketResource resource, int count)
     {
-        // TODO in game configuration add limit on number of offers from a single
-        // kingdom
+        // TODO in game configuration add limit on number of offers from a single kingdom
         var maxToPost = Math.min(count, kingdom.getResources().getCount(ResourceName.from(resource)));
         if (maxToPost > 0)
         {
-            kingdom.getMarket().addOffer(kingdom, resource, count, price);
             kingdom.getResources().subtractCount(ResourceName.from(resource), count);
         }
+
+        return maxToPost;
         // TODO test above scenarios
-    }
-
-    public int buyMarketOffer(MarketOffer offer, int amount)
-    {
-        // TODO test scenario for both sides of each Math.min()
-        var gold = kingdom.getResources().getCount(ResourceName.gold);
-        var maxToSpent = Math.min(gold, amount * offer.getPrice());
-        var maxAmount = Math.min(maxToSpent / offer.getPrice(), amount);
-        var amountBought = kingdom.getMarket().buyExistingOffer(offer, maxAmount);
-        kingdom.getResources().subtractCount(ResourceName.gold, amountBought * offer.getPrice());
-        kingdom.getResources().addCount(ResourceName.from(offer.getResource()), amountBought);
-
-        return amountBought;
     }
 
     public void acceptOffer(int goldValue)
@@ -50,5 +37,14 @@ public class KingdomMarketAction {
             kingdom.getMarket().removeOffer(offer);
             kingdom.getResources().addCount(ResourceName.from(offer.getResource()), offer.getCount());
         }
+    }
+
+    public int reserveGoldForOffer(int price, int amount)
+    {
+        var gold = kingdom.getResources().getCount(ResourceName.gold);
+        var maxToSpend = Math.min(gold, amount * price);
+        kingdom.getResources().subtractCount(ResourceName.gold, maxToSpend);
+
+        return maxToSpend;
     }
 }

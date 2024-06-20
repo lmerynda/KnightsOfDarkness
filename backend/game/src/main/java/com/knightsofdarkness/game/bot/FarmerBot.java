@@ -4,16 +4,19 @@ import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
+import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
 
 public class FarmerBot implements Bot {
     private final Kingdom kingdom;
+    private final IMarket market;
     private final double builderToSpecialistRatio = 0.1;
     private final double housesToSpecialistBuildingRatio = 0.55;
 
-    public FarmerBot(Kingdom kingdom)
+    public FarmerBot(Kingdom kingdom, IMarket market)
     {
         this.kingdom = kingdom;
+        this.market = market;
     }
 
     @Override
@@ -21,7 +24,7 @@ public class FarmerBot implements Bot {
     {
         int actionResultsAggregate = 0;
 
-        actionResultsAggregate += BotFunctions.buyToolsToMaintainCount(kingdom, 5 * 5 + 20); // TODO calculate this from training cost configuration
+        actionResultsAggregate += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 5 + 20); // TODO calculate this from training cost configuration
         actionResultsAggregate += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
         actionResultsAggregate += BotFunctions.trainUnits(kingdom, UnitName.farmer, 5);
         actionResultsAggregate += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
@@ -41,7 +44,7 @@ public class FarmerBot implements Bot {
 
         if (amountToOffer > 0)
         {
-            kingdom.postMarketOffer(MarketResource.food, amountToOffer, 15);
+            market.addOffer(kingdom, MarketResource.food, amountToOffer, 15);
         }
 
         return amountToOffer;

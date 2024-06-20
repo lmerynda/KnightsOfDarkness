@@ -24,8 +24,10 @@ public class Market implements IMarket {
     @Override
     public MarketOffer addOffer(Kingdom kingdom, MarketResource resource, int count, int price)
     {
-        var offer = new MarketOffer(Id.generate(), kingdom, resource, count, price);
+        var countToOffer = kingdom.postMarketOffer(resource, count);
+        var offer = new MarketOffer(Id.generate(), kingdom, resource, countToOffer, price);
         offersRepository.add(offer);
+        // TODO update kingdom?
 
         return offer;
     }
@@ -70,12 +72,13 @@ public class Market implements IMarket {
      * @return amount of resource which was actually sold
      */
     @Override
-    public int buyExistingOffer(MarketOffer offer, int amount)
+    public int buyExistingOffer(MarketOffer offer, Kingdom buyer, int amount)
     {
         var maxToSell = Math.min(offer.count, amount);
-        offer.count -= maxToSell;
-        var goldDue = maxToSell * offer.getPrice();
-        offer.kingdom.acceptMarketOffer(goldDue);
+        var buyerGold = buyer.reserveGoldForOffer(offer.price, maxToSell);
+        var buyerAmount = buyerGold / offer.price;
+        offer.count -= buyerAmount;
+        offer.kingdom.acceptMarketOffer(buyerGold);
         offersRepository.update(offer);
 
         if (offer.count <= 0)
@@ -84,7 +87,7 @@ public class Market implements IMarket {
             log.info("Should normally remove offer because it's empty");
         }
 
-        return maxToSell;
+        return buyerAmount;
     }
 
     @Override

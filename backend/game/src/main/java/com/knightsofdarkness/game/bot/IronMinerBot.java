@@ -4,24 +4,27 @@ import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
+import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
 
 public class IronMinerBot implements Bot {
     private final Kingdom kingdom;
+    private final IMarket market;
     private final double builderToSpecialistRatio = 0.15;
     private final double housesToSpecialistBuildingRatio = 0.6;
 
-    public IronMinerBot(Kingdom kingdom)
+    public IronMinerBot(Kingdom kingdom, IMarket market)
     {
         this.kingdom = kingdom;
+        this.market = market;
     }
 
     @Override
     public boolean doAllActions()
     {
         int actionResultsAggregate = 0;
-        actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom);
-        actionResultsAggregate += BotFunctions.buyToolsToMaintainCount(kingdom, 5 * 15 + 20); // TODO calculate this from training cost configuration
+        actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom, market);
+        actionResultsAggregate += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 15 + 20); // TODO calculate this from training cost configuration
         actionResultsAggregate += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
         actionResultsAggregate += BotFunctions.trainUnits(kingdom, UnitName.ironMiner, 5);
         actionResultsAggregate += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
@@ -39,7 +42,7 @@ public class IronMinerBot implements Bot {
 
         if (ironAmount > 0)
         {
-            kingdom.postMarketOffer(MarketResource.iron, ironAmount, 15);
+            market.addOffer(kingdom, MarketResource.iron, ironAmount, 15);
         }
 
         return ironAmount;

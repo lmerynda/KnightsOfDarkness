@@ -20,7 +20,7 @@ public class SingleGoldMinerGame {
         var kingdomBuilder = new KingdomBuilder(game);
         kingdomBuilder = Utils.setupKingdomStartConfiguration(kingdomBuilder, game);
         var goldMinerKingdom = kingdomBuilder.withName("GoldMinerBot").withResource(ResourceName.turns, 10).build();
-        var goldMinerBot = new GoldMinerBot(goldMinerKingdom);
+        var goldMinerBot = new GoldMinerBot(goldMinerKingdom, game.getMarket());
         game.addKingdom(goldMinerBot.getKingdom());
 
         var infiniteFarmerKingdom = kingdomBuilder.withName("InfiniteFarmer").withResource(ResourceName.food, 1000000).build();

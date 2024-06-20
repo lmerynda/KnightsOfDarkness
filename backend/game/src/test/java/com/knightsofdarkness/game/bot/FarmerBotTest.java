@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.Game;
+import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
 import com.knightsofdarkness.game.kingdom.ResourceName;
@@ -42,7 +42,7 @@ public class FarmerBotTest {
         var farmsBefore = kingdom.getBuildings().getCount(BuildingName.farm);
         var housesBefore = kingdom.getBuildings().getCount(BuildingName.house);
 
-        Bot bot = new FarmerBot(kingdom);
+        Bot bot = new FarmerBot(kingdom, game.getMarket());
         for (var i = 0; i < 10; i++)
         {
             bot.doAllActions();

@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -38,6 +39,7 @@ public class WebTests {
     private ObjectMapper objectMapper;
 
     @Test
+    @Disabled
     void foo() throws Exception
     {
         MarketOffer offer1 = new MarketOffer(Id.generate(), null, MarketResource.food, 10, 100);

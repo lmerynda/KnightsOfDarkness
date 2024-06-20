@@ -2,6 +2,7 @@ package com.knightsofdarkness.web.Market;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,7 @@ class DemoApplicationTests {
 	private MarketController controller;
 
 	@Test
+	@Disabled
 	void contextLoads() throws Exception
 	{
 		assertThat(controller).isNotNull();

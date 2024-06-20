@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.Game;
+import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
@@ -28,7 +28,7 @@ public class MarketKingdomTest {
     @Test
     void whenKingdomMakesOneOffer_thenTheSameOfferShouldAppearOnMarket()
     {
-        kingdom.postMarketOffer(MarketResource.food, 100, 100);
+        market.addOffer(kingdom, MarketResource.food, 100, 100);
         var foodOffers = market.getOffersByResource(MarketResource.food);
         assertEquals(1, foodOffers.size());
         assertEquals(kingdom, foodOffers.get(0).getKingdom());
