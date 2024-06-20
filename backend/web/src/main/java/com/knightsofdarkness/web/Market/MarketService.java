@@ -89,13 +89,15 @@ public class MarketService {
     {
         log.info("Buying offer with id " + id + " for " + buyerData.toString());
         var maybeOffer = market.findOfferById(id);
-        if (maybeOffer.isEmpty())
+        var maybeBuyerKingdom = kingdomRepository.getKingdomByName(buyerData.buyer);
+        if (maybeOffer.isEmpty() || maybeBuyerKingdom.isEmpty())
         {
+            log.warn("Offer or buyer not found");
             return ResponseEntity.notFound().build();
         }
 
         MarketOffer offer = maybeOffer.get();
-        int boughtAmount = market.buyExistingOffer(offer, buyerData.count);
+        var boughtAmount = maybeBuyerKingdom.get().buyMarketOffer(offer, buyerData.count);
 
         // TODO report?
         return ResponseEntity.ok(boughtAmount);
