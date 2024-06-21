@@ -34,7 +34,6 @@ public class KingdomMarketAction {
     {
         if (offer.getKingdom() == kingdom)
         {
-            kingdom.getMarket().removeOffer(offer);
             kingdom.getResources().addCount(ResourceName.from(offer.getResource()), offer.getCount());
         }
     }

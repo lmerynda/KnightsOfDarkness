@@ -70,6 +70,6 @@ public class KingdomBuilder {
 
     public Kingdom build()
     {
-        return new Kingdom(name, game.getConfig(), game.getMarket(), new KingdomResources(resources), new KingdomBuildings(buildings), new KingdomUnits(units), new ArrayList<>());
+        return new Kingdom(name, game.getConfig(), new KingdomResources(resources), new KingdomBuildings(buildings), new KingdomUnits(units), new ArrayList<>());
     }
 }

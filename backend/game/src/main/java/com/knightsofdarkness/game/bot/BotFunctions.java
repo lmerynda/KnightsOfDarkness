@@ -19,7 +19,7 @@ public class BotFunctions {
         // TODO accumulation of amountToBuy and totalBought is the same thing
         while (amountToBuy > 0)
         {
-            var optionalOffer = kingdom.getMarket().getCheapestOfferByResource(MarketResource.food);
+            var optionalOffer = market.getCheapestOfferByResource(MarketResource.food);
             if (optionalOffer.isEmpty())
             {
                 return totalBought;
@@ -51,7 +51,7 @@ public class BotFunctions {
         // TODO accumulation of amountToBuy and totalBought is the same thing
         while (amountToBuy > 0)
         {
-            var optionalOffer = kingdom.getMarket().getCheapestOfferByResource(MarketResource.iron);
+            var optionalOffer = market.getCheapestOfferByResource(MarketResource.iron);
             if (optionalOffer.isEmpty())
             {
                 return totalBought;
@@ -112,7 +112,7 @@ public class BotFunctions {
 
     public static int buyToolsToMaintainCount(IMarket market, Kingdom kingdom, int count)
     {
-        var optionalOffer = kingdom.getMarket().getCheapestOfferByResource(MarketResource.tools);
+        var optionalOffer = market.getCheapestOfferByResource(MarketResource.tools);
         if (optionalOffer.isEmpty())
         {
             return 0;

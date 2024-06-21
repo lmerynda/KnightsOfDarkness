@@ -3,13 +3,11 @@ package com.knightsofdarkness.game.kingdom;
 import java.util.List;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
-import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 
 public class Kingdom {
     private final String name;
-    private final IMarket market;
     private final GameConfig config;
     private final KingdomResources resources;
     private final KingdomBuildings buildings;
@@ -21,11 +19,10 @@ public class Kingdom {
     private final KingdomMarketAction kingdomMarketAction = new KingdomMarketAction(this);
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
 
-    public Kingdom(String name, GameConfig config, IMarket market, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units, List<MarketOffer> marketOffers)
+    public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units, List<MarketOffer> marketOffers)
     {
         this.name = name;
         this.config = config;
-        this.market = market;
         this.resources = resources;
         this.buildings = buildings;
         this.units = units;
@@ -116,11 +113,6 @@ public class Kingdom {
     public GameConfig getConfig()
     {
         return config;
-    }
-
-    public IMarket getMarket()
-    {
-        return market;
     }
 
     public String getName()

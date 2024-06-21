@@ -50,7 +50,7 @@ public class KingdomEntity {
 
     public Kingdom toDomainModel(GameConfig gameConfig)
     {
-        var kingdom = new Kingdom(name, gameConfig, null, resources.toDomainModel(), buildings.toDomainModel(), units.toDomainModel(), new ArrayList<>());
+        var kingdom = new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), units.toDomainModel(), new ArrayList<>());
         List<MarketOffer> kingdomMarketOffers = marketOffers.stream().map(offerEntity -> offerEntity.toDomainModel(gameConfig, kingdom)).toList();
         kingdom.getMarketOffers().addAll(kingdomMarketOffers);
         return kingdom;

@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 
 import jakarta.persistence.EntityManager;
@@ -23,16 +22,13 @@ public class KingdomService {
 
     private final GameConfig gameConfig;
 
-    private final IMarket market;
-
     private final KingdomRepository kingdomRepository;
 
     private final EntityManager entityManager;
 
-    public KingdomService(GameConfig gameConfig, IMarket market, KingdomRepository kingdomRepository, EntityManager entityManager)
+    public KingdomService(GameConfig gameConfig, KingdomRepository kingdomRepository, EntityManager entityManager)
     {
         this.gameConfig = gameConfig;
-        this.market = market;
         this.kingdomRepository = kingdomRepository;
         this.entityManager = entityManager;
     }
@@ -42,7 +38,7 @@ public class KingdomService {
     {
         log.info("Creating new kingdom " + kingdom.toString());
 
-        var createdKingdom = kingdomRepository.add(kingdom.toDomain(gameConfig, market, new ArrayList<>()));
+        var createdKingdom = kingdomRepository.add(kingdom.toDomain(gameConfig, new ArrayList<>()));
         return KingdomDto.fromDomain(createdKingdom);
     }
 
