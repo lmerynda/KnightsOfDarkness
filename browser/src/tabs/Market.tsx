@@ -4,7 +4,7 @@ import { KingdomContext, KingdomReloader } from '../App';
 
 type MarketData = {
     id: string;
-    kingdomName: string;
+    sellerName: string;
     resource: string;
     price: number;
     count: number;
@@ -118,7 +118,7 @@ const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                 <TableBody>
                     {marketData.map((data) => (
                         <TableRow key={data.id}>
-                            <TableCell>{data.kingdomName}</TableCell>
+                            <TableCell>{data.sellerName}</TableCell>
                             <TableCell>{data.resource}</TableCell>
                             <TableCell>{data.price}</TableCell>
                             <TableCell>{data.count}</TableCell>
