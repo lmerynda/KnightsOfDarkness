@@ -1,7 +1,7 @@
-import { Table, TableBody, TableCell, TableHead, TableRow, TextField, Button } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, Button, Input } from '@mui/material';
 import React, { useState } from 'react';
 import { KingdomReloader } from '../App';
-import { buildingList, unitList } from '../GameTypes';
+import { unitList } from '../GameTypes';
 
 const Train: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
     const [unitCounts, setUnitsCounts] = useState<{ [unit: string]: number }>({});
@@ -24,14 +24,14 @@ const Train: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
             body: JSON.stringify(unitCounts)
         })
             .then((response) => {
+                console.log(`Request successful, data: ${JSON.stringify(response.json)}`);
                 if (response.ok) {
                     reloadKingdom();
                     setUnitsCounts({});
                 }
             })
             .catch((error) => {
-                // TODO handle error
-                console.error('Error:', error);
+                console.error('Error requesting kingdom to train: ', error);
             });
     };
 
@@ -50,11 +50,11 @@ const Train: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                         <TableRow key={unit}>
                             <TableCell>{unit}</TableCell>
                             <TableCell>
-                                <TextField
+                                <Input
                                     type="number"
                                     value={unitCounts[unit] || 0}
                                     onChange={(e) => handleCountChange(unit, parseInt(e.target.value))}
-                                    inputProps={{ min: 0 }} // Add this line to set the minimum value to 0
+                                    inputProps={{ min: 0 }}
                                 />
                             </TableCell>
                         </TableRow>

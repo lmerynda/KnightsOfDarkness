@@ -54,6 +54,7 @@ const Build: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                                     type="number"
                                     value={buildingCounts[building] || 0}
                                     onChange={(e) => handleCountChange(building, parseInt(e.target.value))}
+                                    inputProps={{ min: 0 }}
                                 />
                             </TableCell>
                         </TableRow>

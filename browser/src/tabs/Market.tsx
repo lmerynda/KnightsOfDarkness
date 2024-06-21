@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, TextField, Button } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input } from '@mui/material';
 import { KingdomContext, KingdomReloader } from '../App';
 
 type MarketData = {
@@ -123,7 +123,7 @@ const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                             <TableCell>{data.price}</TableCell>
                             <TableCell>{data.count}</TableCell>
                             <TableCell>
-                                <TextField
+                                <Input
                                     type="number"
                                     inputProps={{ min: 0 }}
                                     value={buyInputs[data.id] || 0}
