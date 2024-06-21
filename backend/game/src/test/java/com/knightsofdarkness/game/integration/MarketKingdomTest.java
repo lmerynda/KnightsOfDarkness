@@ -31,6 +31,6 @@ public class MarketKingdomTest {
         market.addOffer(kingdom, MarketResource.food, 100, 100);
         var foodOffers = market.getOffersByResource(MarketResource.food);
         assertEquals(1, foodOffers.size());
-        assertEquals(kingdom, foodOffers.get(0).getKingdom());
+        assertEquals(kingdom, foodOffers.get(0).getSeller());
     }
 }

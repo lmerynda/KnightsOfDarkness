@@ -42,13 +42,13 @@ public class MarketService {
         for (var offer : offers)
         {
             log.info(offer.toString());
-            var kingdom = kingdomRepository.getKingdomByName(offer.kingdomName);
+            var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
             if (kingdom.isPresent())
             {
                 market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
             } else
             {
-                log.warn("Kingdom with name " + offer.kingdomName + " not found");
+                log.warn("Kingdom with name " + offer.sellerName + " not found");
             }
         }
     }
@@ -57,13 +57,13 @@ public class MarketService {
     public void createOffer(MarketOfferDto offer)
     {
         log.info("Creating new offer" + offer.toString());
-        var kingdom = kingdomRepository.getKingdomByName(offer.kingdomName);
+        var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
         if (kingdom.isPresent())
         {
             market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
         } else
         {
-            log.warn("Kingdom with name " + offer.kingdomName + " not found");
+            log.warn("Kingdom with name " + offer.sellerName + " not found");
         }
     }
 
@@ -91,7 +91,6 @@ public class MarketService {
     @Transactional
     public ResponseEntity<Integer> buyOffer(UUID id, MarketBuyerDto buyerData)
     {
-        log.info("Buying offer with id " + id + " for " + buyerData.toString());
         var maybeOffer = market.findOfferById(id);
         var maybeBuyerKingdom = kingdomRepository.getKingdomByName(buyerData.buyer);
         if (maybeOffer.isEmpty() || maybeBuyerKingdom.isEmpty())
@@ -99,6 +98,9 @@ public class MarketService {
             log.warn("Offer or buyer not found");
             return ResponseEntity.notFound().build();
         }
+
+        var offer = maybeOffer.get();
+        log.info("Transaction on " + offer + " with " + buyerData.toString());
 
         int boughtAmount = market.buyExistingOffer(maybeOffer.get(), maybeBuyerKingdom.get(), buyerData.count);
 

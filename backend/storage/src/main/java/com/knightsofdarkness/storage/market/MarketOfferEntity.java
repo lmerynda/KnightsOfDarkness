@@ -57,7 +57,7 @@ public class MarketOfferEntity {
 
     public static MarketOfferEntity fromDomainModel(MarketOffer offer)
     {
-        return new MarketOfferEntity(offer.getId(), KingdomEntity.fromDomainModel(offer.getKingdom()), offer.getResource(), offer.getCount(), offer.getPrice());
+        return new MarketOfferEntity(offer.getId(), KingdomEntity.fromDomainModel(offer.getSeller()), offer.getResource(), offer.getCount(), offer.getPrice());
     }
 
     public static MarketOfferEntity fromDomainModel(MarketOffer offer, KingdomEntity kingdomEntity)

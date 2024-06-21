@@ -6,23 +6,23 @@ import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public class MarketOffer {
     UUID id;
-    Kingdom kingdom;
+    Kingdom seller;
     MarketResource resource;
     int count;
     int price;
 
-    public MarketOffer(UUID id, Kingdom kingdom, MarketResource resource, int count, int price)
+    public MarketOffer(UUID id, Kingdom seller, MarketResource resource, int count, int price)
     {
         this.id = id;
-        this.kingdom = kingdom;
+        this.seller = seller;
         this.resource = resource;
         this.count = count;
         this.price = price;
     }
 
-    public Kingdom getKingdom()
+    public Kingdom getSeller()
     {
-        return kingdom;
+        return seller;
     }
 
     public MarketResource getResource()
@@ -49,7 +49,7 @@ public class MarketOffer {
     {
         return "MarketOffer{" +
                 "id=" + id +
-                ", kingdom=" + kingdom +
+                ", serller=" + seller.getName() +
                 ", resource=" + resource +
                 ", count=" + count +
                 ", price=" + price +

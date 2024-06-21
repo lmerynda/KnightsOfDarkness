@@ -48,7 +48,7 @@ public class MarketRepository implements IMarketOfferRepository {
     public List<MarketOffer> getOffersByKingdomName(String name)
     {
         // TODO use kingdom repository to get kingdom by id and then get offers by kingdom
-        return offers.stream().filter(offer -> offer.getKingdom().getName().equals(name)).toList();
+        return offers.stream().filter(offer -> offer.getSeller().getName().equals(name)).toList();
     }
 
     @Override

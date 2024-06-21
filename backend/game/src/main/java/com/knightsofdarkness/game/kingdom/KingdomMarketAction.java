@@ -32,7 +32,7 @@ public class KingdomMarketAction {
 
     public void withdrawMarketOffer(MarketOffer offer)
     {
-        if (offer.getKingdom() == kingdom)
+        if (offer.getSeller() == kingdom)
         {
             kingdom.getResources().addCount(ResourceName.from(offer.getResource()), offer.getCount());
         }

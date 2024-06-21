@@ -78,7 +78,7 @@ public class Market implements IMarket {
         var buyerGold = buyer.reserveGoldForOffer(offer.price, maxToSell);
         var buyerAmount = buyerGold / offer.price;
         offer.count -= buyerAmount;
-        offer.kingdom.acceptMarketOffer(buyerGold);
+        offer.seller.acceptMarketOffer(buyerGold);
         offersRepository.update(offer);
 
         if (offer.count <= 0)
