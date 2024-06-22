@@ -1,10 +1,16 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button } from '@mui/material';
-import React, { useState } from 'react';
-import { KingdomReloader } from '../App';
+import React, { useContext, useState } from 'react';
 import { buildingList } from '../GameTypes';
+import { KingdomContext } from '../App';
 
-const Build: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
+const Build: React.FC = () => {
     const [buildingCounts, setBuildingCounts] = useState<{ [building: string]: number }>({});
+    const kingdomContext = useContext(KingdomContext);
+    // ask someone how to better solve it, null object pattern?
+    if (kingdomContext === undefined) {
+        throw new Error('Kingdom context is undefined');
+    }
+
 
     const handleCountChange = (building: string, count: number) => {
         if (count >= 0) {
@@ -26,7 +32,7 @@ const Build: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
             .then((response) => {
                 console.log(`Request successful, data: ${JSON.stringify(response.json)}`);
                 if (response.ok) {
-                    reloadKingdom();
+                    kingdomContext.reloadKingdom();
                     setBuildingCounts({});
                 }
             })

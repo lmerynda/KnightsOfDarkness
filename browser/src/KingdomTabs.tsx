@@ -6,10 +6,9 @@ import Build from './tabs/Build';
 import Train from './tabs/Train';
 import Overview from './tabs/Overview';
 import Market from './tabs/Market';
-import { KingdomReloader } from './App';
 
 
-const KingdomTabs: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
+const KingdomTabs: React.FC = () => {
     const [path, setPath] = React.useState('/overview');
 
     return (
@@ -24,9 +23,9 @@ const KingdomTabs: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
                     </Tabs>
                 </AppBar>
                 <Routes>
-                    <Route path="/overview" element={<Overview reloadKingdom={reloadKingdom} />} />
-                    <Route path="/build" element={<Build reloadKingdom={reloadKingdom} />} />
-                    <Route path="/train" element={<Train reloadKingdom={reloadKingdom} />} />
+                    <Route path="/overview" element={<Overview />} />
+                    <Route path="/build" element={<Build />} />
+                    <Route path="/train" element={<Train />} />
                     <Route path="/market/*" element={<Market />} />
                     <Route path="*" element={<Navigate to="/overview" />} />
                 </Routes>

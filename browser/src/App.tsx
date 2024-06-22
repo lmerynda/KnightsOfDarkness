@@ -6,10 +6,6 @@ import KingdomTabs from './KingdomTabs';
 import KingdomToolbar from './KingdomToolbar';
 import { KingdomData } from './GameTypes';
 
-export interface KingdomReloader {
-  reloadKingdom: () => void;
-}
-
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
@@ -54,7 +50,7 @@ const App: React.FC = () => {
                 sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
               >
                 <KingdomToolbar kingdomName={kingdom.name} kingdomResources={kingdom.resources} />
-                <KingdomTabs reloadKingdom={reloadKingdom} />
+                          <KingdomTabs />
               </Box>
             </KingdomContext.Provider>
           ) : <div>Loading...</div>
