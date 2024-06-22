@@ -1,14 +1,7 @@
 import React, { useContext } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input } from '@mui/material';
 import { KingdomContext } from '../App';
-
-type MarketData = {
-    id: string;
-    sellerName: string;
-    resource: string;
-    price: number;
-    count: number;
-};
+import {MarketData} from "../GameTypes";
 
 type OfferBuyer = {
     buyer: string;
@@ -104,7 +97,7 @@ const MarketBuy: React.FC = () => {
 
     return (
         <div>
-            <h1>Market</h1>
+            <h1>Market Buy</h1>
             <Table>
                 <TableHead>
                     <TableRow>

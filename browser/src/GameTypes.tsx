@@ -44,6 +44,15 @@ export type KingdomData = {
     resources: KingdomResources;
     buildings: KingdomBuildings;
     units: KingdomUnits;
+    marketOffers: MarketData[];
+};
+
+export type MarketData = {
+    id: string;
+    sellerName: string;
+    resource: string;
+    price: number;
+    count: number;
 };
 
 export const buildingList = [
