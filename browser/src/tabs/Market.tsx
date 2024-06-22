@@ -1,158 +1,24 @@
-import React, { useContext } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input } from '@mui/material';
-import { KingdomContext, KingdomReloader } from '../App';
+import React from 'react';
+import { Box, Tabs, Tab } from '@mui/material';
+import { Link, Navigate, Route, Routes } from 'react-router-dom';
+import MarketBuy from './MarketBuy';
+import MarketSell from './MarketSell';
 
-type MarketData = {
-    id: string;
-    sellerName: string;
-    resource: string;
-    price: number;
-    count: number;
-};
-
-type OfferBuyer = {
-    buyer: string;
-    count: number;
-}
-
-const Market: React.FC<KingdomReloader> = ({ reloadKingdom }) => {
-    const [marketData, setMarketData] = React.useState<MarketData[]>([]);
-    const [buyInputs, setBuyInputs] = React.useState<{ [id: string]: number }>({});
-    const kingdomContext = useContext(KingdomContext);
-    // ask someone how to better solve it, null object pattern?
-    if (kingdomContext === undefined) {
-        throw new Error('Kingdom context is undefined');
-    }
-
-    console.log(`Kingdom context: ${JSON.stringify(kingdomContext.kingdom.name)}`);
-
-    const handleInputChange = (id: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(event.target.value);
-        setBuyInputs((prevAmounts) => ({
-            ...prevAmounts,
-            [id]: value,
-        }));
-    };
-
-    const reloadMarket = () => {
-        fetch('http://localhost:8080/market')
-            .then(response => response.json())
-            .then(data => {
-                console.log(`Request successful, data: ${JSON.stringify(data)}`);
-                setMarketData(data);
-            })
-            .catch(error => {
-                console.error(`Failed to fetch market data due to ${error ?? 'unknown error'}`);
-            });
-    }
-
-    React.useEffect(() => {
-        reloadMarket();
-    }, []);
-
-    const clearForm = (id: string) => {
-        console.log(`Clearing form for id: ${id}`);
-        setBuyInputs((prevInputs) => ({
-            ...prevInputs,
-            [id]: 0,
-        }));
-    };
-
-    const handleBuyAmount = (id: string, count: number) => {
-        const offerBuyer: OfferBuyer = {
-            buyer: 'uprzejmy',
-            count: count
-        };
-        if (count <= 0) return;
-        fetch(`http://localhost:8080/market/${id}/buy`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(offerBuyer)
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(`Request successful, data: ${JSON.stringify(data)}`);
-                reloadMarket();
-                clearForm(id);
-                reloadKingdom();
-            })
-            .catch(error => {
-                console.error(`Failed to buy ${count} items of id: ${id}, due to ${error || 'unknown error'}`);
-            });
-    };
-
-    const handleBuyPrice = (id: string, toSpend: number, price: number) => {
-        const count = Math.floor(toSpend / price);
-        handleBuyAmount(id, count);
-    }
-
-    function handleMaxInput(id: string, price: number, count: number): void {
-        if (kingdomContext === undefined) {
-            return;
-        }
-        const gold = kingdomContext.kingdom.resources.gold;
-        const maxToAfford = Math.floor(gold / price);
-        const maxToBuy = Math.min(maxToAfford, count);
-
-        setBuyInputs((prevAmounts) => ({
-            ...prevAmounts,
-            [id]: maxToBuy,
-        }));
-    }
+const Market: React.FC = () => {
+    const [path, setPath] = React.useState('/market/buy');
 
     return (
-        <div>
-            <h1>Market</h1>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Kingdom</TableCell>
-                        <TableCell>Resource</TableCell>
-                        <TableCell>Price</TableCell>
-                        <TableCell>Count</TableCell>
-                        <TableCell>Actions</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {marketData.map((data) => (
-                        <TableRow key={data.id}>
-                            <TableCell>{data.sellerName}</TableCell>
-                            <TableCell>{data.resource}</TableCell>
-                            <TableCell>{data.price}</TableCell>
-                            <TableCell>{data.count}</TableCell>
-                            <TableCell>
-                                <Input
-                                    type="number"
-                                    inputProps={{ min: 0 }}
-                                    value={buyInputs[data.id] || 0}
-                                    onChange={handleInputChange(data.id)}
-                                />
-                                <Button
-                                    variant="contained"
-                                    onClick={() => handleBuyAmount(data.id, buyInputs[data.id] || 0)}
-                                >
-                                    Buy Amount
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    onClick={() => handleBuyPrice(data.id, buyInputs[data.id] || 0, data.price)}
-                                >
-                                    Buy Price
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    onClick={() => handleMaxInput(data.id, data.price, data.count)}
-                                >
-                                    Max
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={path} onChange={(e, newPath) => setPath(newPath)}>
+                <Tab label="Buy" component={Link} value="/market/buy" to="/market/buy" />
+                <Tab label="Sell" component={Link} value="/market/sell" to="/market/sell" />
+            </Tabs>
+            <Routes>
+                <Route path="buy" element={<MarketBuy />} />
+                <Route path="sell" element={<MarketSell />} />
+                <Route path="*" element={<Navigate to="/market/buy" />} />
+            </Routes>
+        </Box>
     );
 };
 

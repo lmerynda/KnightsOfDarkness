@@ -1,6 +1,5 @@
 import React from 'react';
 import './css/App.css';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { CssBaseline, Box, createTheme, ThemeProvider } from '@mui/material';
 import Sidebar from './Sidebar';
 import KingdomTabs from './KingdomTabs';
@@ -44,9 +43,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <Router>
-
+      <ThemeProvider theme={darkTheme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
           {kingdom ? (
@@ -62,8 +59,7 @@ const App: React.FC = () => {
             </KingdomContext.Provider>
           ) : <div>Loading...</div>
           }
-        </Box>
-      </Router>
+          </Box>
     </ThemeProvider>
   );
 }
