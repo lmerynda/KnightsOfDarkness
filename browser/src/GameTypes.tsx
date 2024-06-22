@@ -55,6 +55,11 @@ export type MarketData = {
     count: number;
 };
 
+export type OfferBuyer = {
+    buyer: string;
+    count: number;
+}
+
 export const buildingList = [
     "houses",
     "goldMines",

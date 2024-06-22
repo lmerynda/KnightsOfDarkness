@@ -1,12 +1,7 @@
 import React, { useContext } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input } from '@mui/material';
 import { KingdomContext } from '../App';
-import {MarketData} from "../GameTypes";
-
-type OfferBuyer = {
-    buyer: string;
-    count: number;
-}
+import { MarketData, OfferBuyer } from "../GameTypes";
 
 const MarketBuy: React.FC = () => {
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
