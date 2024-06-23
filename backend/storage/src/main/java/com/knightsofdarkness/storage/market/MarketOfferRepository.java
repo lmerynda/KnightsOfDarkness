@@ -39,7 +39,8 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     @Override
     public void remove(MarketOffer marketOffer)
     {
-        entityManager.remove(marketOffer);
+        var marketOfferEntity = MarketOfferEntity.fromDomainModel(marketOffer);
+        entityManager.remove(entityManager.merge(marketOfferEntity));
     }
 
     @Override

@@ -23,8 +23,7 @@ public class MarketService {
 
     private final IMarket market;
 
-    final
-    KingdomRepository kingdomRepository;
+    final KingdomRepository kingdomRepository;
 
     private final EntityManager entityManager;
 
