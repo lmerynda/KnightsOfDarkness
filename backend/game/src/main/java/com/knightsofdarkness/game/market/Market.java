@@ -79,15 +79,17 @@ public class Market implements IMarket {
         var buyerAmount = buyerGold / offer.price;
         offer.count -= buyerAmount;
         offer.seller.acceptMarketOffer(buyerGold);
-        offersRepository.update(offer);
 
         assert(offer.count >= 0);
         if (offer.count == 0)
         {
-            log.debug("Offer sold completely, removing " + offer);
+            // TODO this should be debug log
+            log.info("Offer sold completely, removing " + offer);
             offersRepository.remove(offer);
+            return buyerAmount;
         }
 
+        offersRepository.update(offer);
         return buyerAmount;
     }
 

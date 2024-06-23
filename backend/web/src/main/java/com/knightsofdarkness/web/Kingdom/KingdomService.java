@@ -14,8 +14,6 @@ import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 
-import jakarta.persistence.EntityManager;
-
 @Service
 public class KingdomService {
     private final Logger log = LoggerFactory.getLogger(KingdomService.class);
@@ -24,13 +22,10 @@ public class KingdomService {
 
     private final KingdomRepository kingdomRepository;
 
-    private final EntityManager entityManager;
-
-    public KingdomService(GameConfig gameConfig, KingdomRepository kingdomRepository, EntityManager entityManager)
+    public KingdomService(GameConfig gameConfig, KingdomRepository kingdomRepository)
     {
         this.gameConfig = gameConfig;
         this.kingdomRepository = kingdomRepository;
-        this.entityManager = entityManager;
     }
 
     @Transactional

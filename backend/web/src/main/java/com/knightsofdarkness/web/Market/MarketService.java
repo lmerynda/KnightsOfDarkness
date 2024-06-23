@@ -15,8 +15,6 @@ import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 
-import jakarta.persistence.EntityManager;
-
 @Service
 public class MarketService {
     private final Logger log = LoggerFactory.getLogger(MarketService.class);
@@ -25,13 +23,10 @@ public class MarketService {
 
     final KingdomRepository kingdomRepository;
 
-    private final EntityManager entityManager;
-
-    public MarketService(IMarket market, KingdomRepository kingdomRepository, EntityManager entityManager)
+    public MarketService(IMarket market, KingdomRepository kingdomRepository)
     {
         this.market = market;
         this.kingdomRepository = kingdomRepository;
-        this.entityManager = entityManager;
     }
 
     @Transactional
