@@ -12,43 +12,38 @@ import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-
 @Repository
 public class MarketOfferRepository implements IMarketOfferRepository {
 
     private final GameConfig gameConfig;
+    private final MarketOfferJpaRepository jpaRepository;
 
-    private final EntityManager entityManager;
-
-    public MarketOfferRepository(GameConfig gameConfig, EntityManager entityManager)
+    public MarketOfferRepository(GameConfig gameConfig, MarketOfferJpaRepository jpaRepository)
     {
         this.gameConfig = gameConfig;
-        this.entityManager = entityManager;
+        this.jpaRepository = jpaRepository;
     }
 
     @Override
     public MarketOffer add(MarketOffer marketOffer)
     {
-        entityManager.persist(MarketOfferEntity.fromDomainModel(marketOffer));
+        var marketOfferEntity = jpaRepository.save(MarketOfferEntity.fromDomainModel(marketOffer));
 
-        return marketOffer;
+        return marketOfferEntity.toDomainModel(gameConfig);
     }
 
     @Override
     public void remove(MarketOffer marketOffer)
     {
         var marketOfferEntity = MarketOfferEntity.fromDomainModel(marketOffer);
-        entityManager.remove(entityManager.merge(marketOfferEntity));
+        jpaRepository.delete(marketOfferEntity);
     }
 
     @Override
     public List<MarketOffer> getOffersByResource(MarketResource resource)
     {
-        TypedQuery<MarketOfferEntity> query = entityManager.createQuery("SELECT offer FROM MarketOfferEntity offer WHERE offer.resource = :resource", MarketOfferEntity.class);
-        query.setParameter("resource", resource);
-        return query.getResultList().stream().map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig)).toList();
+        var offers = jpaRepository.findByResource(resource);
+        return offers.stream().map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig)).toList();
     }
 
     @Override
@@ -74,17 +69,16 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     @Override
     public Optional<MarketOffer> findById(UUID marketOfferId)
     {
-        TypedQuery<MarketOfferEntity> query = entityManager.createQuery("SELECT offer FROM MarketOfferEntity offer WHERE offer.id = :id", MarketOfferEntity.class);
-        query.setParameter("id", marketOfferId);
-        var offer = query.getSingleResult();
-        return Optional.ofNullable(offer).map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig));
+        return jpaRepository.findById(marketOfferId).map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig));
     }
 
     public void update(MarketOffer marketOffer)
     {
         var marketOfferEntity = MarketOfferEntity.fromDomainModel(marketOffer);
         // seriously, ask MM why it cannot be the other way around - cascading issue?
-        entityManager.merge(marketOfferEntity.getKingdom());
-        entityManager.merge(marketOfferEntity);
+        // jpaRepository.update(marketOfferEntity.getKingdom());
+        jpaRepository.save(marketOfferEntity);
+        // entityManager.merge(marketOfferEntity.getKingdom()); // TODO, make sure kingdom gets updates and remove this comment
+
     }
 }
