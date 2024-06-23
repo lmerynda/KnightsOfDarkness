@@ -90,12 +90,6 @@ public class Market implements IMarket {
         return buyerAmount;
     }
 
-    @Override
-    public void update(MarketOffer offer)
-    {
-        offersRepository.update(offer);
-    }
-
     static int offerComparator(MarketOffer offer1, MarketOffer offer2)
     {
         return offer1.price - offer2.price;

@@ -25,7 +25,4 @@ public interface IMarket {
      * @return amount of resource which was actually sold
      */
     int buyExistingOffer(MarketOffer offer, Kingdom buyer, int amount);
-
-    void update(MarketOffer offer);
-
 }
