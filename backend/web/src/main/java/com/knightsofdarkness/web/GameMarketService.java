@@ -5,21 +5,24 @@ import org.springframework.stereotype.Service;
 
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.Market;
+import com.knightsofdarkness.game.storage.IKingdomRepository;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 @Service
 public class GameMarketService {
     private final IMarketOfferRepository marketOfferRepository;
+    private final IKingdomRepository kingdomRepository;
 
-    public GameMarketService(IMarketOfferRepository marketOfferRepository)
+    public GameMarketService(IMarketOfferRepository marketOfferRepository, IKingdomRepository kingdomRepository)
     {
         this.marketOfferRepository = marketOfferRepository;
+        this.kingdomRepository = kingdomRepository;
     }
 
     @Bean
     public IMarket market()
     {
-        Market market = new Market(marketOfferRepository);
+        Market market = new Market(marketOfferRepository, kingdomRepository);
         System.out.println("Market created");
         return market;
     }

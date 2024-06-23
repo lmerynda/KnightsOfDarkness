@@ -10,15 +10,18 @@ import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.game.storage.IKingdomRepository;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 public class Market implements IMarket {
     private static final Logger log = LoggerFactory.getLogger(Market.class);
     IMarketOfferRepository offersRepository;
+    IKingdomRepository kingdomRepository;
 
-    public Market(IMarketOfferRepository repository)
+    public Market(IMarketOfferRepository repository, IKingdomRepository kingdomRepository)
     {
         this.offersRepository = repository;
+        this.kingdomRepository = kingdomRepository;
     }
 
     @Override
@@ -90,6 +93,8 @@ public class Market implements IMarket {
         }
 
         offersRepository.update(offer);
+        kingdomRepository.update(offer.seller);
+        kingdomRepository.update(buyer);
         return buyerAmount;
     }
 
