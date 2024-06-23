@@ -2,72 +2,38 @@ package com.knightsofdarkness.storage.kingdom;
 
 import java.util.Optional;
 
-import java.util.UUID;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.storage.IKingdomRepository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.TypedQuery;
-
 @Repository
 public class KingdomRepository implements IKingdomRepository {
-
-    private final Logger log = LoggerFactory.getLogger(KingdomRepository.class);
-
     private final GameConfig gameConfig;
+    private final KingdomJpaRepository jpaRepository;
 
-    private final EntityManager entityManager;
-
-    public KingdomRepository(GameConfig gameConfig, EntityManager entityManager) {
+    public KingdomRepository(GameConfig gameConfig, KingdomJpaRepository jpaRepository)
+    {
         this.gameConfig = gameConfig;
-        this.entityManager = entityManager;
+        this.jpaRepository = jpaRepository;
     }
 
     public Kingdom add(Kingdom kingdom)
     {
-        entityManager.persist(KingdomEntity.fromDomainModel(kingdom));
-
-        return kingdom;
+        var kingdomEntity = jpaRepository.save(KingdomEntity.fromDomainModel(kingdom));
+        return kingdomEntity.toDomainModel(gameConfig);
     }
 
     public Optional<Kingdom> getKingdomByName(String name)
     {
-        TypedQuery<KingdomEntity> query = entityManager.createQuery("SELECT kingdom FROM KingdomEntity kingdom WHERE kingdom.name = :name", KingdomEntity.class);
-        query.setParameter("name", name);
-        try
-        {
-            return Optional.of(query.getSingleResult().toDomainModel(gameConfig));
-        } catch (NoResultException e)
-        {
-            log.warn("Kingdom with name " + name + " not found");
-            return Optional.empty();
-        }
+        var kingdom = jpaRepository.findById(name);
+        return kingdom.map(kingdomEntity -> kingdomEntity.toDomainModel(gameConfig));
     }
 
-    public Optional<Kingdom> getKingdomById(UUID id)
+    public Kingdom update(Kingdom kingdom)
     {
-        log.info("Looking for kingdom with id: " + id);
-        TypedQuery<KingdomEntity> query = entityManager.createQuery("SELECT kingdom FROM KingdomEntity kingdom WHERE kingdom.id = :id", KingdomEntity.class);
-        query.setParameter("id", id);
-        try
-        {
-            return Optional.of(query.getSingleResult().toDomainModel(gameConfig));
-        } catch (NoResultException e)
-        {
-            log.warn("Kingdom with id " + id + " not found");
-            return Optional.empty();
-        }
-    }
-
-    public void update(Kingdom kingdom)
-    {
-        entityManager.merge(KingdomEntity.fromDomainModel(kingdom));
+        var kingdomEntity = jpaRepository.save(KingdomEntity.fromDomainModel(kingdom));
+        return kingdomEntity.toDomainModel(gameConfig);
     }
 }
