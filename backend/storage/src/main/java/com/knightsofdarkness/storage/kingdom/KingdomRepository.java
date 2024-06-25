@@ -19,10 +19,9 @@ public class KingdomRepository implements IKingdomRepository {
         this.jpaRepository = jpaRepository;
     }
 
-    public Kingdom add(Kingdom kingdom)
+    public void add(Kingdom kingdom)
     {
-        var kingdomEntity = jpaRepository.save(KingdomEntity.fromDomainModel(kingdom));
-        return kingdomEntity.toDomainModel(gameConfig);
+        jpaRepository.save(KingdomEntity.fromDomainModel(kingdom));
     }
 
     public Optional<Kingdom> getKingdomByName(String name)

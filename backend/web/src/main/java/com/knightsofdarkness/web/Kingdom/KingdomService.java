@@ -39,8 +39,8 @@ public class KingdomService {
     {
         log.info("Creating new kingdom " + kingdom.toString());
 
-        var createdKingdom = kingdomRepository.add(kingdom.toDomain(gameConfig, new ArrayList<>()));
-        return KingdomDto.fromDomain(createdKingdom);
+        kingdomRepository.add(kingdom.toDomain(gameConfig, new ArrayList<>()));
+        return kingdom;
     }
 
     public Optional<KingdomDto> getKingdomByName(String name)
