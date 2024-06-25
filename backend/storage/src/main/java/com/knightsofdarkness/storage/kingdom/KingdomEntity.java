@@ -59,7 +59,7 @@ public class KingdomEntity {
 
     public KingdomDto toDto()
     {
-        return new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), new ArrayList<>());
+        return new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), marketOffers.stream().map(MarketOfferEntity::toDto).toList());
     }
 
     public static KingdomEntity fromDomainModel(Kingdom kingdom)
@@ -68,5 +68,10 @@ public class KingdomEntity {
         List<MarketOfferEntity> kingdomMarketOffers = kingdom.getMarketOffers().stream().map(offer -> MarketOfferEntity.fromDomainModel(offer, kingdomEntity)).toList();
         kingdomEntity.marketOffers.addAll(kingdomMarketOffers);
         return kingdomEntity;
+    }
+
+    public String getName()
+    {
+        return name;
     }
 }
