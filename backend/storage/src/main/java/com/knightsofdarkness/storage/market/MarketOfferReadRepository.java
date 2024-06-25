@@ -1,6 +1,8 @@
 package com.knightsofdarkness.storage.market;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -19,5 +21,10 @@ public class MarketOfferReadRepository {
     {
         var offers = jpaRepository.findByResource(resource);
         return offers.stream().map(MarketOfferEntity::toDto).toList();
+    }
+
+    public Optional<MarketOfferDto> findOfferById(UUID id)
+    {
+        return jpaRepository.findById(id).map(MarketOfferEntity::toDto);
     }
 }
