@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.knightsofdarkness.common.MarketBuyerDto;
 import com.knightsofdarkness.common.MarketOfferDto;
 import com.knightsofdarkness.game.market.IMarket;
-import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
+import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
 
 @Service
 public class MarketService {
@@ -23,12 +23,14 @@ public class MarketService {
 
     private final IMarket market;
 
-    final KingdomRepository kingdomRepository;
+    private final KingdomRepository kingdomRepository;
+    private final MarketOfferReadRepository marketOfferReadRepository;
 
-    public MarketService(IMarket market, KingdomRepository kingdomRepository)
+    public MarketService(IMarket market, KingdomRepository kingdomRepository, MarketOfferReadRepository marketOfferReadRepository)
     {
         this.market = market;
         this.kingdomRepository = kingdomRepository;
+        this.marketOfferReadRepository = marketOfferReadRepository;
     }
 
     @Transactional
@@ -66,20 +68,20 @@ public class MarketService {
     public List<MarketOfferDto> getAllOffers()
     {
         log.info("Getting all offers");
-        var allOffers = new ArrayList<MarketOffer>();
-        allOffers.addAll(market.getOffersByResource(MarketResource.food));
-        allOffers.addAll(market.getOffersByResource(MarketResource.iron));
-        allOffers.addAll(market.getOffersByResource(MarketResource.tools));
-        allOffers.addAll(market.getOffersByResource(MarketResource.weapons));
+        var allOffers = new ArrayList<MarketOfferDto>();
+        allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.food));
+        allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.iron));
+        allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.tools));
+        allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.weapons));
         log.info("Found " + allOffers.size() + " offers");
 
-        return allOffers.stream().map(MarketOfferDto::fromDomain).toList();
+        return allOffers;
     }
 
     public List<MarketOfferDto> getAllOffersByResource(MarketResource resource)
     {
         log.info("Getting all offers for " + resource);
-        var allOffers = market.getOffersByResource(resource).stream().map(MarketOfferDto::fromDomain).toList();
+        var allOffers = marketOfferReadRepository.getOffersByResource(resource);
         log.info("Found " + allOffers.size() + " offers for " + resource);
         return allOffers;
     }
