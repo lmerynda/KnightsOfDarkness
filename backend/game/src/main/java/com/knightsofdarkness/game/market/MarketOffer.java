@@ -49,7 +49,7 @@ public class MarketOffer {
     {
         return "MarketOffer{" +
                 "id=" + id +
-                ", serller=" + seller.getName() +
+                ", seller=" + seller.getName() +
                 ", resource=" + resource +
                 ", count=" + count +
                 ", price=" + price +
