@@ -1,8 +1,7 @@
 package com.knightsofdarkness.storage.market;
 
-import java.util.Optional;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
@@ -76,10 +75,6 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     public void update(MarketOffer marketOffer)
     {
         var marketOfferEntity = MarketOfferEntity.fromDomainModel(marketOffer);
-        // seriously, ask MM why it cannot be the other way around - cascading issue?
-        // jpaRepository.update(marketOfferEntity.getKingdom());
         jpaRepository.save(marketOfferEntity);
-        // entityManager.merge(marketOfferEntity.getKingdom()); // TODO, make sure kingdom gets updates and remove this comment
-
     }
 }

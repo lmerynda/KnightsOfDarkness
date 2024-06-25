@@ -6,15 +6,12 @@ import java.util.List;
 import com.knightsofdarkness.common.KingdomDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.storage.market.MarketOfferEntity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 
 @Entity
 public class KingdomEntity {
@@ -32,10 +29,6 @@ public class KingdomEntity {
     @Embedded
     KingdomUnitsEntity units;
 
-    @OneToMany(mappedBy = "kingdom", cascade =
-    { CascadeType.ALL })
-    List<MarketOfferEntity> marketOffers;
-
     public KingdomEntity()
     {
     }
@@ -46,27 +39,22 @@ public class KingdomEntity {
         this.resources = resources;
         this.buildings = buildings;
         this.units = units;
-        this.marketOffers = marketOffers;
     }
 
     public Kingdom toDomainModel(GameConfig gameConfig)
     {
         var kingdom = new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), units.toDomainModel(), new ArrayList<>());
-        List<MarketOffer> kingdomMarketOffers = marketOffers.stream().map(offerEntity -> offerEntity.toDomainModel(gameConfig, kingdom)).toList();
-        kingdom.getMarketOffers().addAll(kingdomMarketOffers);
         return kingdom;
     }
 
     public KingdomDto toDto()
     {
-        return new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), marketOffers.stream().map(MarketOfferEntity::toDto).toList());
+        return new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), new ArrayList<>());
     }
 
     public static KingdomEntity fromDomainModel(Kingdom kingdom)
     {
         var kingdomEntity = new KingdomEntity(kingdom.getName(), KingdomResourcesEntity.fromDomainModel(kingdom.getResources()), KingdomBuildingsEntity.fromDomainModel(kingdom.getBuildings()), KingdomUnitsEntity.fromDomainModel(kingdom.getUnits()), new ArrayList<>());
-        List<MarketOfferEntity> kingdomMarketOffers = kingdom.getMarketOffers().stream().map(offer -> MarketOfferEntity.fromDomainModel(offer, kingdomEntity)).toList();
-        kingdomEntity.marketOffers.addAll(kingdomMarketOffers);
         return kingdomEntity;
     }
 

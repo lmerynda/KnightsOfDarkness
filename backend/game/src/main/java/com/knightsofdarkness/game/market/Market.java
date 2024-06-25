@@ -1,8 +1,7 @@
 package com.knightsofdarkness.game.market;
 
-import java.util.Optional;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -85,15 +84,17 @@ public class Market implements IMarket {
 
         assert(offer.count >= 0);
 
-        offersRepository.update(offer);
         kingdomRepository.update(offer.seller);
         kingdomRepository.update(buyer);
         if (offer.count == 0)
         {
             // TODO this should be debug log
             log.info("Offer sold completely, removing " + offer);
-            offer.seller.getMarketOffers().remove(offer);
             offersRepository.remove(offer);
+        }
+        else
+        {
+            offersRepository.update(offer);
         }
 
         return buyerAmount;
