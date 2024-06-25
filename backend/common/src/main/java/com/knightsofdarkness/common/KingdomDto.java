@@ -1,11 +1,10 @@
-package com.knightsofdarkness.web.Kingdom;
+package com.knightsofdarkness.common;
 
 import java.util.List;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.MarketOffer;
-import com.knightsofdarkness.web.Market.MarketOfferDto;
 
 public class KingdomDto {
     public String name;

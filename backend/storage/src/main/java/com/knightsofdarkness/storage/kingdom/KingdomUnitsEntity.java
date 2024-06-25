@@ -1,5 +1,6 @@
 package com.knightsofdarkness.storage.kingdom;
 
+import com.knightsofdarkness.common.KingdomUnitsDto;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
 import com.knightsofdarkness.game.kingdom.UnitName;
 
@@ -53,6 +54,11 @@ public class KingdomUnitsEntity {
         kingdomUnits.setCount(UnitName.bowmen, bowmen);
         kingdomUnits.setCount(UnitName.cavalry, cavalry);
         return kingdomUnits;
+    }
+
+    public KingdomUnitsDto toDto()
+    {
+        return new KingdomUnitsDto(goldMiners, ironMiners, farmers, blacksmiths, builders, carriers, guards, spies, infantry, bowmen, cavalry);
     }
 
     public static KingdomUnitsEntity fromDomainModel(KingdomUnits kingdomUnits)

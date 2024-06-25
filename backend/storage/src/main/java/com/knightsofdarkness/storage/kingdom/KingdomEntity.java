@@ -63,4 +63,29 @@ public class KingdomEntity {
         kingdomEntity.marketOffers.addAll(kingdomMarketOffers);
         return kingdomEntity;
     }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public KingdomResourcesEntity getResources()
+    {
+        return resources;
+    }
+
+    public KingdomBuildingsEntity getBuildings()
+    {
+        return buildings;
+    }
+
+    public KingdomUnitsEntity getUnits()
+    {
+        return units;
+    }
+
+    public List<MarketOfferEntity> getMarketOffers()
+    {
+        return marketOffers;
+    }
 }

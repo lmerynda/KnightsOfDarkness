@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.Kingdom;
+package com.knightsofdarkness.common;
 
 import com.knightsofdarkness.game.kingdom.KingdomResources;
 import com.knightsofdarkness.game.kingdom.ResourceName;

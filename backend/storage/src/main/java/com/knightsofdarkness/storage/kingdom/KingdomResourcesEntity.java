@@ -49,6 +49,11 @@ class KingdomResourcesEntity {
         return kingdomResources;
     }
 
+    // public KingdomResourcesDto toDto()
+    // {
+    // return new KingdomResourcesDto(land, buildingPoints, unemployed, gold, iron, food, tool, weapons, turn);
+    // }
+
     public static KingdomResourcesEntity fromDomainModel(KingdomResources kingdomResources)
     {
         return new KingdomResourcesEntity(

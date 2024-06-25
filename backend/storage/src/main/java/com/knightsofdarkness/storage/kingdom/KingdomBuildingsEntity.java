@@ -38,6 +38,11 @@ class KingdomBuildingsEntity {
         this.castles = castles;
     }
 
+    // public KingdomBuildingsDto toDto()
+    // {
+    // return new KingdomBuildingsDto(houses, goldMines, ironMines, workshops, farms, markets, barracks, guardHouses, spyGuilds, towers, castles);
+    // }
+
     public KingdomBuildings toDomainModel()
     {
         var kingdomBuildings = new KingdomBuildings();

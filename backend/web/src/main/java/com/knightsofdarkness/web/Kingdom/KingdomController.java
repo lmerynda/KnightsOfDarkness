@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.knightsofdarkness.common.KingdomBuildingsDto;
+import com.knightsofdarkness.common.KingdomDto;
+import com.knightsofdarkness.common.KingdomUnitsDto;
+
 @RestController
 @RequestMapping("/kingdom")
 public class KingdomController {
