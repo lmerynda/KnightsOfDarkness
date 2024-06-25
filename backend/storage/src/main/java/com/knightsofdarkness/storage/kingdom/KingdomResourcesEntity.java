@@ -1,5 +1,6 @@
 package com.knightsofdarkness.storage.kingdom;
 
+import com.knightsofdarkness.common.KingdomResourcesDto;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 
@@ -49,10 +50,10 @@ class KingdomResourcesEntity {
         return kingdomResources;
     }
 
-    // public KingdomResourcesDto toDto()
-    // {
-    // return new KingdomResourcesDto(land, buildingPoints, unemployed, gold, iron, food, tool, weapons, turn);
-    // }
+    public KingdomResourcesDto toDto()
+    {
+        return new KingdomResourcesDto(land, buildingPoints, unemployed, gold, iron, food, tool, weapons, turn);
+    }
 
     public static KingdomResourcesEntity fromDomainModel(KingdomResources kingdomResources)
     {

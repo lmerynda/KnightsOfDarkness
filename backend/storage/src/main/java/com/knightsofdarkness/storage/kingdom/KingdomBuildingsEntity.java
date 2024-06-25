@@ -1,5 +1,6 @@
 package com.knightsofdarkness.storage.kingdom;
 
+import com.knightsofdarkness.common.KingdomBuildingsDto;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.KingdomBuildings;
 
@@ -38,10 +39,10 @@ class KingdomBuildingsEntity {
         this.castles = castles;
     }
 
-    // public KingdomBuildingsDto toDto()
-    // {
-    // return new KingdomBuildingsDto(houses, goldMines, ironMines, workshops, farms, markets, barracks, guardHouses, spyGuilds, towers, castles);
-    // }
+    public KingdomBuildingsDto toDto()
+    {
+        return new KingdomBuildingsDto(houses, goldMines, ironMines, workshops, farms, markets, barracks, guardHouses, spyGuilds, towers, castles);
+    }
 
     public KingdomBuildings toDomainModel()
     {

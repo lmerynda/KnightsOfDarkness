@@ -3,6 +3,7 @@ package com.knightsofdarkness.storage.kingdom;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.knightsofdarkness.common.KingdomDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.MarketOffer;
@@ -56,36 +57,16 @@ public class KingdomEntity {
         return kingdom;
     }
 
+    public KingdomDto toDto()
+    {
+        return new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), new ArrayList<>());
+    }
+
     public static KingdomEntity fromDomainModel(Kingdom kingdom)
     {
         var kingdomEntity = new KingdomEntity(kingdom.getName(), KingdomResourcesEntity.fromDomainModel(kingdom.getResources()), KingdomBuildingsEntity.fromDomainModel(kingdom.getBuildings()), KingdomUnitsEntity.fromDomainModel(kingdom.getUnits()), new ArrayList<>());
         List<MarketOfferEntity> kingdomMarketOffers = kingdom.getMarketOffers().stream().map(offer -> MarketOfferEntity.fromDomainModel(offer, kingdomEntity)).toList();
         kingdomEntity.marketOffers.addAll(kingdomMarketOffers);
         return kingdomEntity;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public KingdomResourcesEntity getResources()
-    {
-        return resources;
-    }
-
-    public KingdomBuildingsEntity getBuildings()
-    {
-        return buildings;
-    }
-
-    public KingdomUnitsEntity getUnits()
-    {
-        return units;
-    }
-
-    public List<MarketOfferEntity> getMarketOffers()
-    {
-        return marketOffers;
     }
 }
