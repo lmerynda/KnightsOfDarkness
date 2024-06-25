@@ -84,17 +84,18 @@ public class Market implements IMarket {
         offer.seller.acceptMarketOffer(buyerGold);
 
         assert(offer.count >= 0);
-        if (offer.count == 0)
-        {
-            // TODO this should be debug log
-            log.info("Offer sold completely, removing " + offer);
-            offersRepository.remove(offer);
-            return buyerAmount;
-        }
 
         offersRepository.update(offer);
         kingdomRepository.update(offer.seller);
         kingdomRepository.update(buyer);
+        if (offer.count == 0)
+        {
+            // TODO this should be debug log
+            log.info("Offer sold completely, removing " + offer);
+            offer.seller.getMarketOffers().remove(offer);
+            offersRepository.remove(offer);
+        }
+
         return buyerAmount;
     }
 

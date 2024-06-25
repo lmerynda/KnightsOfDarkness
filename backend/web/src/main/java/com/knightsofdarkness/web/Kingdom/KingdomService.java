@@ -45,17 +45,20 @@ public class KingdomService {
     }
 
     @Transactional
-    public ResponseEntity<KingdomDto> build(String name, KingdomBuildingsDto buildings) {
+    public ResponseEntity<Integer> build(String name, KingdomBuildingsDto buildings)
+    {
         log.info("[" + name + "] building " + buildings.toString());
-        Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
-        if (kingdom.isEmpty())
+        Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(name);
+        if (maybeKingdom.isEmpty())
         {
             return ResponseEntity.notFound().build();
         }
 
-        kingdom.get().build(buildings.toDomain());
-        kingdomRepository.update(kingdom.get());
-        return ResponseEntity.ok(KingdomDto.fromDomain(kingdom.get()));
+        var kingdom = maybeKingdom.get();
+
+        var howManyWereBuilt = kingdom.build(buildings.toDomain());
+        kingdomRepository.update(kingdom);
+        return ResponseEntity.ok(howManyWereBuilt);
     }
 
     @Transactional

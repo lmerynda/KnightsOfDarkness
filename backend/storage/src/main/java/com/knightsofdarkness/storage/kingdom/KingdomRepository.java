@@ -31,9 +31,8 @@ public class KingdomRepository implements IKingdomRepository {
         return kingdom.map(kingdomEntity -> kingdomEntity.toDomainModel(gameConfig));
     }
 
-    public Kingdom update(Kingdom kingdom)
+    public void update(Kingdom kingdom)
     {
-        var kingdomEntity = jpaRepository.save(KingdomEntity.fromDomainModel(kingdom));
-        return kingdomEntity.toDomainModel(gameConfig);
+        jpaRepository.save(KingdomEntity.fromDomainModel(kingdom));
     }
 }

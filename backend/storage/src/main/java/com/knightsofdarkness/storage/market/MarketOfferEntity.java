@@ -21,10 +21,9 @@ public class MarketOfferEntity {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "kingdom_id", nullable = false)
+    @JoinColumn(name = "kingdom_name", nullable = false)
     private KingdomEntity kingdom;
 
-    // TODO ask MM how to store enum refs in db
     @Enumerated(EnumType.STRING)
     private MarketResource resource;
 
@@ -47,7 +46,9 @@ public class MarketOfferEntity {
 
     public MarketOffer toDomainModel(GameConfig gameConfig)
     {
-        return new MarketOffer(id, kingdom.toDomainModel(gameConfig), resource, count, price);
+        var kingdom = this.kingdom.toDomainModel(gameConfig);
+        var marketOffer = kingdom.getMarketOffers().stream().filter(offer -> offer.getId().equals(id)).findFirst();
+        return marketOffer.orElseGet(() -> new MarketOffer(id, kingdom, resource, count, price));
     }
 
     public MarketOffer toDomainModel(GameConfig gameConfig, Kingdom kingdom)

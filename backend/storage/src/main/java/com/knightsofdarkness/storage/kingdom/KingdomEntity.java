@@ -63,9 +63,4 @@ public class KingdomEntity {
         kingdomEntity.marketOffers.addAll(kingdomMarketOffers);
         return kingdomEntity;
     }
-
-    public List<MarketOfferEntity> getMarketOffers()
-    {
-        return marketOffers;
-    }
 }

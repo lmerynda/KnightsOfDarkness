@@ -11,7 +11,7 @@ public class KingdomRepository implements IKingdomRepository {
     List<Kingdom> kingdoms = new ArrayList<>();
 
     @Override
-    public Kingdom update(Kingdom kingdom)
+    public void update(Kingdom kingdom)
     {
         for (var savedKingdom : kingdoms)
         {
@@ -19,7 +19,6 @@ public class KingdomRepository implements IKingdomRepository {
             {
                 kingdoms.remove(savedKingdom);
                 kingdoms.add(kingdom);
-                return kingdom;
             }
         }
 

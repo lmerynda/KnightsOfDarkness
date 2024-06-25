@@ -69,7 +69,8 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     @Override
     public Optional<MarketOffer> findById(UUID marketOfferId)
     {
-        return jpaRepository.findById(marketOfferId).map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig));
+        var marketOffer = jpaRepository.findById(marketOfferId);
+        return marketOffer.map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig));
     }
 
     public void update(MarketOffer marketOffer)

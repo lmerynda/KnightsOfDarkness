@@ -53,7 +53,7 @@ public class KingdomController {
     }
 
     @PostMapping("/{name}/build")
-    ResponseEntity<KingdomDto> kingdomBuild(@PathVariable String name, @RequestBody KingdomBuildingsDto buildings)
+    ResponseEntity<Integer> kingdomBuild(@PathVariable String name, @RequestBody KingdomBuildingsDto buildings)
     {
         return kingdomService.build(name, buildings);
     }

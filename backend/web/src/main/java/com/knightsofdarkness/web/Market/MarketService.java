@@ -96,7 +96,7 @@ public class MarketService {
         var offer = maybeOffer.get();
         log.info("Transaction on " + offer + " with " + buyerData.toString());
 
-        int boughtAmount = market.buyExistingOffer(maybeOffer.get(), maybeBuyerKingdom.get(), buyerData.count);
+        int boughtAmount = market.buyExistingOffer(offer, maybeBuyerKingdom.get(), buyerData.count);
 
         // TODO report?
         return ResponseEntity.ok(boughtAmount);
