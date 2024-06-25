@@ -2,6 +2,11 @@ package com.knightsofdarkness.storage.kingdom;
 
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
+import com.knightsofdarkness.common.KingdomDto;
+
+@Repository
 public class KingdomReadRepository {
     private final KingdomJpaRepository jpaRepository;
 
@@ -10,8 +15,8 @@ public class KingdomReadRepository {
         this.jpaRepository = jpaRepository;
     }
 
-    public Optional<KingdomEntity> getKingdomByName(String name)
+    public Optional<KingdomDto> getKingdomByName(String name)
     {
-        return jpaRepository.findById(name);
+        return jpaRepository.findById(name).map(KingdomEntity::toDto);
     }
 }
