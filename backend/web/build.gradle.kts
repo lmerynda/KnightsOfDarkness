@@ -3,7 +3,6 @@ plugins {
 	id("com.adarshr.test-logger") version "4.0.0"
 	id("org.springframework.boot") version "3.2.4"
 	id("io.spring.dependency-management") version "1.1.4"
-	id("org.springdoc.openapi-gradle-plugin") version "1.8.0"
 }
 
 group = "com.knightsofdarkness"
@@ -25,8 +24,6 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework:spring-context")
 	implementation("jakarta.persistence:jakarta.persistence-api")
-	implementation("org.springdoc:springdoc-openapi-ui:1.8.0")
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.5.0")
     implementation(project(":common"))
     implementation(project(":game"))
 	implementation(project(":storage"))
