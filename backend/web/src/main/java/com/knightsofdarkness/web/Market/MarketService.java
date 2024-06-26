@@ -110,4 +110,21 @@ public class MarketService {
         // TODO report?
         return ResponseEntity.ok(boughtAmount);
     }
+
+    // TODO verify if offer belongs to active kingdom
+    public ResponseEntity<Boolean> withdraw(UUID id)
+    {
+        var maybeOffer = market.findOfferById(id);
+        if(maybeOffer.isEmpty())
+        {
+            log.warn("Offer not found");
+            return ResponseEntity.notFound().build();
+        }
+
+        var offer = maybeOffer.get();
+        log.info("Withdrawing offer " + offer);
+
+        market.removeOffer(offer);
+        return ResponseEntity.ok(true);
+    }
 }

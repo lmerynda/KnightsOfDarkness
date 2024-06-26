@@ -1,8 +1,7 @@
 package com.knightsofdarkness.game.market;
 
-import java.util.Optional;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -38,6 +37,9 @@ public class Market implements IMarket {
     @Override
     public void removeOffer(MarketOffer offer)
     {
+        var seller = offer.seller;
+        seller.withdrawMarketOffer(offer);
+        kingdomRepository.update(seller);
         offersRepository.remove(offer);
     }
 

@@ -53,4 +53,10 @@ public class MarketController {
     {
         return marketService.buyOffer(id, buyerData);
     }
+
+    @PostMapping("/market/{id}/withdraw")
+    ResponseEntity<Boolean> buyOffer(@PathVariable UUID id)
+    {
+        return marketService.withdraw(id);
+    }
 }
