@@ -27,4 +27,9 @@ public class MarketOfferReadRepository {
     {
         return jpaRepository.findById(id).map(MarketOfferEntity::toDto);
     }
+
+    public List<MarketOfferDto> findByKingdomName(String name)
+    {
+        return jpaRepository.findByKingdomName(name).stream().map(MarketOfferEntity::toDto).toList();
+    }
 }

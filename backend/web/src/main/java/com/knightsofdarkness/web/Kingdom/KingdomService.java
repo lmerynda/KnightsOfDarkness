@@ -1,8 +1,7 @@
 package com.knightsofdarkness.web.Kingdom;
 
-import java.util.Optional;
-
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +16,7 @@ import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.storage.kingdom.KingdomReadRepository;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
+import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
 
 @Service
 public class KingdomService {
@@ -26,12 +26,14 @@ public class KingdomService {
 
     private final KingdomRepository kingdomRepository;
     private final KingdomReadRepository kingdomReadRepository;
+    private final MarketOfferReadRepository marketOfferReadRepository;
 
-    public KingdomService(GameConfig gameConfig, KingdomRepository kingdomRepository, KingdomReadRepository kingdomReadRepository)
+    public KingdomService(GameConfig gameConfig, KingdomRepository kingdomRepository, KingdomReadRepository kingdomReadRepository,  MarketOfferReadRepository marketOfferReadRepository)
     {
         this.gameConfig = gameConfig;
         this.kingdomRepository = kingdomRepository;
         this.kingdomReadRepository = kingdomReadRepository;
+        this.marketOfferReadRepository = marketOfferReadRepository;
     }
 
     @Transactional
@@ -46,7 +48,15 @@ public class KingdomService {
     public Optional<KingdomDto> getKingdomByName(String name)
     {
         log.info("Looking for a kingdom with name " + name);
-        return kingdomReadRepository.getKingdomByName(name);
+        var maybeKingdom = kingdomReadRepository.getKingdomByName(name);
+        if (maybeKingdom.isEmpty())
+        {
+            return Optional.empty();
+        }
+        var kingdom = maybeKingdom.get();
+        var offers = marketOfferReadRepository.findByKingdomName(name);
+        kingdom.marketOffers = offers;
+        return Optional.of(kingdom);
     }
 
     @Transactional

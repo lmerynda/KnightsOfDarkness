@@ -11,4 +11,5 @@ import com.knightsofdarkness.game.market.MarketResource;
 @Repository
 public interface MarketOfferJpaRepository extends JpaRepository<MarketOfferEntity, UUID> {
     List<MarketOfferEntity> findByResource(MarketResource resource);
+    List<MarketOfferEntity> findByKingdomName(String name);
 }
