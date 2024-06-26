@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow, Button, Input } from 
 import React, { useContext, useState } from 'react';
 import { unitList } from '../GameTypes';
 import { KingdomContext } from '../App';
+import { GAME_API } from '../Consts';
 
 const Train: React.FC = () => {
     const [unitCounts, setUnitsCounts] = useState<{ [unit: string]: number }>({});
@@ -21,7 +22,7 @@ const Train: React.FC = () => {
     };
 
     const handleSubmit = () => {
-        fetch('http://localhost:8080/kingdom/uprzejmy/train', {
+        fetch(`${GAME_API}/kingdom/uprzejmy/train`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

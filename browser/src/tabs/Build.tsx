@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button } from 
 import React, { useContext, useState } from 'react';
 import { buildingList } from '../GameTypes';
 import { KingdomContext } from '../App';
+import { GAME_API } from '../Consts';
 
 const Build: React.FC = () => {
     const [buildingCounts, setBuildingCounts] = useState<{ [building: string]: number }>({});
@@ -22,7 +23,7 @@ const Build: React.FC = () => {
     };
 
     const handleSubmit = () => {
-        fetch('http://localhost:8080/kingdom/uprzejmy/build', {
+        fetch(`${GAME_API}/kingdom/uprzejmy/build`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

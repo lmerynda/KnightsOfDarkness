@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 import KingdomTabs from './KingdomTabs';
 import KingdomToolbar from './KingdomToolbar';
 import { KingdomData } from './GameTypes';
+import { GAME_API } from './Consts';
 
 const darkTheme = createTheme({
   palette: {
@@ -25,7 +26,7 @@ const App: React.FC = () => {
   const [kingdom, setKingdom] = React.useState<KingdomData>();
 
   const reloadKingdom = () => {
-    fetch(`http://localhost:8080/kingdom/${kingdomName}`)
+    fetch(`${GAME_API}/kingdom/${kingdomName}`)
       .then(response => response.json())
       .then(kingdom => {
         console.log(`Request successful, data: ${JSON.stringify(kingdom)}`);

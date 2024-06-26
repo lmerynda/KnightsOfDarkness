@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { KingdomContext } from '../App';
 import Button from '@mui/material/Button';
+import { GAME_API } from '../Consts';
 
 const Overview: React.FC = () => {
     const kingdomContext = useContext(KingdomContext);
@@ -10,7 +11,7 @@ const Overview: React.FC = () => {
     }
 
     const handleSubmit = () => {
-        fetch('http://localhost:8080/kingdom/uprzejmy/pass-turn', {
+        fetch(`${GAME_API}/kingdom/uprzejmy/pass-turn`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

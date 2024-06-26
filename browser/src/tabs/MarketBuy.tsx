@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input } from '@mui/material';
 import { KingdomContext } from '../App';
 import { MarketData, OfferBuyer } from "../GameTypes";
+import { GAME_API } from '../Consts';
 
 const MarketBuy: React.FC = () => {
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
@@ -23,7 +24,7 @@ const MarketBuy: React.FC = () => {
     };
 
     const reloadMarket = () => {
-        fetch('http://localhost:8080/market')
+        fetch(`${GAME_API}/market`)
             .then(response => response.json())
             .then(data => {
                 console.log(`Request successful, data: ${JSON.stringify(data)}`);
@@ -52,7 +53,7 @@ const MarketBuy: React.FC = () => {
             count: count
         };
         if (count <= 0) return;
-        fetch(`http://localhost:8080/market/${id}/buy`, {
+        fetch(`${GAME_API}/market/${id}/buy`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
