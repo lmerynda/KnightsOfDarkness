@@ -46,4 +46,8 @@ public class KingdomMarketAction {
 
         return maxToSpend;
     }
+
+    public void deliverResourcesFromOffer(MarketResource resource, int amount) {
+        kingdom.getResources().addCount(ResourceName.from(resource), amount);
+    }
 }

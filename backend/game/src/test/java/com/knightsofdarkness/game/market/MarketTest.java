@@ -87,7 +87,7 @@ class MarketTest {
 
         var offer = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 100);
 
-        var amountBought = market.buyExistingOffer(offer, kingdom, 100);
+        var amountBought = market.buyExistingOffer(offer, kingdom, kingdom, 100);
 
         assertEquals(0, market.getOffersByResource(MarketResource.food).size());
         assertEquals(0, amountBought);
@@ -103,7 +103,7 @@ class MarketTest {
         var offers = market.getOffersByResource(MarketResource.food);
         assertTrue(!offers.isEmpty());
 
-        var amountBought = market.buyExistingOffer(offers.get(0), kingdom, 100);
+        var amountBought = market.buyExistingOffer(offers.get(0), kingdom, kingdom, 100);
 
         assertEquals(1, market.getOffersByResource(MarketResource.food).size());
         assertEquals(100, amountBought);
@@ -120,7 +120,7 @@ class MarketTest {
         var offers = market.getOffersByResource(MarketResource.food);
         assertTrue(!offers.isEmpty());
 
-        var amountBought = market.buyExistingOffer(offers.get(0), kingdom, 100);
+        var amountBought = market.buyExistingOffer(offers.get(0), kingdom, kingdom, 100);
 
         assertEquals(0, market.getOffersByResource(MarketResource.food).size());
         assertEquals(100, amountBought);
@@ -137,7 +137,7 @@ class MarketTest {
         assertTrue(!offers.isEmpty());
         var offer = offers.get(0);
 
-        var amountBought = market.buyExistingOffer(offer, kingdom, 20);
+        var amountBought = market.buyExistingOffer(offer, kingdom, kingdom, 20);
 
         assertEquals(1, market.getOffersByResource(MarketResource.food).size());
         assertEquals(100 - amountBought, offer.getCount());
@@ -156,7 +156,7 @@ class MarketTest {
         assertTrue(!offers.isEmpty());
         var offer = offers.get(0);
 
-        market.buyExistingOffer(offer, kingdom, 100);
+        market.buyExistingOffer(offer, kingdom, kingdom, 100);
 
         assertEquals(1, market.getOffersByResource(MarketResource.food).size());
     }

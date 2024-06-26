@@ -97,10 +97,15 @@ public class MarketService {
             return ResponseEntity.notFound().build();
         }
 
+        var buyer = maybeBuyerKingdom.get();
         var offer = maybeOffer.get();
+        // a case when buyer and seller is the same kingdom is handle here
+        // to avoid complications in persistence layer deserialization
+        var seller = offer.getSeller().getName().equals(buyerData.buyer) ? buyer : offer.getSeller();
+
         log.info("Transaction on " + offer + " with " + buyerData.toString());
 
-        int boughtAmount = market.buyExistingOffer(offer, maybeBuyerKingdom.get(), buyerData.count);
+        int boughtAmount = market.buyExistingOffer(offer, seller, buyer, buyerData.count);
 
         // TODO report?
         return ResponseEntity.ok(boughtAmount);

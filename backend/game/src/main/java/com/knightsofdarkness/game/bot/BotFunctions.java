@@ -26,7 +26,7 @@ public class BotFunctions {
             }
 
             var offer = optionalOffer.get();
-            var amountBought = market.buyExistingOffer(offer, kingdom, amountToBuy);
+            var amountBought = market.buyExistingOffer(offer, kingdom, kingdom, amountToBuy);
             if (amountBought == 0)
             {
                 // Could not afford, TODO tests
@@ -58,7 +58,7 @@ public class BotFunctions {
             }
 
             var offer = optionalOffer.get();
-            var amountBought = market.buyExistingOffer(offer, kingdom, amountToBuy);
+            var amountBought = market.buyExistingOffer(offer, kingdom, kingdom, amountToBuy);
             if (amountBought == 0)
             {
                 // Could not afford, TODO tests
@@ -119,7 +119,7 @@ public class BotFunctions {
         }
 
         var offer = optionalOffer.get();
-        return market.buyExistingOffer(offer, kingdom, count);
+        return market.buyExistingOffer(offer, kingdom, kingdom, count);
     }
 
     public static int trainBuilders(Kingdom kingdom, int count, double desiredBuilderToSpecialistRatio)

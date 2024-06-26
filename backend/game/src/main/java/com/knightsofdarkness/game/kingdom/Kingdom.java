@@ -124,4 +124,9 @@ public class Kingdom {
     {
         return kingdomMarketAction.reserveGoldForOffer(price, amount);
     }
+
+    public void deliverResourcesFromOffer(MarketResource resource, int amount)
+    {
+        kingdomMarketAction.deliverResourcesFromOffer(resource, amount);
+    }
 }

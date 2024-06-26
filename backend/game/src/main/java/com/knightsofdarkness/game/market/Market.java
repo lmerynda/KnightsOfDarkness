@@ -1,7 +1,8 @@
 package com.knightsofdarkness.game.market;
 
-import java.util.List;
 import java.util.Optional;
+
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -74,17 +75,18 @@ public class Market implements IMarket {
      * @return amount of resource which was actually sold
      */
     @Override
-    public int buyExistingOffer(MarketOffer offer, Kingdom buyer, int amount)
+    public int buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount)
     {
         var maxToSell = Math.min(offer.count, amount);
         var buyerGold = buyer.reserveGoldForOffer(offer.price, maxToSell);
         var buyerAmount = buyerGold / offer.price;
         offer.count -= buyerAmount;
-        offer.seller.acceptMarketOffer(buyerGold);
+        seller.acceptMarketOffer(buyerGold);
+        buyer.deliverResourcesFromOffer(offer.resource, buyerAmount);
 
         assert(offer.count >= 0);
 
-        kingdomRepository.update(offer.seller);
+        kingdomRepository.update(seller);
         kingdomRepository.update(buyer);
         if (offer.count == 0)
         {
