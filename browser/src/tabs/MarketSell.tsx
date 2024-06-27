@@ -1,6 +1,7 @@
 import { Button, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import React, { useContext } from "react";
 import { KingdomContext } from "../App";
+import MarketPost from "../components/MarketPost";
 import { GAME_API } from "../Consts";
 
 const MarketSell: React.FC = () => {
@@ -34,6 +35,7 @@ const MarketSell: React.FC = () => {
     return (
         <div>
             <h1>Market Sell</h1>
+            <MarketPost />
             <Table>
                 <TableHead>
                     <TableRow>

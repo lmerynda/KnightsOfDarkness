@@ -11,6 +11,13 @@ export type KingdomResources = {
     turns: number;
 }
 
+export type MarketResources = {
+    food: string;
+    iron: string;
+    tools: string;
+    weapons: string;
+}
+
 export type KingdomBuildings = {
     houses: number,
     goldMines: number,
