@@ -67,7 +67,7 @@ const Train: React.FC = () => {
                     ))}
                 </TableBody>
             </Table>
-            <Button variant="contained" onClick={handleSubmit}>Submit</Button>
+            <Button variant="contained" onClick={handleSubmit}>Train</Button>
         </div>
     );
 };
