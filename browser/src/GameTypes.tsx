@@ -11,11 +11,15 @@ export type KingdomResources = {
     turns: number;
 }
 
-export type MarketResources = {
-    food: string;
-    iron: string;
-    tools: string;
-    weapons: string;
+export enum MarketResource {
+    food = "food",
+    iron = "iron",
+    tools = "tools",
+    weapons = "weapons",
+}
+
+export type MarketResourcesMap = {
+    [key in (MarketResource)]: number;
 }
 
 export type KingdomBuildings = {

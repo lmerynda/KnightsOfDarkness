@@ -1,19 +1,18 @@
 import { Button, ButtonGroup, Grid, Input, InputLabel } from "@mui/material";
 import React, { useContext } from "react";
 import { KingdomContext } from "../App";
+import { MarketResource } from "../GameTypes";
 
 const MarketPost: React.FC = () => {
     const [sellAmount, setSellAmount] = React.useState<number>(0);
     const [price, setPrice] = React.useState<number>(0);
-    const [resource, setResource] = React.useState<string>('food');
+    const [selectedResource, setSelectedResource] = React.useState<MarketResource>(MarketResource.food);
     const kingdomContext = useContext(KingdomContext);
 
     // ask someone how to better solve it, null object pattern?
     if (kingdomContext === undefined) {
         throw new Error('Kingdom context is undefined');
     }
-
-    const ResourcesTypes = ['food', 'iron', 'tools', 'weapons'];
 
     function handleCreateOffer(): void {
         throw new Error("Function not implemented.");
@@ -25,13 +24,13 @@ const MarketPost: React.FC = () => {
             <Grid container spacing={2} alignItems="center">
                 <Grid item>
                     <ButtonGroup variant="contained" >
-                        {ResourcesTypes.map((type) => (
+                        {Object.values(MarketResource).map((resource) => (
                             <Button
-                                key={type}
-                                variant={resource === type ? 'contained' : 'outlined'}
-                                onClick={() => setResource(type)}
+                                key={resource}
+                                variant={resource === selectedResource ? 'contained' : 'outlined'}
+                                onClick={() => setSelectedResource(resource)}
                             >
-                                {type}
+                                {resource}
                             </Button>
                         ))}
                     </ButtonGroup>
