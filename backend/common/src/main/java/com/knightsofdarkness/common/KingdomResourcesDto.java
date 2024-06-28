@@ -5,6 +5,7 @@ import com.knightsofdarkness.game.kingdom.ResourceName;
 
 public class KingdomResourcesDto {
     public int land;
+    public int usedLand;
     public int buildingPoints;
     public int unemployed;
     public int gold;

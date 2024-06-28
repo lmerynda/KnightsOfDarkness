@@ -24,6 +24,12 @@ public class KingdomDto {
         this.buildings = buildings;
         this.units = units;
         this.marketOffers = marketOffers;
+        setDetails();
+    }
+
+    private void setDetails()
+    {
+        resources.usedLand = buildings.countAll();
     }
 
     public Kingdom toDomain(GameConfig config, List<MarketOffer> marketOffers)

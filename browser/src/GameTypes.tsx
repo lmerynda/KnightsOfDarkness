@@ -3,6 +3,7 @@ export type KingdomResources = {
     food: number;
     gold: number;
     iron: number;
+    usedLand: number;
     land: number;
     tools: number;
     weapons: number;

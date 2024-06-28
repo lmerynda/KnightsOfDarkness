@@ -84,4 +84,22 @@ public class KingdomBuildingsDto {
                 ", castles=" + castles +
                 '}';
     }
+
+    public int countAll()
+    {
+        // huehue, it hurts, fix please
+        int count = 0;
+        count += houses;
+        count += goldMines;
+        count += ironMines;
+        count += workshops;
+        count += farms;
+        count += markets;
+        count += barracks;
+        count += guardHouses;
+        count += spyGuilds;
+        count += towers;
+        count += castles;
+        return count;
+    }
 }
