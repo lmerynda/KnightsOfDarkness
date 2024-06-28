@@ -29,7 +29,7 @@ public class Market implements IMarket {
         var countToOffer = kingdom.postMarketOffer(resource, count);
         var offer = new MarketOffer(Id.generate(), kingdom, resource, countToOffer, price);
         offersRepository.add(offer);
-        // TODO update kingdom?
+        kingdomRepository.update(kingdom);
 
         return offer;
     }

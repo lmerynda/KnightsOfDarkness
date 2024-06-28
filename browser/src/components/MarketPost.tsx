@@ -2,6 +2,7 @@ import { Button, ButtonGroup, Grid, Input, InputLabel } from "@mui/material";
 import React, { useContext } from "react";
 import { KingdomContext } from "../App";
 import { MarketResource } from "../GameTypes";
+import { GAME_API } from "../Consts";
 
 const MarketPost: React.FC = () => {
     const [sellAmount, setSellAmount] = React.useState<number>(0);
@@ -14,8 +15,35 @@ const MarketPost: React.FC = () => {
         throw new Error('Kingdom context is undefined');
     }
 
-    function handleCreateOffer(): void {
-        throw new Error("Function not implemented.");
+    const handleCreateOffer = (): void => {
+        const offer = {
+            sellerName: kingdomContext.kingdom.name,
+            resource: selectedResource,
+            price: price,
+            count: sellAmount
+        };
+
+        fetch(`${GAME_API}/market/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(offer)
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Offer created successfully');
+                    setSellAmount(0);
+                    setPrice(0);
+                    setSelectedResource(MarketResource.food);
+                    kingdomContext.reloadKingdom();
+                } else {
+                    console.error('Failed to create offer');
+                }
+            })
+            .catch(error => {
+                console.error(`Failed to create offer due to ${error ?? 'unknown error'}`);
+            });
     }
 
     return (

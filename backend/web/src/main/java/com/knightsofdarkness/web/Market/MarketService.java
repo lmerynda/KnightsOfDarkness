@@ -59,7 +59,8 @@ public class MarketService {
         if (kingdom.isPresent())
         {
             market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
-        } else
+        }
+        else
         {
             log.warn("Kingdom with name " + offer.sellerName + " not found");
         }

@@ -49,9 +49,9 @@ public class DemoApplication {
                     {
                     	"name": "uprzejmy",
                     	"resources": {
-                    		"food": 1000,
+                    		"food": 20000,
                     		"gold": 1000,
-                    		"iron": 100,
+                    		"iron": 1000,
                     		"land": 100,
                     		"tools": 100,
                     		"weapons": 100,
@@ -90,7 +90,7 @@ public class DemoApplication {
             HttpEntity<String> kingdomEntity = new HttpEntity<>(kingdomPayload, headers);
             restTemplate.postForObject("http://localhost:8080/kingdom/", kingdomEntity, String.class);
 
-            // POST request to /market/add
+            // POST request to /market/create
             String marketPayload = """
                     {
                     	"sellerName": "uprzejmy",
@@ -100,7 +100,7 @@ public class DemoApplication {
                     }
                     """;
             HttpEntity<String> marketEntity = new HttpEntity<>(marketPayload, headers);
-            restTemplate.postForObject("http://localhost:8080/market/add", marketEntity, String.class);
+            restTemplate.postForObject("http://localhost:8080/market/create", marketEntity, String.class);
 
             // POST request to /market_fixtures
             String marketFixturesPayload = """
@@ -114,19 +114,19 @@ public class DemoApplication {
                     	{
                     		"sellerName": "uprzejmy",
                     		"resource": "food",
-                    		"count": 20000,
+                    		"count": 500,
                     		"price": 30
                     	},
                     	{
                     		"sellerName": "uprzejmy",
                     		"resource": "iron",
-                    		"count": 10000,
+                    		"count": 100,
                     		"price": 50
                     	},
                     	{
                     		"sellerName": "uprzejmy",
                     		"resource": "iron",
-                    		"count": 15000,
+                    		"count": 150,
                     		"price": 70
                     	}
                     ]

@@ -30,7 +30,7 @@ public class MarketController {
         marketService.createOffers(offers);
     }
 
-    @PostMapping("/market/add")
+    @PostMapping("/market/create")
     void createOffer(@RequestBody MarketOfferDto offer)
     {
         marketService.createOffer(offer);
