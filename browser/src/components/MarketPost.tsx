@@ -1,4 +1,4 @@
-import { Button, Input, MenuItem, Select } from "@mui/material";
+import { Button, ButtonGroup, Grid, Input, InputLabel } from "@mui/material";
 import React, { useContext } from "react";
 import { KingdomContext } from "../App";
 
@@ -15,30 +15,49 @@ const MarketPost: React.FC = () => {
 
     const ResourcesTypes = ['food', 'iron', 'tools', 'weapons'];
 
+    function handleCreateOffer(): void {
+        throw new Error("Function not implemented.");
+    }
+
     return (
         <div>
             <h2>Create Offer</h2>
-            {ResourcesTypes.map((type) => (
-                    <Button
-                        key={type}
-                        variant={resource === type ? 'contained' : 'outlined'}
-                        onClick={() => setResource(type)}
-                    >
-                        {type}
-                    </Button>
-                ))}
-            <Input
-                type="number"
-                inputProps={{ min: 0 }}
-                value={sellAmount}
-                onChange={(event) => setSellAmount(parseInt(event.target.value))}
-            />
-            <Input
-                type="number"
-                inputProps={{ min: 0 }}
-                value={price}
-                onChange={(event) => setPrice(parseInt(event.target.value))}
-            />
+            <Grid container spacing={2} alignItems="center">
+                <Grid item>
+                    <ButtonGroup variant="contained" >
+                        {ResourcesTypes.map((type) => (
+                            <Button
+                                key={type}
+                                variant={resource === type ? 'contained' : 'outlined'}
+                                onClick={() => setResource(type)}
+                            >
+                                {type}
+                            </Button>
+                        ))}
+                    </ButtonGroup>
+                </Grid>
+                <Grid item>
+                    <InputLabel>Amount</InputLabel>
+                    <Input
+                        type="number"
+                        inputProps={{ min: 0 }}
+                        value={sellAmount}
+                        onChange={(event) => setSellAmount(parseInt(event.target.value))}
+                    />
+                </Grid>
+                <Grid item>
+                    <InputLabel>Price</InputLabel>
+                    <Input
+                        type="number"
+                        inputProps={{ min: 0 }}
+                        value={price}
+                        onChange={(event) => setPrice(parseInt(event.target.value))}
+                    />
+                </Grid>
+                <Grid item>
+                    <Button variant="contained" onClick={() => handleCreateOffer()}>Create Offer</Button>
+                </Grid>
+            </Grid>
         </div>
     );
 }
