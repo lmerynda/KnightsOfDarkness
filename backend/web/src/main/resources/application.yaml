@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: knightofdarkness
+
+app:
+  jwt:
+    # Signing key for HS512 algorithm
+    # In http://www.allkeysgenerator.com/ you can generate all kinds of keys
+    secret: not-so-secret-key
+    expiration:
+      minutes: 10
+  cors:
+    allowed-origins: http://localhost:3000
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+
+server:
+    port: 8080

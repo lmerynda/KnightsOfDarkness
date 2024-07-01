@@ -68,3 +68,13 @@ GET http://localhost:8080/market
 content-type: application/json
 
 ###
+
+POST http://localhost:8080/auth/authenticate
+content-type: application/json
+
+{
+    "username": "admin",
+    "password": "admin"
+}
+
+###
