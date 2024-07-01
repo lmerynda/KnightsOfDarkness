@@ -34,7 +34,7 @@ public class MarketService {
     }
 
     @Transactional
-    public void createOffers(ArrayList<MarketOfferDto> offers)
+    public void createOffers(List<MarketOfferDto> offers)
     {
         log.info("Creating new offers");
         for (var offer : offers)
