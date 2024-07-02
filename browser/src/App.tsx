@@ -25,21 +25,21 @@ const kingdomName = "uprzejmy";
 
 const App: React.FC = () => {
     const [user, setUser] = React.useState<string | undefined>(undefined);
-  const [kingdom, setKingdom] = React.useState<KingdomData>();
+    const [kingdom, setKingdom] = React.useState<KingdomData>();
 
-  const reloadKingdom = () => {
-    fetch(`${GAME_API}/kingdom/${kingdomName}`)
-      .then(response => response.json())
-      .then(kingdom => {
-        console.log(`Request successful, data: ${JSON.stringify(kingdom)}`);
-        setKingdom(kingdom);
-      })
-      .catch(error => console.error('Fetching kingdom data for reload has failed:', error))
-  };
+    const reloadKingdom = () => {
+        fetch(`${GAME_API}/kingdom/${kingdomName}`)
+            .then(response => response.json())
+            .then(kingdom => {
+                console.log(`Request successful, data: ${JSON.stringify(kingdom)}`);
+                setKingdom(kingdom);
+            })
+            .catch(error => console.error('Fetching kingdom data for reload has failed:', error))
+    };
 
-  React.useEffect(() => {
-    reloadKingdom();
-  }, []);
+    React.useEffect(() => {
+        reloadKingdom();
+    }, []);
 
     return (
         <ThemeProvider theme={darkTheme}>
