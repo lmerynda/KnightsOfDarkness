@@ -6,9 +6,9 @@ import Kingdom from './Kingdom';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
 const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
+    palette: {
+        mode: 'dark',
+    },
 });
 
 const App: React.FC = () => {
@@ -16,7 +16,7 @@ const App: React.FC = () => {
 
     return (
         <ThemeProvider theme={darkTheme}>
-        <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
                 <Router>
                     <Routes>
@@ -31,7 +31,7 @@ const App: React.FC = () => {
                     </Routes>
                 </Router>
             </Box>
-    </ThemeProvider>
+        </ThemeProvider>
     );
 }
 

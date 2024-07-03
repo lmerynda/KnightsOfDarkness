@@ -35,8 +35,6 @@ const Kingdom: React.FC = () => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-
             {kingdom ? (
                 <KingdomContext.Provider value={{ kingdom, reloadKingdom }}>
                     <Sidebar {...kingdom} />
