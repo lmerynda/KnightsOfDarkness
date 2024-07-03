@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Grid, Input, InputLabel } from "@mui/material";
 import React, { useContext } from "react";
-import { KingdomContext } from "../App";
 import { MarketResource } from "../GameTypes";
 import { GAME_API } from "../Consts";
+import { KingdomContext } from "../Kingdom";
 
 const MarketPost: React.FC = () => {
     const [sellAmount, setSellAmount] = React.useState<number>(0);

@@ -1,8 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { buildingList } from '../GameTypes';
-import { KingdomContext } from '../App';
 import { GAME_API } from '../Consts';
+import { KingdomContext } from '../Kingdom';
 
 const Build: React.FC = () => {
     const [buildingCounts, setBuildingCounts] = useState<{ [building: string]: number }>({});

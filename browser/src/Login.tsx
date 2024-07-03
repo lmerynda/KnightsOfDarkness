@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Container, TextField, Typography } from '@mui/material';
+import { GAME_API } from './Consts';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 interface LoginProps {
     setUser: (user: string | undefined) => void;
@@ -9,10 +11,46 @@ const Login: React.FC<LoginProps> = ({ setUser }) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        setUser(username);
+        if (username === '' || password === '') {
+            console.log('Username or password is empty');
+            return;
+        }
+        console.log(`Logging in with username: ${username} and password: ${password}`);
+        const authRequest = {
+            username: username,
+            password: password
+        };
+
+        try {
+            const response = await fetch(`${GAME_API}/auth/authenticate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(authRequest)
+            })
+            if (response.ok) {
+                const data = await response.json();
+                console.log(`Response ok, data: ${JSON.stringify(data)}`);
+                localStorage.setItem('authToken', data.token);
+                setUser('uprzejmy');
+                navigate('/');
+            } else if (response.status === 401) {
+                console.log('Unauthorized');
+            }
+            else if (response.status === 500) {
+                console.log('Internal Server Error');
+            } else {
+                console.log('Unknown error');
+            }
+        }
+        catch (error) {
+            console.error('Error during authentication: ', error);
+        }
     };
 
     return (
@@ -28,8 +66,7 @@ const Login: React.FC<LoginProps> = ({ setUser }) => {
                 <Typography component="h1" variant="h5">
                     Login
                 </Typography>
-                <Box component="form" sx={{ mt: 1 }}>
-                    <form style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Box component={'form'} onSubmit={handleSubmit} sx={{ mt: 1 }}>
                         <TextField
                             label="User"
                             type="text"
@@ -44,10 +81,9 @@ const Login: React.FC<LoginProps> = ({ setUser }) => {
                             onChange={(event) => setPassword(event.target.value)}
                             required
                         />
-                        <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>
+                    <Button type="submit" variant="contained" color="primary">
                             Login
-                        </Button>
-                    </form>
+                    </Button>
                 </Box>
             </Box>
         </Container>

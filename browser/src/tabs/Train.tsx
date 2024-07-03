@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Button, Input } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { unitList } from '../GameTypes';
-import { KingdomContext } from '../App';
+import { KingdomContext } from '../Kingdom';
 import { GAME_API } from '../Consts';
 
 const Train: React.FC = () => {

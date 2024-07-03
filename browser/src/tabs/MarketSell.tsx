@@ -1,6 +1,6 @@
 import { Button, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import React, { useContext } from "react";
-import { KingdomContext } from "../App";
+import { KingdomContext } from "../Kingdom";
 import MarketPost from "../components/MarketPost";
 import { GAME_API } from "../Consts";
 

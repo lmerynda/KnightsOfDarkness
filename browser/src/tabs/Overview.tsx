@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { KingdomContext } from '../App';
+import { KingdomContext } from '../Kingdom';
 import Button from '@mui/material/Button';
 import { GAME_API } from '../Consts';
 
