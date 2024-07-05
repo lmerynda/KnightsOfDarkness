@@ -27,7 +27,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     private UserData mapUserToCustomUserDetails(UserEntity user) {
-        UserData userData = new UserData(user.username, user.password);
-        return userData;
+        return new UserData(user.username, user.password, user.kingdom);
     }
 }

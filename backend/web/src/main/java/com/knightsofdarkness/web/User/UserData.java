@@ -9,11 +9,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class UserData implements UserDetails {
     public String username;
     public String password;
+    public String kingdom;
 
-    public UserData(String username, String password)
+    public UserData(String username, String password, String kingdom)
     {
         this.username = username;
         this.password = password;
+        this.kingdom = kingdom;
     }
 
     @Override
@@ -52,5 +54,19 @@ public class UserData implements UserDetails {
     public String getUsername()
     {
         return username;
+    }
+
+    public String getKingdom()
+    {
+        return kingdom;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "UserData{" +
+                "username='" + username + '\'' +
+                ", kingdom='" + kingdom + '\'' +
+                '}';
     }
 }

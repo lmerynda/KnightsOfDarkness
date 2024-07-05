@@ -34,7 +34,7 @@ public class UserInitializer implements CommandLineRunner {
     }
 
     private static final List<UserEntity> USERS = Arrays.asList(
-            new UserEntity("admin", "admin"),
-            new UserEntity("user", "user")
+            new UserEntity("admin", "admin", "uprzejmy"),
+            new UserEntity("user", "user", "umbar")
     );
 }

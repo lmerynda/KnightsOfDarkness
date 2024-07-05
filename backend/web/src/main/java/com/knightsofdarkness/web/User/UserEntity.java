@@ -21,10 +21,13 @@ public class UserEntity {
 
     public String username;
     public String password;
+    public String kingdom;
 
-    public UserEntity(String username, String password) {
+    public UserEntity(String username, String password, String kingdom)
+    {
         this.username = username;
         this.password = password;
+        this.kingdom = kingdom;
     }
 
     public String toString()
@@ -32,6 +35,7 @@ public class UserEntity {
         return "UserEntity{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
+                ", kingdom='" + kingdom + '\'' +
                 '}';
     }
 }
