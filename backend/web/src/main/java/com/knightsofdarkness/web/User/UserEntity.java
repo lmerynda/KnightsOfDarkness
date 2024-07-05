@@ -26,4 +26,12 @@ public class UserEntity {
         this.username = username;
         this.password = password;
     }
+
+    public String toString()
+    {
+        return "UserEntity{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                '}';
+    }
 }

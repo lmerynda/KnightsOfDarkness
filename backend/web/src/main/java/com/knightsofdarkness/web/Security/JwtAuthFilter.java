@@ -2,16 +2,14 @@ package com.knightsofdarkness.web.Security;
 import java.util.Optional;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.knightsofdarkness.web.User.IUserService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,12 +20,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JwtAuthFilter.class);
 
-    private final IUserService userService;
+    private final UserDetailsService userDetailsService;
     private final TokenService jwtService;
 
-    public JwtAuthFilter(IUserService userService, TokenService jwtService)
+    public JwtAuthFilter(UserDetailsService userDetailsService, TokenService jwtService)
     {
-        this.userService = userService;
+        this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
     }
 
@@ -40,16 +38,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .ifPresent(jws -> {
                         String username = jws.getPayload().getSubject();
                         log.info("Authenticating user: {}", jws.getPayload().getSubject());
-                        var maybeUser = userService.getUserByUsername(username);
-                        if(maybeUser.isEmpty())
-                        {
-                            log.error("User not found: {}", username);
-                            return;
-                        }
-                        var user = maybeUser.get();
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                        var user = userDetailsService.loadUserByUsername(username);
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authentication);
+                        log.info("Authenticated user: {}", user);
                     });
         } catch (Exception e) {
             log.error("Cannot set user authentication", e);

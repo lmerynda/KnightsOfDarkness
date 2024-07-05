@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/auth/authenticate").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/**").permitAll() // for now, change later to allow only authenticated users
+                        .requestMatchers("/**").authenticated() // for now, change later to allow only authenticated users
                         .anyRequest().authenticated())
                 .sessionManagement(management -> management
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

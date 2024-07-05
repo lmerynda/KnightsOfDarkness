@@ -20,7 +20,15 @@ const Kingdom: React.FC = () => {
     const [kingdom, setKingdom] = React.useState<KingdomData>();
 
     const reloadKingdom = () => {
-        fetch(`${GAME_API}/kingdom/${kingdomName}`)
+        fetch(`${GAME_API}/kingdom/${kingdomName}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
+                },
+            }
+        )
             .then(response => response.json())
             .then(kingdom => {
                 console.log(`Request successful, data: ${JSON.stringify(kingdom)}`);
