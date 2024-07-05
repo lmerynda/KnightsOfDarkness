@@ -88,10 +88,10 @@ public class MarketService {
     }
 
     @Transactional
-    public ResponseEntity<Integer> buyOffer(UUID id, MarketBuyerDto buyerData)
+    public ResponseEntity<Integer> buyOffer(UUID id, int amount, String buyerName)
     {
         var maybeOffer = market.findOfferById(id);
-        var maybeBuyerKingdom = kingdomRepository.getKingdomByName(buyerData.buyer);
+        var maybeBuyerKingdom = kingdomRepository.getKingdomByName(buyerName);
         if (maybeOffer.isEmpty() || maybeBuyerKingdom.isEmpty())
         {
             log.warn("Offer or buyer not found");
@@ -102,11 +102,11 @@ public class MarketService {
         var offer = maybeOffer.get();
         // a case when buyer and seller is the same kingdom is handle here
         // to avoid complications in persistence layer deserialization
-        var seller = offer.getSeller().getName().equals(buyerData.buyer) ? buyer : offer.getSeller();
+        var seller = offer.getSeller().getName().equals(buyerName) ? buyer : offer.getSeller();
 
-        log.info("Transaction on " + offer + " with " + buyerData.toString());
+        log.info("Transaction on " + offer + " with " + buyerName + " and amount " + amount);
 
-        int boughtAmount = market.buyExistingOffer(offer, seller, buyer, buyerData.count);
+        int boughtAmount = market.buyExistingOffer(offer, seller, buyer, amount);
 
         // TODO report?
         return ResponseEntity.ok(boughtAmount);

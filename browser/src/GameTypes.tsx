@@ -68,7 +68,6 @@ export type MarketData = {
 };
 
 export type OfferBuyer = {
-    buyer: string;
     count: number;
 }
 

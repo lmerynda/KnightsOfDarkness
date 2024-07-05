@@ -24,7 +24,15 @@ const MarketBuy: React.FC = () => {
     };
 
     const reloadMarket = () => {
-        fetch(`${GAME_API}/market`)
+        fetch(`${GAME_API}/market`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
+                },
+            }
+        )
             .then(response => response.json())
             .then(data => {
                 console.log(`Request successful, data: ${JSON.stringify(data)}`);
@@ -49,14 +57,14 @@ const MarketBuy: React.FC = () => {
 
     const handleBuyAmount = (id: string, count: number) => {
         const offerBuyer: OfferBuyer = {
-            buyer: 'uprzejmy',
             count: count
         };
         if (count <= 0) return;
         fetch(`${GAME_API}/market/${id}/buy`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
             },
             body: JSON.stringify(offerBuyer)
         })
