@@ -53,18 +53,18 @@ public class KingdomController {
                 .body("Kingdom already exists");
     }
 
-    @GetMapping("/{name}")
-    ResponseEntity<KingdomDto> getKingdomByName(@AuthenticationPrincipal UserData currentUser, @PathVariable String name)
+    @GetMapping()
+    ResponseEntity<KingdomDto> getKingdomByName(@AuthenticationPrincipal UserData currentUser)
     {
-        if(currentUser != null)
+        if (currentUser == null)
         {
-            log.info("User {} is trying to get kingdom {}", currentUser.getUsername(), name);
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        else
-        {
-            log.info("User not read from authentication context");
-        }
-        return kingdomService.getKingdomByName(name)
+
+        log.info("User {} requested kingdom", currentUser);
+
+        return kingdomService.getKingdomByName(currentUser.getKingdom())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

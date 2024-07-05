@@ -20,7 +20,7 @@ const Kingdom: React.FC = () => {
     const [kingdom, setKingdom] = React.useState<KingdomData>();
 
     const reloadKingdom = () => {
-        fetch(`${GAME_API}/kingdom/${kingdomName}`,
+        fetch(`${GAME_API}/kingdom`,
             {
                 method: 'GET',
                 headers: {
