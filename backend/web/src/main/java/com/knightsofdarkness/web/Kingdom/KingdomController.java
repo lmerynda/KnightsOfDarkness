@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +53,7 @@ public class KingdomController {
     }
 
     @GetMapping()
-    ResponseEntity<KingdomDto> getKingdomByName(@AuthenticationPrincipal UserData currentUser)
+    ResponseEntity<KingdomDto> getKingdom(@AuthenticationPrincipal UserData currentUser)
     {
         if (currentUser == null)
         {
@@ -69,21 +68,39 @@ public class KingdomController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/{name}/build")
-    ResponseEntity<Integer> kingdomBuild(@PathVariable String name, @RequestBody KingdomBuildingsDto buildings)
+    @PostMapping("/build")
+    ResponseEntity<Integer> kingdomBuild(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
     {
-        return kingdomService.build(name, buildings);
+        if (currentUser == null)
+        {
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.build(currentUser.kingdom, buildings);
     }
 
-    @PostMapping("/{name}/train")
-    ResponseEntity<KingdomDto> kingdomTrain(@PathVariable String name, @RequestBody KingdomUnitsDto unitsToTrain)
+    @PostMapping("/train")
+    ResponseEntity<KingdomDto> kingdomTrain(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomUnitsDto unitsToTrain)
     {
-        return kingdomService.train(name, unitsToTrain);
+        if (currentUser == null)
+        {
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.train(currentUser.kingdom, unitsToTrain);
     }
 
-    @PostMapping("/{name}/pass-turn")
-    ResponseEntity<KingdomDto> kingdomPassTurn(@PathVariable String name)
+    @PostMapping("/pass-turn")
+    ResponseEntity<KingdomDto> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser)
     {
-        return kingdomService.passTurn(name);
+        if (currentUser == null)
+        {
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.passTurn(currentUser.kingdom);
     }
 }

@@ -11,10 +11,11 @@ const Overview: React.FC = () => {
     }
 
     const handleSubmit = () => {
-        fetch(`${GAME_API}/kingdom/uprzejmy/pass-turn`, {
+        fetch(`${GAME_API}/kingdom/pass-turn`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
             },
             body: JSON.stringify({})
         })

@@ -23,10 +23,11 @@ const Build: React.FC = () => {
     };
 
     const handleSubmit = () => {
-        fetch(`${GAME_API}/kingdom/uprzejmy/build`, {
+        fetch(`${GAME_API}/kingdom/build`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
             },
             body: JSON.stringify(buildingCounts)
         })

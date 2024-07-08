@@ -22,10 +22,11 @@ const Train: React.FC = () => {
     };
 
     const handleSubmit = () => {
-        fetch(`${GAME_API}/kingdom/uprzejmy/train`, {
+        fetch(`${GAME_API}/kingdom/train`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
             },
             body: JSON.stringify(unitCounts)
         })
