@@ -14,8 +14,6 @@ export type KingdomContextType = {
 
 export const KingdomContext = React.createContext<KingdomContextType | undefined>(undefined);
 
-const kingdomName = "uprzejmy";
-
 const Kingdom: React.FC = () => {
     const [kingdom, setKingdom] = React.useState<KingdomData>();
 
