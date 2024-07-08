@@ -17,7 +17,6 @@ const MarketPost: React.FC = () => {
 
     const handleCreateOffer = (): void => {
         const offer = {
-            sellerName: kingdomContext.kingdom.name,
             resource: selectedResource,
             price: price,
             count: sellAmount
@@ -26,7 +25,8 @@ const MarketPost: React.FC = () => {
         fetch(`${GAME_API}/market/create`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
             },
             body: JSON.stringify(offer)
         })

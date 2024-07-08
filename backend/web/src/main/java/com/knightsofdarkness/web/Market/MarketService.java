@@ -6,11 +6,11 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.knightsofdarkness.common.MarketBuyerDto;
 import com.knightsofdarkness.common.MarketOfferDto;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
@@ -113,7 +113,7 @@ public class MarketService {
     }
 
     // TODO verify if offer belongs to active kingdom
-    public ResponseEntity<Boolean> withdraw(UUID id)
+    public ResponseEntity<Boolean> withdraw(UUID id, String kingdom)
     {
         var maybeOffer = market.findOfferById(id);
         if(maybeOffer.isEmpty())
@@ -123,6 +123,11 @@ public class MarketService {
         }
 
         var offer = maybeOffer.get();
+        if (!offer.getSeller().getName().equals(kingdom))
+        {
+            log.warn("Offer does not belong to kingdom " + kingdom);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         log.info("Withdrawing offer " + offer);
 
         market.removeOffer(offer);

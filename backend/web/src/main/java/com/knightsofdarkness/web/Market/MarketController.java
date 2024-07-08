@@ -37,9 +37,17 @@ public class MarketController {
     }
 
     @PostMapping("/market/create")
-    void createOffer(@RequestBody MarketOfferDto offer)
+    ResponseEntity<MarketOfferDto> createOffer(@AuthenticationPrincipal UserData currentUser, @RequestBody MarketOfferDto offer)
     {
+        if (currentUser == null)
+        {
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        offer.sellerName = currentUser.getKingdom();
         marketService.createOffer(offer);
+        return ResponseEntity.ok(offer);
     }
 
     @GetMapping("/market")
@@ -67,8 +75,14 @@ public class MarketController {
     }
 
     @PostMapping("/market/{id}/withdraw")
-    ResponseEntity<Boolean> buyOffer(@PathVariable UUID id)
+    ResponseEntity<Boolean> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
     {
-        return marketService.withdraw(id);
+        if (currentUser == null)
+        {
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return marketService.withdraw(id, currentUser.getKingdom());
     }
 }
