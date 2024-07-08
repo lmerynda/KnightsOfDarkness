@@ -15,7 +15,8 @@ const MarketSell: React.FC = () => {
         fetch(`${GAME_API}/market/${id}/withdraw`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
             },
             body: JSON.stringify({})
         })
