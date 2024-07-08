@@ -12,7 +12,7 @@ const darkTheme = createTheme({
 });
 
 const App: React.FC = () => {
-    const [user, setUser] = React.useState<string | undefined>(undefined);
+    const [authenticated, setAuthenticated] = React.useState<boolean>(false);
 
     return (
         <ThemeProvider theme={darkTheme}>
@@ -20,11 +20,11 @@ const App: React.FC = () => {
                 <CssBaseline />
                 <Router>
                     <Routes>
-                        <Route path="/login" element={<Login setUser={setUser} />} />
+                        <Route path="/login" element={<Login setAuthenticated={setAuthenticated} />} />
                         <Route
                             path="/*"
                             element={
-                                user ? <Kingdom /> : <Navigate to="/login" />
+                                authenticated ? <Kingdom /> : <Navigate to="/login" />
                             }
                         />
                         <Route path="*" element={<Navigate to="/" />} />

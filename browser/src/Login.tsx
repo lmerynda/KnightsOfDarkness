@@ -4,10 +4,10 @@ import { GAME_API } from './Consts';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 interface LoginProps {
-    setUser: (user: string | undefined) => void;
+    setAuthenticated: (isAuthenticated: boolean) => void;
 }
 
-const Login: React.FC<LoginProps> = ({ setUser }) => {
+const Login: React.FC<LoginProps> = ({ setAuthenticated }) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -37,7 +37,7 @@ const Login: React.FC<LoginProps> = ({ setUser }) => {
                 const data = await response.json();
                 console.log(`Response ok, data: ${JSON.stringify(data)}`);
                 localStorage.setItem('authToken', data.token);
-                setUser('uprzejmy');
+                setAuthenticated(true);
                 navigate('/');
             } else if (response.status === 401) {
                 console.log('Unauthorized');
