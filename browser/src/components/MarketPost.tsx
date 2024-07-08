@@ -1,8 +1,9 @@
-import { Button, ButtonGroup, Grid, Input, InputLabel } from "@mui/material";
+import { Button, ButtonGroup, Grid, IconButton, Input, InputAdornment, InputLabel } from "@mui/material";
 import React, { useContext } from "react";
 import { MarketResource } from "../GameTypes";
 import { GAME_API } from "../Consts";
 import { KingdomContext } from "../Kingdom";
+import { VerticalAlignTop } from "@mui/icons-material";
 
 const MarketPost: React.FC = () => {
     const [sellAmount, setSellAmount] = React.useState<number>(0);
@@ -46,6 +47,10 @@ const MarketPost: React.FC = () => {
             });
     }
 
+    function handleMaxClick(): void {
+        setSellAmount(kingdomContext?.kingdom.resources[selectedResource] ?? 0);
+    }
+
     return (
         <div>
             <h2>Create Offer</h2>
@@ -56,7 +61,7 @@ const MarketPost: React.FC = () => {
                             <Button
                                 key={resource}
                                 variant={resource === selectedResource ? 'contained' : 'outlined'}
-                                onClick={() => setSelectedResource(resource)}
+                                onClick={() => { setSelectedResource(resource); setSellAmount(0) }}
                             >
                                 {resource}
                             </Button>
@@ -70,6 +75,13 @@ const MarketPost: React.FC = () => {
                         inputProps={{ min: 0 }}
                         value={sellAmount}
                         onChange={(event) => setSellAmount(parseInt(event.target.value))}
+                        endAdornment={
+                            <InputAdornment position="end">
+                                <IconButton onClick={handleMaxClick}>
+                                    <VerticalAlignTop />
+                                </IconButton>
+                            </InputAdornment>
+                        }
                     />
                 </Grid>
                 <Grid item>
