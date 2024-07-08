@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input, ButtonGroup } from '@mui/material';
 import { KingdomContext } from '../Kingdom';
 import { MarketData, OfferBuyer } from "../GameTypes";
 import { GAME_API } from '../Consts';
@@ -126,24 +126,23 @@ const MarketBuy: React.FC = () => {
                                     value={buyInputs[data.id] || 0}
                                     onChange={handleInputChange(data.id)}
                                 />
-                                <Button
-                                    variant="contained"
-                                    onClick={() => handleBuyAmount(data.id, buyInputs[data.id] || 0)}
-                                >
-                                    Buy Amount
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    onClick={() => handleBuyPrice(data.id, buyInputs[data.id] || 0, data.price)}
-                                >
-                                    Buy Price
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    onClick={() => handleMaxInput(data.id, data.price, data.count)}
-                                >
-                                    Max
-                                </Button>
+                                <ButtonGroup variant="contained" >
+                                    <Button
+                                        onClick={() => handleBuyAmount(data.id, buyInputs[data.id] || 0)}
+                                    >
+                                        Buy Amount
+                                    </Button>
+                                    <Button
+                                        onClick={() => handleBuyPrice(data.id, buyInputs[data.id] || 0, data.price)}
+                                    >
+                                        Buy Price
+                                    </Button>
+                                    <Button
+                                        onClick={() => handleMaxInput(data.id, data.price, data.count)}
+                                    >
+                                        Max
+                                    </Button>
+                                </ButtonGroup>
                             </TableCell>
                         </TableRow>
                     ))}
