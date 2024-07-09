@@ -1,6 +1,6 @@
 import React from 'react';
 import './css/App.css';
-import { CssBaseline, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import Sidebar from './Sidebar';
 import KingdomTabs from './KingdomTabs';
 import KingdomToolbar from './KingdomToolbar';

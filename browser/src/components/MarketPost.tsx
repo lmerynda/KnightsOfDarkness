@@ -3,7 +3,6 @@ import React, { useContext } from "react";
 import { MarketResource } from "../GameTypes";
 import { GAME_API } from "../Consts";
 import { KingdomContext } from "../Kingdom";
-import { VerticalAlignTop } from "@mui/icons-material";
 
 const MarketPost: React.FC = () => {
     const [sellAmount, setSellAmount] = React.useState<number>(0);
