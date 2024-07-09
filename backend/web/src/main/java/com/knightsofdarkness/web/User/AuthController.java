@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,8 +32,15 @@ public class AuthController {
     public AuthResponseDto login(@RequestBody AuthRequestDto loginRequest) {
         log.info("login request received for user: {}", loginRequest.username);
         var authToken = new UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password);
-        Authentication authentication = authenticationManager.authenticate(authToken);
-        String token = tokenService.generateToken(authentication);
-        return new AuthResponseDto(token);
+        try
+        {
+            Authentication authentication = authenticationManager.authenticate(authToken);
+            String token = tokenService.generateToken(authentication);
+            return new AuthResponseDto(token);
+        } catch (AuthenticationException e)
+        {
+            log.warn("Authentication failed for user: {} with message: {}", loginRequest.username, e.getMessage());
+            throw e;
+        }
     }
 }
