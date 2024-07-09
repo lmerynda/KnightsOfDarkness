@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Grid, IconButton, Input, InputAdornment, InputLabel } from "@mui/material";
+import { Button, ButtonGroup, Grid, IconButton, Input, InputAdornment, InputLabel, Typography } from "@mui/material";
 import React, { useContext } from "react";
 import { MarketResource } from "../GameTypes";
 import { GAME_API } from "../Consts";
@@ -78,7 +78,9 @@ const MarketPost: React.FC = () => {
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton onClick={handleMaxClick}>
-                                    <VerticalAlignTop />
+                                    <Typography variant="body2" component="span" style={{ fontWeight: 'bold' }}>
+                                        max
+                                    </Typography>
                                 </IconButton>
                             </InputAdornment>
                         }
