@@ -14,6 +14,7 @@ import com.knightsofdarkness.common.KingdomDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.game.kingdom.KingdomTurnPassedResults;
 import com.knightsofdarkness.storage.kingdom.KingdomReadRepository;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
@@ -93,7 +94,7 @@ public class KingdomService {
     }
 
     @Transactional
-    public ResponseEntity<KingdomDto> passTurn(String name)
+    public ResponseEntity<KingdomTurnPassedResults> passTurn(String name)
     {
         log.info("[" + name + "] passing turn ");
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
@@ -103,8 +104,8 @@ public class KingdomService {
         }
 
         // TODO turn report
-        boolean isSucessful = kingdom.get().passTurn();
-        if (!isSucessful)
+        var passedTurnResult = kingdom.get().passTurn();
+        if (passedTurnResult.isEmpty())
         {
             // TODO this action just failed on business logic, we should not return error
             // probably we just just miss part of the domain? PassTurn report?
@@ -112,7 +113,8 @@ public class KingdomService {
         }
 
         kingdomRepository.update(kingdom.get());
+        log.info(passedTurnResult.get().toString());
 
-        return ResponseEntity.ok(KingdomDto.fromDomain(kingdom.get()));
+        return ResponseEntity.ok(passedTurnResult.get());
     }
 }

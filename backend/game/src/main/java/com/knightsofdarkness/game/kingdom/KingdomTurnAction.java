@@ -1,28 +1,33 @@
 package com.knightsofdarkness.game.kingdom;
 
+import java.util.Optional;
+
 public class KingdomTurnAction {
     private final Kingdom kingdom;
+    private final KingdomTurnPassedResults results;
 
     public KingdomTurnAction(Kingdom kingdom)
     {
         this.kingdom = kingdom;
+        this.results = new KingdomTurnPassedResults();
     }
 
-    public boolean passTurn()
+    public Optional<KingdomTurnPassedResults> passTurn()
     {
         if (kingdom.getResources().getCount(ResourceName.turns) <= 0)
         {
-            return false;
+            return Optional.empty();
         }
 
         kingdom.getResources().subtractCount(ResourceName.turns, 1);
         resetBuildingPoints();
-        double fedPeopleRatio = eatFood();
-        doProduction(fedPeopleRatio);
+        double nourishmentProductionFactor = eatFood();
+        results.nourishmentProductionFactor = nourishmentProductionFactor;
+        doProduction(nourishmentProductionFactor);
         // TODO food production should happen before consumption
         getNewPeople();
 
-        return true;
+        return Optional.of(results);
     }
 
     private void resetBuildingPoints()
@@ -44,6 +49,7 @@ public class KingdomTurnAction {
         if (foodAvailable >= foodUpkeep)
         {
             kingdom.getResources().subtractCount(ResourceName.food, foodUpkeep);
+            results.foodConsumed = foodUpkeep;
 
             // everyone was fed
             return 1.0;
@@ -54,17 +60,18 @@ public class KingdomTurnAction {
         // TODO real traces
         System.out.println("There wasn't enough food in " + kingdom.getName() + " only " + fedPeopleRatio + "% were fed");
         kingdom.getResources().subtractCount(ResourceName.food, foodAvailable);
+        results.foodConsumed = foodAvailable;
         return fedPeopleRatio;
     }
 
-    private void doProduction(double baseProductionRate)
+    private void doProduction(double nourishmentProductionFactor)
     {
         var productionConfig = kingdom.getConfig().production();
 
         for (var unitName : UnitName.getProductionUnits())
         {
             var resourceType = productionConfig.getResource(unitName);
-            var resourceProduction = kingdom.getUnits().getCount(unitName) * baseProductionRate * productionConfig.getProductionRate(unitName);
+            var resourceProduction = kingdom.getUnits().getCount(unitName) * nourishmentProductionFactor * productionConfig.getProductionRate(unitName);
             if (unitName == UnitName.blacksmith)
             {
                 // TODO have the rate somewhere in the config
@@ -75,8 +82,9 @@ public class KingdomTurnAction {
                 resourceProduction = Math.min(resourceProduction, maxIronToSpend);
                 kingdom.getResources().subtractCount(ResourceName.iron, maxIronToSpend);
             }
-            int actualProduction = (int) Math.round(resourceProduction * getProductionBonus());
+            int actualProduction = (int) Math.round(resourceProduction * getKingdomSizeProductionBonus());
             kingdom.getResources().addCount(resourceType, actualProduction);
+            results.resourcesProduced.put(resourceType, actualProduction);
         }
     }
 
@@ -86,32 +94,38 @@ public class KingdomTurnAction {
         var peopleCount = kingdom.getTotalPeopleCount();
         if (housingCapacity > peopleCount)
         {
+            int arrivingPeople = housingCapacity - peopleCount;
             kingdom.getResources().addCount(ResourceName.unemployed, housingCapacity - peopleCount);
+            results.arrivingPeople = arrivingPeople;
         } else if (housingCapacity < peopleCount)
         {
             // TODO test
             // TODO fire workers here
-            kingdom.getResources().subtractCount(ResourceName.unemployed, peopleCount - housingCapacity);
+            int exiledPeople = peopleCount - housingCapacity;
+            kingdom.getResources().subtractCount(ResourceName.unemployed, exiledPeople);
+            results.exiledPeople = exiledPeople;
         }
     }
 
-    private double getProductionBonus()
+    private double getKingdomSizeProductionBonus()
     {
         var land = kingdom.getResources().getCount(ResourceName.land);
         if (land > 1000)
         {
+            results.kingdomSizeProductionBonus = 1.0;
             return 1.0;
         }
 
         var landFactor = 1000 - Math.max(100, land); // we don't give a bonus for land below 100 to avoid exploits
         var bonus = getBonusFactorBasedOnLand(landFactor);
+        results.kingdomSizeProductionBonus = bonus;
 
         return bonus;
     }
 
     /**
      * the bonus factor decreases exponentially, max is 5 at 100 land, min is 1 at
-     * 1000 land
+     * 1000 land, formula is made up based on manual curve tweaking
      * 
      * @param land
      * @return

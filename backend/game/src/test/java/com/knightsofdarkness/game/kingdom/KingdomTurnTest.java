@@ -1,7 +1,6 @@
 package com.knightsofdarkness.game.kingdom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.EnumMap;
@@ -218,10 +217,10 @@ class KingdomTurnTest {
         // first we pass every turn that kingdom has
         for (int i = 0; i < numberOfTurns; i++)
         {
-            assertTrue(kingdom.passTurn());
+            assertTrue(kingdom.passTurn().isPresent());
         }
 
         // then we try to pass turn which is not available
-        assertFalse(kingdom.passTurn());
+        assertTrue(kingdom.passTurn().isEmpty());
     }
 }

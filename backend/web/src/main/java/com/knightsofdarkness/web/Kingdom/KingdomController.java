@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.knightsofdarkness.common.KingdomBuildingsDto;
 import com.knightsofdarkness.common.KingdomDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
+import com.knightsofdarkness.game.kingdom.KingdomTurnPassedResults;
 import com.knightsofdarkness.web.User.UserData;
 
 @RestController
@@ -92,8 +94,8 @@ public class KingdomController {
         return kingdomService.train(currentUser.kingdom, unitsToTrain);
     }
 
-    @PostMapping("/pass-turn")
-    ResponseEntity<KingdomDto> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser)
+    @PostMapping(value = "/pass-turn", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<KingdomTurnPassedResults> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser)
     {
         if (currentUser == null)
         {
@@ -101,6 +103,8 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.passTurn(currentUser.kingdom);
+        var passTurnResult = kingdomService.passTurn(currentUser.kingdom);
+
+        return passTurnResult;
     }
 }

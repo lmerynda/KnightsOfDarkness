@@ -1,6 +1,7 @@
 package com.knightsofdarkness.game.kingdom;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
@@ -15,7 +16,6 @@ public class Kingdom {
     private final List<MarketOffer> marketOffers;
     private final KingdomBuildAction kingdomBuildAction = new KingdomBuildAction(this);
     private final KingdomTrainAction kingdomTrainAction = new KingdomTrainAction(this);
-    private final KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(this);
     private final KingdomMarketAction kingdomMarketAction = new KingdomMarketAction(this);
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
 
@@ -49,9 +49,9 @@ public class Kingdom {
         return kingdomTrainAction.train(unitsToTrain);
     }
 
-    public boolean passTurn()
+    public Optional<KingdomTurnPassedResults> passTurn()
     {
-        return kingdomTurnAction.passTurn();
+        return new KingdomTurnAction(this).passTurn();
     }
 
     public int getTotalPeopleCount()
