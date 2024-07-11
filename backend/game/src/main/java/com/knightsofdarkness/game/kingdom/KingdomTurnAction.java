@@ -2,10 +2,12 @@ package com.knightsofdarkness.game.kingdom;
 
 public class KingdomTurnAction {
     private final Kingdom kingdom;
+    private final KingdomTurnPassedResults results;
 
     public KingdomTurnAction(Kingdom kingdom)
     {
         this.kingdom = kingdom;
+        this.results = new KingdomTurnPassedResults();
     }
 
     public boolean passTurn()
@@ -44,6 +46,7 @@ public class KingdomTurnAction {
         if (foodAvailable >= foodUpkeep)
         {
             kingdom.getResources().subtractCount(ResourceName.food, foodUpkeep);
+            results.foodConsumed = foodUpkeep;
 
             // everyone was fed
             return 1.0;
@@ -54,6 +57,7 @@ public class KingdomTurnAction {
         // TODO real traces
         System.out.println("There wasn't enough food in " + kingdom.getName() + " only " + fedPeopleRatio + "% were fed");
         kingdom.getResources().subtractCount(ResourceName.food, foodAvailable);
+        results.foodConsumed = foodAvailable;
         return fedPeopleRatio;
     }
 

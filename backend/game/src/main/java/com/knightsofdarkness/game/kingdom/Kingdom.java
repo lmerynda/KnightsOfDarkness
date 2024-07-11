@@ -15,7 +15,6 @@ public class Kingdom {
     private final List<MarketOffer> marketOffers;
     private final KingdomBuildAction kingdomBuildAction = new KingdomBuildAction(this);
     private final KingdomTrainAction kingdomTrainAction = new KingdomTrainAction(this);
-    private final KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(this);
     private final KingdomMarketAction kingdomMarketAction = new KingdomMarketAction(this);
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
 
@@ -51,7 +50,7 @@ public class Kingdom {
 
     public boolean passTurn()
     {
-        return kingdomTurnAction.passTurn();
+        return new KingdomTurnAction(this).passTurn();
     }
 
     public int getTotalPeopleCount()
