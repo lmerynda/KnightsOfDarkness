@@ -57,6 +57,7 @@ export type KingdomData = {
     buildings: KingdomBuildings;
     units: KingdomUnits;
     marketOffers: MarketData[];
+    lastTurnReport: TurnReport;
 };
 
 export type MarketData = {
@@ -98,3 +99,12 @@ export const unitList = [
     "bowmen",
     "cavalry"
 ];
+
+export type TurnReport = {
+    foodConsumed: number;
+    resourcesProduced: KingdomResources;
+    arrivingPeople: number;
+    exiledPeople: number;
+    kingdomSizeProductionBonus: number;
+    nourishmentProductionFactor: number;
+}
