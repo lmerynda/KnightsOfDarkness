@@ -20,7 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.knightsofdarkness.common.KingdomBuildingsDto;
 import com.knightsofdarkness.common.KingdomDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
-import com.knightsofdarkness.game.kingdom.KingdomTurnPassedResults;
+import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.web.User.UserData;
 
 @RestController
@@ -95,7 +95,7 @@ public class KingdomController {
     }
 
     @PostMapping(value = "/pass-turn", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<KingdomTurnPassedResults> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser)
+    ResponseEntity<KingdomTurnReport> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser)
     {
         if (currentUser == null)
         {

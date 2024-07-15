@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.game.market.MarketOffer;
 
 public class KingdomDto {
@@ -12,18 +13,20 @@ public class KingdomDto {
     public KingdomBuildingsDto buildings;
     public KingdomUnitsDto units;
     public List<MarketOfferDto> marketOffers;
+    public KingdomTurnReport lastTurnReport;
 
     public KingdomDto()
     {
     }
 
-    public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers)
+    public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers, KingdomTurnReport lastTurnReport)
     {
         this.name = name;
         this.resources = resources;
         this.buildings = buildings;
         this.units = units;
         this.marketOffers = marketOffers;
+        this.lastTurnReport = lastTurnReport;
         setDetails();
     }
 
@@ -34,13 +37,18 @@ public class KingdomDto {
 
     public Kingdom toDomain(GameConfig config, List<MarketOffer> marketOffers)
     {
-        return new Kingdom(name, config, resources.toDomain(), buildings.toDomain(), units.toDomain(), marketOffers);
+        // TODO hehe, no, go back and fix this...
+        if (lastTurnReport == null)
+        {
+            lastTurnReport = new KingdomTurnReport();
+        }
+        return new Kingdom(name, config, resources.toDomain(), buildings.toDomain(), units.toDomain(), marketOffers, lastTurnReport);
     }
 
     public static KingdomDto fromDomain(Kingdom kingdom)
     {
         return new KingdomDto(kingdom.getName(), KingdomResourcesDto.fromDomain(kingdom.getResources()), KingdomBuildingsDto.fromDomain(kingdom.getBuildings()), KingdomUnitsDto.fromDomain(kingdom.getUnits()), kingdom
-                .getMarketOffers().stream().map(MarketOfferDto::fromDomain).toList());
+                .getMarketOffers().stream().map(MarketOfferDto::fromDomain).toList(), kingdom.getLastTurnReport());
     }
 
     public String toString()

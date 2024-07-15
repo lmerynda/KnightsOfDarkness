@@ -1,7 +1,8 @@
 package com.knightsofdarkness.web.Kingdom;
 
-import java.util.ArrayList;
 import java.util.Optional;
+
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import com.knightsofdarkness.common.KingdomDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.game.kingdom.KingdomTurnPassedResults;
+import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.storage.kingdom.KingdomReadRepository;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
@@ -94,7 +95,7 @@ public class KingdomService {
     }
 
     @Transactional
-    public ResponseEntity<KingdomTurnPassedResults> passTurn(String name)
+    public ResponseEntity<KingdomTurnReport> passTurn(String name)
     {
         log.info("[" + name + "] passing turn ");
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);

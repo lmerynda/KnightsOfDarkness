@@ -3,7 +3,7 @@ package com.knightsofdarkness.game.kingdom;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KingdomTurnPassedResults {
+public class KingdomTurnReport {
     public int foodConsumed = 0;
     public Map<ResourceName, Integer> resourcesProduced = new HashMap<>();
     public int arrivingPeople = 0;
@@ -13,7 +13,7 @@ public class KingdomTurnPassedResults {
 
     public String toString()
     {
-        return "KingdomTurnPassedResults{" +
+        return "KingdomTurnReport{" +
                 "foodConsumed=" + foodConsumed +
                 ", resourcesProduced=" + resourcesProduced +
                 ", arrivingPeople=" + arrivingPeople +

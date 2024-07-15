@@ -4,15 +4,15 @@ import java.util.Optional;
 
 public class KingdomTurnAction {
     private final Kingdom kingdom;
-    private final KingdomTurnPassedResults results;
+    private final KingdomTurnReport results;
 
     public KingdomTurnAction(Kingdom kingdom)
     {
         this.kingdom = kingdom;
-        this.results = new KingdomTurnPassedResults();
+        this.results = new KingdomTurnReport();
     }
 
-    public Optional<KingdomTurnPassedResults> passTurn()
+    public Optional<KingdomTurnReport> passTurn()
     {
         if (kingdom.getResources().getCount(ResourceName.turns) <= 0)
         {
@@ -26,6 +26,8 @@ public class KingdomTurnAction {
         doProduction(nourishmentProductionFactor);
         // TODO food production should happen before consumption
         getNewPeople();
+
+        kingdom.lastTurnReport = results;
 
         return Optional.of(results);
     }
