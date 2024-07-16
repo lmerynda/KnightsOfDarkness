@@ -1,8 +1,7 @@
 package com.knightsofdarkness.game.kingdom;
 
-import java.util.Optional;
-
 import java.util.List;
+import java.util.Optional;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
@@ -67,7 +66,7 @@ public class Kingdom {
         return resources.getCount(ResourceName.land) - buildings.countAll();
     }
 
-    public int buyLand(int count)
+    public LandTransaction buyLand(int count)
     {
         return kingdomOtherAction.buyLand(count);
     }

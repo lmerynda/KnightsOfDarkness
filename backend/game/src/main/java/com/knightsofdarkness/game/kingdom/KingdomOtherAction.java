@@ -1,16 +1,5 @@
 package com.knightsofdarkness.game.kingdom;
 
-class LandTransaction {
-    final int amount;
-    final int cost;
-
-    public LandTransaction(int amount, int cost)
-    {
-        this.amount = amount;
-        this.cost = cost;
-    }
-}
-
 public class KingdomOtherAction {
 
     private final Kingdom kingdom;
@@ -20,10 +9,7 @@ public class KingdomOtherAction {
         this.kingdom = kingdom;
     }
 
-    /**
-     * @return amount of land that has been bought
-     */
-    public int buyLand(int count)
+    public LandTransaction buyLand(int count)
     {
         // TODO tests, check situations where we could potentially go below 0
         // check more sophisticated math like this:
@@ -39,7 +25,7 @@ public class KingdomOtherAction {
         kingdom.getResources().subtractCount(ResourceName.gold, transaction.cost);
         kingdom.getResources().addCount(ResourceName.land, transaction.amount);
 
-        return transaction.amount;
+        return transaction;
     }
 
     static LandTransaction calculateCost(int initialLand, int count, int availableGold)
