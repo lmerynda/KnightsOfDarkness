@@ -6,7 +6,7 @@ app:
   jwt:
     # Signing key for HS512 algorithm
     # In http://www.allkeysgenerator.com/ you can generate all kinds of keys
-    secret: not-so-secret-key
+    secret: /tQretYydZ8/fm+/lOcWN2GrwVF2UCI2E3BtnJUrjTZw1zH4zIau1itrWghUC5fhcao2FtC9KU+KbTa9VJNmI7DK88jZrq9m91P6n6o0+cWNU57rBfxNE5rYdAl3V/kPt4sUOBImDW2zBz4CQ9flbmkwaUn/MVMHVXnSA6iW9Xw5Wa2p+J2wG0xqOiWJhzSKJ/KVsKhPqWvrFJVTgBJJp+EC5NruhbfZqSpv0Q==%
     expiration:
       minutes: 10
   cors:
@@ -15,7 +15,6 @@ app:
 logging:
   level:
     root: INFO
-    org.springframework.security: DEBUG
 
 server:
     port: 8080

@@ -39,16 +39,16 @@ const Overview: React.FC = () => {
             <Typography variant="h5">Last turn report</Typography>
             <div style={{ marginLeft: '1rem' }}>
                 <Typography variant="body1">Food consumed: {lastTurnReport.foodConsumed}</Typography>
+                <Typography variant="body1">Arriving people: {lastTurnReport.arrivingPeople}</Typography>
+                <Typography variant="body1">Exiled People: {lastTurnReport.exiledPeople}</Typography>
+                <Typography variant="body1">Kingdom size production bonus: {lastTurnReport.kingdomSizeProductionBonus}</Typography>
+                <Typography variant="body1">Nourishment production factor: {lastTurnReport.nourishmentProductionFactor}</Typography>
                 <Typography variant="h6">Resources Produced</Typography>
                 <div style={{ marginLeft: '1rem' }}>
                     {Object.entries(lastTurnReport.resourcesProduced).map(([resource, quantity]) => (
                         <Typography variant="body1" key={resource}>{resource}: {quantity}</Typography>
                     ))}
                 </div>
-                <Typography variant="body1">Arriving people: {lastTurnReport.arrivingPeople}</Typography>
-                <Typography variant="body1">Exiled People: {lastTurnReport.exiledPeople}</Typography>
-                <Typography variant="body1">Kingdom size production bonus: {lastTurnReport.kingdomSizeProductionBonus}</Typography>
-                <Typography variant="body1">Nourishment prduction factor: {lastTurnReport.nourishmentProductionFactor}</Typography>
             </div>
         </div>
     );
