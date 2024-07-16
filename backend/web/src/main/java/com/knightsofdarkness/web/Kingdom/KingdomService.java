@@ -1,8 +1,7 @@
 package com.knightsofdarkness.web.Kingdom;
 
-import java.util.Optional;
-
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +15,7 @@ import com.knightsofdarkness.common.KingdomUnitsDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.game.kingdom.LandTransaction;
 import com.knightsofdarkness.storage.kingdom.KingdomReadRepository;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
@@ -117,5 +117,21 @@ public class KingdomService {
         log.info(passedTurnResult.get().toString());
 
         return ResponseEntity.ok(passedTurnResult.get());
+    }
+
+    @Transactional
+    public ResponseEntity<LandTransaction> buyLand(String name, int amount)
+    {
+        log.info("[" + name + "] buying land");
+        Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
+        if (kingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        var transaction = kingdom.get().buyLand(amount);
+        kingdomRepository.update(kingdom.get());
+
+        return ResponseEntity.ok(transaction);
     }
 }

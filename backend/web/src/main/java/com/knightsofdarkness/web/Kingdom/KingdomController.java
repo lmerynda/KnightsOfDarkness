@@ -21,6 +21,7 @@ import com.knightsofdarkness.common.KingdomBuildingsDto;
 import com.knightsofdarkness.common.KingdomDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
 import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.game.kingdom.LandTransaction;
 import com.knightsofdarkness.web.User.UserData;
 
 @RestController
@@ -106,5 +107,19 @@ public class KingdomController {
         var passTurnResult = kingdomService.passTurn(currentUser.kingdom);
 
         return passTurnResult;
+    }
+
+    @PostMapping(value = "/buy-land", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<LandTransaction> kingdomBuyLand(@AuthenticationPrincipal UserData currentUser, @RequestBody int amount)
+    {
+        if (currentUser == null)
+        {
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        var landTransaction = kingdomService.buyLand(currentUser.kingdom, amount);
+
+        return landTransaction;
     }
 }

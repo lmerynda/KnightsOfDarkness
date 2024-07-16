@@ -2,10 +2,10 @@ import React, { useContext } from 'react';
 import { KingdomContext } from '../Kingdom';
 import Button from '@mui/material/Button';
 import { GAME_API } from '../Consts';
-import TurnReport from '../components/TurnReport';
-import BuyLand from '../components/BuyLand';
+import { Input } from '@mui/material';
 
-const Overview: React.FC = () => {
+const BuyLand: React.FC = () => {
+    const [buyAmount, setBuyAmount] = React.useState<number>(0);
     const kingdomContext = useContext(KingdomContext);
     // ask someone how to better solve it, null object pattern?
     if (kingdomContext === undefined) {
@@ -13,33 +13,32 @@ const Overview: React.FC = () => {
     }
 
     const handleSubmit = () => {
-        fetch(`${GAME_API}/kingdom/pass-turn`, {
+        fetch(`${GAME_API}/kingdom/buy-land`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
             },
-            body: JSON.stringify({})
+            body: JSON.stringify(buyAmount)
         })
             .then((response) => {
                 console.log(`Request successful, data: ${JSON.stringify(response.json)}`);
                 if (response.ok) {
+                    setBuyAmount(0);
                     kingdomContext.reloadKingdom();
                 }
             })
             .catch((error) => {
-                console.error('Error when requesting turn pass: ', error);
+                console.error('Error when buying land: ', error);
             });
     };
 
     return (
         <div>
-            <h1>Overview</h1>
-            <Button variant="contained" onClick={handleSubmit}>Pass Turn</Button>
-            <BuyLand />
-            <TurnReport />
+            <Input type="number" value={buyAmount} onChange={(event) => setBuyAmount(parseInt(event.target.value))} />
+            <Button variant="contained" onClick={handleSubmit}>Buy Land</Button>
         </div>
     );
 };
 
-export default Overview;
+export default BuyLand;
