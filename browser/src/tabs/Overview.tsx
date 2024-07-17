@@ -22,8 +22,13 @@ const Overview: React.FC = () => {
             body: JSON.stringify({})
         })
             .then((response) => {
-                console.log(`Request successful, data: ${JSON.stringify(response.json)}`);
+                if (response.status === 401) {
+                    // redirect to localhost:3000/login
+                    window.location.href = '/login';
+                }
+
                 if (response.ok) {
+                    console.log(`Request successful, data: ${JSON.stringify(response.json)}`);
                     kingdomContext.reloadKingdom();
                 }
             })

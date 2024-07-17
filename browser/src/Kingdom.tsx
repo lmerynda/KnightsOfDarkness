@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import KingdomTabs from './KingdomTabs';
 import KingdomToolbar from './KingdomToolbar';
 import { KingdomData } from './GameTypes';
-import { GAME_API } from './Consts';
+import { fetchKingdomData } from './game-api-client/KingdomApi';
 
 export type KingdomContextType = {
     kingdom: KingdomData;
@@ -17,22 +17,9 @@ export const KingdomContext = React.createContext<KingdomContextType | undefined
 const Kingdom: React.FC = () => {
     const [kingdom, setKingdom] = React.useState<KingdomData>();
 
-    const reloadKingdom = () => {
-        fetch(`${GAME_API}/kingdom`,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
-                },
-            }
-        )
-            .then(response => response.json())
-            .then(kingdom => {
-                console.log(`Request successful, data: ${JSON.stringify(kingdom)}`);
-                setKingdom(kingdom);
-            })
-            .catch(error => console.error('Fetching kingdom data for reload has failed:', error))
+    const reloadKingdom = async () => {
+        const data = await fetchKingdomData();
+        setKingdom(data);
     };
 
     React.useEffect(() => {
