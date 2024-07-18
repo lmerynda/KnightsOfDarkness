@@ -1,6 +1,7 @@
 type RequestFunction = () => Promise<Response>;
 
-const redirectToLogin = (): never => {
+const unauthenticateAndRedirectToLogin = (): never => {
+    // TODO investiage if and how we should reset kingdom context here
     window.location.href = '/login';
     throw new Error('Authentication error, redirecting to login');
 };
@@ -9,7 +10,7 @@ export const handleResponse = async (requestFunction: RequestFunction): Promise<
     try {
         const response = await requestFunction();
         if (response.status === 401) {
-            redirectToLogin();
+            unauthenticateAndRedirectToLogin();
         }
         return response;
     } catch (error) {

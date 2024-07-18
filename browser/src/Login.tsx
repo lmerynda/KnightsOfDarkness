@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Container, TextField, Typography } from '@mui/material';
 import { GAME_API } from './Consts';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginProps {
     setAuthenticated: (isAuthenticated: boolean) => void;

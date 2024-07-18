@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import { GAME_API } from '../Consts';
 import TurnReport from '../components/TurnReport';
 import BuyLand from '../components/BuyLand';
+import { passTurnRequest } from '../game-api-client/KingdomApi';
 
 const Overview: React.FC = () => {
     const kingdomContext = useContext(KingdomContext);
@@ -12,29 +13,9 @@ const Overview: React.FC = () => {
         throw new Error('Kingdom context is undefined');
     }
 
-    const handleSubmit = () => {
-        fetch(`${GAME_API}/kingdom/pass-turn`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
-            },
-            body: JSON.stringify({})
-        })
-            .then((response) => {
-                if (response.status === 401) {
-                    // redirect to localhost:3000/login
-                    window.location.href = '/login';
-                }
-
-                if (response.ok) {
-                    console.log(`Request successful, data: ${JSON.stringify(response.json)}`);
-                    kingdomContext.reloadKingdom();
-                }
-            })
-            .catch((error) => {
-                console.error('Error when requesting turn pass: ', error);
-            });
+    const handleSubmit = async () => {
+        const data = await passTurnRequest();
+        kingdomContext.reloadKingdom();
     };
 
     return (

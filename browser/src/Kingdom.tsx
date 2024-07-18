@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import KingdomTabs from './KingdomTabs';
 import KingdomToolbar from './KingdomToolbar';
 import { KingdomData } from './GameTypes';
-import { fetchKingdomData } from './game-api-client/KingdomApi';
+import { fetchKingdomDataRequest } from './game-api-client/KingdomApi';
 
 export type KingdomContextType = {
     kingdom: KingdomData;
@@ -18,7 +18,7 @@ const Kingdom: React.FC = () => {
     const [kingdom, setKingdom] = React.useState<KingdomData>();
 
     const reloadKingdom = async () => {
-        const data = await fetchKingdomData();
+        const data = await fetchKingdomDataRequest();
         setKingdom(data);
     };
 
