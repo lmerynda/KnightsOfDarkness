@@ -37,13 +37,36 @@ export async function passTurnRequest(): Promise<Response> {
         }));
 
         if (response.ok) {
-            console.log(`pass-turn Request successful`);
+            console.log(`pass-turn request successful`);
             return response.json();
         }
 
         throw new Error(`request failed, status: ${response.status}`);
     } catch (error) {
         console.error('pass-turn error:', error);
+        throw error;
+    }
+}
+
+export async function buildRequest(data: { [building: string]: number }): Promise<Response> {
+    try {
+        const response = await handleResponse(fetchData(`${GAME_API}/kingdom/build`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
+            },
+            body: JSON.stringify(data)
+        }));
+
+        if (response.ok) {
+            console.log(`build request successful`);
+            return response.json();
+        }
+
+        throw new Error(`request failed, status: ${response.status}`);
+    } catch (error) {
+        console.error('build error:', error);
         throw error;
     }
 }

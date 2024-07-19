@@ -1,8 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { buildingList } from '../GameTypes';
-import { GAME_API } from '../Consts';
 import { KingdomContext } from '../Kingdom';
+import { buildRequest } from '../game-api-client/KingdomApi';
 
 const Build: React.FC = () => {
     const [buildingCounts, setBuildingCounts] = useState<{ [building: string]: number }>({});
@@ -22,25 +22,10 @@ const Build: React.FC = () => {
         }
     };
 
-    const handleSubmit = () => {
-        fetch(`${GAME_API}/kingdom/build`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
-            },
-            body: JSON.stringify(buildingCounts)
-        })
-            .then((response) => {
-                console.log(`Request successful, data: ${JSON.stringify(response.json)}`);
-                if (response.ok) {
-                    kingdomContext.reloadKingdom();
-                    setBuildingCounts({});
-                }
-            })
-            .catch((error) => {
-                console.error('Error requesting kingdom to build: ', error);
-            });
+    const handleSubmit = async () => {
+        const data = await buildRequest(buildingCounts);
+        kingdomContext.reloadKingdom();
+        setBuildingCounts({});
     };
 
     return (

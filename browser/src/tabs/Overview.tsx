@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { KingdomContext } from '../Kingdom';
 import Button from '@mui/material/Button';
-import { GAME_API } from '../Consts';
 import TurnReport from '../components/TurnReport';
 import BuyLand from '../components/BuyLand';
 import { passTurnRequest } from '../game-api-client/KingdomApi';
