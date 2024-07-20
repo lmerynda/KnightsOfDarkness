@@ -3,6 +3,7 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input, Button
 import { KingdomContext } from '../Kingdom';
 import { MarketData, OfferBuyer } from "../GameTypes";
 import { GAME_API } from '../Consts';
+import { fetchMarketDataRequest } from '../game-api-client/MarketApi';
 
 const MarketBuy: React.FC = () => {
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
@@ -23,24 +24,10 @@ const MarketBuy: React.FC = () => {
         }));
     };
 
-    const reloadMarket = () => {
-        fetch(`${GAME_API}/market`,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
-                },
-            }
-        )
-            .then(response => response.json())
-            .then(data => {
-                console.log(`Request successful, data: ${JSON.stringify(data)}`);
-                setMarketData(data);
-            })
-            .catch(error => {
-                console.error(`Failed to fetch market data due to ${error ?? 'unknown error'}`);
-            });
+    const reloadMarket = async () => {
+
+        const data = await fetchMarketDataRequest();
+        setMarketData(data);
     }
 
     React.useEffect(() => {
