@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Grid, IconButton, Input, InputAdornment, InputLabel, Typography } from "@mui/material";
 import React, { useContext } from "react";
 import { MarketResource } from "../GameTypes";
-import { GAME_API } from "../Consts";
 import { KingdomContext } from "../Kingdom";
+import { CreateMarketOfferData, createMarketOfferRequest } from "../game-api-client/MarketApi";
 
 const MarketPost: React.FC = () => {
     const [sellAmount, setSellAmount] = React.useState<number>(0);
@@ -15,35 +15,18 @@ const MarketPost: React.FC = () => {
         throw new Error('Kingdom context is undefined');
     }
 
-    const handleCreateOffer = (): void => {
-        const offer = {
+    const handleCreateOffer = async () => {
+        const offer: CreateMarketOfferData = {
             resource: selectedResource,
             price: price,
             count: sellAmount
         };
 
-        fetch(`${GAME_API}/market/create`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
-            },
-            body: JSON.stringify(offer)
-        })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Offer created successfully');
-                    setSellAmount(0);
-                    setPrice(0);
-                    setSelectedResource(MarketResource.food);
-                    kingdomContext.reloadKingdom();
-                } else {
-                    console.error('Failed to create offer');
-                }
-            })
-            .catch(error => {
-                console.error(`Failed to create offer due to ${error ?? 'unknown error'}`);
-            });
+        const data = await createMarketOfferRequest(offer);
+        setSellAmount(0);
+        setPrice(0);
+        setSelectedResource(MarketResource.food);
+        kingdomContext.reloadKingdom();
     }
 
     function handleMaxClick(): void {

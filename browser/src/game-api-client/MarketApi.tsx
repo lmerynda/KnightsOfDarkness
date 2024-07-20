@@ -1,6 +1,12 @@
 import { GAME_API } from "../Consts";
-import { MarketData, OfferBuyer } from "../GameTypes";
+import { MarketData, MarketResource, OfferBuyer } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
+
+export type CreateMarketOfferData = {
+    resource: MarketResource,
+    price: number,
+    count: number
+}
 
 export async function fetchMarketDataRequest(): Promise<MarketData[]> {
     try {
@@ -70,6 +76,30 @@ export async function withdrawMarketOfferRequest(id: string): Promise<MarketData
         throw new Error(`request failed, status: ${response.status}`);
     } catch (error) {
         console.error('Withdrawing market offer error', error);
+        throw error;
+    }
+}
+
+export async function createMarketOfferRequest(offer: CreateMarketOfferData): Promise<MarketData[]> {
+    try {
+        const response = await handleResponse(fetchData(`${GAME_API}/market/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
+            },
+            body: JSON.stringify(offer)
+        }));
+
+        if (response.ok) {
+            const data = response.json()
+            console.log(`createMarketOffer Request successful, status: ${response.status} data: ${JSON.stringify(data)}`);
+            return data;
+        }
+
+        throw new Error(`request failed, status: ${response.status}`);
+    } catch (error) {
+        console.error('Creating market offer error', error);
         throw error;
     }
 }
