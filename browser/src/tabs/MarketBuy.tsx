@@ -3,7 +3,7 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input, Button
 import { KingdomContext } from '../Kingdom';
 import { MarketData, OfferBuyer } from "../GameTypes";
 import { GAME_API } from '../Consts';
-import { fetchMarketDataRequest } from '../game-api-client/MarketApi';
+import { buyMarketOfferRequest, fetchMarketDataRequest } from '../game-api-client/MarketApi';
 
 const MarketBuy: React.FC = () => {
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
@@ -14,8 +14,6 @@ const MarketBuy: React.FC = () => {
         throw new Error('Kingdom context is undefined');
     }
 
-    console.log(`Kingdom context: ${JSON.stringify(kingdomContext.kingdom.name)}`);
-
     const handleInputChange = (id: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(event.target.value);
         setBuyInputs((prevAmounts) => ({
@@ -25,7 +23,6 @@ const MarketBuy: React.FC = () => {
     };
 
     const reloadMarket = async () => {
-
         const data = await fetchMarketDataRequest();
         setMarketData(data);
     }
@@ -35,36 +32,23 @@ const MarketBuy: React.FC = () => {
     }, []);
 
     const clearForm = (id: string) => {
-        console.log(`Clearing form for id: ${id}`);
+        console.log(`Clearing market buy value for id: ${id}`);
         setBuyInputs((prevInputs) => ({
             ...prevInputs,
             [id]: 0,
         }));
     };
 
-    const handleBuyAmount = (id: string, count: number) => {
+    const handleBuyAmount = async (id: string, count: number) => {
         const offerBuyer: OfferBuyer = {
             count: count
         };
         if (count <= 0) return;
-        fetch(`${GAME_API}/market/${id}/buy`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
-            },
-            body: JSON.stringify(offerBuyer)
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(`Request successful, data: ${JSON.stringify(data)}`);
-                reloadMarket();
-                clearForm(id);
-                kingdomContext.reloadKingdom();
-            })
-            .catch(error => {
-                console.error(`Failed to buy ${count} items of id: ${id}, due to ${error || 'unknown error'}`);
-            });
+
+        const data = await buyMarketOfferRequest(id, offerBuyer);
+        reloadMarket();
+        clearForm(id);
+        kingdomContext.reloadKingdom();
     };
 
     const handleBuyPrice = (id: string, toSpend: number, price: number) => {
