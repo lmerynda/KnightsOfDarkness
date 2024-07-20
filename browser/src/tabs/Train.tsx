@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow, Button, Input } from 
 import React, { useContext, useState } from 'react';
 import { unitList } from '../GameTypes';
 import { KingdomContext } from '../Kingdom';
-import { GAME_API } from '../Consts';
+import { trainRequest } from '../game-api-client/KingdomApi';
 
 const Train: React.FC = () => {
     const [unitCounts, setUnitsCounts] = useState<{ [unit: string]: number }>({});
@@ -21,25 +21,10 @@ const Train: React.FC = () => {
         }
     };
 
-    const handleSubmit = () => {
-        fetch(`${GAME_API}/kingdom/train`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
-            },
-            body: JSON.stringify(unitCounts)
-        })
-            .then((response) => {
-                console.log(`Request successful, data: ${JSON.stringify(response.json)}`);
-                if (response.ok) {
-                    kingdomContext.reloadKingdom();
-                    setUnitsCounts({});
-                }
-            })
-            .catch((error) => {
-                console.error('Error requesting kingdom to train: ', error);
-            });
+    const handleSubmit = async () => {
+        const data = await trainRequest(unitCounts);
+        kingdomContext.reloadKingdom();
+        setUnitsCounts({});
     };
 
     return (

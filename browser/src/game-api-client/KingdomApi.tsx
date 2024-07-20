@@ -70,3 +70,26 @@ export async function buildRequest(data: { [building: string]: number }): Promis
         throw error;
     }
 }
+
+export async function trainRequest(data: { [unit: string]: number }): Promise<Response> {
+    try {
+        const response = await handleResponse(fetchData(`${GAME_API}/kingdom/train`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
+            },
+            body: JSON.stringify(data)
+        }));
+
+        if (response.ok) {
+            console.log(`train request successful`);
+            return response.json();
+        }
+
+        throw new Error(`request failed, status: ${response.status}`);
+    } catch (error) {
+        console.error('train error:', error);
+        throw error;
+    }
+}
