@@ -2,7 +2,7 @@ import { Button, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/m
 import React, { useContext } from "react";
 import { KingdomContext } from "../Kingdom";
 import MarketPost from "../components/MarketPost";
-import { GAME_API } from "../Consts";
+import { withdrawMarketOfferRequest } from "../game-api-client/MarketApi";
 
 const MarketSell: React.FC = () => {
     const kingdomContext = useContext(KingdomContext);
@@ -11,26 +11,9 @@ const MarketSell: React.FC = () => {
         throw new Error('Kingdom context is undefined');
     }
 
-    const handleWithdraw = (id: string): void => {
-        fetch(`${GAME_API}/market/${id}/withdraw`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
-            },
-            body: JSON.stringify({})
-        })
-            .then(response => {
-                if (response.ok) {
-                    console.log(`Withdrawn offer ${id}`);
-                    kingdomContext.reloadKingdom();
-                } else {
-                    console.error(`Failed to withdraw offer ${id}`);
-                }
-            })
-            .catch(error => {
-                console.error(`Failed to withdraw offer ${id} due to ${error ?? 'unknown error'}`);
-            });
+    const handleWithdraw = async (id: string) => {
+        const data = await withdrawMarketOfferRequest(id);
+        kingdomContext.reloadKingdom();
     }
 
     return (

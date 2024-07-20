@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input, ButtonGroup } from '@mui/material';
 import { KingdomContext } from '../Kingdom';
 import { MarketData, OfferBuyer } from "../GameTypes";
-import { GAME_API } from '../Consts';
 import { buyMarketOfferRequest, fetchMarketDataRequest } from '../game-api-client/MarketApi';
 
 const MarketBuy: React.FC = () => {
