@@ -93,3 +93,26 @@ export async function trainRequest(data: { [unit: string]: number }): Promise<Re
         throw error;
     }
 }
+
+export async function buyLandRequest(buyAmount: number): Promise<Response> {
+    try {
+        const response = await handleResponse(fetchData(`${GAME_API}/kingdom/buy-land`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
+            },
+            body: JSON.stringify(buyAmount)
+        }));
+
+        if (response.ok) {
+            console.log(`buyLand request successful`);
+            return response.json();
+        }
+
+        throw new Error(`request failed, status: ${response.status}`);
+    } catch (error) {
+        console.error('buyLand error:', error);
+        throw error;
+    }
+}
