@@ -69,6 +69,8 @@ public class KingdomTurnAction {
     private void doProduction(double nourishmentProductionFactor)
     {
         var productionConfig = kingdom.getConfig().production();
+        var land = kingdom.getResources().getCount(ResourceName.land);
+        var productionBonus = getKingdomSizeProductionBonus(land);
 
         for (var unitName : UnitName.getProductionUnits())
         {
@@ -84,7 +86,7 @@ public class KingdomTurnAction {
                 resourceProduction = Math.min(resourceProduction, maxIronToSpend);
                 kingdom.getResources().subtractCount(ResourceName.iron, maxIronToSpend);
             }
-            int actualProduction = (int) Math.round(resourceProduction * getKingdomSizeProductionBonus());
+            int actualProduction = (int) Math.round(resourceProduction * productionBonus);
             kingdom.getResources().addCount(resourceType, actualProduction);
             results.resourcesProduced.put(resourceType, actualProduction);
         }
@@ -109,16 +111,15 @@ public class KingdomTurnAction {
         }
     }
 
-    private double getKingdomSizeProductionBonus()
+    double getKingdomSizeProductionBonus(int land)
     {
-        var land = kingdom.getResources().getCount(ResourceName.land);
-        if (land > 1000)
+        if (land >= 1000)
         {
             results.kingdomSizeProductionBonus = 1.0;
             return 1.0;
         }
 
-        var landFactor = 1000 - Math.max(100, land); // we don't give a bonus for land below 100 to avoid exploits
+        var landFactor = Math.max(100, land); // we don't give a bonus for land below 100 to avoid exploits
         var bonus = getBonusFactorBasedOnLand(landFactor);
         results.kingdomSizeProductionBonus = bonus;
 
@@ -132,7 +133,7 @@ public class KingdomTurnAction {
      * @param land
      * @return
      */
-    private double getBonusFactorBasedOnLand(int land)
+    double getBonusFactorBasedOnLand(int land)
     {
         var bonus = 6.5 * Math.exp(-0.0047 * land) - 0.06;
         var minBonus = Math.max(0, bonus);

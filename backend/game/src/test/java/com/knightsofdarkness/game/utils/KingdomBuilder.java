@@ -51,6 +51,12 @@ public class KingdomBuilder {
         return this;
     }
 
+    public KingdomBuilder withLand(int count)
+    {
+        this.resources.setCount(ResourceName.land, count);
+        return this;
+    }
+
     public KingdomBuilder withUnit(UnitName unit, int count)
     {
         this.units.setCount(unit, count);
