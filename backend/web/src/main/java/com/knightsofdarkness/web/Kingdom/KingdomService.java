@@ -1,7 +1,8 @@
 package com.knightsofdarkness.web.Kingdom;
 
-import java.util.ArrayList;
 import java.util.Optional;
+
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class KingdomService {
     }
 
     @Transactional
-    public ResponseEntity<Integer> build(String name, KingdomBuildingsDto buildings)
+    public ResponseEntity<KingdomBuildingsDto> build(String name, KingdomBuildingsDto buildings)
     {
         log.info("[" + name + "] building " + buildings.toString());
         Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(name);
@@ -75,7 +76,7 @@ public class KingdomService {
 
         var howManyWereBuilt = kingdom.build(buildings.toDomain());
         kingdomRepository.update(kingdom);
-        return ResponseEntity.ok(howManyWereBuilt);
+        return ResponseEntity.ok(KingdomBuildingsDto.fromDomain(howManyWereBuilt));
     }
 
     @Transactional

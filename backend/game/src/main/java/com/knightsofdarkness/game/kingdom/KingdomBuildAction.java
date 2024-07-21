@@ -12,21 +12,24 @@ public class KingdomBuildAction {
 
     /**
      * simplest algorithm to build from top until the building points are depleted
+     * 
+     * @return the buildings that were built
      */
-    public int build(KingdomBuildings buildingsToBuild)
+    public KingdomBuildings build(KingdomBuildings buildingsToBuild)
     {
+        KingdomBuildings buildingsBuilt = new KingdomBuildings();
         // by using EnumSet we make sure the names are ordered as specified in the enum declaration
         var buildingNames = EnumSet.copyOf(buildingsToBuild.buildings.keySet());
-        int howManyWereBuilt = 0;
         for (var buildingName : buildingNames)
         {
             if(buildingsToBuild.getCount(buildingName) > 0)
             {
-                howManyWereBuilt += build(buildingName, buildingsToBuild.getCount(buildingName));
+                var howManyWereBuilt = build(buildingName, buildingsToBuild.getCount(buildingName));
+                buildingsBuilt.addCount(buildingName, howManyWereBuilt);
             }
         }
 
-        return howManyWereBuilt;
+        return buildingsBuilt;
     }
 
     public int build(BuildingName building, int count)

@@ -2,6 +2,10 @@ import { GAME_API } from "../Consts";
 import { KingdomData } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
 
+export type BuildResponse = {
+    [building: string]: number;
+}
+
 export async function fetchKingdomDataRequest(): Promise<KingdomData> {
     try {
         const response = await handleResponse(fetchData(`${GAME_API}/kingdom`, {
@@ -48,7 +52,7 @@ export async function passTurnRequest(): Promise<Response> {
     }
 }
 
-export async function buildRequest(data: { [building: string]: number }): Promise<Response> {
+export async function buildRequest(data: { [building: string]: number }): Promise<BuildResponse> {
     try {
         const response = await handleResponse(fetchData(`${GAME_API}/kingdom/build`, {
             method: 'POST',

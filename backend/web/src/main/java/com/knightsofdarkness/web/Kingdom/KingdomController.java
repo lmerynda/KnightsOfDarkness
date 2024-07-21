@@ -72,7 +72,7 @@ public class KingdomController {
     }
 
     @PostMapping("/build")
-    ResponseEntity<Integer> kingdomBuild(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
+    ResponseEntity<KingdomBuildingsDto> kingdomBuild(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
     {
         if (currentUser == null)
         {

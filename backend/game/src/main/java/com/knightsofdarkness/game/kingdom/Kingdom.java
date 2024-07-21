@@ -1,7 +1,8 @@
 package com.knightsofdarkness.game.kingdom;
 
-import java.util.List;
 import java.util.Optional;
+
+import java.util.List;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
@@ -31,11 +32,12 @@ public class Kingdom {
         this.lastTurnReport = lastTurnReport;
     }
 
-    public int build(KingdomBuildings buildingsToBuild)
+    public KingdomBuildings build(KingdomBuildings buildingsToBuild)
     {
         return kingdomBuildAction.build(buildingsToBuild);
     }
 
+    @Deprecated
     public int build(BuildingName building, int count)
     {
         return kingdomBuildAction.build(building, count);
