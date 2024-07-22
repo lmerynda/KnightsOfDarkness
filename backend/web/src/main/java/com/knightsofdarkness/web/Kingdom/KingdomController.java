@@ -84,7 +84,7 @@ public class KingdomController {
     }
 
     @PostMapping("/train")
-    ResponseEntity<KingdomDto> kingdomTrain(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomUnitsDto unitsToTrain)
+    ResponseEntity<KingdomUnitsDto> kingdomTrain(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomUnitsDto unitsToTrain)
     {
         if (currentUser == null)
         {

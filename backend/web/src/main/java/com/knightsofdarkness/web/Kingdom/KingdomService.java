@@ -74,13 +74,13 @@ public class KingdomService {
 
         var kingdom = maybeKingdom.get();
 
-        var howManyWereBuilt = kingdom.build(buildings.toDomain());
+        var buildingsBuilt = kingdom.build(buildings.toDomain());
         kingdomRepository.update(kingdom);
-        return ResponseEntity.ok(KingdomBuildingsDto.fromDomain(howManyWereBuilt));
+        return ResponseEntity.ok(KingdomBuildingsDto.fromDomain(buildingsBuilt));
     }
 
     @Transactional
-    public ResponseEntity<KingdomDto> train(String name, KingdomUnitsDto unitsToTrain)
+    public ResponseEntity<KingdomUnitsDto> train(String name, KingdomUnitsDto unitsToTrain)
     {
         log.info("[" + name + "] training " + unitsToTrain.toString());
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
@@ -89,10 +89,10 @@ public class KingdomService {
             return ResponseEntity.notFound().build();
         }
 
-        kingdom.get().train(unitsToTrain.toDomain());
+        var unitsTrained = kingdom.get().train(unitsToTrain.toDomain());
         kingdomRepository.update(kingdom.get());
 
-        return ResponseEntity.ok(KingdomDto.fromDomain(kingdom.get()));
+        return ResponseEntity.ok(KingdomUnitsDto.fromDomain(unitsTrained));
     }
 
     @Transactional

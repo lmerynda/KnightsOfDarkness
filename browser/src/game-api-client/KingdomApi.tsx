@@ -6,6 +6,10 @@ export type BuildResponse = {
     [building: string]: number;
 }
 
+export type TrainingResponse = {
+    [unit: string]: number;
+}
+
 export async function fetchKingdomDataRequest(): Promise<KingdomData> {
     try {
         const response = await handleResponse(fetchData(`${GAME_API}/kingdom`, {
@@ -75,7 +79,7 @@ export async function buildRequest(data: { [building: string]: number }): Promis
     }
 }
 
-export async function trainRequest(data: { [unit: string]: number }): Promise<Response> {
+export async function trainRequest(data: { [unit: string]: number }): Promise<TrainingResponse> {
     try {
         const response = await handleResponse(fetchData(`${GAME_API}/kingdom/train`, {
             method: 'POST',

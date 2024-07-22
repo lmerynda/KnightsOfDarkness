@@ -3,9 +3,11 @@ import React, { useContext, useState } from 'react';
 import { unitList } from '../GameTypes';
 import { KingdomContext } from '../Kingdom';
 import { trainRequest } from '../game-api-client/KingdomApi';
+import TrainingReport from '../components/TrainingReport';
 
 const Train: React.FC = () => {
     const [unitCounts, setUnitsCounts] = useState<{ [unit: string]: number }>({});
+    const [lastTrainingReport, setLastTrainingReport] = useState<{ [unit: string]: number }>({});
     const kingdomContext = useContext(KingdomContext);
     // ask someone how to better solve it, null object pattern?
     if (kingdomContext === undefined) {
@@ -23,6 +25,7 @@ const Train: React.FC = () => {
 
     const handleSubmit = async () => {
         const data = await trainRequest(unitCounts);
+        setLastTrainingReport(data);
         kingdomContext.reloadKingdom();
         setUnitsCounts({});
     };
@@ -30,6 +33,7 @@ const Train: React.FC = () => {
     return (
         <div>
             <h1>Train</h1>
+            <TrainingReport {...lastTrainingReport} />
             <Table>
                 <TableHead>
                     <TableRow>
