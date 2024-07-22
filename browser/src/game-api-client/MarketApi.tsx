@@ -8,6 +8,13 @@ export type CreateMarketOfferData = {
     count: number
 }
 
+export type MarketOfferBuyResponse = {
+    resource: MarketResource,
+    count: number,
+    pricePerUnit: number,
+    totalCost: number
+}
+
 export async function fetchMarketDataRequest(): Promise<MarketData[]> {
     try {
         const response = await handleResponse(fetchData(`${GAME_API}/market`, {
@@ -31,7 +38,7 @@ export async function fetchMarketDataRequest(): Promise<MarketData[]> {
     }
 }
 
-export async function buyMarketOfferRequest(id: string, offerBuyer: OfferBuyer): Promise<MarketData[]> {
+export async function buyMarketOfferRequest(id: string, offerBuyer: OfferBuyer): Promise<MarketOfferBuyResponse> {
     try {
         const response = await handleResponse(fetchData(`${GAME_API}/market/${id}/buy`, {
             method: 'POST',
@@ -54,7 +61,6 @@ export async function buyMarketOfferRequest(id: string, offerBuyer: OfferBuyer):
         throw error;
     }
 }
-
 
 export async function withdrawMarketOfferRequest(id: string): Promise<MarketData[]> {
     try {

@@ -2,11 +2,14 @@ import React, { useContext } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input, ButtonGroup } from '@mui/material';
 import { KingdomContext } from '../Kingdom';
 import { MarketData, OfferBuyer } from "../GameTypes";
-import { buyMarketOfferRequest, fetchMarketDataRequest } from '../game-api-client/MarketApi';
+import { buyMarketOfferRequest, fetchMarketDataRequest, MarketOfferBuyResponse } from '../game-api-client/MarketApi';
+import Market from './Market';
+import MarketOfferBuyReport from '../components/MarketOfferBuyReport';
 
 const MarketBuy: React.FC = () => {
     const [marketData, setMarketData] = React.useState<MarketData[]>([]);
     const [buyInputs, setBuyInputs] = React.useState<{ [id: string]: number }>({});
+    const [lastBuyReport, setLastBuyReport] = React.useState<MarketOfferBuyResponse | undefined>(undefined);
     const kingdomContext = useContext(KingdomContext);
     // ask someone how to better solve it, null object pattern?
     if (kingdomContext === undefined) {
@@ -45,6 +48,7 @@ const MarketBuy: React.FC = () => {
         if (count <= 0) return;
 
         const data = await buyMarketOfferRequest(id, offerBuyer);
+        setLastBuyReport(data);
         reloadMarket();
         clearForm(id);
         kingdomContext.reloadKingdom();
@@ -72,6 +76,7 @@ const MarketBuy: React.FC = () => {
     return (
         <div>
             <h1>Market Buy</h1>
+            {lastBuyReport && <MarketOfferBuyReport {...lastBuyReport} />}
             <Table>
                 <TableHead>
                     <TableRow>

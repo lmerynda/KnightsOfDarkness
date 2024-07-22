@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.common.MarketOfferDto;
 import com.knightsofdarkness.game.market.IMarket;
+import com.knightsofdarkness.game.market.MarketOfferBuyResult;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
@@ -88,7 +89,7 @@ public class MarketService {
     }
 
     @Transactional
-    public ResponseEntity<Integer> buyOffer(UUID id, int amount, String buyerName)
+    public ResponseEntity<MarketOfferBuyResult> buyOffer(UUID id, int amount, String buyerName)
     {
         var maybeOffer = market.findOfferById(id);
         var maybeBuyerKingdom = kingdomRepository.getKingdomByName(buyerName);
@@ -100,16 +101,16 @@ public class MarketService {
 
         var buyer = maybeBuyerKingdom.get();
         var offer = maybeOffer.get();
-        // a case when buyer and seller is the same kingdom is handle here
+        // a case when buyer and seller is the same kingdom is handled here
         // to avoid complications in persistence layer deserialization
         var seller = offer.getSeller().getName().equals(buyerName) ? buyer : offer.getSeller();
 
         log.info("Transaction on " + offer + " with " + buyerName + " and amount " + amount);
 
-        int boughtAmount = market.buyExistingOffer(offer, seller, buyer, amount);
+        var result = market.buyExistingOffer(offer, seller, buyer, amount);
 
-        // TODO report?
-        return ResponseEntity.ok(boughtAmount);
+        // TODO report? what if the action failed?
+        return ResponseEntity.ok(result);
     }
 
     // TODO verify if offer belongs to active kingdom

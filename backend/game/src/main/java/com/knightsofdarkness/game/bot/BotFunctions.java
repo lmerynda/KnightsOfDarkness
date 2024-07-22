@@ -26,14 +26,14 @@ public class BotFunctions {
             }
 
             var offer = optionalOffer.get();
-            var amountBought = market.buyExistingOffer(offer, kingdom, kingdom, amountToBuy);
-            if (amountBought == 0)
+            var result = market.buyExistingOffer(offer, kingdom, kingdom, amountToBuy);
+            if (result.count == 0)
             {
                 // Could not afford, TODO tests
                 return totalBought;
             }
-            amountToBuy -= amountBought;
-            totalBought += amountBought;
+            amountToBuy -= result.count;
+            totalBought += result.count;
         }
 
         return totalBought;
@@ -58,14 +58,14 @@ public class BotFunctions {
             }
 
             var offer = optionalOffer.get();
-            var amountBought = market.buyExistingOffer(offer, kingdom, kingdom, amountToBuy);
-            if (amountBought == 0)
+            var result = market.buyExistingOffer(offer, kingdom, kingdom, amountToBuy);
+            if (result.count == 0)
             {
                 // Could not afford, TODO tests
                 return totalBought;
             }
-            amountToBuy -= amountBought;
-            totalBought += amountBought;
+            amountToBuy -= result.count;
+            totalBought += result.count;
         }
 
         return totalBought;
@@ -119,7 +119,8 @@ public class BotFunctions {
         }
 
         var offer = optionalOffer.get();
-        return market.buyExistingOffer(offer, kingdom, kingdom, count);
+        var result = market.buyExistingOffer(offer, kingdom, kingdom, count);
+        return result.count;
     }
 
     public static int trainBuilders(Kingdom kingdom, int count, double desiredBuilderToSpecialistRatio)

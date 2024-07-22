@@ -137,10 +137,10 @@ class MarketTest {
         assertTrue(!offers.isEmpty());
         var offer = offers.get(0);
 
-        var amountBought = market.buyExistingOffer(offer, kingdom, kingdom, 20);
+        var result = market.buyExistingOffer(offer, kingdom, kingdom, 20);
 
         assertEquals(1, market.getOffersByResource(MarketResource.food).size());
-        assertEquals(100 - amountBought, offer.getCount());
+        assertEquals(100 - result.count, offer.getCount());
     }
 
     @Test

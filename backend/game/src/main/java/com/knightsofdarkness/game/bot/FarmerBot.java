@@ -24,7 +24,8 @@ public class FarmerBot implements Bot {
     {
         int actionResultsAggregate = 0;
 
-        actionResultsAggregate += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 5 + 20); // TODO calculate this from training cost configuration
+        actionResultsAggregate += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 5 + 20);
+        // TODO calculate this from training cost configuration
         actionResultsAggregate += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
         actionResultsAggregate += BotFunctions.trainUnits(kingdom, UnitName.farmer, 5);
         actionResultsAggregate += BotFunctions.buyLandToMaintainUnused(kingdom, 2);

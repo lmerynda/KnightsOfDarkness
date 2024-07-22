@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.common.MarketBuyerDto;
 import com.knightsofdarkness.common.MarketOfferDto;
+import com.knightsofdarkness.game.market.MarketOfferBuyResult;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.web.User.UserData;
 
@@ -63,7 +64,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/{id}/buy")
-    ResponseEntity<Integer> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id, @RequestBody MarketBuyerDto buyerData)
+    ResponseEntity<MarketOfferBuyResult> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id, @RequestBody MarketBuyerDto buyerData)
     {
         if (currentUser == null)
         {

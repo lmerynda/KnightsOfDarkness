@@ -21,8 +21,5 @@ public interface IMarket {
 
     Optional<MarketOffer> findOfferById(UUID id);
 
-    /**
-     * @return amount of resource which was actually sold
-     */
-    int buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount);
+    MarketOfferBuyResult buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount);
 }
