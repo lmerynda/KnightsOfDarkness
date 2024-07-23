@@ -6,6 +6,7 @@ import KingdomTabs from './KingdomTabs';
 import KingdomToolbar from './KingdomToolbar';
 import { KingdomData } from './GameTypes';
 import { fetchKingdomDataRequest } from './game-api-client/KingdomApi';
+import { kingdomRefreshInterval } from './Consts';
 
 export type KingdomContextType = {
     kingdom: KingdomData;
@@ -27,8 +28,7 @@ const Kingdom: React.FC = () => {
 
         const interval = setInterval(() => {
             reloadKingdom();
-            // TODO move value to constant
-        }, 5000);
+        }, kingdomRefreshInterval);
 
         return () => {
             clearInterval(interval);
