@@ -58,6 +58,15 @@ public class Kingdom {
         return new KingdomTurnAction(this).passTurn();
     }
 
+    public void addTurn()
+    {
+        // TODO make it game constant
+        if (resources.getCount(ResourceName.turns) < 36)
+        {
+            resources.addCount(ResourceName.turns, 1);
+        }
+    }
+
     public int getTotalPeopleCount()
     {
         return units.countAll() + resources.getCount(ResourceName.unemployed);

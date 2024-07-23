@@ -2,6 +2,8 @@ package com.knightsofdarkness.storage.kingdom;
 
 import java.util.Optional;
 
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -28,6 +30,11 @@ public class KingdomRepository implements IKingdomRepository {
     {
         var kingdom = jpaRepository.findById(name);
         return kingdom.map(kingdomEntity -> kingdomEntity.toDomainModel(gameConfig));
+    }
+
+    public List<Kingdom> getAllKingdoms()
+    {
+        return jpaRepository.findAll().stream().map(kingdomEntity -> kingdomEntity.toDomainModel(gameConfig)).toList();
     }
 
     public void update(Kingdom kingdom)

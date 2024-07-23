@@ -24,9 +24,7 @@ import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
 @Service
 public class KingdomService {
     private final Logger log = LoggerFactory.getLogger(KingdomService.class);
-
     private final GameConfig gameConfig;
-
     private final KingdomRepository kingdomRepository;
     private final KingdomReadRepository kingdomReadRepository;
     private final MarketOfferReadRepository marketOfferReadRepository;
@@ -134,5 +132,16 @@ public class KingdomService {
         kingdomRepository.update(kingdom.get());
 
         return ResponseEntity.ok(transaction);
+    }
+
+    @Transactional
+    public void addTurnForEveryone()
+    {
+        log.info("Adding turn for everyone");
+        kingdomRepository.getAllKingdoms().forEach(kingdom ->
+        {
+            kingdom.addTurn();
+            kingdomRepository.update(kingdom);
+        });
     }
 }
