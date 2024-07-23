@@ -30,14 +30,14 @@ public class GameInitializer implements CommandLineRunner {
     @Override
     public void run(String... args)
     {
-
-        kingdomService.createKingdom(generateKingdom());
+        kingdomService.createKingdom(generateKingdom(uprzejmyKingdomPayload));
+        kingdomService.createKingdom(generateKingdom(blacksmithBotKingdomPayload));
         log.info("Kingdoms initialized");
         marketService.createOffers(generateMarketOffers());
         log.info("Market offers initialized");
     }
 
-    private KingdomDto generateKingdom()
+    private KingdomDto generateKingdom(String kingdomPayload)
     {
         ObjectMapper objectMapper = new ObjectMapper();
         try
@@ -64,9 +64,52 @@ public class GameInitializer implements CommandLineRunner {
         }
     }
 
-    private final String kingdomPayload = """
+    private final String uprzejmyKingdomPayload = """
             {
                 "name": "uprzejmy",
+                "resources": {
+                    "food": 20000,
+                    "gold": 1000,
+                    "iron": 1000,
+                    "land": 100,
+                    "tools": 100,
+                    "weapons": 100,
+                    "buildingPoints": 10000,
+                    "unemployed": 20,
+                    "turns": 36
+                },
+                "buildings": {
+                    "houses": 10,
+                    "goldMines": 5,
+                    "ironMines": 5,
+                    "workshops": 5,
+                    "farms": 5,
+                    "markets": 1,
+                    "barracks": 1,
+                    "guardHouses": 1,
+                    "spyGuilds": 0,
+                    "towers": 1,
+                    "castles": 0
+                },
+                "units": {
+                    "goldMiners": 5,
+                    "ironMiners": 5,
+                    "farmers": 5,
+                    "blacksmiths": 5,
+                    "builders": 5,
+                    "carriers": 0,
+                    "guards": 5,
+                    "spies": 0,
+                    "infantry": 0,
+                    "bowmen": 0,
+                    "cavalry": 0
+                }
+            }
+            """;
+
+    private final String blacksmithBotKingdomPayload = """
+            {
+                "name": "BlacksmithBot",
                 "resources": {
                     "food": 20000,
                     "gold": 1000,
