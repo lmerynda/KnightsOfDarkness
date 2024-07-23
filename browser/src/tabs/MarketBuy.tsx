@@ -3,7 +3,6 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input, Button
 import { KingdomContext } from '../Kingdom';
 import { MarketData, OfferBuyer } from "../GameTypes";
 import { buyMarketOfferRequest, fetchMarketDataRequest, MarketOfferBuyResponse } from '../game-api-client/MarketApi';
-import Market from './Market';
 import MarketOfferBuyReport from '../components/MarketOfferBuyReport';
 
 const MarketBuy: React.FC = () => {
