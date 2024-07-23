@@ -24,6 +24,15 @@ const Kingdom: React.FC = () => {
 
     React.useEffect(() => {
         reloadKingdom();
+
+        const interval = setInterval(() => {
+            reloadKingdom();
+            // TODO move value to constant
+        }, 5000);
+
+        return () => {
+            clearInterval(interval);
+        };
     }, []);
 
     return (
