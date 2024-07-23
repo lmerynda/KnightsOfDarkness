@@ -86,12 +86,7 @@ public class Market implements IMarket {
 
         assert(offer.count >= 0);
 
-        // TODO constructor with arguments
-        var result = new MarketOfferBuyResult();
-        result.count = buyerAmount;
-        result.pricePerUnit = offer.price;
-        result.resource = offer.resource;
-        result.totalCost = buyerGold;
+        var result = new MarketOfferBuyResult(offer.resource, buyerAmount, offer.price, buyerGold);
 
         kingdomRepository.update(seller);
         kingdomRepository.update(buyer);
