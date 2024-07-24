@@ -52,7 +52,7 @@ public class BlacksmithBot implements Bot {
 
     private int withdrawToolsOffer()
     {
-        var kingdomOffers = kingdom.getMarketOffers();
+        var kingdomOffers = market.getOffersByKingdomName(kingdom.getName());
         var count = kingdomOffers.size();
         for (var offer : kingdomOffers)
         {

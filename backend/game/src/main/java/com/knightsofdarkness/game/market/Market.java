@@ -56,12 +56,14 @@ public class Market implements IMarket {
         return offersRepository.getCheapestOfferByResource(resource);
     }
 
+    @Deprecated
     @Override
     public List<MarketOffer> getOffersByKingdom(Kingdom kingdom)
     {
         return offersRepository.getOffersByKingdomName(kingdom.getName());
     }
 
+    @Override
     public List<MarketOffer> getOffersByKingdomName(String name)
     {
         return offersRepository.getOffersByKingdomName(name);

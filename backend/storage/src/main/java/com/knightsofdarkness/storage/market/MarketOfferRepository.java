@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
+import com.knightsofdarkness.common.MarketOfferDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
@@ -59,10 +60,7 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     @Override
     public List<MarketOffer> getOffersByKingdomName(String name)
     {
-        throw new UnsupportedOperationException("Not implemented");
-        // TypedQuery<MarketOffer> query = entityManager.createQuery("SELECT offer FROM MarketOffer offer WHERE offer.kingdom.id = :kingdomId", MarketOffer.class);
-        // query.setParameter("kingdomId", kingdomId);
-        // return query.getResultList();
+        return jpaRepository.findByKingdomName(name).stream().map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig)).toList();
     }
 
     @Override

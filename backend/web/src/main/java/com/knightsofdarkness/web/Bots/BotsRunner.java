@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.game.bot.BlacksmithBot;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -41,9 +42,15 @@ public class BotsRunner {
 
         var kingdom = blacksmithBotKingdom.get().toDomain(gameConfig, new ArrayList<>());
         var blacksmithBot = new BlacksmithBot(kingdom, market);
-        blacksmithBot.doAllActions();
-        blacksmithBot.passTurn();
+        runBotActions(blacksmithBot);
         log.info(blacksmithBot.getKingdomInfo());
         log.info("BlacksmithBot actions done");
+    }
+
+    @Transactional
+    void runBotActions(BlacksmithBot blacksmithBot)
+    {
+        blacksmithBot.doAllActions();
+        blacksmithBot.passTurn();
     }
 }
