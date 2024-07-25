@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.knightsofdarkness.game.bot.BlacksmithBot;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
+import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.web.Kingdom.KingdomService;
 
 @Component
@@ -18,12 +19,14 @@ public class BotsRunner {
     private final Logger log = LoggerFactory.getLogger(BotsRunner.class);
 
     KingdomService kingdomService;
+    KingdomRepository kingdomRepository;
     GameConfig gameConfig;
     IMarket market;
 
-    public BotsRunner(KingdomService kingdomService, IMarket market, GameConfig gameConfig)
+    public BotsRunner(KingdomService kingdomService, KingdomRepository kingdomRepository, IMarket market, GameConfig gameConfig)
     {
         this.kingdomService = kingdomService;
+        this.kingdomRepository = kingdomRepository;
         this.market = market;
         this.gameConfig = gameConfig;
     }
@@ -52,5 +55,6 @@ public class BotsRunner {
     {
         blacksmithBot.doAllActions();
         blacksmithBot.passTurn();
+        kingdomRepository.update(blacksmithBot.getKingdom());
     }
 }

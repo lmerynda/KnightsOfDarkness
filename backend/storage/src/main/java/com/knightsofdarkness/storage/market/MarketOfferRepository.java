@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import com.knightsofdarkness.common.MarketOfferDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
@@ -14,7 +15,7 @@ import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 @Repository
 public class MarketOfferRepository implements IMarketOfferRepository {
-
+    private final Logger log = LoggerFactory.getLogger(MarketOfferRepository.class);
     private final GameConfig gameConfig;
     private final MarketOfferJpaRepository jpaRepository;
 
@@ -49,12 +50,8 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     @Override
     public Optional<MarketOffer> getCheapestOfferByResource(MarketResource resource)
     {
-        throw new UnsupportedOperationException("Not implemented");
-        // TypedQuery<MarketOffer> query = entityManager.createQuery("SELECT offer FROM MarketOffer offer WHERE offer.resource = :resource ORDER BY offer.price ASC", MarketOffer.class);
-        // query.setParameter("resource", resource);
-        // query.setMaxResults(1);
-        // var results = query.getResultList();
-        // return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+        var result = jpaRepository.findFirstByResourceOrderByPriceAsc(resource);
+        return result.map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig));
     }
 
     @Override

@@ -53,10 +53,11 @@ public class BlacksmithBot implements Bot {
     private int withdrawToolsOffer()
     {
         var kingdomOffers = market.getOffersByKingdomName(kingdom.getName());
+        // TODO why count kingdomOffers?
         var count = kingdomOffers.size();
         for (var offer : kingdomOffers)
         {
-            kingdom.withdrawMarketOffer(offer);
+            market.removeOffer(offer);
         }
 
         return count;
