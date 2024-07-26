@@ -155,4 +155,17 @@ public class BotFunctions {
 
         return kingdom.build(BuildingName.house, count);
     }
+
+    public static boolean doesHaveEnoughFoodForNextTurn(Kingdom kingdom)
+    {
+        var foodAvailable = kingdom.getResources().getCount(ResourceName.food);
+        var foodUpkeep = kingdom.getFoodUpkeep();
+
+        if(foodAvailable > foodUpkeep) {
+            return true;
+        }
+
+        double fedPeopleRatio = (double) foodAvailable / foodUpkeep;
+        return fedPeopleRatio > 0.8; // TODO this should be somewhere as a constant
+    }
 }

@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.Bots;
 
+import com.knightsofdarkness.game.bot.BotFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,7 +34,7 @@ public class BotsRunner {
     }
 
     // Runs every 10 seconds (units are in milliseconds)
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 500)
     public void runEvery10Seconds()
     {
         log.info("Running bots every 10 second");
@@ -55,8 +56,16 @@ public class BotsRunner {
     @Transactional
     void runBotActions(BlacksmithBot blacksmithBot)
     {
+        var kingdom = blacksmithBot.getKingdom();
         blacksmithBot.doAllActions();
-        blacksmithBot.passTurn();
-        kingdomRepository.update(blacksmithBot.getKingdom());
+        if(BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom))
+        {
+            blacksmithBot.passTurn();
+        }
+        else
+        {
+            log.info("[{}] didn't have at least 80% food upkeep for turn pass, skipping", kingdom.getName());
+        }
+        kingdomRepository.update(kingdom);
     }
 }
