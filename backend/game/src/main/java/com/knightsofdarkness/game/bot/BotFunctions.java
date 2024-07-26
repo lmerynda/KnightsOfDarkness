@@ -7,8 +7,12 @@ import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BotFunctions {
+    private static final Logger log = LoggerFactory.getLogger(BotFunctions.class);
+
     public static int buyFoodForUpkeep(Kingdom kingdom, IMarket market)
     {
         var foodAmount = kingdom.getResources().getCount(ResourceName.food);
@@ -22,6 +26,7 @@ public class BotFunctions {
             var optionalOffer = market.getCheapestOfferByResource(MarketResource.food);
             if (optionalOffer.isEmpty())
             {
+                log.info("[{}] there were no offers left to buy food", kingdom.getName());
                 return totalBought;
             }
 
@@ -30,6 +35,7 @@ public class BotFunctions {
             if (result.count == 0)
             {
                 // Could not afford, TODO tests
+                log.info("[{}] didn't have enough gold to buy food", kingdom.getName());
                 return totalBought;
             }
             amountToBuy -= result.count;
@@ -160,12 +166,9 @@ public class BotFunctions {
     {
         var foodAvailable = kingdom.getResources().getCount(ResourceName.food);
         var foodUpkeep = kingdom.getFoodUpkeep();
+        var foodReserve = (double) foodAvailable / foodUpkeep;
+        log.info("[{} food reserve {}]", kingdom.getName(), foodReserve);
 
-        if(foodAvailable > foodUpkeep) {
-            return true;
-        }
-
-        double fedPeopleRatio = (double) foodAvailable / foodUpkeep;
-        return fedPeopleRatio > 0.8; // TODO this should be somewhere as a constant
+        return foodReserve > 0.8d;
     }
 }

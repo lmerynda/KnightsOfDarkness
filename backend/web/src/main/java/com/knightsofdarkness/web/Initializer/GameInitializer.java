@@ -30,20 +30,23 @@ public class GameInitializer implements CommandLineRunner {
     @Override
     public void run(String... args)
     {
-        kingdomService.createKingdom(generateKingdom(uprzejmyKingdomPayload));
-        kingdomService.createKingdom(generateKingdom(blacksmithBotKingdomPayload));
-        kingdomService.createKingdom(generateKingdom(farmerBotKingdomPayload));
+        kingdomService.createKingdom(generateKingdom("uprzejmy"));
+        kingdomService.createKingdom(generateKingdom("BlacksmithBot"));
+        kingdomService.createKingdom(generateKingdom("FarmerBot"));
+        kingdomService.createKingdom(generateKingdom("IronMinerBot"));
         log.info("Kingdoms initialized");
         marketService.createOffers(generateMarketOffers());
         log.info("Market offers initialized");
     }
 
-    private KingdomDto generateKingdom(String kingdomPayload)
+    private KingdomDto generateKingdom(String name)
     {
         ObjectMapper objectMapper = new ObjectMapper();
         try
         {
-            return objectMapper.readValue(kingdomPayload, KingdomDto.class);
+            var kingdomDto = objectMapper.readValue(defaultKingdomPayload, KingdomDto.class);
+            kingdomDto.name = name;
+            return kingdomDto;
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -65,96 +68,10 @@ public class GameInitializer implements CommandLineRunner {
         }
     }
 
-    private final String uprzejmyKingdomPayload = """
+    private final String defaultKingdomPayload = """
             {
-                "name": "uprzejmy",
-                "resources": {
-                    "food": 20000,
-                    "gold": 1000,
-                    "iron": 1000,
-                    "land": 100,
-                    "tools": 100,
-                    "weapons": 100,
-                    "buildingPoints": 10000,
-                    "unemployed": 20,
-                    "turns": 36
-                },
-                "buildings": {
-                    "houses": 10,
-                    "goldMines": 5,
-                    "ironMines": 5,
-                    "workshops": 5,
-                    "farms": 5,
-                    "markets": 1,
-                    "barracks": 1,
-                    "guardHouses": 1,
-                    "spyGuilds": 0,
-                    "towers": 1,
-                    "castles": 0
-                },
-                "units": {
-                    "goldMiners": 5,
-                    "ironMiners": 5,
-                    "farmers": 5,
-                    "blacksmiths": 5,
-                    "builders": 5,
-                    "carriers": 0,
-                    "guards": 5,
-                    "spies": 0,
-                    "infantry": 0,
-                    "bowmen": 0,
-                    "cavalry": 0
-                }
-            }
-            """;
-
-    private final String blacksmithBotKingdomPayload = """
-            {
-                "name": "BlacksmithBot",
-                "resources": {
-                    "food": 20000,
-                    "gold": 1000,
-                    "iron": 1000,
-                    "land": 100,
-                    "tools": 100,
-                    "weapons": 100,
-                    "buildingPoints": 10000,
-                    "unemployed": 20,
-                    "turns": 36
-                },
-                "buildings": {
-                    "houses": 10,
-                    "goldMines": 5,
-                    "ironMines": 5,
-                    "workshops": 5,
-                    "farms": 5,
-                    "markets": 1,
-                    "barracks": 1,
-                    "guardHouses": 1,
-                    "spyGuilds": 0,
-                    "towers": 1,
-                    "castles": 0
-                },
-                "units": {
-                    "goldMiners": 5,
-                    "ironMiners": 5,
-                    "farmers": 5,
-                    "blacksmiths": 5,
-                    "builders": 5,
-                    "carriers": 0,
-                    "guards": 5,
-                    "spies": 0,
-                    "infantry": 0,
-                    "bowmen": 0,
-                    "cavalry": 0
-                }
-            }
-            """;
-
-    private final String farmerBotKingdomPayload = """
-            {
-                "name": "FarmerBot",
-                "resources": {
+                "name": "default_kingdom_name",
+                        "resources": {
                     "food": 20000,
                     "gold": 1000,
                     "iron": 1000,

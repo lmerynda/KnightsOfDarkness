@@ -37,6 +37,7 @@ public class UserInitializer implements CommandLineRunner {
             new UserEntity("uprzejmy", "uprzejmy_password", "uprzejmy"),
             new UserEntity("umbar", "umbar_password", "umbar"),
             new UserEntity("BlacksmithBot", "1234", "BlacksmithBot"),
-            new UserEntity("FarmerBot", "1234", "FarmerBot")
+            new UserEntity("FarmerBot", "1234", "FarmerBot"),
+            new UserEntity("IronMinerBot", "1234", "IronMinerBot")
     );
 }

@@ -1,6 +1,5 @@
 package com.knightsofdarkness.web.Bots;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +13,7 @@ import com.knightsofdarkness.game.bot.BlacksmithBot;
 import com.knightsofdarkness.game.bot.Bot;
 import com.knightsofdarkness.game.bot.BotFunctions;
 import com.knightsofdarkness.game.bot.FarmerBot;
+import com.knightsofdarkness.game.bot.IronMinerBot;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
@@ -29,7 +29,7 @@ public class BotsRunner {
     private final KingdomRepository kingdomRepository;
     private final GameConfig gameConfig;
     private final IMarket market;
-    private final List<String> botNames = Arrays.asList("BlacksmithBot", "FarmerBot");
+    private final List<String> botNames = Arrays.asList("BlacksmithBot", "FarmerBot", "IronMinerBot");
 
     public BotsRunner(KingdomService kingdomService, MarketService marketService, KingdomRepository kingdomRepository, IMarket market, GameConfig gameConfig)
     {
@@ -55,14 +55,14 @@ public class BotsRunner {
             }
 
             var kingdom = botKingdom.get();
-            Bot bot;
-            if (botName == "BlacksmithBot")
+            // TODO redo this funny code...
+            Bot bot = switch (botName)
             {
-                bot = new BlacksmithBot(kingdom, market);
-            } else
-            {
-                bot = new FarmerBot(kingdom, market);
-            }
+                case "BlacksmithBot" -> new BlacksmithBot(kingdom, market);
+                case "IronMinerBot" -> new IronMinerBot(kingdom, market);
+                case "FarmerBot" -> new FarmerBot(kingdom, market);
+                default -> new FarmerBot(kingdom, market);
+            };
 
             runBotActions(bot);
             log.info(bot.getKingdomInfo());
@@ -75,11 +75,10 @@ public class BotsRunner {
     {
         var kingdom = bot.getKingdom();
         bot.doAllActions();
-        if(BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom))
+        if (BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom))
         {
             bot.passTurn();
-        }
-        else
+        } else
         {
             log.info("[{}] didn't have at least 80% food upkeep for turn pass, skipping", kingdom.getName());
         }

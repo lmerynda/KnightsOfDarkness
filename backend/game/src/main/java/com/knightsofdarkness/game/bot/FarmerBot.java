@@ -70,7 +70,7 @@ public class FarmerBot implements Bot {
         var offers = kingdom.getMarketOffers();
         if (!offers.isEmpty())
         {
-            kingdom.withdrawMarketOffer(offers.get(0));
+            market.removeOffer(offers.get(0));
         }
         kingdom.passTurn();
         postFoodOffer();
