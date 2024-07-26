@@ -1,7 +1,8 @@
 package com.knightsofdarkness.storage.market;
 
-import java.util.List;
 import java.util.Optional;
+
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -50,8 +51,7 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     @Override
     public Optional<MarketOffer> getCheapestOfferByResource(MarketResource resource)
     {
-        var result = jpaRepository.findFirstByResourceOrderByPriceAsc(resource);
-        return result.map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig));
+        return jpaRepository.findFirstByResourceOrderByPriceAsc(resource).map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig));
     }
 
     @Override

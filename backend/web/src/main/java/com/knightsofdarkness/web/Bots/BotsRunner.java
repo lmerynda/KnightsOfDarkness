@@ -1,7 +1,5 @@
 package com.knightsofdarkness.web.Bots;
 
-import java.util.ArrayList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,37 +11,41 @@ import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.web.Kingdom.KingdomService;
+import com.knightsofdarkness.web.Market.MarketService;
 
 @Component
 public class BotsRunner {
     private final Logger log = LoggerFactory.getLogger(BotsRunner.class);
 
-    KingdomService kingdomService;
-    KingdomRepository kingdomRepository;
-    GameConfig gameConfig;
-    IMarket market;
+    private final KingdomService kingdomService;
+    private final MarketService marketService;
+    private final KingdomRepository kingdomRepository;
+    private final GameConfig gameConfig;
+    private final IMarket market;
 
-    public BotsRunner(KingdomService kingdomService, KingdomRepository kingdomRepository, IMarket market, GameConfig gameConfig)
+    public BotsRunner(KingdomService kingdomService, MarketService marketService, KingdomRepository kingdomRepository, IMarket market, GameConfig gameConfig)
     {
         this.kingdomService = kingdomService;
+        this.marketService = marketService;
         this.kingdomRepository = kingdomRepository;
         this.market = market;
         this.gameConfig = gameConfig;
     }
 
     // Runs every 10 seconds (units are in milliseconds)
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 2000)
     public void runEvery10Seconds()
     {
         log.info("Running bots every 10 second");
-        var blacksmithBotKingdom = kingdomService.getKingdomByName("BlacksmithBot");
+        var blacksmithBotKingdom = kingdomRepository.getKingdomByName("BlacksmithBot");
         if (blacksmithBotKingdom.isEmpty())
         {
             log.error("BlacksmithBot kingdom not found");
             return;
         }
 
-        var kingdom = blacksmithBotKingdom.get().toDomain(gameConfig, new ArrayList<>());
+        var kingdom = blacksmithBotKingdom.get();
+
         var blacksmithBot = new BlacksmithBot(kingdom, market);
         runBotActions(blacksmithBot);
         log.info(blacksmithBot.getKingdomInfo());
