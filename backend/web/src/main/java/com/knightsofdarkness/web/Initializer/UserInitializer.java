@@ -38,6 +38,7 @@ public class UserInitializer implements CommandLineRunner {
             new UserEntity("umbar", "umbar_password", "umbar"),
             new UserEntity("BlacksmithBot", "1234", "BlacksmithBot"),
             new UserEntity("FarmerBot", "1234", "FarmerBot"),
-            new UserEntity("IronMinerBot", "1234", "IronMinerBot")
+            new UserEntity("IronMinerBot", "1234", "IronMinerBot"),
+            new UserEntity("GoldMinerBot", "1234", "GoldMinerBot")
     );
 }

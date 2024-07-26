@@ -13,6 +13,7 @@ import com.knightsofdarkness.game.bot.BlacksmithBot;
 import com.knightsofdarkness.game.bot.Bot;
 import com.knightsofdarkness.game.bot.BotFunctions;
 import com.knightsofdarkness.game.bot.FarmerBot;
+import com.knightsofdarkness.game.bot.GoldMinerBot;
 import com.knightsofdarkness.game.bot.IronMinerBot;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
@@ -29,7 +30,7 @@ public class BotsRunner {
     private final KingdomRepository kingdomRepository;
     private final GameConfig gameConfig;
     private final IMarket market;
-    private final List<String> botNames = Arrays.asList("BlacksmithBot", "FarmerBot", "IronMinerBot");
+    private final List<String> botNames = Arrays.asList("BlacksmithBot", "FarmerBot", "IronMinerBot", "GoldMinerBot");
 
     public BotsRunner(KingdomService kingdomService, MarketService marketService, KingdomRepository kingdomRepository, IMarket market, GameConfig gameConfig)
     {
@@ -61,7 +62,8 @@ public class BotsRunner {
                 case "BlacksmithBot" -> new BlacksmithBot(kingdom, market);
                 case "IronMinerBot" -> new IronMinerBot(kingdom, market);
                 case "FarmerBot" -> new FarmerBot(kingdom, market);
-                default -> new FarmerBot(kingdom, market);
+                case "GoldMinerBot" -> new GoldMinerBot(kingdom, market);
+                default -> new GoldMinerBot(kingdom, market);
             };
 
             runBotActions(bot);

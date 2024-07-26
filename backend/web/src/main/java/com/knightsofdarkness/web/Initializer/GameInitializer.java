@@ -34,6 +34,7 @@ public class GameInitializer implements CommandLineRunner {
         kingdomService.createKingdom(generateKingdom("BlacksmithBot"));
         kingdomService.createKingdom(generateKingdom("FarmerBot"));
         kingdomService.createKingdom(generateKingdom("IronMinerBot"));
+        kingdomService.createKingdom(generateKingdom("GoldMinerBot"));
         log.info("Kingdoms initialized");
         marketService.createOffers(generateMarketOffers());
         log.info("Market offers initialized");

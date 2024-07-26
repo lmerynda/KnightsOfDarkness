@@ -19,8 +19,15 @@ public class GoldMinerBot implements Bot {
     }
 
     @Override
-    public boolean doAllActions() {
-        return false;
+    public boolean doAllActions()
+    {
+        boolean hasAnythingHappened = true;
+        do
+        {
+            hasAnythingHappened = doActionCycle();
+        } while (hasAnythingHappened);
+
+        return hasAnythingHappened;
     }
 
     @Override
