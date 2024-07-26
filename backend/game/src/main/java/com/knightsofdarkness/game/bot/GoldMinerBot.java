@@ -19,7 +19,12 @@ public class GoldMinerBot implements Bot {
     }
 
     @Override
-    public boolean doAllActions()
+    public boolean doAllActions() {
+        return false;
+    }
+
+    @Override
+    public boolean doActionCycle()
     {
         int actionResultsAggregate = 0;
 

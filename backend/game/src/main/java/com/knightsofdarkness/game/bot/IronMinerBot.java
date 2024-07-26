@@ -20,7 +20,12 @@ public class IronMinerBot implements Bot {
     }
 
     @Override
-    public boolean doAllActions()
+    public boolean doAllActions() {
+        return false;
+    }
+
+    @Override
+    public boolean doActionCycle()
     {
         int actionResultsAggregate = 0;
         actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom, market);

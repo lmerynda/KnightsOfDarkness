@@ -1,6 +1,9 @@
 package com.knightsofdarkness.web.Bots;
 
-import com.knightsofdarkness.game.bot.BotFunctions;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -8,6 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.game.bot.BlacksmithBot;
+import com.knightsofdarkness.game.bot.Bot;
+import com.knightsofdarkness.game.bot.BotFunctions;
+import com.knightsofdarkness.game.bot.FarmerBot;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
@@ -23,6 +29,7 @@ public class BotsRunner {
     private final KingdomRepository kingdomRepository;
     private final GameConfig gameConfig;
     private final IMarket market;
+    private final List<String> botNames = Arrays.asList("BlacksmithBot", "FarmerBot");
 
     public BotsRunner(KingdomService kingdomService, MarketService marketService, KingdomRepository kingdomRepository, IMarket market, GameConfig gameConfig)
     {
@@ -38,29 +45,39 @@ public class BotsRunner {
     public void runEvery10Seconds()
     {
         log.info("Running bots every 10 second");
-        var blacksmithBotKingdom = kingdomRepository.getKingdomByName("BlacksmithBot");
-        if (blacksmithBotKingdom.isEmpty())
+        for (var botName : botNames)
         {
-            log.error("BlacksmithBot kingdom not found");
-            return;
+            var botKingdom = kingdomRepository.getKingdomByName(botName);
+            if (botKingdom.isEmpty())
+            {
+                log.error("kingdom {} not found", botName);
+                return;
+            }
+
+            var kingdom = botKingdom.get();
+            Bot bot;
+            if (botName == "BlacksmithBot")
+            {
+                bot = new BlacksmithBot(kingdom, market);
+            } else
+            {
+                bot = new FarmerBot(kingdom, market);
+            }
+
+            runBotActions(bot);
+            log.info(bot.getKingdomInfo());
+            log.info("[{}] actions done", botName);
         }
-
-        var kingdom = blacksmithBotKingdom.get();
-
-        var blacksmithBot = new BlacksmithBot(kingdom, market);
-        runBotActions(blacksmithBot);
-        log.info(blacksmithBot.getKingdomInfo());
-        log.info("BlacksmithBot actions done");
     }
 
     @Transactional
-    void runBotActions(BlacksmithBot blacksmithBot)
+    void runBotActions(Bot bot)
     {
-        var kingdom = blacksmithBot.getKingdom();
-        blacksmithBot.doAllActions();
+        var kingdom = bot.getKingdom();
+        bot.doAllActions();
         if(BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom))
         {
-            blacksmithBot.passTurn();
+            bot.passTurn();
         }
         else
         {

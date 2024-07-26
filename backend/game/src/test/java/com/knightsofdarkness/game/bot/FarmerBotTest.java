@@ -45,7 +45,7 @@ public class FarmerBotTest {
         Bot bot = new FarmerBot(kingdom, game.getMarket());
         for (var i = 0; i < 10; i++)
         {
-            bot.doAllActions();
+            bot.doActionCycle();
             bot.passTurn();
         }
 

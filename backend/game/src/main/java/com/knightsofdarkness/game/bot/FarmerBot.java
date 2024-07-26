@@ -22,6 +22,18 @@ public class FarmerBot implements Bot {
     @Override
     public boolean doAllActions()
     {
+        boolean hasAnythingHappened = true;
+        do
+        {
+            hasAnythingHappened = doActionCycle();
+        } while (hasAnythingHappened);
+
+        return hasAnythingHappened;
+    }
+
+    @Override
+    public boolean doActionCycle()
+    {
         int actionResultsAggregate = 0;
 
         actionResultsAggregate += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 5 + 20);

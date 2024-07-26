@@ -49,7 +49,7 @@ class GoldMinerBotTest {
         KingdomPrinter.printLineSeparator();
         for (var i = 0; i < 10; i++)
         {
-            bot.doAllActions();
+            bot.doActionCycle();
             bot.passTurn();
             KingdomPrinter.kingdomInfoPrinter(kingdom);
         }
@@ -74,7 +74,7 @@ class GoldMinerBotTest {
         toTrain.addCount(UnitName.goldMiner, 1);
 
         var bot = new GoldMinerBot(kingdom, game.getMarket());
-        bot.doAllActions();
+        bot.doActionCycle();
 
         var trainedUnits = kingdom.train(toTrain);
 

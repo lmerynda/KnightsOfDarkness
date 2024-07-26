@@ -10,7 +10,7 @@ import com.knightsofdarkness.game.market.MarketResource;
 public class BlacksmithBot implements Bot {
     private final Kingdom kingdom;
     private final IMarket market;
-    private final double builderToSpecialistRatio = 0.1;
+    private final double builderToSpecialistRatio = 0.07;
     private final double housesToSpecialistBuildingRatio = 0.6;
 
     public BlacksmithBot(Kingdom kingdom, IMarket market)
@@ -31,7 +31,8 @@ public class BlacksmithBot implements Bot {
         return hasAnythingHappened;
     }
 
-    private boolean doActionCycle()
+    @Override
+    public boolean doActionCycle()
     {
         int actionResultsAggregate = 0;
         actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom, market);

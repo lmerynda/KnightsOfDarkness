@@ -73,7 +73,7 @@ public class BotGame {
                 hasAnythingHappened = false;
                 for (var bot : bots)
                 {
-                    var result = bot.doAllActions();
+                    var result = bot.doActionCycle();
                     hasAnythingHappened = hasAnythingHappened || result;
                 }
             } while (hasAnythingHappened);

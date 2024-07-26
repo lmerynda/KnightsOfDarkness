@@ -34,7 +34,7 @@ public class SingleGoldMinerGame {
 
         for (var i = 0; i < 10; i++)
         {
-            goldMinerBot.doAllActions();
+            goldMinerBot.doActionCycle();
             goldMinerBot.passTurn();
             KingdomPrinter.kingdomInfoPrinter(goldMinerBot.getKingdom());
             KingdomPrinter.printLineSeparator();
