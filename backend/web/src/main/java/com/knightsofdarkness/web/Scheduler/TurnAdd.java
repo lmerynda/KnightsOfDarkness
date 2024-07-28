@@ -20,7 +20,7 @@ public class TurnAdd {
     }
 
     // TODO time value should be in game config
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 2000)
     public void addTurnEveryMinute()
     {
         log.info("Adding turn");
