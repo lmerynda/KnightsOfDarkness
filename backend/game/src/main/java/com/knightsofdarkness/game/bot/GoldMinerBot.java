@@ -56,8 +56,8 @@ public class GoldMinerBot implements Bot {
     @Override
     public String getKingdomInfo()
     {
-        return String.format("[%s] passed turn, land: %d, houses: %d, gold mines: %d, gold: %d, food: %d", kingdom.getName(), kingdom.getResources().getCount(ResourceName.land), kingdom.getBuildings().getCount(BuildingName.house),
-                kingdom.getBuildings().getCount(BuildingName.goldMine),
+        return String.format("[%s] land: %d, houses: %d, gold mines: %d, gold: %d, food: %d", kingdom.getName(), kingdom.getResources().getCount(ResourceName.land), kingdom.getBuildings().getCount(BuildingName.house),
+                        kingdom.getBuildings().getCount(BuildingName.goldMine),
                 kingdom.getResources().getCount(ResourceName.gold), kingdom.getResources().getCount(ResourceName.food));
     }
 
