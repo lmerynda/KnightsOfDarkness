@@ -78,23 +78,24 @@ public class BotsRunner {
     }
 
     @Transactional
-    void runActions(Bot bot)
+    boolean runActions(Bot bot)
     {
         var kingdom = bot.getKingdom();
-        bot.doAllActions();
+        var result = bot.doAllActions();
         kingdomRepository.update(kingdom);
+        return result;
     }
 
     @Transactional
     void passTurn(Bot bot)
     {
         var kingdom = bot.getKingdom();
-        if (bot.doesHaveEnoughUpkeep())
+        if (kingdom.hasMaxTurns() || bot.doesHaveEnoughUpkeep())
         {
             bot.passTurn();
         } else
         {
-            log.info("[{}] didn't have at least 80% food upkeep for turn pass, skipping", kingdom.getName());
+            log.info("[{}] didn't have at least 80% upkeep for turn pass, skipping", kingdom.getName());
         }
         kingdomRepository.update(kingdom);
     }
