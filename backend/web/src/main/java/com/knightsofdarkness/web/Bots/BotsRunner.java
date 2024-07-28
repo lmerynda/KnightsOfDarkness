@@ -24,20 +24,14 @@ import com.knightsofdarkness.web.Market.MarketService;
 public class BotsRunner {
     private final Logger log = LoggerFactory.getLogger(BotsRunner.class);
 
-    private final KingdomService kingdomService;
-    private final MarketService marketService;
     private final KingdomRepository kingdomRepository;
-    private final GameConfig gameConfig;
     private final IMarket market;
     private final List<String> botNames = Arrays.asList("BlacksmithBot", "FarmerBot", "IronMinerBot", "GoldMinerBot");
 
     public BotsRunner(KingdomService kingdomService, MarketService marketService, KingdomRepository kingdomRepository, IMarket market, GameConfig gameConfig)
     {
-        this.kingdomService = kingdomService;
-        this.marketService = marketService;
         this.kingdomRepository = kingdomRepository;
         this.market = market;
-        this.gameConfig = gameConfig;
     }
 
     // Runs every 10 seconds (units are in milliseconds)
