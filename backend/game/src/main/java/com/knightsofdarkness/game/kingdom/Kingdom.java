@@ -82,6 +82,7 @@ public class Kingdom {
         return kingdomOtherAction.buyLand(count);
     }
 
+    @Deprecated
     public List<MarketOffer> getMarketOffers()
     {
         return marketOffers;
