@@ -17,9 +17,6 @@ public interface IMarket {
 
     Optional<MarketOffer> getCheapestOfferByResource(MarketResource resource);
 
-    @Deprecated
-    List<MarketOffer> getOffersByKingdom(Kingdom kingdom);
-
     List<MarketOffer> getOffersByKingdomName(String name);
 
     Optional<MarketOffer> findOfferById(UUID id);
