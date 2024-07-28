@@ -164,7 +164,10 @@ public class BotFunctions {
             return 0;
         }
 
-        return kingdom.build(BuildingName.house, count);
+        var kingdomBuildings = new KingdomBuildings();
+        kingdomBuildings.addCount(BuildingName.house, count);
+
+        return kingdom.build(kingdomBuildings).countAll();
     }
 
     public static boolean doesHaveEnoughFoodForNextTurn(Kingdom kingdom)
