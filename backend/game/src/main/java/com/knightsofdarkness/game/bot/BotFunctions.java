@@ -177,7 +177,7 @@ public class BotFunctions {
     public static void withdrawAllOffers(Kingdom kingdom, IMarket market)
     {
         // TODO make it more sophisticated to withdraw only necessary amount
-        var offers = kingdom.getMarketOffers();
+        var offers = market.getOffersByKingdomName(kingdom.getName());
         for (var offer : offers)
         {
             market.removeOffer(offer);
