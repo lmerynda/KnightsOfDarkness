@@ -156,4 +156,10 @@ public class Kingdom {
         var production = units.getCount(UnitName.blacksmith) * nourishmentProductionFactor * config.production().getProductionRate(UnitName.blacksmith) * ironConsumptionPerOneProductionUnit;
         return ((int) Math.ceil(production));
     }
+
+    public boolean hasMaxTurns()
+    {
+        // TODO make max turns a game constant
+        return resources.getCount(ResourceName.turns) >= 36;
+    }
 }
