@@ -1,7 +1,8 @@
 package com.knightsofdarkness.game.market;
 
-import java.util.List;
 import java.util.Optional;
+
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -78,6 +79,7 @@ public class Market implements IMarket {
     @Override
     public MarketOfferBuyResult buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount)
     {
+        log.info("Transaction: buyer: {} seller: {} amount: {} offer: {}", buyer.getName(), seller.getName(), amount, offer);
         var maxToSell = Math.min(offer.count, amount);
         var buyerGold = buyer.reserveGoldForOffer(offer.price, maxToSell);
         var buyerAmount = buyerGold / offer.price;

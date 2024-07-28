@@ -66,4 +66,10 @@ public class GoldMinerBot implements Bot {
     {
         return kingdom;
     }
+
+    @Override
+    public boolean doesHaveEnoughUpkeep()
+    {
+        return BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom);
+    }
 }

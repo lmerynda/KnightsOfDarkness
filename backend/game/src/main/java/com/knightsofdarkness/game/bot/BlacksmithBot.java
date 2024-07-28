@@ -22,11 +22,15 @@ public class BlacksmithBot implements Bot {
     @Override
     public boolean doAllActions()
     {
+        BotFunctions.withdrawAllOffers(kingdom, market);
+
         boolean hasAnythingHappened = true;
         do
         {
             hasAnythingHappened = doActionCycle();
         } while (hasAnythingHappened);
+
+        postToolsOffer();
 
         return hasAnythingHappened;
     }
@@ -37,31 +41,16 @@ public class BlacksmithBot implements Bot {
         int actionResultsAggregate = 0;
         actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom, market);
         actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
-        withdrawToolsOffer();
         actionResultsAggregate += BotFunctions.trainUnits(kingdom, UnitName.blacksmith, 3);
         actionResultsAggregate += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
         actionResultsAggregate += BotFunctions.trainUnits(kingdom, UnitName.blacksmith, 2);
         actionResultsAggregate += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
         actionResultsAggregate += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.workshop, 1);
         actionResultsAggregate += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
-        postToolsOffer();
         actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
 
         boolean hasAnythingHappen = actionResultsAggregate > 0;
         return hasAnythingHappen;
-    }
-
-    private int withdrawToolsOffer()
-    {
-        var kingdomOffers = market.getOffersByKingdomName(kingdom.getName());
-        // TODO why count kingdomOffers?
-        var count = kingdomOffers.size();
-        for (var offer : kingdomOffers)
-        {
-            market.removeOffer(offer);
-        }
-
-        return count;
     }
 
     private int postToolsOffer()
@@ -85,13 +74,31 @@ public class BlacksmithBot implements Bot {
     @Override
     public String getKingdomInfo()
     {
-        return String.format("[%s] passed turn, land: %d, houses: %d, workshops: %d, gold: %d, food: %d", kingdom.getName(), kingdom.getResources().getCount(ResourceName.land), kingdom.getBuildings().getCount(BuildingName.house),
-                kingdom.getBuildings().getCount(BuildingName.workshop), kingdom.getResources().getCount(ResourceName.gold), kingdom.getResources().getCount(ResourceName.food));
+        return String.format("[%s] passed turn, land: %d, houses: %d, workshops: %d, gold: %d, food: %d, iron: %d, tools: %d", kingdom.getName(), kingdom.getResources().getCount(ResourceName.land),
+                kingdom.getBuildings().getCount(BuildingName.house),
+                kingdom.getBuildings().getCount(BuildingName.workshop), kingdom.getResources().getCount(ResourceName.gold), kingdom.getResources().getCount(ResourceName.food), kingdom.getResources().getCount(ResourceName.iron),
+                kingdom.getResources().getCount(ResourceName.tools));
     }
 
     @Override
     public Kingdom getKingdom()
     {
         return kingdom;
+    }
+
+    @Override
+    public boolean doesHaveEnoughUpkeep()
+    {
+        var doesHaveEnoughFood = BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom);
+        var doesHaveEnoughIron = doesHaveEnoughIron();
+        return doesHaveEnoughFood && doesHaveEnoughIron;
+    }
+
+    private boolean doesHaveEnoughIron()
+    {
+        var nourishmentFactor = 1.0; // Assume everyone is fed
+        var ironUpkeep = kingdom.getIronUpkeep(nourishmentFactor);
+        var ironAmount = kingdom.getResources().getCount(ResourceName.iron);
+        return ironAmount / ironUpkeep >= 0.8d;
     }
 }

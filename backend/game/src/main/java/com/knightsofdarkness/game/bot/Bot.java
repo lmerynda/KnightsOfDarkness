@@ -3,12 +3,15 @@ package com.knightsofdarkness.game.bot;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public interface Bot {
-	boolean doAllActions();
+    boolean doAllActions();
+
     boolean doActionCycle();
 
-	void passTurn();
+    void passTurn();
 
-	String getKingdomInfo();
+    String getKingdomInfo();
 
-	Kingdom getKingdom();
+    Kingdom getKingdom();
+
+    boolean doesHaveEnoughUpkeep();
 }

@@ -1,5 +1,8 @@
 package com.knightsofdarkness.game.bot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
@@ -7,8 +10,6 @@ import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BotFunctions {
     private static final Logger log = LoggerFactory.getLogger(BotFunctions.class);
@@ -18,6 +19,7 @@ public class BotFunctions {
         var foodAmount = kingdom.getResources().getCount(ResourceName.food);
         var foodUpkeep = kingdom.getFoodUpkeep();
         var amountToBuy = Math.max(0, foodUpkeep - foodAmount);
+        log.info("[{}] Food to buy {} to maintain upkeep {}, while kingdom has {}", kingdom.getName(), amountToBuy, foodUpkeep, foodAmount);
         var totalBought = 0;
 
         // TODO accumulation of amountToBuy and totalBought is the same thing
@@ -167,8 +169,19 @@ public class BotFunctions {
         var foodAvailable = kingdom.getResources().getCount(ResourceName.food);
         var foodUpkeep = kingdom.getFoodUpkeep();
         var foodReserve = (double) foodAvailable / foodUpkeep;
-        log.info("[{} food reserve {}]", kingdom.getName(), foodReserve);
+        log.info("[{}] food reserve {}", kingdom.getName(), foodReserve);
 
-        return foodReserve > 0.8d;
+        return foodReserve >= 0.8d;
     }
+
+    public static void withdrawAllOffers(Kingdom kingdom, IMarket market)
+    {
+        // TODO make it more sophisticated to withdraw only necessary amount
+        var offers = kingdom.getMarketOffers();
+        for (var offer : offers)
+        {
+            market.removeOffer(offer);
+        }
+    }
+
 }

@@ -2,7 +2,11 @@ package com.knightsofdarkness.game.kingdom;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class KingdomTurnAction {
+    private static final Logger log = LoggerFactory.getLogger(KingdomTurnAction.class);
     private final Kingdom kingdom;
     private final KingdomTurnReport results;
 
@@ -60,7 +64,7 @@ public class KingdomTurnAction {
         // there wasn't food for everyone
         double fedPeopleRatio = (double) foodAvailable / foodUpkeep;
         // TODO real traces
-        System.out.println("There wasn't enough food in " + kingdom.getName() + " only " + fedPeopleRatio + "% were fed");
+        // System.out.println("There wasn't enough food in " + kingdom.getName() + " only " + fedPeopleRatio + "% were fed");
         kingdom.getResources().subtractCount(ResourceName.food, foodAvailable);
         results.foodConsumed = foodAvailable;
         return fedPeopleRatio;
@@ -78,13 +82,14 @@ public class KingdomTurnAction {
             var resourceProduction = kingdom.getUnits().getCount(unitName) * nourishmentProductionFactor * productionConfig.getProductionRate(unitName);
             if (unitName == UnitName.blacksmith)
             {
-                // TODO have the rate somewhere in the config
-                int ironConsumptionPerOneProductionUnit = 1;
-                // unfed blacksmith who don't work, will not consume any iron either
-                int neededIron = (int) (resourceProduction * ironConsumptionPerOneProductionUnit);
+                int neededIron = kingdom.getIronUpkeep(nourishmentProductionFactor);
+                log.info("needed iron {}", neededIron);
                 var maxIronToSpend = Math.min(neededIron, kingdom.getResources().getCount(ResourceName.iron));
+                log.info("max iron to spend {}", maxIronToSpend);
                 resourceProduction = Math.min(resourceProduction, maxIronToSpend);
+                log.info("resourceProduction after iron calculation {}", resourceProduction);
                 kingdom.getResources().subtractCount(ResourceName.iron, maxIronToSpend);
+                log.info("Actual tools production: {}", (int) Math.round(resourceProduction * productionBonus));
             }
             int actualProduction = (int) Math.round(resourceProduction * productionBonus);
             kingdom.getResources().addCount(resourceType, actualProduction);

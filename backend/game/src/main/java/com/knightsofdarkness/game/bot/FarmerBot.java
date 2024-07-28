@@ -22,11 +22,15 @@ public class FarmerBot implements Bot {
     @Override
     public boolean doAllActions()
     {
+        BotFunctions.withdrawAllOffers(kingdom, market);
+
         boolean hasAnythingHappened = true;
         do
         {
             hasAnythingHappened = doActionCycle();
         } while (hasAnythingHappened);
+
+        postFoodOffer();
 
         return hasAnythingHappened;
     }
@@ -43,7 +47,6 @@ public class FarmerBot implements Bot {
         actionResultsAggregate += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
         actionResultsAggregate += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.farm, 1);
         actionResultsAggregate += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
-        actionResultsAggregate += postFoodOffer();
 
         boolean hasAnythingHappen = actionResultsAggregate > 0;
         return hasAnythingHappen;
@@ -66,14 +69,7 @@ public class FarmerBot implements Bot {
     @Override
     public void passTurn()
     {
-        // TODO make it more sophisticated to withdraw only necessary amount
-        var offers = kingdom.getMarketOffers();
-        if (!offers.isEmpty())
-        {
-            market.removeOffer(offers.get(0));
-        }
         kingdom.passTurn();
-        postFoodOffer();
     }
 
     @Override
@@ -88,5 +84,11 @@ public class FarmerBot implements Bot {
     public Kingdom getKingdom()
     {
         return kingdom;
+    }
+
+    @Override
+    public boolean doesHaveEnoughUpkeep()
+    {
+        return BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom);
     }
 }

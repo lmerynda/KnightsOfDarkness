@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.game.bot.BlacksmithBot;
 import com.knightsofdarkness.game.bot.Bot;
-import com.knightsofdarkness.game.bot.BotFunctions;
 import com.knightsofdarkness.game.bot.FarmerBot;
 import com.knightsofdarkness.game.bot.GoldMinerBot;
 import com.knightsofdarkness.game.bot.IronMinerBot;
@@ -66,18 +65,31 @@ public class BotsRunner {
                 default -> new GoldMinerBot(kingdom, market);
             };
 
-            runBotActions(bot);
+            runSingleBotActions(bot);
             log.info(bot.getKingdomInfo());
             log.info("[{}] actions done", botName);
         }
     }
 
+    void runSingleBotActions(Bot bot)
+    {
+        runActions(bot);
+        passTurn(bot);
+    }
+
     @Transactional
-    void runBotActions(Bot bot)
+    void runActions(Bot bot)
     {
         var kingdom = bot.getKingdom();
         bot.doAllActions();
-        if (BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom))
+        kingdomRepository.update(kingdom);
+    }
+
+    @Transactional
+    void passTurn(Bot bot)
+    {
+        var kingdom = bot.getKingdom();
+        if (bot.doesHaveEnoughUpkeep())
         {
             bot.passTurn();
         } else

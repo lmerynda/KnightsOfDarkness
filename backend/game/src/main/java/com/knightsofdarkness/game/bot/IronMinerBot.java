@@ -22,11 +22,15 @@ public class IronMinerBot implements Bot {
     @Override
     public boolean doAllActions()
     {
+        BotFunctions.withdrawAllOffers(kingdom, market);
+
         boolean hasAnythingHappened = true;
         do
         {
             hasAnythingHappened = doActionCycle();
         } while (hasAnythingHappened);
+
+        postIronOffer();
 
         return hasAnythingHappened;
     }
@@ -42,7 +46,6 @@ public class IronMinerBot implements Bot {
         actionResultsAggregate += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
         actionResultsAggregate += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.ironMine, 1);
         actionResultsAggregate += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
-        actionResultsAggregate += postIronOffer();
 
         boolean hasAnythingHappen = actionResultsAggregate > 0;
         return hasAnythingHappen;
@@ -77,5 +80,11 @@ public class IronMinerBot implements Bot {
     public Kingdom getKingdom()
     {
         return kingdom;
+    }
+
+    @Override
+    public boolean doesHaveEnoughUpkeep()
+    {
+        return BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom);
     }
 }

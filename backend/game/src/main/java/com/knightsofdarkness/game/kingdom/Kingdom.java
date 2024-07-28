@@ -147,4 +147,13 @@ public class Kingdom {
     {
         kingdomMarketAction.deliverResourcesFromOffer(resource, amount);
     }
+
+    public int getIronUpkeep(double nourishmentProductionFactor)
+    {
+        // TODO have the rate somewhere in the config
+        int ironConsumptionPerOneProductionUnit = 1;
+        // unfed blacksmith who don't work, will not consume any iron either
+        var production = units.getCount(UnitName.blacksmith) * nourishmentProductionFactor * config.production().getProductionRate(UnitName.blacksmith) * ironConsumptionPerOneProductionUnit;
+        return ((int) Math.ceil(production));
+    }
 }
