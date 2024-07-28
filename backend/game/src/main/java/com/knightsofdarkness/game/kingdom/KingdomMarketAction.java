@@ -26,8 +26,7 @@ public class KingdomMarketAction {
 
     public void acceptOffer(int goldValue)
     {
-        // TODO enforced a tax on transactions to make changes visible with current crude test models, remove!
-        kingdom.getResources().addCount(ResourceName.gold, (int) (goldValue * 0.9));
+        kingdom.getResources().addCount(ResourceName.gold, goldValue);
     }
 
     public void withdrawMarketOffer(MarketOffer offer)
