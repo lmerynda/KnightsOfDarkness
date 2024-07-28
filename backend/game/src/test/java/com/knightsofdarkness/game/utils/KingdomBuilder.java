@@ -1,7 +1,5 @@
 package com.knightsofdarkness.game.utils;
 
-import java.util.ArrayList;
-
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
@@ -77,6 +75,6 @@ public class KingdomBuilder {
 
     public Kingdom build()
     {
-        return new Kingdom(name, game.getConfig(), new KingdomResources(resources), new KingdomBuildings(buildings), new KingdomUnits(units), new ArrayList<>(), new KingdomTurnReport());
+        return new Kingdom(name, game.getConfig(), new KingdomResources(resources), new KingdomBuildings(buildings), new KingdomUnits(units), new KingdomTurnReport());
     }
 }

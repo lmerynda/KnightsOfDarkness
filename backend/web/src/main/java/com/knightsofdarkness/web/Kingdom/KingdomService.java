@@ -2,8 +2,6 @@ package com.knightsofdarkness.web.Kingdom;
 
 import java.util.Optional;
 
-import java.util.ArrayList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +40,7 @@ public class KingdomService {
     {
         log.info("Creating new kingdom " + kingdom.toString());
 
-        kingdomRepository.add(kingdom.toDomain(gameConfig, new ArrayList<>()));
+        kingdomRepository.add(kingdom.toDomain(gameConfig));
         return kingdom;
     }
 

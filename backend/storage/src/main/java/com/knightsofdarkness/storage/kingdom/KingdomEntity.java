@@ -47,7 +47,7 @@ public class KingdomEntity {
 
     public Kingdom toDomainModel(GameConfig gameConfig)
     {
-        var kingdom = new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), units.toDomainModel(), new ArrayList<>(), lastTurnReport.toDomainModel());
+        var kingdom = new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), units.toDomainModel(), lastTurnReport.toDomainModel());
         return kingdom;
     }
 

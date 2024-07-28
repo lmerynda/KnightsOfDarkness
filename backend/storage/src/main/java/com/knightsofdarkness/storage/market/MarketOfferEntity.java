@@ -48,8 +48,7 @@ public class MarketOfferEntity {
     public MarketOffer toDomainModel(GameConfig gameConfig)
     {
         var kingdom = this.kingdom.toDomainModel(gameConfig);
-        var marketOffer = kingdom.getMarketOffers().stream().filter(offer -> offer.getId().equals(id)).findFirst();
-        return marketOffer.orElseGet(() -> new MarketOffer(id, kingdom, resource, count, price));
+        return new MarketOffer(id, kingdom, resource, count, price);
     }
 
     public MarketOfferDto toDto()

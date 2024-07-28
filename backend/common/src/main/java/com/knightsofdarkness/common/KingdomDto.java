@@ -1,11 +1,11 @@
 package com.knightsofdarkness.common;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
-import com.knightsofdarkness.game.market.MarketOffer;
 
 public class KingdomDto {
     public String name;
@@ -35,20 +35,20 @@ public class KingdomDto {
         resources.usedLand = buildings.countAll();
     }
 
-    public Kingdom toDomain(GameConfig config, List<MarketOffer> marketOffers)
+    public Kingdom toDomain(GameConfig config)
     {
         // TODO hehe, no, go back and fix this...
         if (lastTurnReport == null)
         {
             lastTurnReport = new KingdomTurnReport();
         }
-        return new Kingdom(name, config, resources.toDomain(), buildings.toDomain(), units.toDomain(), marketOffers, lastTurnReport);
+        return new Kingdom(name, config, resources.toDomain(), buildings.toDomain(), units.toDomain(), lastTurnReport);
     }
 
     public static KingdomDto fromDomain(Kingdom kingdom)
     {
-        return new KingdomDto(kingdom.getName(), KingdomResourcesDto.fromDomain(kingdom.getResources()), KingdomBuildingsDto.fromDomain(kingdom.getBuildings()), KingdomUnitsDto.fromDomain(kingdom.getUnits()), kingdom
-                .getMarketOffers().stream().map(MarketOfferDto::fromDomain).toList(), kingdom.getLastTurnReport());
+        return new KingdomDto(kingdom.getName(), KingdomResourcesDto.fromDomain(kingdom.getResources()), KingdomBuildingsDto.fromDomain(kingdom.getBuildings()), KingdomUnitsDto.fromDomain(kingdom.getUnits()), new ArrayList<>(),
+                kingdom.getLastTurnReport());
     }
 
     public String toString()

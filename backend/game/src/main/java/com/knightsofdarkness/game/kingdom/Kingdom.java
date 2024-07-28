@@ -2,8 +2,6 @@ package com.knightsofdarkness.game.kingdom;
 
 import java.util.Optional;
 
-import java.util.List;
-
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
@@ -14,21 +12,19 @@ public class Kingdom {
     private final KingdomResources resources;
     private final KingdomBuildings buildings;
     private final KingdomUnits units;
-    private final List<MarketOffer> marketOffers;
     KingdomTurnReport lastTurnReport; // TOOD consider making them all package-private
     private final KingdomBuildAction kingdomBuildAction = new KingdomBuildAction(this);
     private final KingdomTrainAction kingdomTrainAction = new KingdomTrainAction(this);
     private final KingdomMarketAction kingdomMarketAction = new KingdomMarketAction(this);
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
 
-    public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units, List<MarketOffer> marketOffers, KingdomTurnReport lastTurnReport)
+    public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units, KingdomTurnReport lastTurnReport)
     {
         this.name = name;
         this.config = config;
         this.resources = resources;
         this.buildings = buildings;
         this.units = units;
-        this.marketOffers = marketOffers;
         this.lastTurnReport = lastTurnReport;
     }
 
@@ -80,12 +76,6 @@ public class Kingdom {
     public LandTransaction buyLand(int count)
     {
         return kingdomOtherAction.buyLand(count);
-    }
-
-    @Deprecated
-    public List<MarketOffer> getMarketOffers()
-    {
-        return marketOffers;
     }
 
     public int postMarketOffer(MarketResource resource, int count)

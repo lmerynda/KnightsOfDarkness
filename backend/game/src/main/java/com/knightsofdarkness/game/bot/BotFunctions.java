@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.game.kingdom.KingdomBuildings;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
@@ -106,8 +107,10 @@ public class BotFunctions {
 
         var lackingCapacity = desiredFreeCapacity - freeCapacity;
         var buildingsToBuild = (int) Math.ceil((double) lackingCapacity / perBuildingCapacity);
+        var kingdomBuildings = new KingdomBuildings();
+        kingdomBuildings.addCount(building, buildingsToBuild);
 
-        return kingdom.build(building, buildingsToBuild);
+        return kingdom.build(kingdomBuildings).countAll();
     }
 
     public static int trainUnits(Kingdom kingdom, UnitName unit, int count)

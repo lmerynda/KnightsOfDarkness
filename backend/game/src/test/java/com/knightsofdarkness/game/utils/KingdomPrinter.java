@@ -21,8 +21,8 @@ public class KingdomPrinter {
         var resources = kingdom.getResources();
         var units = kingdom.getUnits();
         // @formatter:off 
-        System.out.format("%-15s | %5d | %6d | %10d | %8d | %6d/%-6d | %6d/%-6d | %7d/%-7d | %6d/%-6d | %10d | %10d | %10d | %10d | %2d\n", 
-            kingdom.getName(),
+        System.out.format("%-15s | %5d | %6d | %10d | %8d | %6d/%-6d | %6d/%-6d | %7d/%-7d | %6d/%-6d | %10d | %10d | %10d | %10d\n", 
+                    kingdom.getName(),
             resources.getCount(ResourceName.land),
             kingdom.getTotalPeopleCount(),
             resources.getCount(ResourceName.unemployed),
@@ -38,8 +38,7 @@ public class KingdomPrinter {
             resources.getCount(ResourceName.gold),
             resources.getCount(ResourceName.food),
             resources.getCount(ResourceName.tools),
-            resources.getCount(ResourceName.iron),
-            kingdom.getMarketOffers().size()
+            resources.getCount(ResourceName.iron)
         );
         // @formatter:on
     }
