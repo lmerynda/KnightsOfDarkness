@@ -33,12 +33,6 @@ public class Kingdom {
         return kingdomBuildAction.build(buildingsToBuild);
     }
 
-    @Deprecated
-    public int build(BuildingName building, int count)
-    {
-        return kingdomBuildAction.build(building, count);
-    }
-
     public int getBuildingCapacity(BuildingName name)
     {
         return buildings.getCapacity(name, config.buildingCapacity().getCapacity(name));
