@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,5 +43,13 @@ public class AuthController {
             log.warn("Authentication failed for user: {} with message: {}", loginRequest.username, e.getMessage());
             throw e;
         }
+    }
+
+    @PostMapping("/auth/validate-token")
+    public boolean validateToken(@AuthenticationPrincipal UserData currentUser)
+    {
+        // since this url is protected by security, if we reach here, the token is valid
+        log.info("Validate token request received for user: {}", currentUser.username);
+        return true;
     }
 }
