@@ -43,4 +43,9 @@ public class KingdomBuildings {
     {
         buildings.put(name, count);
     }
+
+    public String toString()
+    {
+        return buildings.toString();
+    }
 }

@@ -40,4 +40,9 @@ public class KingdomResources {
         assert count >= 0;
         resources.put(name, count);
     }
+
+    public String toString()
+    {
+        return resources.toString();
+    }
 }
