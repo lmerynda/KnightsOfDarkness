@@ -10,9 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.common.KingdomBuildingsDto;
 import com.knightsofdarkness.common.KingdomDto;
+import com.knightsofdarkness.common.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.game.kingdom.LandTransaction;
 import com.knightsofdarkness.storage.kingdom.KingdomReadRepository;
@@ -141,5 +143,21 @@ public class KingdomService {
             kingdom.addTurn();
             kingdomRepository.update(kingdom);
         });
+    }
+
+    @Transactional
+    public ResponseEntity<KingdomSpecialBuilding> startSpecialBuilding(String name, KingdomSpecialBuildingStartDto specialBuildingStartDto)
+    {
+        log.info("[{}] starting special building {}", name, specialBuildingStartDto.name);
+
+        Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
+        if (kingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<KingdomSpecialBuilding> specialBuilding = kingdom.get().startSpecialBuilding(specialBuildingStartDto.name);
+        kingdomRepository.update(kingdom.get());
+        return ResponseEntity.of(specialBuilding);
     }
 }

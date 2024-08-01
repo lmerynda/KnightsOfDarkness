@@ -36,6 +36,7 @@ public class BotsRunner {
 
     // Runs every 10 seconds (units are in milliseconds)
     @Scheduled(fixedRate = 500)
+    @Transactional
     public void runEvery10Seconds()
     {
         log.info("Running bots every 10 second");

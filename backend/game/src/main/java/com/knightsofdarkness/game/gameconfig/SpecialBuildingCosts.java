@@ -1,10 +1,10 @@
 package com.knightsofdarkness.game.gameconfig;
 
-import com.knightsofdarkness.game.kingdom.SpecialBuildingName;
+import com.knightsofdarkness.game.kingdom.SpecialBuildingType;
 
 public record SpecialBuildingCosts(int goldShaft, int ironShaft, int granary, int forge, int warehouse) {
 
-    public int getCost(SpecialBuildingName name)
+    public int getCost(SpecialBuildingType name)
     {
         return switch (name)
         {

@@ -19,7 +19,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.knightsofdarkness.common.KingdomBuildingsDto;
 import com.knightsofdarkness.common.KingdomDto;
+import com.knightsofdarkness.common.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
+import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.game.kingdom.LandTransaction;
 import com.knightsofdarkness.web.User.UserData;
@@ -73,6 +75,30 @@ public class KingdomController {
 
     @PostMapping("/build")
     ResponseEntity<KingdomBuildingsDto> kingdomBuild(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
+    {
+        if (currentUser == null)
+        {
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.build(currentUser.kingdom, buildings);
+    }
+
+    @PostMapping("/start-special-building")
+    ResponseEntity<KingdomSpecialBuilding> kingdomSelectSpecial(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingStartDto specialBuildingStartDto)
+    {
+        if (currentUser == null)
+        {
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.startSpecialBuilding(currentUser.kingdom, specialBuildingStartDto);
+    }
+
+    @PostMapping("/build-special")
+    ResponseEntity<KingdomBuildingsDto> kingdomBuildSpecial(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
     {
         if (currentUser == null)
         {

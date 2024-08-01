@@ -1,6 +1,6 @@
 package com.knightsofdarkness.game.kingdom;
 
-public enum SpecialBuildingName
+public enum SpecialBuildingType
 {
     goldShaft, ironShaft, granary, forge, warehouse, emptyBuilding
 }

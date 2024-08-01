@@ -4,28 +4,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-class KingdomSpecialBuilding {
-    SpecialBuildingName buildingType;
-    int level = 0;
-    int buildingPointsPut = 0;
-
-    public KingdomSpecialBuilding(SpecialBuildingName specialBuilding)
-    {
-        buildingType = specialBuilding;
-    }
-}
-
+@Deprecated
 public class KingdomSpecialBuildings {
     List<KingdomSpecialBuilding> specialBuildings;
     Kingdom kingdom;
 
     public KingdomSpecialBuildings(Kingdom kingdom)
     {
-        specialBuildings = Arrays.asList(new KingdomSpecialBuilding(SpecialBuildingName.emptyBuilding), new KingdomSpecialBuilding(SpecialBuildingName.emptyBuilding), new KingdomSpecialBuilding(SpecialBuildingName.emptyBuilding),
-                new KingdomSpecialBuilding(SpecialBuildingName.emptyBuilding), new KingdomSpecialBuilding(SpecialBuildingName.emptyBuilding));
+        specialBuildings = Arrays.asList(new KingdomSpecialBuilding(SpecialBuildingType.emptyBuilding), new KingdomSpecialBuilding(SpecialBuildingType.emptyBuilding), new KingdomSpecialBuilding(SpecialBuildingType.emptyBuilding),
+                new KingdomSpecialBuilding(SpecialBuildingType.emptyBuilding), new KingdomSpecialBuilding(SpecialBuildingType.emptyBuilding));
     }
 
-    public Optional<Integer> startNew(SpecialBuildingName specialBuilding, int buildingPlace)
+    public Optional<Integer> startNew(SpecialBuildingType specialBuilding, int buildingPlace)
     {
         int listIndex = buildingPlace - 1;
         // TODO move hardcoded value to config
@@ -34,7 +24,7 @@ public class KingdomSpecialBuildings {
             return Optional.empty();
         }
 
-        if (specialBuildings.get(listIndex).buildingType != SpecialBuildingName.emptyBuilding)
+        if (specialBuildings.get(listIndex).buildingType != SpecialBuildingType.emptyBuilding)
         {
             return Optional.empty();
         }
@@ -53,7 +43,7 @@ public class KingdomSpecialBuildings {
             return;
         }
 
-        specialBuildings.set(listIndex, new KingdomSpecialBuilding(SpecialBuildingName.emptyBuilding));
+        specialBuildings.set(listIndex, new KingdomSpecialBuilding(SpecialBuildingType.emptyBuilding));
     }
 
     public Optional<KingdomSpecialBuilding> getAt(int buildingPlace)

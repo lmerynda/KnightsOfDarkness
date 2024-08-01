@@ -1,5 +1,6 @@
 package com.knightsofdarkness.game.kingdom;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -12,13 +13,14 @@ public class Kingdom {
     private final KingdomResources resources;
     private final KingdomBuildings buildings;
     private final KingdomUnits units;
+    private final List<KingdomSpecialBuilding> specialBuildings;
     KingdomTurnReport lastTurnReport; // TOOD consider making them all package-private
     private final KingdomBuildAction kingdomBuildAction = new KingdomBuildAction(this);
     private final KingdomTrainAction kingdomTrainAction = new KingdomTrainAction(this);
     private final KingdomMarketAction kingdomMarketAction = new KingdomMarketAction(this);
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
 
-    public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, KingdomUnits units, KingdomTurnReport lastTurnReport)
+    public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, List<KingdomSpecialBuilding> specialBuildings, KingdomUnits units, KingdomTurnReport lastTurnReport)
     {
         this.name = name;
         this.config = config;
@@ -26,6 +28,7 @@ public class Kingdom {
         this.buildings = buildings;
         this.units = units;
         this.lastTurnReport = lastTurnReport;
+        this.specialBuildings = specialBuildings;
     }
 
     public KingdomBuildings build(KingdomBuildings buildingsToBuild)
@@ -146,5 +149,24 @@ public class Kingdom {
     {
         // TODO make max turns a game constant
         return resources.getCount(ResourceName.turns) >= 36;
+    }
+
+    public Optional<KingdomSpecialBuilding> startSpecialBuilding(SpecialBuildingType name)
+    {
+        // TODO move to game consts
+        if (specialBuildings.size() >= 5)
+        {
+            return Optional.empty();
+        }
+
+        var specialBuilding = new KingdomSpecialBuilding(name);
+        specialBuildings.add(specialBuilding);
+
+        return Optional.of(specialBuilding);
+    }
+
+    public List<KingdomSpecialBuilding> getSpecialBuildings()
+    {
+        return specialBuildings;
     }
 }

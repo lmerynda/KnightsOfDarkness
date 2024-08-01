@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.Game;
+import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
 public class KingdomSpecialBuildingsTest {
@@ -33,7 +33,7 @@ public class KingdomSpecialBuildingsTest {
         int buildingPlace = 1;
         var specialBuildings = new KingdomSpecialBuildings(kingdomBuilder.build());
         specialBuildings.deleteBuilding(buildingPlace);
-        assertEquals(SpecialBuildingName.emptyBuilding, specialBuildings.getAt(buildingPlace).get().buildingType);
+        assertEquals(SpecialBuildingType.emptyBuilding, specialBuildings.getAt(buildingPlace).get().buildingType);
     }
 
     @Test
@@ -41,9 +41,9 @@ public class KingdomSpecialBuildingsTest {
     {
         int buildingPlace = 1;
         var specialBuildings = new KingdomSpecialBuildings(kingdomBuilder.build());
-        specialBuildings.startNew(SpecialBuildingName.goldShaft, 1);
+        specialBuildings.startNew(SpecialBuildingType.goldShaft, 1);
         specialBuildings.deleteBuilding(buildingPlace);
-        assertEquals(SpecialBuildingName.emptyBuilding, specialBuildings.getAt(buildingPlace).get().buildingType);
+        assertEquals(SpecialBuildingType.emptyBuilding, specialBuildings.getAt(buildingPlace).get().buildingType);
     }
 
     @Test
@@ -51,8 +51,8 @@ public class KingdomSpecialBuildingsTest {
     {
         int buildingPlace = 1;
         var specialBuildings = new KingdomSpecialBuildings(kingdomBuilder.build());
-        specialBuildings.startNew(SpecialBuildingName.goldShaft, 1);
-        assertEquals(SpecialBuildingName.goldShaft, specialBuildings.getAt(buildingPlace).get().buildingType);
+        specialBuildings.startNew(SpecialBuildingType.goldShaft, 1);
+        assertEquals(SpecialBuildingType.goldShaft, specialBuildings.getAt(buildingPlace).get().buildingType);
     }
 
     @Test
@@ -60,9 +60,9 @@ public class KingdomSpecialBuildingsTest {
     {
         int buildingPlace = 1;
         var specialBuildings = new KingdomSpecialBuildings(kingdomBuilder.build());
-        specialBuildings.startNew(SpecialBuildingName.goldShaft, 1);
+        specialBuildings.startNew(SpecialBuildingType.goldShaft, 1);
         var currentBuilding = specialBuildings.getAt(buildingPlace);
-        specialBuildings.startNew(SpecialBuildingName.ironShaft, 1);
+        specialBuildings.startNew(SpecialBuildingType.ironShaft, 1);
         assertEquals(currentBuilding, specialBuildings.getAt(buildingPlace));
     }
 
@@ -74,7 +74,7 @@ public class KingdomSpecialBuildingsTest {
         // TODO move magic value to config
         for (int buildingPlace = 1; buildingPlace <= 5; buildingPlace++)
         {
-            assertEquals(SpecialBuildingName.emptyBuilding, specialBuildings.getAt(buildingPlace).get().buildingType);
+            assertEquals(SpecialBuildingType.emptyBuilding, specialBuildings.getAt(buildingPlace).get().buildingType);
         }
     }
 

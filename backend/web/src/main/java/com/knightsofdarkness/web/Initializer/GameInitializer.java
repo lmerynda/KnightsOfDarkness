@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knightsofdarkness.common.KingdomDto;
+import com.knightsofdarkness.common.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.MarketOfferDto;
+import com.knightsofdarkness.game.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.web.Kingdom.KingdomService;
 import com.knightsofdarkness.web.Market.MarketService;
 
@@ -35,6 +37,7 @@ public class GameInitializer implements CommandLineRunner {
         kingdomService.createKingdom(generateKingdom("FarmerBot"));
         kingdomService.createKingdom(generateKingdom("IronMinerBot"));
         kingdomService.createKingdom(generateKingdom("GoldMinerBot"));
+        kingdomService.startSpecialBuilding("BlacksmithBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.forge));
         log.info("Kingdoms initialized");
         marketService.createOffers(generateMarketOffers());
         log.info("Market offers initialized");

@@ -42,7 +42,7 @@ public class KingdomDto {
         {
             lastTurnReport = new KingdomTurnReport();
         }
-        return new Kingdom(name, config, resources.toDomain(), buildings.toDomain(), units.toDomain(), lastTurnReport);
+        return new Kingdom(name, config, resources.toDomain(), buildings.toDomain(), new ArrayList<>(), units.toDomain(), lastTurnReport);
     }
 
     public static KingdomDto fromDomain(Kingdom kingdom)
