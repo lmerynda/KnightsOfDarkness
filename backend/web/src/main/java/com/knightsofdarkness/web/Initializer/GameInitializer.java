@@ -37,10 +37,22 @@ public class GameInitializer implements CommandLineRunner {
         kingdomService.createKingdom(generateKingdom("FarmerBot"));
         kingdomService.createKingdom(generateKingdom("IronMinerBot"));
         kingdomService.createKingdom(generateKingdom("GoldMinerBot"));
-        kingdomService.startSpecialBuilding("BlacksmithBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.forge));
+        startBotsSpecialBuildings();
         log.info("Kingdoms initialized");
         marketService.createOffers(generateMarketOffers());
         log.info("Market offers initialized");
+    }
+
+    private void startBotsSpecialBuildings()
+    {
+        var numberOfSpecialBuildings = 5;
+        for(int i = 0; i < numberOfSpecialBuildings; i++)
+        {
+            kingdomService.startSpecialBuilding("FarmerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.granary));
+            kingdomService.startSpecialBuilding("BlacksmithBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.forge));
+            kingdomService.startSpecialBuilding("IronMinerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.ironShaft));
+            kingdomService.startSpecialBuilding("GoldMinerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.goldShaft));
+        }
     }
 
     private KingdomDto generateKingdom(String name)
