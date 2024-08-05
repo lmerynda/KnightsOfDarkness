@@ -29,15 +29,15 @@ const App: React.FC = () => {
                 if (response.ok) {
                     console.log('Token is valid');
                     setAuthenticated(true);
+                    return;
                 } else {
                     console.log('Token is not valid');
-                    setAuthenticated(false);
                 }
             } catch (error) {
                 console.error('Error validating token: ', error);
-                setAuthenticated(false);
             }
         }
+        setAuthenticated(false);
     };
 
     React.useEffect(() => {
