@@ -4,6 +4,7 @@ import { buildingList } from '../GameTypes';
 import { KingdomContext } from '../Kingdom';
 import { buildRequest } from '../game-api-client/KingdomApi';
 import BuildReport from '../components/BuildReport';
+import SpecialBuilding from '../components/SpecialBuildings';
 
 const Build: React.FC = () => {
     const [buildingCounts, setBuildingCounts] = useState<{ [building: string]: number }>({});
@@ -60,6 +61,7 @@ const Build: React.FC = () => {
                 </TableBody>
             </Table>
             <Button variant="contained" onClick={handleSubmit}>Build</Button>
+            <SpecialBuilding />
         </div>
     );
 };

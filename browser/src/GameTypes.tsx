@@ -51,12 +51,22 @@ export type KingdomUnits = {
     cavalry: number
 }
 
+export type SpecialBuilding = {
+    id: string,
+    buildingType: string,
+    level: number,
+    buildingPointsPut: number,
+    buildingPointsRequired: number,
+    isMaxLevel: boolean
+}
+
 export type KingdomData = {
     name: string;
     resources: KingdomResources;
     buildings: KingdomBuildings;
     units: KingdomUnits;
     marketOffers: MarketData[];
+    specialBuildings: SpecialBuilding[];
     lastTurnReport: TurnReport;
 };
 
