@@ -74,7 +74,36 @@ public class BlacksmithBot implements IBot {
     @Override
     public void passTurn()
     {
+        runPrePassTurnActions();
         kingdom.passTurn();
+    }
+
+    private void runPrePassTurnActions()
+    {
+        int buildingPointsSpent = 0;
+        do
+        {
+            buildingPointsSpent = putAllPointsToLowestLevelSpecialBuilding();
+        } while (buildingPointsSpent > 0);
+    }
+
+    private int putAllPointsToLowestLevelSpecialBuilding()
+    {
+        var maybeSpecialBuilding = kingdom.getLowestLevelSpecialBuilding();
+        if (maybeSpecialBuilding.isEmpty())
+        {
+            log.info("[{}] has no special building", kingdom.getName());
+            return 0;
+        }
+
+        var specialBuilding = maybeSpecialBuilding.get();
+        if (specialBuilding.isMaxLevel())
+        {
+            return 0;
+        }
+
+        int buildingPoints = kingdom.getResources().getCount(ResourceName.buildingPoints);
+        return kingdom.buildSpecialBuilding(specialBuilding, buildingPoints);
     }
 
     @Override

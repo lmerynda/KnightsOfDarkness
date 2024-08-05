@@ -1,7 +1,10 @@
 package com.knightsofdarkness.game.kingdom;
 
-import java.util.List;
 import java.util.Optional;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
@@ -168,5 +171,44 @@ public class Kingdom {
     public List<KingdomSpecialBuilding> getSpecialBuildings()
     {
         return specialBuildings;
+    }
+
+    public Optional<KingdomSpecialBuilding> getLowestLevelSpecialBuilding()
+    {
+        if (specialBuildings.isEmpty())
+        {
+            return Optional.empty();
+        }
+
+        return Optional.of(Collections.min(specialBuildings, Comparator.comparingInt(KingdomSpecialBuilding::getLevel)));
+    }
+
+    public int buildSpecialBuilding(KingdomSpecialBuilding specialBuilding, int buildingPoints)
+    {
+        if (specialBuilding.isMaxLevel())
+        {
+            // log.info("[{}] special building {} is at max level", name, specialBuilding.getBuildingType());
+            return 0;
+        }
+        // TODO encapsulate this functionality
+        var buildingPointsRemaining = specialBuilding.getBuildingPointsRequired() - specialBuilding.getBuildingPointsPut();
+        if (buildingPoints >= buildingPointsRemaining)
+        {
+            resources.subtractCount(ResourceName.buildingPoints, buildingPointsRemaining);
+            specialBuilding.buildingPointsPut = 0;
+            specialBuilding.level++;
+            specialBuilding.buildingPointsRequired *= 2;
+            if (specialBuilding.level >= 5)
+            {
+                specialBuilding.isMaxLevel = true;
+                specialBuilding.buildingPointsRequired = 0;
+            }
+            return buildingPointsRemaining;
+        } else
+        {
+            resources.subtractCount(ResourceName.buildingPoints, buildingPoints);
+            specialBuilding.buildingPointsPut += buildingPoints;
+            return buildingPoints;
+        }
     }
 }
