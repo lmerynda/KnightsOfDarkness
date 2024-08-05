@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
 
 public class KingdomDto {
@@ -13,19 +14,22 @@ public class KingdomDto {
     public KingdomBuildingsDto buildings;
     public KingdomUnitsDto units;
     public List<MarketOfferDto> marketOffers;
+    public List<KingdomSpecialBuildingDto> specialBuildings;
     public KingdomTurnReport lastTurnReport;
 
     public KingdomDto()
     {
     }
 
-    public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers, KingdomTurnReport lastTurnReport)
+    public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers, List<KingdomSpecialBuildingDto> specialBuildings,
+            KingdomTurnReport lastTurnReport)
     {
         this.name = name;
         this.resources = resources;
         this.buildings = buildings;
         this.units = units;
         this.marketOffers = marketOffers;
+        this.specialBuildings = specialBuildings;
         this.lastTurnReport = lastTurnReport;
         setDetails();
     }
@@ -42,13 +46,21 @@ public class KingdomDto {
         {
             lastTurnReport = new KingdomTurnReport();
         }
-        return new Kingdom(name, config, resources.toDomain(), buildings.toDomain(), new ArrayList<>(), units.toDomain(), lastTurnReport);
+
+        // fix this too
+        if (specialBuildings == null)
+        {
+            specialBuildings = new ArrayList<>();
+        }
+        List<KingdomSpecialBuilding> specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingDto::toDomain).toList();
+        return new Kingdom(name, config, resources.toDomain(), buildings.toDomain(), specialBuildings, units.toDomain(), lastTurnReport);
     }
 
     public static KingdomDto fromDomain(Kingdom kingdom)
     {
+        List<KingdomSpecialBuildingDto> specialBuildings = kingdom.getSpecialBuildings().stream().map(KingdomSpecialBuildingDto::fromDomain).toList();
         return new KingdomDto(kingdom.getName(), KingdomResourcesDto.fromDomain(kingdom.getResources()), KingdomBuildingsDto.fromDomain(kingdom.getBuildings()), KingdomUnitsDto.fromDomain(kingdom.getUnits()), new ArrayList<>(),
-                kingdom.getLastTurnReport());
+                specialBuildings, kingdom.getLastTurnReport());
     }
 
     public String toString()
@@ -59,6 +71,7 @@ public class KingdomDto {
                 ", buildings=" + buildings +
                 ", units=" + units +
                 ", marketOffers=" + marketOffers +
+                ", specialBuildings=" + specialBuildings +
                 '}';
     }
 }

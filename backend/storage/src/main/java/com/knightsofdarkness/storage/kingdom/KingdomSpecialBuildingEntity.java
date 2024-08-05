@@ -2,6 +2,7 @@ package com.knightsofdarkness.storage.kingdom;
 
 import java.util.UUID;
 
+import com.knightsofdarkness.common.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.game.kingdom.SpecialBuildingType;
 
@@ -56,5 +57,10 @@ public class KingdomSpecialBuildingEntity {
     {
         return new KingdomSpecialBuildingEntity(kingdomSpecialBuilding.getId(), kingdomEntity, kingdomSpecialBuilding.getBuildingType(), kingdomSpecialBuilding.getLevel(), kingdomSpecialBuilding.getBuildingPointsPut(),
                 kingdomSpecialBuilding.getBuildingPointsRequired(), kingdomSpecialBuilding.isMaxLevel());
+    }
+
+    public KingdomSpecialBuildingDto toDto()
+    {
+        return new KingdomSpecialBuildingDto(id, buildingType, level, buildingPointsPut, buildingPointsRequired, isMaxLevel);
     }
 }
