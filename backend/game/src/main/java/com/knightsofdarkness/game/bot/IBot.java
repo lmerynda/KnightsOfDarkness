@@ -2,7 +2,7 @@ package com.knightsofdarkness.game.bot;
 
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
-public interface Bot {
+public interface IBot {
     boolean doAllActions();
 
     boolean doActionCycle();

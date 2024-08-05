@@ -42,7 +42,7 @@ public class FarmerBotTest {
         var farmsBefore = kingdom.getBuildings().getCount(BuildingName.farm);
         var housesBefore = kingdom.getBuildings().getCount(BuildingName.house);
 
-        Bot bot = new FarmerBot(kingdom, game.getMarket());
+        IBot bot = new FarmerBot(kingdom, game.getMarket());
         for (var i = 0; i < 10; i++)
         {
             bot.doActionCycle();

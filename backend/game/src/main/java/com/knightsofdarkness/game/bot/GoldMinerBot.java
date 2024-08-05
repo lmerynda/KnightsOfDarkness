@@ -6,7 +6,7 @@ import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.market.IMarket;
 
-public class GoldMinerBot implements Bot {
+public class GoldMinerBot implements IBot {
     private final Kingdom kingdom;
     private final IMarket market;
     private final double builderToSpecialistRatio = 0.15;

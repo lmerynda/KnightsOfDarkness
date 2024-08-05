@@ -10,7 +10,7 @@ import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
 
-public class BlacksmithBot implements Bot {
+public class BlacksmithBot implements IBot {
     private static final Logger log = LoggerFactory.getLogger(BlacksmithBot.class);
     private final Kingdom kingdom;
     private final IMarket market;
