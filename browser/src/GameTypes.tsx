@@ -117,4 +117,5 @@ export type TurnReport = {
     exiledPeople: number;
     kingdomSizeProductionBonus: number;
     nourishmentProductionFactor: number;
+    specialBuildingBonus: number;
 }

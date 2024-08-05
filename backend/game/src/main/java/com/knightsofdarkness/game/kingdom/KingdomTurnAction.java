@@ -80,8 +80,11 @@ public class KingdomTurnAction {
         {
             var resourceType = productionConfig.getResource(unitName);
             var resourceProduction = kingdom.getUnits().getCount(unitName) * nourishmentProductionFactor * productionConfig.getProductionRate(unitName);
+            var specialBuildingBonus = 1.0;
             if (unitName == UnitName.blacksmith)
             {
+                specialBuildingBonus = getSpecialBuildingBonus(SpecialBuildingType.forge);
+                results.specialBuildingBonus = specialBuildingBonus;
                 int neededIron = kingdom.getIronUpkeep(nourishmentProductionFactor);
                 log.info("needed iron {}", neededIron);
                 var maxIronToSpend = Math.min(neededIron, kingdom.getResources().getCount(ResourceName.iron));
@@ -89,12 +92,28 @@ public class KingdomTurnAction {
                 resourceProduction = Math.min(resourceProduction, maxIronToSpend);
                 log.info("resourceProduction after iron calculation {}", resourceProduction);
                 kingdom.getResources().subtractCount(ResourceName.iron, maxIronToSpend);
-                log.info("Actual tools production: {}", (int) Math.round(resourceProduction * productionBonus));
+                log.info("Actual tools production: {}", (int) Math.round(resourceProduction * productionBonus * specialBuildingBonus));
             }
-            int actualProduction = (int) Math.round(resourceProduction * productionBonus);
+            int actualProduction = (int) Math.round(resourceProduction * productionBonus * specialBuildingBonus);
             kingdom.getResources().addCount(resourceType, actualProduction);
             results.resourcesProduced.put(resourceType, actualProduction);
         }
+    }
+
+    private double getSpecialBuildingBonus(SpecialBuildingType buildingType)
+    {
+        if (buildingType != SpecialBuildingType.forge)
+        {
+            // TODO so far simple implementation for forge only, fix this
+            throw new UnsupportedOperationException("Unimplemented method 'getSpecialBuildingBonus'");
+        }
+
+        var summedForgeLevels = kingdom.getSpecialBuildings().stream()
+                .filter(b -> b.getBuildingType() == SpecialBuildingType.forge)
+                .mapToInt(KingdomSpecialBuilding::getLevel).sum();
+
+        // move bonus to game constants, 20% per forge level, think about how it has worked in the past
+        return 1 + summedForgeLevels * 0.2;
     }
 
     private void getNewPeople()

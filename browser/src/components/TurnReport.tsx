@@ -19,6 +19,7 @@ const TurnReport: React.FC = () => {
                 <Typography variant="body1">Exiled People: {lastTurnReport.exiledPeople}</Typography>
                 <Typography variant="body1">Kingdom size production bonus: {lastTurnReport.kingdomSizeProductionBonus}</Typography>
                 <Typography variant="body1">Nourishment production factor: {lastTurnReport.nourishmentProductionFactor}</Typography>
+                <Typography variant="body1">Special Building Bonus: {lastTurnReport.specialBuildingBonus}</Typography>
                 <Typography variant="h6">Resources Produced</Typography>
                 <div style={{ marginLeft: '1rem' }}>
                     {Object.entries(lastTurnReport.resourcesProduced).map(([resource, quantity]) => (

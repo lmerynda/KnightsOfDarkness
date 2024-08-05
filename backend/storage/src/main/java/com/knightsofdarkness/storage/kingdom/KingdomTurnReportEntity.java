@@ -19,6 +19,7 @@ public class KingdomTurnReportEntity {
     public int exiledPeople;
     public double kingdomSizeProductionBonus;
     public double nourishmentProductionFactor;
+    public double specialBuildingBonus;
 
     public KingdomTurnReport toDto()
     {
@@ -29,6 +30,7 @@ public class KingdomTurnReportEntity {
         kingdomTurnPassedResults.exiledPeople = exiledPeople;
         kingdomTurnPassedResults.kingdomSizeProductionBonus = kingdomSizeProductionBonus;
         kingdomTurnPassedResults.nourishmentProductionFactor = nourishmentProductionFactor;
+        kingdomTurnPassedResults.specialBuildingBonus = specialBuildingBonus;
         return kingdomTurnPassedResults;
     }
 
@@ -47,6 +49,7 @@ public class KingdomTurnReportEntity {
         kingdomTurnReportEntity.exiledPeople = kingdomTurnPassedResults.exiledPeople;
         kingdomTurnReportEntity.kingdomSizeProductionBonus = kingdomTurnPassedResults.kingdomSizeProductionBonus;
         kingdomTurnReportEntity.nourishmentProductionFactor = kingdomTurnPassedResults.nourishmentProductionFactor;
+        kingdomTurnReportEntity.specialBuildingBonus = kingdomTurnPassedResults.specialBuildingBonus;
         return kingdomTurnReportEntity;
     }
 
@@ -65,6 +68,7 @@ public class KingdomTurnReportEntity {
                 ", exiledPeople=" + exiledPeople +
                 ", kingdomSizeProductionBonus=" + kingdomSizeProductionBonus +
                 ", nourishmentProductionFactor=" + nourishmentProductionFactor +
+                ", specialBuildingBonus=" + specialBuildingBonus +
                 '}';
     }
 
