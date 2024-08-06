@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.game.bot.BlacksmithBot;
-import com.knightsofdarkness.game.bot.Bot;
 import com.knightsofdarkness.game.bot.FarmerBot;
 import com.knightsofdarkness.game.bot.GoldMinerBot;
+import com.knightsofdarkness.game.bot.IBot;
 import com.knightsofdarkness.game.bot.IronMinerBot;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
@@ -51,7 +51,7 @@ public class BotsRunner {
 
             var kingdom = botKingdom.get();
             // TODO redo this funny code...
-            Bot bot = switch (botName)
+IBot bot = switch (botName)
             {
                 case "BlacksmithBot" -> new BlacksmithBot(kingdom, market);
                 case "IronMinerBot" -> new IronMinerBot(kingdom, market);
@@ -66,14 +66,14 @@ public class BotsRunner {
         }
     }
 
-    void runSingleBotActions(Bot bot)
+    void runSingleBotActions(IBot bot)
     {
         runActions(bot);
         passTurn(bot);
     }
 
     @Transactional
-    boolean runActions(Bot bot)
+    boolean runActions(IBot bot)
     {
         var kingdom = bot.getKingdom();
         var result = bot.doAllActions();
@@ -82,7 +82,7 @@ public class BotsRunner {
     }
 
     @Transactional
-    void passTurn(Bot bot)
+    void passTurn(IBot bot)
     {
         var kingdom = bot.getKingdom();
         if (kingdom.hasMaxTurns() || bot.doesHaveEnoughUpkeep())
