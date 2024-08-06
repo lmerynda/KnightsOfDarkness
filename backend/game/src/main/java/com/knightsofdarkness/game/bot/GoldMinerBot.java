@@ -19,6 +19,14 @@ public class GoldMinerBot implements IBot {
     }
 
     @Override
+    public boolean doUpkeepActions()
+    {
+        int actionResult = BotFunctions.buyFoodForUpkeep(kingdom, market);
+
+        return actionResult > 0;
+    }
+
+    @Override
     public boolean doAllActions()
     {
         boolean hasAnythingHappened = true;

@@ -24,19 +24,34 @@ public class BlacksmithBot implements IBot {
     }
 
     @Override
+    public boolean doUpkeepActions()
+    {
+
+        int actionResultsAggregate = 0;
+        actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom, market);
+        actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
+
+        return actionResultsAggregate > 0;
+    }
+
+    @Override
     public boolean doAllActions()
     {
         BotFunctions.withdrawAllOffers(kingdom, market);
         // always put something on the market to have any income for supplies
         postToolsOffer(0.2);
+        doUpkeepActions();
 
         boolean hasAnythingHappened = true;
-        do
-        {
-            hasAnythingHappened = doActionCycle();
-        } while (hasAnythingHappened);
 
-        postToolsOffer(1.0);
+        if (doesHaveEnoughUpkeep())
+        {
+            do
+            {
+                hasAnythingHappened = doActionCycle();
+            } while (hasAnythingHappened);
+            postToolsOffer(1.0);
+        }
 
         return hasAnythingHappened;
     }
@@ -65,7 +80,7 @@ public class BlacksmithBot implements IBot {
 
         if (toolsAmount > 0)
         {
-            market.addOffer(kingdom, MarketResource.tools, (int)(toolsAmount * percentage), 140);
+            market.addOffer(kingdom, MarketResource.tools, (int) (toolsAmount * percentage), 140);
         }
 
         return toolsAmount;
@@ -91,7 +106,7 @@ public class BlacksmithBot implements IBot {
     public String getKingdomInfo()
     {
         return String.format("[%s] land: %d, houses: %d, workshops: %d, gold: %d, food: %d, iron: %d, tools: %d", kingdom.getName(), kingdom.getResources().getCount(ResourceName.land),
-                        kingdom.getBuildings().getCount(BuildingName.house),
+                kingdom.getBuildings().getCount(BuildingName.house),
                 kingdom.getBuildings().getCount(BuildingName.workshop), kingdom.getResources().getCount(ResourceName.gold), kingdom.getResources().getCount(ResourceName.food), kingdom.getResources().getCount(ResourceName.iron),
                 kingdom.getResources().getCount(ResourceName.tools));
     }

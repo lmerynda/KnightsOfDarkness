@@ -20,6 +20,14 @@ public class IronMinerBot implements IBot {
     }
 
     @Override
+    public boolean doUpkeepActions()
+    {
+        int actionResult = BotFunctions.buyFoodForUpkeep(kingdom, market);
+
+        return actionResult > 0;
+    }
+
+    @Override
     public boolean doAllActions()
     {
         BotFunctions.withdrawAllOffers(kingdom, market);
@@ -84,7 +92,7 @@ public class IronMinerBot implements IBot {
     public String getKingdomInfo()
     {
         return String.format("[%s] land: %d, houses: %d, iron mines: %d, gold: %d, food: %d", kingdom.getName(), kingdom.getResources().getCount(ResourceName.land), kingdom.getBuildings().getCount(BuildingName.house),
-                        kingdom.getBuildings().getCount(BuildingName.ironMine), kingdom.getResources().getCount(ResourceName.gold), kingdom.getResources().getCount(ResourceName.food));
+                kingdom.getBuildings().getCount(BuildingName.ironMine), kingdom.getResources().getCount(ResourceName.gold), kingdom.getResources().getCount(ResourceName.food));
     }
 
     @Override
