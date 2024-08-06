@@ -69,15 +69,29 @@ public class FarmerBot implements IBot {
     @Override
     public void passTurn()
     {
+        runPrePassTurnActions();
         kingdom.passTurn();
+    }
+
+    private void runPrePassTurnActions()
+    {
+        int buildingPointsSpent = 0;
+        do
+        {
+            buildingPointsSpent = BotFunctions.putRemainingPointsToLowestLevelSpecialBuilding(kingdom);
+        } while (buildingPointsSpent > 0);
     }
 
     @Override
     public String getKingdomInfo()
     {
-        return String.format("[%s] land: %d, houses: %d, farms: %d, gold: %d, food: %d", kingdom.getName(), kingdom.getResources().getCount(ResourceName.land), kingdom.getBuildings().getCount(BuildingName.house),
-                        kingdom.getBuildings().getCount(BuildingName.farm),
-                kingdom.getResources().getCount(ResourceName.gold), kingdom.getResources().getCount(ResourceName.food));
+        return String.format("[%s] land: %d, houses: %d, farms: %d, gold: %d, food: %d",
+                kingdom.getName(),
+                kingdom.getResources().getCount(ResourceName.land),
+                kingdom.getBuildings().getCount(BuildingName.house),
+                kingdom.getBuildings().getCount(BuildingName.farm),
+                kingdom.getResources().getCount(ResourceName.gold),
+                kingdom.getResources().getCount(ResourceName.food));
     }
 
     @Override
