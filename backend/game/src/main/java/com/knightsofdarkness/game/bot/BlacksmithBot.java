@@ -83,11 +83,11 @@ public class BlacksmithBot implements IBot {
         int buildingPointsSpent = 0;
         do
         {
-            buildingPointsSpent = putAllPointsToLowestLevelSpecialBuilding();
+            buildingPointsSpent = putRemainingPointsToLowestLevelSpecialBuilding();
         } while (buildingPointsSpent > 0);
     }
 
-    private int putAllPointsToLowestLevelSpecialBuilding()
+    private int putRemainingPointsToLowestLevelSpecialBuilding()
     {
         var maybeSpecialBuilding = kingdom.getLowestLevelSpecialBuilding();
         if (maybeSpecialBuilding.isEmpty())
