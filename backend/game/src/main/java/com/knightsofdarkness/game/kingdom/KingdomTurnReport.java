@@ -10,7 +10,7 @@ public class KingdomTurnReport {
     public int exiledPeople = 0;
     public double kingdomSizeProductionBonus = 0.0;
     public double nourishmentProductionFactor = 1.0;
-    public double specialBuildingBonus;
+    public Map<ResourceName, Double> specialBuildingBonus;
 
     public String toString()
     {

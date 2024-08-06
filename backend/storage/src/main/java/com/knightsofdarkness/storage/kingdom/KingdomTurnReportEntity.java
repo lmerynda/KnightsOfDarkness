@@ -19,7 +19,7 @@ public class KingdomTurnReportEntity {
     public int exiledPeople;
     public double kingdomSizeProductionBonus;
     public double nourishmentProductionFactor;
-    public double specialBuildingBonus;
+    public Map<ResourceName, Double> specialBuildingBonus;
 
     public KingdomTurnReport toDto()
     {

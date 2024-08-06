@@ -80,11 +80,9 @@ public class KingdomTurnAction {
         {
             var resourceType = productionConfig.getResource(unitName);
             var resourceProduction = kingdom.getUnits().getCount(unitName) * nourishmentProductionFactor * productionConfig.getProductionRate(unitName);
-            var specialBuildingBonus = 1.0;
+            var specialBuildingBonus = getSpecialBuildingBonus(resourceType);
             if (unitName == UnitName.blacksmith)
             {
-                specialBuildingBonus = getSpecialBuildingBonus(SpecialBuildingType.forge);
-                results.specialBuildingBonus = specialBuildingBonus;
                 int neededIron = kingdom.getIronUpkeep(nourishmentProductionFactor);
                 log.info("needed iron {}", neededIron);
                 var maxIronToSpend = Math.min(neededIron, kingdom.getResources().getCount(ResourceName.iron));
@@ -97,23 +95,21 @@ public class KingdomTurnAction {
             int actualProduction = (int) Math.round(resourceProduction * productionBonus * specialBuildingBonus);
             kingdom.getResources().addCount(resourceType, actualProduction);
             results.resourcesProduced.put(resourceType, actualProduction);
+            results.specialBuildingBonus.put(resourceType, specialBuildingBonus);
         }
     }
 
-    private double getSpecialBuildingBonus(SpecialBuildingType buildingType)
+    private double getSpecialBuildingBonus(ResourceName resourceName)
     {
-        if (buildingType != SpecialBuildingType.forge)
-        {
-            // TODO so far simple implementation for forge only, fix this
-            throw new UnsupportedOperationException("Unimplemented method 'getSpecialBuildingBonus'");
-        }
+        var specialBuildingType = SpecialBuildingType.fromResource(resourceName);
 
-        var summedForgeLevels = kingdom.getSpecialBuildings().stream()
-                .filter(b -> b.getBuildingType() == SpecialBuildingType.forge)
+        var summedLevels = kingdom.getSpecialBuildings().stream()
+                .filter(b -> b.getBuildingType() == specialBuildingType)
                 .mapToInt(KingdomSpecialBuilding::getLevel).sum();
 
-        // move bonus to game constants, 20% per forge level, think about how it has worked in the past
-        return 1 + summedForgeLevels * 0.2;
+        // TODO move bonus to game constants, 20% per special building level
+        // think about how it has worked in the past
+        return 1 + summedLevels * 0.2;
     }
 
     private void getNewPeople()
