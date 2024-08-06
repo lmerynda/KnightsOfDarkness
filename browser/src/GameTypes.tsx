@@ -110,6 +110,14 @@ export const unitList = [
     "cavalry"
 ];
 
+export type SpecialBuildingBonus = {
+    food: number;
+    gold: number;
+    iron: number;
+    tools: number;
+    weapons: number;
+}
+
 export type TurnReport = {
     foodConsumed: number;
     resourcesProduced: KingdomResources;
@@ -117,5 +125,5 @@ export type TurnReport = {
     exiledPeople: number;
     kingdomSizeProductionBonus: number;
     nourishmentProductionFactor: number;
-    specialBuildingBonus: number;
+    specialBuildingBonus: SpecialBuildingBonus;
 }

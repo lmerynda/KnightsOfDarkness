@@ -19,6 +19,7 @@ public class KingdomTurnReportEntity {
     public int exiledPeople;
     public double kingdomSizeProductionBonus;
     public double nourishmentProductionFactor;
+    @JdbcTypeCode(SqlTypes.JSON)
     public Map<ResourceName, Double> specialBuildingBonus;
 
     public KingdomTurnReport toDto()

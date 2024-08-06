@@ -57,7 +57,7 @@ public class IronMinerBot implements IBot {
 
         if (ironAmount > 0)
         {
-            market.addOffer(kingdom, MarketResource.iron, ironAmount, 15);
+            market.addOffer(kingdom, MarketResource.iron, ironAmount, 25);
         }
 
         return ironAmount;
@@ -66,7 +66,18 @@ public class IronMinerBot implements IBot {
     @Override
     public void passTurn()
     {
+        runPrePassTurnActions();
         kingdom.passTurn();
+    }
+
+    // TODO time to have a base bot class?
+    private void runPrePassTurnActions()
+    {
+        int buildingPointsSpent = 0;
+        do
+        {
+            buildingPointsSpent = BotFunctions.putRemainingPointsToLowestLevelSpecialBuilding(kingdom);
+        } while (buildingPointsSpent > 0);
     }
 
     @Override
