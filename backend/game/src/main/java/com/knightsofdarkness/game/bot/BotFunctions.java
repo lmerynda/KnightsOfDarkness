@@ -190,4 +190,23 @@ public class BotFunctions {
         }
     }
 
+    public static int putRemainingPointsToLowestLevelSpecialBuilding(Kingdom kingdom)
+    {
+        var maybeSpecialBuilding = kingdom.getLowestLevelSpecialBuilding();
+        if (maybeSpecialBuilding.isEmpty())
+        {
+            log.info("[{}] has no special building", kingdom.getName());
+            return 0;
+        }
+
+        var specialBuilding = maybeSpecialBuilding.get();
+        if (specialBuilding.isMaxLevel())
+        {
+            return 0;
+        }
+
+        int buildingPoints = kingdom.getResources().getCount(ResourceName.buildingPoints);
+        return kingdom.buildSpecialBuilding(specialBuilding, buildingPoints);
+    }
+
 }
