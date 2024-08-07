@@ -9,7 +9,7 @@ import com.knightsofdarkness.game.market.IMarket;
 public class GoldMinerBot implements IBot {
     private final Kingdom kingdom;
     private final IMarket market;
-    private final double builderToSpecialistRatio = 0.15;
+    private final double builderToSpecialistRatio = 0.1;
     private final double housesToSpecialistBuildingRatio = 0.6;
 
     public GoldMinerBot(Kingdom kingdom, IMarket market)

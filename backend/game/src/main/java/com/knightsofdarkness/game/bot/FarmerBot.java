@@ -10,7 +10,7 @@ import com.knightsofdarkness.game.market.MarketResource;
 public class FarmerBot implements IBot {
     private final Kingdom kingdom;
     private final IMarket market;
-    private final double builderToSpecialistRatio = 0.1;
+    private final double builderToSpecialistRatio = 0.05;
     private final double housesToSpecialistBuildingRatio = 0.55;
 
     public FarmerBot(Kingdom kingdom, IMarket market)

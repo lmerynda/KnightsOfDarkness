@@ -130,7 +130,7 @@ public class BlacksmithBot implements IBot {
         var nourishmentFactor = 1.0; // Assume everyone is fed
         var ironUpkeep = kingdom.getIronUpkeep(nourishmentFactor);
         var ironAmount = kingdom.getResources().getCount(ResourceName.iron);
-        int ironReserve = ironAmount / ironUpkeep;
+        double ironReserve = (double)ironAmount / ironUpkeep;
         log.info("[{}] iron reserve {}", kingdom.getName(), ironReserve);
         return ironReserve >= 0.8d;
     }
