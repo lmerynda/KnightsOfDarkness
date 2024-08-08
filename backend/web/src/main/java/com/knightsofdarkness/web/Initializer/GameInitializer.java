@@ -33,6 +33,7 @@ public class GameInitializer implements CommandLineRunner {
     public void run(String... args)
     {
         kingdomService.createKingdom(generateKingdom("uprzejmy"));
+        kingdomService.startSpecialBuilding("uprzejmy", new KingdomSpecialBuildingStartDto(SpecialBuildingType.goldShaft));
         kingdomService.createKingdom(generateKingdom("BlacksmithBot"));
         kingdomService.createKingdom(generateKingdom("FarmerBot"));
         kingdomService.createKingdom(generateKingdom("IronMinerBot"));
