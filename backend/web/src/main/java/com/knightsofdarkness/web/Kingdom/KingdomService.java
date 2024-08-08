@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.common.KingdomBuildingsDto;
 import com.knightsofdarkness.common.KingdomDto;
+import com.knightsofdarkness.common.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.common.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -159,5 +160,27 @@ public class KingdomService {
         Optional<KingdomSpecialBuilding> specialBuilding = kingdom.get().startSpecialBuilding(specialBuildingStartDto.name);
         kingdomRepository.update(kingdom.get());
         return ResponseEntity.of(specialBuilding);
+    }
+
+    public ResponseEntity<Integer> buildSpecialBuilding(String name, KingdomSpecialBuildingBuildDto specialBuildingBuildDto)
+    {
+        log.info("[{}] building special building {}", name, specialBuildingBuildDto);
+        Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(name);
+        if (maybeKingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        var kingdom = maybeKingdom.get();
+        Optional<KingdomSpecialBuilding> maybeSpecialBuilding = kingdom.getSpecialBuildings().stream().filter(specialBuilding -> specialBuilding.getId().equals(specialBuildingBuildDto.id)).findFirst();
+        if (maybeSpecialBuilding.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        var spentPoints = kingdom.buildSpecialBuilding(maybeSpecialBuilding.get(), specialBuildingBuildDto.buildingPoints);
+        kingdomRepository.update(kingdom);
+
+        return ResponseEntity.ok(spentPoints);
     }
 }

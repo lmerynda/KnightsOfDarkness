@@ -33,7 +33,6 @@ const MarketBuy: React.FC = () => {
     }, []);
 
     const clearForm = (id: string) => {
-        console.log(`Clearing market buy value for id: ${id}`);
         setBuyInputs((prevInputs) => ({
             ...prevInputs,
             [id]: 0,

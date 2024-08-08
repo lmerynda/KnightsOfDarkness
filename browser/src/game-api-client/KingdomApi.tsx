@@ -124,3 +124,27 @@ export async function buyLandRequest(buyAmount: number): Promise<Response> {
         throw error;
     }
 }
+
+export async function buildSpecialBuildingRequest(id: string, buildingPoints: number): Promise<Response> {
+    try {
+        const response = await handleResponse(fetchData(`${GAME_API}/kingdom/build-special-building`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
+            },
+
+            body: JSON.stringify({ "id": id, "buildingPoints": buildingPoints })
+        }));
+
+        if (response.ok) {
+            console.log(`special building build request successful`);
+            return response.json();
+        }
+
+        throw new Error(`request failed, status: ${response.status}`);
+    } catch (error) {
+        console.error('special building build error:', error);
+        throw error;
+    }
+}

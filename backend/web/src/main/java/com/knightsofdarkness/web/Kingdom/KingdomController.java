@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.knightsofdarkness.common.KingdomBuildingsDto;
 import com.knightsofdarkness.common.KingdomDto;
+import com.knightsofdarkness.common.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.common.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
@@ -97,8 +98,8 @@ public class KingdomController {
         return kingdomService.startSpecialBuilding(currentUser.kingdom, specialBuildingStartDto);
     }
 
-    @PostMapping("/build-special")
-    ResponseEntity<KingdomBuildingsDto> kingdomBuildSpecial(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
+    @PostMapping("/build-special-building")
+    ResponseEntity<Integer> kingdomBuildSpecial(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingBuildDto specialBuildingBuildDto)
     {
         if (currentUser == null)
         {
@@ -106,7 +107,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.build(currentUser.kingdom, buildings);
+        return kingdomService.buildSpecialBuilding(currentUser.kingdom, specialBuildingBuildDto);
     }
 
     @PostMapping("/train")

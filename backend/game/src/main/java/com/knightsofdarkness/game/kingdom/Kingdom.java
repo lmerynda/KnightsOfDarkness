@@ -192,9 +192,11 @@ public class Kingdom {
         }
         // TODO encapsulate this functionality
         var buildingPointsRemaining = specialBuilding.getBuildingPointsRequired() - specialBuilding.getBuildingPointsPut();
+        var kingdomBuildingPoints = resources.getCount(ResourceName.buildingPoints);
         if (buildingPoints >= buildingPointsRemaining)
         {
-            resources.subtractCount(ResourceName.buildingPoints, buildingPointsRemaining);
+            var buildingPointsToSpend = Math.min(kingdomBuildingPoints, buildingPointsRemaining);
+            resources.subtractCount(ResourceName.buildingPoints, buildingPointsToSpend);
             specialBuilding.buildingPointsPut = 0;
             specialBuilding.level++;
             specialBuilding.buildingPointsRequired *= 2;
@@ -203,12 +205,13 @@ public class Kingdom {
                 specialBuilding.isMaxLevel = true;
                 specialBuilding.buildingPointsRequired = 0;
             }
-            return buildingPointsRemaining;
+            return buildingPointsToSpend;
         } else
         {
-            resources.subtractCount(ResourceName.buildingPoints, buildingPoints);
-            specialBuilding.buildingPointsPut += buildingPoints;
-            return buildingPoints;
+            var buildingPointsToSpend = Math.min(kingdomBuildingPoints, buildingPoints);
+            resources.subtractCount(ResourceName.buildingPoints, buildingPointsToSpend);
+            specialBuilding.buildingPointsPut += buildingPointsToSpend;
+            return buildingPointsToSpend;
         }
     }
 }

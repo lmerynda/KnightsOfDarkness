@@ -1,26 +1,26 @@
 package com.knightsofdarkness.common;
 
-import com.knightsofdarkness.game.kingdom.SpecialBuildingType;
+import java.util.UUID;
 
 public class KingdomSpecialBuildingBuildDto {
-    public int buildingPlace;
-    public SpecialBuildingType specialBuilding;
+    public UUID id;
+    public int buildingPoints;
 
     public KingdomSpecialBuildingBuildDto()
     {
     }
 
-    public KingdomSpecialBuildingBuildDto(int buildingPlace, SpecialBuildingType specialBuilding)
+    public KingdomSpecialBuildingBuildDto(UUID id, int buildingPoints)
     {
-        this.buildingPlace = buildingPlace;
-        this.specialBuilding = specialBuilding;
+        this.id = id;
+        this.buildingPoints = buildingPoints;
     }
 
     public String toString()
     {
         return "KingdomSpecialBuildingBuildDto{" +
-                "buildingPlace=" + buildingPlace +
-                ", specialBuilding=" + specialBuilding +
+                "id=" + id +
+                ", buildingPoints=" + buildingPoints +
                 '}';
     }
 }

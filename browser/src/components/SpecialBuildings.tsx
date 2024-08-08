@@ -1,10 +1,10 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button, ButtonGroup } from '@mui/material';
 import React, { useContext } from 'react';
 import { KingdomContext } from '../Kingdom';
+import { buildSpecialBuildingRequest } from '../game-api-client/KingdomApi';
 
 const SpecialBuilding: React.FC = () => {
     const [buildInputs, setBuildInputs] = React.useState<{ [id: string]: number }>({});
-
 
     const kingdomContext = useContext(KingdomContext);
     // ask someone how to better solve it, null object pattern?
@@ -34,6 +34,24 @@ const SpecialBuilding: React.FC = () => {
         }));
     };
 
+    const clearForm = (id: string) => {
+        setBuildInputs((prevInputs) => ({
+            ...prevInputs,
+            [id]: 0,
+        }));
+    };
+
+    const handleBuild = async (id: string, buildingPoints: number) => {
+        if (kingdomContext === undefined || buildingPoints <= 0) {
+            return;
+        }
+
+        const data = await buildSpecialBuildingRequest(id, buildingPoints);
+
+        clearForm(id);
+        kingdomContext.reloadKingdom();
+    };
+
     return (
         <div>
             <h2>Special Buildings</h2>
@@ -59,7 +77,7 @@ const SpecialBuilding: React.FC = () => {
                                     value={buildInputs[specialBuilding.id] || 0}
                                     onChange={handleInputChange(specialBuilding.id)} />
                                 <ButtonGroup>
-                                    <Button>Build</Button>
+                                    <Button onClick={() => handleBuild(specialBuilding.id, buildInputs[specialBuilding.id] || 0)}>Build</Button>
                                     <Button onClick={() => handleMaxInput(specialBuilding.id, specialBuilding.buildingPointsRequired - specialBuilding.buildingPointsPut)}>Max</Button>
                                 </ButtonGroup>
                             </TableCell>
