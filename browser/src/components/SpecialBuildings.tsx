@@ -15,9 +15,14 @@ const SpecialBuilding: React.FC = () => {
     const specialBuildings = kingdomContext.kingdom.specialBuildings;
 
     function handleMaxInput(id: string, pointsToPut: number): void {
+        if (kingdomContext === undefined) {
+            return;
+        }
+        const availableBuildingPoints = kingdomContext.kingdom.resources.buildingPoints;
+        const maxPoints = Math.min(availableBuildingPoints, pointsToPut);
         setBuildInputs((prevAmounts) => ({
             ...prevAmounts,
-            [id]: pointsToPut,
+            [id]: maxPoints,
         }));
     }
 
@@ -32,7 +37,6 @@ const SpecialBuilding: React.FC = () => {
     return (
         <div>
             <h2>Special Buildings</h2>
-
             <Table>
                 <TableHead>
                     <TableRow>
