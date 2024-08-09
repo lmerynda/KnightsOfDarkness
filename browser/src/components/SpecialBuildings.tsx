@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button, Button
 import React, { useContext } from 'react';
 import { KingdomContext } from '../Kingdom';
 import { buildSpecialBuildingRequest } from '../game-api-client/KingdomApi';
+import SpecialBuildingStart from './SpecialBuildingStart';
 
 const SpecialBuilding: React.FC = () => {
     const [buildInputs, setBuildInputs] = React.useState<{ [id: string]: number }>({});
@@ -55,6 +56,7 @@ const SpecialBuilding: React.FC = () => {
     return (
         <div>
             <h2>Special Buildings</h2>
+            <SpecialBuildingStart />
             <Table>
                 <TableHead>
                     <TableRow>

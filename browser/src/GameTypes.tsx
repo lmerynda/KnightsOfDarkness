@@ -110,6 +110,11 @@ export const unitList = [
     "cavalry"
 ];
 
+export const specialBuildingList = [
+    "goldShaft",
+    "granary"
+] as const;
+
 export type SpecialBuildingBonus = {
     food: number;
     gold: number;
