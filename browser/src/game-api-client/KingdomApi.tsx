@@ -172,3 +172,27 @@ export async function buildSpecialBuildingRequest(id: string, buildingPoints: nu
         throw error;
     }
 }
+
+export async function demolishSpecialBuildingRequest(id: string): Promise<Response> {
+    try {
+        const response = await handleResponse(fetchData(`${GAME_API}/kingdom/demolish-special-building`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
+            },
+
+            body: JSON.stringify({ "id": id })
+        }));
+
+        if (response.ok) {
+            console.log(`special building demolish request successful`);
+            return response.json();
+        }
+
+        throw new Error(`request failed, status: ${response.status}`);
+    } catch (error) {
+        console.error('special building demolish error:', error);
+        throw error;
+    }
+}

@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button, ButtonGroup } from '@mui/material';
 import React, { useContext } from 'react';
 import { KingdomContext } from '../Kingdom';
-import { buildSpecialBuildingRequest } from '../game-api-client/KingdomApi';
+import { buildSpecialBuildingRequest, demolishSpecialBuildingRequest } from '../game-api-client/KingdomApi';
 import SpecialBuildingStart from './SpecialBuildingStart';
 
 const SpecialBuilding: React.FC = () => {
@@ -52,6 +52,10 @@ const SpecialBuilding: React.FC = () => {
         clearForm(id);
         kingdomContext.reloadKingdom();
     };
+    const handleDemolish = async (id: string) => {
+        const data = await demolishSpecialBuildingRequest(id);
+        kingdomContext.reloadKingdom();
+    }
 
     return (
         <div>
@@ -81,6 +85,7 @@ const SpecialBuilding: React.FC = () => {
                                 <ButtonGroup>
                                     <Button onClick={() => handleBuild(specialBuilding.id, buildInputs[specialBuilding.id] || 0)}>Build</Button>
                                     <Button onClick={() => handleMaxInput(specialBuilding.id, specialBuilding.buildingPointsRequired - specialBuilding.buildingPointsPut)}>Max</Button>
+                                    <Button variant="contained" onClick={() => handleDemolish(specialBuilding.id)} color="error">Demolish</Button>
                                 </ButtonGroup>
                             </TableCell>
                         </TableRow>

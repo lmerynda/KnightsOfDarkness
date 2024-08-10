@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
@@ -213,5 +214,17 @@ public class Kingdom {
             specialBuilding.buildingPointsPut += buildingPointsToSpend;
             return buildingPointsToSpend;
         }
+    }
+
+    public boolean demolishSpecialBuilding(UUID id)
+    {
+        var specialBuilding = specialBuildings.stream().filter(sb -> sb.getId().equals(id)).findFirst();
+        if (specialBuilding.isEmpty())
+        {
+            return false;
+        }
+
+        specialBuildings.remove(specialBuilding.get());
+        return true;
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.knightsofdarkness.common.KingdomBuildingsDto;
 import com.knightsofdarkness.common.KingdomDto;
 import com.knightsofdarkness.common.KingdomSpecialBuildingBuildDto;
+import com.knightsofdarkness.common.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.common.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -182,5 +183,21 @@ public class KingdomService {
         kingdomRepository.update(kingdom);
 
         return ResponseEntity.ok(spentPoints);
+    }
+
+    public ResponseEntity<Boolean> demolishSpecialBuilding(String name, KingdomSpecialBuildingDemolishDto specialBuildingDemolishDto)
+    {
+        log.info("[{}] demolishing special building {}", name, specialBuildingDemolishDto);
+        Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(name);
+        if (maybeKingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        var kingdom = maybeKingdom.get();
+        var demolished = kingdom.demolishSpecialBuilding(specialBuildingDemolishDto.id);
+        kingdomRepository.update(kingdom);
+
+        return ResponseEntity.ok(demolished);
     }
 }

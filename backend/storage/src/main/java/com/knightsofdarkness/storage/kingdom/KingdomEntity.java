@@ -30,7 +30,7 @@ public class KingdomEntity {
     @Embedded
     KingdomBuildingsEntity buildings;
 
-    @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
     List<KingdomSpecialBuildingEntity> specialBuildings;
 
     @Embedded

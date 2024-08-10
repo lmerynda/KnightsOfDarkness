@@ -20,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.knightsofdarkness.common.KingdomBuildingsDto;
 import com.knightsofdarkness.common.KingdomDto;
 import com.knightsofdarkness.common.KingdomSpecialBuildingBuildDto;
+import com.knightsofdarkness.common.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.common.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.KingdomUnitsDto;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
@@ -87,7 +88,7 @@ public class KingdomController {
     }
 
     @PostMapping("/start-special-building")
-    ResponseEntity<KingdomSpecialBuilding> kingdomSelectSpecial(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingStartDto specialBuildingStartDto)
+    ResponseEntity<KingdomSpecialBuilding> kingdomStartSpecialBuilding(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingStartDto specialBuildingStartDto)
     {
         if (currentUser == null)
         {
@@ -96,6 +97,18 @@ public class KingdomController {
         }
 
         return kingdomService.startSpecialBuilding(currentUser.kingdom, specialBuildingStartDto);
+    }
+
+    @PostMapping("/demolish-special-building")
+    ResponseEntity<Boolean> kingdomDemolishSpecialBuilding(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingDemolishDto specialBuildingDemolishDto)
+    {
+        if (currentUser == null)
+        {
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.demolishSpecialBuilding(currentUser.kingdom, specialBuildingDemolishDto);
     }
 
     @PostMapping("/build-special-building")
