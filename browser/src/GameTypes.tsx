@@ -94,7 +94,7 @@ export const buildingList = [
     "spyGuilds",
     "towers",
     "castles"
-];
+] as const;
 
 export const unitList = [
     "builders",
@@ -108,10 +108,12 @@ export const unitList = [
     "infantry",
     "bowmen",
     "cavalry"
-];
+] as const;
 
 export const specialBuildingList = [
     "goldShaft",
+    "ironShaft",
+    "forge",
     "granary"
 ] as const;
 
