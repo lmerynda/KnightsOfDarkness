@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.Game;
+import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
@@ -60,8 +60,8 @@ class KingdomBuildTest {
         assertEquals(housesBeforeBuild + 5, kingdom.getBuildings().getCount(BuildingName.house));
         assertEquals(goldMinesBeforeBuild + 2, kingdom.getBuildings().getCount(BuildingName.goldMine));
 
-        var housesCost = housesToBuild * config.buildingPointCosts().house();
-        var goldMinesCost = goldMinesToBuild * config.buildingPointCosts().goldMine();
+        var housesCost = housesToBuild * config.buildingPointCosts().houses();
+        var goldMinesCost = goldMinesToBuild * config.buildingPointCosts().goldMines();
         var totalCost = housesCost + goldMinesCost;
 
         assertEquals(buildingPointsBeforeBuild - totalCost, kingdom.getResources().getCount(ResourceName.buildingPoints));

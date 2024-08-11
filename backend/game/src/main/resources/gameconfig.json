@@ -1,16 +1,16 @@
 {
   "buildingPointCosts": {
-    "house": 100,
-    "goldMine": 1000,
-    "ironMine": 1000,
-    "farm": 200,
-    "workshop": 100,
-    "market": 500,
+    "houses": 100,
+    "goldMines": 1000,
+    "ironMines": 1000,
+    "farms": 200,
+    "workshops": 100,
+    "markets": 500,
     "barracks": 2000,
-    "guardHouse": 1000,
-    "spyGuild": 1000,
-    "castle": 100000,
-    "tower": 1000
+    "guardHouses": 1000,
+    "spyGuilds": 1000,
+    "castles": 100000,
+    "towers": 1000
   },
   "specialBuildingCosts": {
     "goldShaft": 10000,

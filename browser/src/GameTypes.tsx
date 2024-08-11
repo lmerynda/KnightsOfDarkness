@@ -65,10 +65,6 @@ export type KingdomData = {
     lastTurnReport: TurnReport;
 };
 
-export type GameConfig = {
-    name: string;
-};
-
 export type MarketOfferData = {
     id: string;
     sellerName: string;
@@ -90,3 +86,23 @@ export type TurnReport = {
     nourishmentProductionFactor: number;
     specialBuildingBonus: SpecialBuildingBonus;
 }
+
+export type TrainingCost = Record<Unit, {
+    gold: number;
+    tools: number;
+    weapons: number;
+}>;
+
+export const productionResources = ["food", "gold", "iron", "tools", "weapons"] as const;
+export type ProductionResource = (typeof productionResources)[number];
+export type Production = Record<Unit, {
+    rate: number;
+    resource: ProductionResource;
+}>;
+export type GameConfig = {
+    buildingPointCosts: Record<Building, number>;
+    buildingCapacity: Record<Building, number>;
+    trainingCost: TrainingCost;
+    production: Production;
+    specialBuildingCosts: Record<SpecialBuildingType, number>; // not really, cost should be reworked
+};

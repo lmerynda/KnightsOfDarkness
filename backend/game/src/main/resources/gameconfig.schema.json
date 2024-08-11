@@ -5,37 +5,37 @@
     "buildingPointCosts": {
       "type": "object",
       "properties": {
-        "house": {
+        "houses": {
           "type": "integer"
         },
-        "goldMine": {
+        "goldMines": {
           "type": "integer"
         },
-        "ironMine": {
+        "ironMines": {
           "type": "integer"
         },
-        "farm": {
+        "farms": {
           "type": "integer"
         },
-        "workshop": {
+        "workshops": {
           "type": "integer"
         },
-        "market": {
+        "markets": {
           "type": "integer"
         },
         "barracks": {
           "type": "integer"
         },
-        "guardHouse": {
+        "guardHouses": {
           "type": "integer"
         },
-        "spyGuild": {
+        "spyGuilds": {
           "type": "integer"
         },
-        "castle": {
+        "castles": {
           "type": "integer"
         },
-        "tower": {
+        "towers": {
           "type": "integer"
         }
       },

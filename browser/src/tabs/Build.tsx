@@ -41,6 +41,7 @@ const Build: React.FC = () => {
                 <TableHead>
                     <TableRow>
                         <TableCell>Building</TableCell>
+                        <TableCell>Cost</TableCell>
                         <TableCell>Count</TableCell>
                     </TableRow>
                 </TableHead>
@@ -48,6 +49,7 @@ const Build: React.FC = () => {
                     {buildings.map((building) => (
                         <TableRow key={building}>
                             <TableCell>{building}</TableCell>
+                            <TableCell>{kingdomContext.gameConfig.buildingPointCosts[building]}</TableCell>
                             <TableCell>
                                 <Input
                                     type="number"

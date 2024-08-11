@@ -2,22 +2,22 @@ package com.knightsofdarkness.game.gameconfig;
 
 import com.knightsofdarkness.game.kingdom.BuildingName;
 
-public record BuildingPointCosts(int house, int goldMine, int ironMine, int workshop, int farm, int market, int barracks, int guardHouse, int spyGuild, int tower, int castle) {
+public record BuildingPointCosts(int houses, int goldMines, int ironMines, int workshops, int farms, int markets, int barracks, int guardHouses, int spyGuilds, int towers, int castles) {
     public int getCost(BuildingName name)
     {
         return switch (name)
         {
-            case house -> house;
-            case goldMine -> goldMine;
-            case ironMine -> ironMine;
-            case workshop -> workshop;
-            case farm -> farm;
-            case market -> market;
+            case house -> houses;
+            case goldMine -> goldMines;
+            case ironMine -> ironMines;
+            case workshop -> workshops;
+            case farm -> farms;
+            case market -> markets;
             case barracks -> barracks;
-            case guardHouse -> guardHouse;
-            case spyGuild -> spyGuild;
-            case tower -> tower;
-            case castle -> castle;
+            case guardHouse -> guardHouses;
+            case spyGuild -> spyGuilds;
+            case tower -> towers;
+            case castle -> castles;
         };
     }
 }
