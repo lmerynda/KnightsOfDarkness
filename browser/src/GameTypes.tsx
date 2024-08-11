@@ -106,3 +106,17 @@ export type GameConfig = {
     production: Production;
     specialBuildingCosts: Record<SpecialBuildingType, number>; // not really, cost should be reworked
 };
+
+export const buildingOccupantsMap: Record<Building, readonly Unit[]> = {
+    goldMines: ["goldMiners"],
+    ironMines: ["ironMiners"],
+    workshops: ["blacksmiths"],
+    farms: ["farmers"],
+    markets: ["carriers"],
+    barracks: ["infantry", "bowmen", "cavalry"],
+    guardHouses: ["guards"],
+    spyGuilds: ["spies"],
+    towers: ["bowmen"],
+    castles: ["infantry", "bowmen", "cavalry"],
+    houses: ["builders", "goldMiners", "ironMiners", "farmers", "blacksmiths", "carriers", "guards", "spies", "infantry", "bowmen", "cavalry"]
+} as const;

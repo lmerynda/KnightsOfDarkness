@@ -59,17 +59,17 @@
     }
   },
   "buildingCapacity": {
-    "house": 5,
-    "goldMine": 5,
-    "ironMine": 5,
-    "farm": 5,
-    "workshop": 5,
-    "market": 50,
+    "houses": 5,
+    "goldMines": 5,
+    "ironMines": 5,
+    "farms": 5,
+    "workshops": 5,
+    "markets": 50,
     "barracks": 100,
-    "guardHouse": 10,
-    "spyGuild": 50,
-    "castle": 0,
-    "tower": 10
+    "guardHouses": 10,
+    "spyGuilds": 50,
+    "castles": 0,
+    "towers": 10
   },
   "trainingCost": {
     "goldMiner": {

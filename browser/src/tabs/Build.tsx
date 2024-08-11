@@ -5,6 +5,7 @@ import { KingdomContext } from '../Kingdom';
 import { buildRequest } from '../game-api-client/KingdomApi';
 import BuildReport from '../components/BuildReport';
 import SpecialBuilding from '../components/SpecialBuildings';
+import { getBuildingOccupants, getTotalCapacity } from '../GameUtils';
 
 const Build: React.FC = () => {
     const [buildingCounts, setBuildingCounts] = useState<{ [building: string]: number }>({});
@@ -42,6 +43,7 @@ const Build: React.FC = () => {
                     <TableRow>
                         <TableCell>Building</TableCell>
                         <TableCell>Cost</TableCell>
+                        <TableCell>Occupancy</TableCell>
                         <TableCell>Count</TableCell>
                     </TableRow>
                 </TableHead>
@@ -50,6 +52,7 @@ const Build: React.FC = () => {
                         <TableRow key={building}>
                             <TableCell>{building}</TableCell>
                             <TableCell>{kingdomContext.gameConfig.buildingPointCosts[building]}</TableCell>
+                            <TableCell>{getBuildingOccupants(building, kingdomContext.kingdom)}/{getTotalCapacity(building, kingdomContext.kingdom, kingdomContext.gameConfig)}</TableCell>
                             <TableCell>
                                 <Input
                                     type="number"
