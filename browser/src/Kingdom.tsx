@@ -4,12 +4,14 @@ import { Box } from '@mui/material';
 import Sidebar from './Sidebar';
 import KingdomTabs from './KingdomTabs';
 import KingdomToolbar from './KingdomToolbar';
-import { KingdomData } from './GameTypes';
+import { GameConfig, KingdomData } from './GameTypes';
 import { fetchKingdomDataRequest } from './game-api-client/KingdomApi';
 import { kingdomRefreshInterval } from './Consts';
+import { fetchGameConfigRequest } from './game-api-client/GameApi';
 
 export type KingdomContextType = {
     kingdom: KingdomData;
+    gameConfig: GameConfig;
     reloadKingdom: () => void;
 }
 
@@ -17,14 +19,21 @@ export const KingdomContext = React.createContext<KingdomContextType | undefined
 
 const Kingdom: React.FC = () => {
     const [kingdom, setKingdom] = React.useState<KingdomData>();
+    const [gameConfig, setGameConfig] = React.useState<GameConfig>();
 
     const reloadKingdom = async () => {
         const data = await fetchKingdomDataRequest();
         setKingdom(data);
     };
 
+    const reloadGameConfig = async () => {
+        const data = await fetchGameConfigRequest();
+        setGameConfig(data);
+    };
+
     React.useEffect(() => {
         reloadKingdom();
+        reloadGameConfig();
 
         const interval = setInterval(() => {
             reloadKingdom();
@@ -37,8 +46,8 @@ const Kingdom: React.FC = () => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            {kingdom ? (
-                <KingdomContext.Provider value={{ kingdom, reloadKingdom }}>
+            {kingdom && gameConfig ? (
+                <KingdomContext.Provider value={{ kingdom, gameConfig, reloadKingdom }}>
                     <Sidebar {...kingdom} />
                     <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
                         <KingdomToolbar kingdomName={kingdom.name} kingdomResources={kingdom.resources} />

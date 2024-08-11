@@ -70,6 +70,10 @@ export type KingdomData = {
     lastTurnReport: TurnReport;
 };
 
+export type GameConfig = {
+    name: string;
+};
+
 export type MarketData = {
     id: string;
     sellerName: string;
