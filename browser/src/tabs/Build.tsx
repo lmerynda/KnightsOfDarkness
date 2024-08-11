@@ -42,17 +42,19 @@ const Build: React.FC = () => {
                 <TableHead>
                     <TableRow>
                         <TableCell>Building</TableCell>
-                        <TableCell>Cost</TableCell>
-                        <TableCell>Occupancy</TableCell>
                         <TableCell>Count</TableCell>
+                        <TableCell>Occupancy</TableCell>
+                        <TableCell>Cost</TableCell>
+                        <TableCell>Build Plan</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {buildings.map((building) => (
                         <TableRow key={building}>
                             <TableCell>{building}</TableCell>
-                            <TableCell>{kingdomContext.gameConfig.buildingPointCosts[building]}</TableCell>
+                            <TableCell>{kingdomContext.kingdom.buildings[building]}</TableCell>
                             <TableCell>{getBuildingOccupants(building, kingdomContext.kingdom)}/{getTotalCapacity(building, kingdomContext.kingdom, kingdomContext.gameConfig)}</TableCell>
+                            <TableCell>{kingdomContext.gameConfig.buildingPointCosts[building]}</TableCell>
                             <TableCell>
                                 <Input
                                     type="number"
