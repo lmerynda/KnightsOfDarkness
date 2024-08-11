@@ -1,92 +1,4 @@
-
-export type KingdomResources = {
-    food: number;
-    gold: number;
-    iron: number;
-    usedLand: number;
-    land: number;
-    tools: number;
-    weapons: number;
-    buildingPoints: number;
-    unemployed: number;
-    turns: number;
-}
-
-export enum MarketResource {
-    food = "food",
-    iron = "iron",
-    tools = "tools",
-    weapons = "weapons",
-}
-
-export type MarketResourcesMap = {
-    [key in (MarketResource)]: number;
-}
-
-export type KingdomBuildings = {
-    houses: number,
-    goldMines: number,
-    ironMines: number,
-    workshops: number,
-    farms: number,
-    markets: number,
-    barracks: number,
-    guardHouses: number,
-    spyGuilds: number,
-    towers: number,
-    castles: number
-}
-
-export type KingdomUnits = {
-    goldMiners: number,
-    ironMiners: number,
-    farmers: number,
-    blacksmiths: number,
-    builders: number,
-    carriers: number,
-    guards: number,
-    spies: number,
-    infantry: number,
-    bowmen: number,
-    cavalry: number
-}
-
-export type SpecialBuilding = {
-    id: string,
-    buildingType: string,
-    level: number,
-    buildingPointsPut: number,
-    buildingPointsRequired: number,
-    isMaxLevel: boolean
-}
-
-export type KingdomData = {
-    name: string;
-    resources: KingdomResources;
-    buildings: KingdomBuildings;
-    units: KingdomUnits;
-    marketOffers: MarketData[];
-    specialBuildings: SpecialBuilding[];
-    lastTurnReport: TurnReport;
-};
-
-export type GameConfig = {
-    name: string;
-};
-
-export type MarketData = {
-    id: string;
-    sellerName: string;
-    resource: string;
-    price: number;
-    count: number;
-};
-
-export type OfferBuyer = {
-    count: number;
-}
-
-export const buildingList = [
+export const buildings = [
     "houses",
     "goldMines",
     "ironMines",
@@ -99,8 +11,10 @@ export const buildingList = [
     "towers",
     "castles"
 ] as const;
+export type Building = (typeof buildings)[number];
+export type KingdomBuildings = Record<Building, number>;
 
-export const unitList = [
+export const units = [
     "builders",
     "goldMiners",
     "ironMiners",
@@ -113,20 +27,58 @@ export const unitList = [
     "bowmen",
     "cavalry"
 ] as const;
+export type Unit = (typeof units)[number];
+export type KingdomUnits = Record<Unit, number>;
 
-export const specialBuildingList = [
-    "goldShaft",
-    "ironShaft",
-    "forge",
-    "granary"
-] as const;
+export type Resource = "food" | "gold" | "iron" | "tools" | "weapons" | "land" | "usedLand" |
+    "buildingPoints" | "unemployed" | "turns";
+export type KingdomResources = Record<Resource, number>;
 
+export const marketResources = ["food", "iron", "tools", "weapons"] as const;
+export type MarketResource = (typeof marketResources)[number];
+
+export const specialBuildingTypes = ["goldShaft", "ironShaft", "forge", "granary"] as const;
+export type SpecialBuildingType = (typeof units)[number];
+export type SpecialBuilding = {
+    id: string,
+    buildingType: SpecialBuildingType,
+    level: number,
+    buildingPointsPut: number,
+    buildingPointsRequired: number,
+    isMaxLevel: boolean
+}
 export type SpecialBuildingBonus = {
     food: number;
     gold: number;
     iron: number;
     tools: number;
     weapons: number;
+}
+
+export type KingdomData = {
+    name: string;
+    resources: KingdomResources;
+    buildings: KingdomBuildings;
+    units: KingdomUnits;
+    marketOffers: MarketOfferData[];
+    specialBuildings: SpecialBuilding[];
+    lastTurnReport: TurnReport;
+};
+
+export type GameConfig = {
+    name: string;
+};
+
+export type MarketOfferData = {
+    id: string;
+    sellerName: string;
+    resource: string;
+    price: number;
+    count: number;
+};
+
+export type OfferBuyer = {
+    count: number;
 }
 
 export type TurnReport = {

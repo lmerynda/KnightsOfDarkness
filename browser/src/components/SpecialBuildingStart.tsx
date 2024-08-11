@@ -1,10 +1,10 @@
 import { Select, MenuItem, Grid, Button } from '@mui/material';
 import React, { useContext } from 'react';
 import { KingdomContext } from '../Kingdom';
-import { specialBuildingList } from '../GameTypes';
+import { specialBuildingTypes } from '../GameTypes';
 import { startSpecialBuildingRequest } from '../game-api-client/KingdomApi';
 
-type BuildingType = typeof specialBuildingList[number];
+type BuildingType = typeof specialBuildingTypes[number];
 
 const SpecialBuildingStart: React.FC = () => {
     const [newBuilding, setNewBuilding] = React.useState<BuildingType>("goldShaft");
@@ -37,7 +37,7 @@ const SpecialBuildingStart: React.FC = () => {
             <Grid container spacing={2} alignItems="center">
                 <Grid item>
                     <Select value={newBuilding}>
-                        {specialBuildingList.map((building) => (
+                        {specialBuildingTypes.map((building) => (
                             <MenuItem key={building} value={building} onClick={() => setNewBuilding(building)}>{building}</MenuItem>
                         ))}
                     </Select>

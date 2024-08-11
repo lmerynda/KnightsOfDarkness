@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button } from '@mui/material';
 import React, { useContext, useState } from 'react';
-import { buildingList } from '../GameTypes';
+import { buildings } from '../GameTypes';
 import { KingdomContext } from '../Kingdom';
 import { buildRequest } from '../game-api-client/KingdomApi';
 import BuildReport from '../components/BuildReport';
@@ -45,7 +45,7 @@ const Build: React.FC = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {buildingList.map((building) => (
+                    {buildings.map((building) => (
                         <TableRow key={building}>
                             <TableCell>{building}</TableCell>
                             <TableCell>

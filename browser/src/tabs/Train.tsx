@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Button, Input } from '@mui/material';
 import React, { useContext, useState } from 'react';
-import { unitList } from '../GameTypes';
+import { units } from '../GameTypes';
 import { KingdomContext } from '../Kingdom';
 import { trainRequest } from '../game-api-client/KingdomApi';
 import TrainingReport from '../components/TrainingReport';
@@ -42,7 +42,7 @@ const Train: React.FC = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {unitList.map((unit) => (
+                    {units.map((unit) => (
                         <TableRow key={unit}>
                             <TableCell>{unit}</TableCell>
                             <TableCell>

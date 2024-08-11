@@ -1,13 +1,14 @@
 import { Button, ButtonGroup, Grid, IconButton, Input, InputAdornment, InputLabel, Typography } from "@mui/material";
 import React, { useContext } from "react";
-import { MarketResource } from "../GameTypes";
+import { MarketResource, marketResources } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 import { CreateMarketOfferData, createMarketOfferRequest } from "../game-api-client/MarketApi";
 
 const MarketPost: React.FC = () => {
     const [sellAmount, setSellAmount] = React.useState<number>(0);
     const [price, setPrice] = React.useState<number>(0);
-    const [selectedResource, setSelectedResource] = React.useState<MarketResource>(MarketResource.food);
+    const defaultResource: MarketResource = "food";
+    const [selectedResource, setSelectedResource] = React.useState<MarketResource>(defaultResource);
     const kingdomContext = useContext(KingdomContext);
 
     // ask someone how to better solve it, null object pattern?
@@ -25,7 +26,7 @@ const MarketPost: React.FC = () => {
         const data = await createMarketOfferRequest(offer);
         setSellAmount(0);
         setPrice(0);
-        setSelectedResource(MarketResource.food);
+        setSelectedResource(defaultResource);
         kingdomContext.reloadKingdom();
     }
 
@@ -39,7 +40,7 @@ const MarketPost: React.FC = () => {
             <Grid container spacing={2} alignItems="center">
                 <Grid item>
                     <ButtonGroup variant="contained" >
-                        {Object.values(MarketResource).map((resource) => (
+                        {marketResources.map((resource) => (
                             <Button
                                 key={resource}
                                 variant={resource === selectedResource ? 'contained' : 'outlined'}

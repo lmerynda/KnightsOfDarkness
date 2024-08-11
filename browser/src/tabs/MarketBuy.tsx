@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input, ButtonGroup } from '@mui/material';
 import { KingdomContext } from '../Kingdom';
-import { MarketData, OfferBuyer } from "../GameTypes";
+import { MarketOfferData, OfferBuyer } from "../GameTypes";
 import { buyMarketOfferRequest, fetchMarketDataRequest, MarketOfferBuyResponse } from '../game-api-client/MarketApi';
 import MarketOfferBuyReport from '../components/MarketOfferBuyReport';
 
 const MarketBuy: React.FC = () => {
-    const [marketData, setMarketData] = React.useState<MarketData[]>([]);
+    const [marketData, setMarketData] = React.useState<MarketOfferData[]>([]);
     const [buyInputs, setBuyInputs] = React.useState<{ [id: string]: number }>({});
     const [lastBuyReport, setLastBuyReport] = React.useState<MarketOfferBuyResponse | undefined>(undefined);
     const kingdomContext = useContext(KingdomContext);
