@@ -38,13 +38,19 @@ const Train: React.FC = () => {
                 <TableHead>
                     <TableRow>
                         <TableCell>Unit</TableCell>
-                        <TableCell>Count</TableCell>
+                        <TableCell>Gold</TableCell>
+                        <TableCell>Tools</TableCell>
+                        <TableCell>Weapons</TableCell>
+                        <TableCell>Train Plan</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {units.map((unit) => (
                         <TableRow key={unit}>
                             <TableCell>{unit}</TableCell>
+                            <TableCell>{kingdomContext.gameConfig.trainingCost[unit].gold}</TableCell>
+                            <TableCell>{kingdomContext.gameConfig.trainingCost[unit].tools}</TableCell>
+                            <TableCell>{kingdomContext.gameConfig.trainingCost[unit].weapons}</TableCell>
                             <TableCell>
                                 <Input
                                     type="number"

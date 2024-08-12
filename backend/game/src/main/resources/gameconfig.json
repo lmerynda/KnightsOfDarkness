@@ -72,42 +72,42 @@
     "towers": 10
   },
   "trainingCost": {
-    "goldMiner": {
+    "goldMiners": {
       "gold": 4000,
       "tools": 15,
       "weapons": 0
     },
-    "ironMiner": {
+    "ironMiners": {
       "gold": 4000,
       "tools": 15,
       "weapons": 0
     },
-    "farmer": {
+    "farmers": {
       "gold": 3000,
       "tools": 5,
       "weapons": 0
     },
-    "blacksmith": {
+    "blacksmiths": {
       "gold": 7000,
       "tools": 10,
       "weapons": 0
     },
-    "builder": {
+    "builders": {
       "gold": 5000,
       "tools": 20,
       "weapons": 0
     },
-    "carrier": {
+    "carriers": {
       "gold": 700,
       "tools": 2,
       "weapons": 0
     },
-    "guard": {
+    "guards": {
       "gold": 5000,
       "tools": 0,
       "weapons": 10
     },
-    "spy": {
+    "spies": {
       "gold": 10000,
       "tools": 0,
       "weapons": 5

@@ -258,7 +258,7 @@
     "trainingCost": {
       "type": "object",
       "properties": {
-        "goldMiner": {
+        "goldMiners": {
           "type": "object",
           "properties": {
             "gold": {
@@ -277,7 +277,7 @@
             "weapons"
           ]
         },
-        "ironMiner": {
+        "ironMiners": {
           "type": "object",
           "properties": {
             "gold": {
@@ -296,7 +296,7 @@
             "weapons"
           ]
         },
-        "farmer": {
+        "farmers": {
           "type": "object",
           "properties": {
             "gold": {
@@ -315,7 +315,7 @@
             "weapons"
           ]
         },
-        "blacksmith": {
+        "blacksmiths": {
           "type": "object",
           "properties": {
             "gold": {
@@ -334,7 +334,7 @@
             "weapons"
           ]
         },
-        "builder": {
+        "builders": {
           "type": "object",
           "properties": {
             "gold": {
@@ -353,7 +353,7 @@
             "weapons"
           ]
         },
-        "carrier": {
+        "carriers": {
           "type": "object",
           "properties": {
             "gold": {
@@ -372,7 +372,7 @@
             "weapons"
           ]
         },
-        "guard": {
+        "guards": {
           "type": "object",
           "properties": {
             "gold": {
@@ -391,7 +391,7 @@
             "weapons"
           ]
         },
-        "spy": {
+        "spies": {
           "type": "object",
           "properties": {
             "gold": {
@@ -469,14 +469,14 @@
         }
       },
       "required": [
-        "goldMiner",
-        "ironMiner",
-        "farmer",
-        "blacksmith",
-        "builder",
-        "carrier",
-        "guard",
-        "spy",
+        "goldMiners",
+        "ironMiners",
+        "farmers",
+        "blacksmiths",
+        "builders",
+        "carriers",
+        "guards",
+        "spies",
         "bowmen",
         "infantry",
         "cavalry"
