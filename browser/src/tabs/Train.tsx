@@ -4,6 +4,7 @@ import { units } from '../GameTypes';
 import { KingdomContext } from '../Kingdom';
 import { trainRequest } from '../game-api-client/KingdomApi';
 import TrainingReport from '../components/TrainingReport';
+import { getOpenPositions } from '../GameUtils';
 
 const Train: React.FC = () => {
     const [unitCounts, setUnitsCounts] = useState<{ [unit: string]: number }>({});
@@ -41,6 +42,7 @@ const Train: React.FC = () => {
                         <TableCell>Gold</TableCell>
                         <TableCell>Tools</TableCell>
                         <TableCell>Weapons</TableCell>
+                        <TableCell>Open Positions</TableCell>
                         <TableCell>Train Plan</TableCell>
                     </TableRow>
                 </TableHead>
@@ -51,6 +53,7 @@ const Train: React.FC = () => {
                             <TableCell>{kingdomContext.gameConfig.trainingCost[unit].gold}</TableCell>
                             <TableCell>{kingdomContext.gameConfig.trainingCost[unit].tools}</TableCell>
                             <TableCell>{kingdomContext.gameConfig.trainingCost[unit].weapons}</TableCell>
+                            <TableCell>{getOpenPositions(unit, kingdomContext.kingdom, kingdomContext.gameConfig) || "N/A"}</TableCell>
                             <TableCell>
                                 <Input
                                     type="number"
