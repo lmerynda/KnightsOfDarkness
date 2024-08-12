@@ -31,6 +31,10 @@ const Train: React.FC = () => {
         setUnitsCounts({});
     };
 
+    function handleMaxInput(unit: string): void {
+        throw new Error('Function not implemented.');
+    }
+
     return (
         <div>
             <h1>Train</h1>
@@ -44,6 +48,7 @@ const Train: React.FC = () => {
                         <TableCell>Weapons</TableCell>
                         <TableCell>Open Positions</TableCell>
                         <TableCell>Train Plan</TableCell>
+                        <TableCell>Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -61,6 +66,14 @@ const Train: React.FC = () => {
                                     onChange={(e) => handleCountChange(unit, parseInt(e.target.value))}
                                     inputProps={{ min: 0 }}
                                 />
+                            </TableCell>
+                            <TableCell>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => handleMaxInput(unit)}
+                                >
+                                    Max
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
