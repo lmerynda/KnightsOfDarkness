@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Button, Input } from '@mui/material';
 import React, { useContext, useState } from 'react';
-import { units } from '../GameTypes';
+import { Unit, units } from '../GameTypes';
 import { KingdomContext } from '../Kingdom';
 import { trainRequest } from '../game-api-client/KingdomApi';
 import TrainingReport from '../components/TrainingReport';
@@ -31,8 +31,26 @@ const Train: React.FC = () => {
         setUnitsCounts({});
     };
 
-    function handleMaxInput(unit: string): void {
-        throw new Error('Function not implemented.');
+    const howManyUnitsCanAfford = (unit: Unit) => {
+        const singleUnitCost = kingdomContext.gameConfig.trainingCost[unit];
+        const resources = kingdomContext.kingdom.resources;
+        const canAffordInGold = resources.gold / singleUnitCost.gold;
+        const canAffordInMaterials = singleUnitCost.tools !== 0 ? resources.tools / singleUnitCost.tools : resources.weapons / singleUnitCost.weapons;
+        return Math.floor(Math.min(canAffordInGold, canAffordInMaterials));
+    }
+
+    const handleMaxInput = (unit: Unit) => {
+        const openPositions = getOpenPositions(unit, kingdomContext.kingdom, kingdomContext.gameConfig);
+        if (openPositions === undefined) {
+            return;
+        }
+
+        const maxUnitsToAfford = Math.min(openPositions, howManyUnitsCanAfford(unit));
+
+        setUnitsCounts((prevCounts) => ({
+            ...prevCounts,
+            [unit]: maxUnitsToAfford
+        }));
     }
 
     return (
