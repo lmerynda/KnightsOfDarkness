@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
+import com.knightsofdarkness.game.market.MarketTransaction;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 public class MarketRepository implements IMarketOfferRepository {
@@ -61,5 +62,12 @@ public class MarketRepository implements IMarketOfferRepository {
     public void update(MarketOffer marketOffer)
     {
         log.info("should update offer with id: " + marketOffer.getId());
+    }
+
+    @Override
+    public void registerMarketTransaction(MarketTransaction transaction)
+    {
+        // XXX Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'registerMarketTransaction'");
     }
 }

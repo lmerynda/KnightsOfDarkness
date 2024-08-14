@@ -10,17 +10,20 @@ import org.springframework.stereotype.Repository;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
+import com.knightsofdarkness.game.market.MarketTransaction;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 @Repository
 public class MarketOfferRepository implements IMarketOfferRepository {
     private final GameConfig gameConfig;
     private final MarketOfferJpaRepository jpaRepository;
+    private final MarketTransactionJpaRepository transactionJpaRepository;
 
-    public MarketOfferRepository(GameConfig gameConfig, MarketOfferJpaRepository jpaRepository)
+    public MarketOfferRepository(GameConfig gameConfig, MarketOfferJpaRepository jpaRepository, MarketTransactionJpaRepository transactionJpaRepository)
     {
         this.gameConfig = gameConfig;
         this.jpaRepository = jpaRepository;
+        this.transactionJpaRepository = transactionJpaRepository;
     }
 
     @Override
@@ -68,5 +71,12 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     {
         var marketOfferEntity = MarketOfferEntity.fromDomainModel(marketOffer);
         jpaRepository.save(marketOfferEntity);
+    }
+
+    @Override
+    public void registerMarketTransaction(MarketTransaction transaction)
+    {
+        var transactionEntity = MarketTransactionEntity.fromDomainModel(transaction);
+        transactionJpaRepository.save(transactionEntity);
     }
 }

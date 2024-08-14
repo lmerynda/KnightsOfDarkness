@@ -2,6 +2,7 @@ package com.knightsofdarkness.game.market;
 
 import java.util.Optional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -96,6 +97,9 @@ public class Market implements IMarket {
         {
             offersRepository.update(offer);
         }
+
+        var transaction = new MarketTransaction(Id.generate(), offer.resource, seller.getName(), buyer.getName(), offer.price, buyerAmount, Instant.now());
+        offersRepository.registerMarketTransaction(transaction);
 
         return result;
     }

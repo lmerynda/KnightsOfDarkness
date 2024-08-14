@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
+import com.knightsofdarkness.game.market.MarketTransaction;
 
 public interface IMarketOfferRepository {
     MarketOffer add(MarketOffer marketOffer);
@@ -22,4 +23,6 @@ public interface IMarketOfferRepository {
     Optional<MarketOffer> findById(UUID marketOfferId);
 
     void update(MarketOffer marketOffer);
+
+    void registerMarketTransaction(MarketTransaction transaction);
 }
