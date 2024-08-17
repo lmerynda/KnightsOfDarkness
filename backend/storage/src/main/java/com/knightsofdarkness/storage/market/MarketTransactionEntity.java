@@ -38,8 +38,18 @@ public class MarketTransactionEntity {
         this.date = date;
     }
 
+    public MarketTransaction toDomainModel()
+    {
+        return new MarketTransaction(id, resource, seller, buyer, price, count, date);
+    }
+
     public static MarketTransactionEntity fromDomainModel(MarketTransaction transaction)
     {
         return new MarketTransactionEntity(transaction.getId(), transaction.getResource(), transaction.getSeller(), transaction.getBuyer(), transaction.getPrice(), transaction.getCount(), transaction.getDate());
+    }
+
+    public int getCount()
+    {
+        return count;
     }
 }

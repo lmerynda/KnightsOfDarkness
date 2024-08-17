@@ -2,6 +2,7 @@ package com.knightsofdarkness.game.market;
 
 import java.util.Optional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,4 +23,6 @@ public interface IMarket {
     Optional<MarketOffer> findOfferById(UUID id);
 
     MarketOfferBuyResult buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount);
+
+    void updateMarketTransactionsAverages(Instant from, Instant to);
 }

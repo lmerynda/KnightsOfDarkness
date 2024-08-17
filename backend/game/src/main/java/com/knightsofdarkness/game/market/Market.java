@@ -87,7 +87,7 @@ public class Market implements IMarket {
         seller.acceptMarketOffer(buyerGold);
         buyer.deliverResourcesFromOffer(offer.resource, buyerAmount);
 
-        assert(offer.count >= 0);
+        assert (offer.count >= 0);
 
         var result = new MarketOfferBuyResult(offer.resource, buyerAmount, offer.price, buyerGold);
 
@@ -113,5 +113,27 @@ public class Market implements IMarket {
     static int offerComparator(MarketOffer offer1, MarketOffer offer2)
     {
         return offer1.price - offer2.price;
+    }
+
+    @Override
+    public void updateMarketTransactionsAverages(Instant from, Instant to)
+    {
+        for (var resource : MarketResource.values())
+        {
+            var transactions = offersRepository.getTransactionsByResourceAndTimeRange(resource, from, to);
+            log.info("Transactions for resource {} between: {} - {}: ", resource, from, to, transactions.size());
+            var volume = transactions.stream().mapToInt(t -> t.count).sum();
+            if (volume > 0)
+            {
+                var weightedAveragePrice = transactions.stream().mapToInt(t -> t.price * t.count).sum() / volume;
+                log.info("[Market Data Update] Resource: {} volume: {} weighted average price: {}", resource, volume, weightedAveragePrice);
+                var averageSaleRecord = new MarketTransactionTimeRangeAverage(Id.generate(), resource, weightedAveragePrice, volume, from, to);
+                offersRepository.addTransactionTimeRangeAverage(averageSaleRecord);
+            } else
+            {
+                log.info("[Market Data Update] Resource: {} no transactions in last hour", resource);
+            }
+
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.knightsofdarkness.storage.market;
 
 import java.util.Optional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.market.MarketTransaction;
+import com.knightsofdarkness.game.market.MarketTransactionTimeRangeAverage;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 @Repository
@@ -18,12 +20,14 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     private final GameConfig gameConfig;
     private final MarketOfferJpaRepository jpaRepository;
     private final MarketTransactionJpaRepository transactionJpaRepository;
+    private final MarketTransactionTimeRangeAveragesJpaRepository transactionAveragesJpaRepository;
 
-    public MarketOfferRepository(GameConfig gameConfig, MarketOfferJpaRepository jpaRepository, MarketTransactionJpaRepository transactionJpaRepository)
+    public MarketOfferRepository(GameConfig gameConfig, MarketOfferJpaRepository jpaRepository, MarketTransactionJpaRepository transactionJpaRepository, MarketTransactionTimeRangeAveragesJpaRepository transactionAveragesJpaRepository)
     {
         this.gameConfig = gameConfig;
         this.jpaRepository = jpaRepository;
         this.transactionJpaRepository = transactionJpaRepository;
+        this.transactionAveragesJpaRepository = transactionAveragesJpaRepository;
     }
 
     @Override
@@ -78,5 +82,18 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     {
         var transactionEntity = MarketTransactionEntity.fromDomainModel(transaction);
         transactionJpaRepository.save(transactionEntity);
+    }
+
+    @Override
+    public List<MarketTransaction> getTransactionsByResourceAndTimeRange(MarketResource resource, Instant hourAgo, Instant now)
+    {
+        return transactionJpaRepository.findTransactionsForResourceAndTimeRange(resource, hourAgo, now).stream().map(MarketTransactionEntity::toDomainModel).toList();
+    }
+
+    @Override
+    public void addTransactionTimeRangeAverage(MarketTransactionTimeRangeAverage averageSaleRecord)
+    {
+        var averageSaleRecordEntity = MarketTransactionTimeRangeAveragesEntity.fromDomainModel(averageSaleRecord);
+        transactionAveragesJpaRepository.save(averageSaleRecordEntity);
     }
 }

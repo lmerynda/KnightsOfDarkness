@@ -2,6 +2,7 @@ package com.knightsofdarkness.game.utils;
 
 import java.util.Optional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.market.MarketTransaction;
+import com.knightsofdarkness.game.market.MarketTransactionTimeRangeAverage;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 public class MarketRepository implements IMarketOfferRepository {
@@ -69,5 +71,19 @@ public class MarketRepository implements IMarketOfferRepository {
     {
         // XXX Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'registerMarketTransaction'");
+    }
+
+    @Override
+    public List<MarketTransaction> getTransactionsByResourceAndTimeRange(MarketResource resource, Instant hourAgo, Instant now)
+    {
+        // XXX Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getTransactionsByResourceAndTimeRange'");
+    }
+
+    @Override
+    public void addTransactionTimeRangeAverage(MarketTransactionTimeRangeAverage averageSaleRecord)
+    {
+        // XXX Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addTransactionTimeRangeAverage'");
     }
 }
