@@ -73,10 +73,16 @@ public class Market implements IMarket {
     @Override
     public MarketOfferBuyResult buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount)
     {
-        log.info("Transaction: buyer: {} seller: {} amount: {} offer: {}", buyer.getName(), seller.getName(), amount, offer);
+        log.info("Transaction request: buyer: {} seller: {} amount: {} offer: {}", buyer.getName(), seller.getName(), amount, offer);
         var maxToSell = Math.min(offer.count, amount);
         var buyerGold = buyer.reserveGoldForOffer(offer.price, maxToSell);
         var buyerAmount = buyerGold / offer.price;
+
+        if (buyerAmount == 0)
+        {
+            log.info("Not enough gold to buy any amount of resource");
+            return new MarketOfferBuyResult(offer.resource, buyerAmount, offer.price, buyerGold);
+        }
         offer.count -= buyerAmount;
         seller.acceptMarketOffer(buyerGold);
         buyer.deliverResourcesFromOffer(offer.resource, buyerAmount);
