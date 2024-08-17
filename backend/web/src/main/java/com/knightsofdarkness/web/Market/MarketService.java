@@ -114,6 +114,7 @@ public class MarketService {
     }
 
     // TODO verify if offer belongs to active kingdom
+    @Transactional
     public ResponseEntity<Boolean> withdraw(UUID id, String kingdom)
     {
         var maybeOffer = market.findOfferById(id);
