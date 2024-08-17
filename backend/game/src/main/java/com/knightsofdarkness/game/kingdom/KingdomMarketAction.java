@@ -41,6 +41,8 @@ public class KingdomMarketAction {
     {
         var gold = kingdom.getResources().getCount(ResourceName.gold);
         var maxToSpend = Math.min(gold, amount * price);
+        var amoutTobuy = maxToSpend / price; // notice the truncation, it is important as should only pay for what can be bought
+        maxToSpend = amoutTobuy * price;
         kingdom.getResources().subtractCount(ResourceName.gold, maxToSpend);
 
         return maxToSpend;
