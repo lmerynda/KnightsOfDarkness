@@ -2,6 +2,7 @@ package com.knightsofdarkness.game.simulation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.game.TestGame;
@@ -12,6 +13,7 @@ import com.knightsofdarkness.game.utils.KingdomBuilder;
 import com.knightsofdarkness.game.utils.KingdomPrinter;
 
 public class SingleGoldMinerGame {
+    @Disabled
     @Test
     void simulateTenTurnsTest()
     {

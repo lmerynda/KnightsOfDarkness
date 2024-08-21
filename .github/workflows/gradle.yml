@@ -32,5 +32,5 @@ jobs:
         build-root-directory: backend
     - name: Build with Gradle
       run: |
-        ./gradlew build -x test
+        ./gradlew build
       working-directory: backend
