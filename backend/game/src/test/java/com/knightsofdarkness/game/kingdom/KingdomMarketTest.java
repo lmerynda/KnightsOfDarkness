@@ -1,6 +1,7 @@
 package com.knightsofdarkness.game.kingdom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,12 +9,11 @@ import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.TestGame;
-import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
 class KingdomMarketTest {
     private static Game game;
-    private KingdomBuilder kingdomBuilder;
+    private Kingdom kingdom;
 
     @BeforeAll
     static void beforeAll()
@@ -24,14 +24,68 @@ class KingdomMarketTest {
     @BeforeEach
     void setUp()
     {
-        this.kingdomBuilder = new KingdomBuilder(game);
+        this.kingdom = new KingdomBuilder(game).build();
     }
 
     @Test
-    void marketSanityTest()
+    void whenKingdomHasEnoughGold_reserveGold_shouldReserveAllRequested()
     {
-        var kingdom = kingdomBuilder.build();
-        game.getMarket().addOffer(kingdom, MarketResource.food, 100, 100);
-        assertEquals(1, game.getMarket().getOffersByKingdomName(kingdom.getName()));
+        kingdom.getResources().addCount(ResourceName.gold, 1000);
+        int goldReserved = kingdom.reserveGoldForOffer(10, 1);
+        assertEquals(10, goldReserved);
+    }
+
+    @Test
+    void whenKingdomHasNotEnoughGold_reserveGold_shouldReserveNothing()
+    {
+        kingdom.getResources().setCount(ResourceName.gold, 0);
+        int goldReserved = kingdom.reserveGoldForOffer(10, 1);
+        assertEquals(0, goldReserved);
+    }
+
+    @Test
+    void whenKingdomHasNotEnoughGold_reserveGold_shouldNotChangeKingdomGold()
+    {
+        int initialGold = 50;
+        kingdom.getResources().setCount(ResourceName.gold, initialGold);
+        kingdom.reserveGoldForOffer(100, 1);
+        int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
+        assertEquals(initialGold, kingdomGold);
+    }
+
+    @Test
+    void whenKingdomHasEnoughGold_reserveGold_shouldChangeKingdomGold()
+    {
+        int initialGold = 5000;
+        int price = 100;
+        kingdom.getResources().setCount(ResourceName.gold, initialGold);
+        kingdom.reserveGoldForOffer(price, 1);
+        int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
+        assertEquals(initialGold - price, kingdomGold);
+    }
+
+    @Test
+    void whenKingdomBuysMultipleResources_reserveGold_shouldChangeKingdomGold()
+    {
+        int initialGold = 5000;
+        int price = 100;
+        int amount = 50;
+        kingdom.getResources().setCount(ResourceName.gold, initialGold);
+        kingdom.reserveGoldForOffer(price, amount);
+        int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
+        assertEquals(initialGold - price * amount, kingdomGold);
+    }
+
+    @Test
+    void whenKingdomBuysMultipleResourcesAndHasGoldForLimitedAmount_reserveGold_shouldChangeKingdomGold()
+    {
+        int initialGold = 5000;
+        int price = 100;
+        int amount = 70;
+        kingdom.getResources().setCount(ResourceName.gold, initialGold);
+        int reservedGold = kingdom.reserveGoldForOffer(price, amount);
+        int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
+        assertThat(reservedGold).isLessThan(amount * price);
+        assertThat(kingdomGold).isEqualTo(initialGold - reservedGold);
     }
 }
