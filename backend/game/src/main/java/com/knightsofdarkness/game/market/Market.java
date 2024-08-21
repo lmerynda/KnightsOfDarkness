@@ -98,8 +98,7 @@ public class Market implements IMarket {
             // TODO this should be debug log
             log.info("Offer sold completely, removing " + offer);
             offersRepository.remove(offer);
-        }
-        else
+        } else
         {
             offersRepository.update(offer);
         }
@@ -131,7 +130,7 @@ public class Market implements IMarket {
                 offersRepository.addTransactionTimeRangeAverage(averageSaleRecord);
             } else
             {
-                log.info("[Market Data Update] Resource: {} no transactions in last hour", resource);
+                log.info("[Market Data Update] Resource: {} no transactions within specified range from {} to {}", resource, from, to);
             }
 
         }
