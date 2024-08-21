@@ -19,6 +19,7 @@ class KingdomMarketTest {
     static void beforeAll()
     {
         game = new TestGame().get();
+        
     }
 
     @BeforeEach
