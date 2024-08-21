@@ -27,8 +27,10 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
     - name: Setup Gradle
-      uses: gradle/gradle-build-action@v3
-      working-directory: backend
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        working-directory: backend
     - name: Build with Gradle
-      run: ./gradlew build -x test
+      run: |
+        ./gradlew build -x test
       working-directory: backend
