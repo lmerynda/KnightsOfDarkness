@@ -13,6 +13,9 @@ jobs:
   Analysis:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  
       - name: Analyze with Sonarcloud.io
         uses: SonarSource/sonarcloud-github-action@v3.0.0
         env:
