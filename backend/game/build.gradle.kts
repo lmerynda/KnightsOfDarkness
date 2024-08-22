@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("com.adarshr.test-logger") version "4.0.0"
+    id("jacoco")
     id("org.sonarqube") version "5.0.0.4638"
 }
 
@@ -37,4 +38,10 @@ sonar {
     property("sonar.organization", "uprzejmy")
     property("sonar.host.url", "https://sonarcloud.io")
   }
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(true)
+    }
 }

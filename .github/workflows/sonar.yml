@@ -25,9 +25,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           build-root-directory: backend
-      - name: Build with Gradle
+      - name: Build, test and produce coverage report with Gradle
         run: |
-          ./gradlew build
+          ./gradlew test jacocoTestReport
         working-directory: backend
       - name: Analyze with Sonarcloud.io
         uses: SonarSource/sonarcloud-github-action@v3.0.0
