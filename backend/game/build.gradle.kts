@@ -2,7 +2,7 @@ plugins {
     id("java")
     id("com.adarshr.test-logger") version "4.0.0"
     id("jacoco")
-    id("org.sonarqube") version "5.0.0.4638"
+    id("org.sonarqube") version "5.1.0.4882"
 }
 
 group = "com.knightsofdarkness"

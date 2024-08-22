@@ -34,3 +34,12 @@ jobs:
       run: |
         ./gradlew build
       working-directory: backend
+    - name: Test and produce coverage report with Gradle
+      run: |
+        ./gradlew test jacocoTestReport
+      working-directory: backend
+    - name: Test and produce coverage report with Gradle
+      run: |
+        ./gradlew test jacocoTestReport sonar
+      working-directory: backend/game
+
