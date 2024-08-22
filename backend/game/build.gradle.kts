@@ -32,14 +32,6 @@ tasks.test {
     useJUnitPlatform()
 }
 
-sonar {
-  properties {
-    property("sonar.projectKey", "Uprzejmy_KnightsOfDarkness")
-    property("sonar.organization", "uprzejmy")
-    property("sonar.host.url", "https://sonarcloud.io")
-  }
-}
-
 tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
