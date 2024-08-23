@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "outDir": "./dist/types",
     "emitDeclarationOnly": true,
     "allowJs": true,
@@ -24,7 +20,5 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
