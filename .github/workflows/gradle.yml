@@ -38,7 +38,7 @@ jobs:
       run: |
         ./gradlew test jacocoTestReport
       working-directory: backend
-    - name: Test and produce coverage report with Gradle
+    - name: Run SonarCloud analysis
       run: |
         ./gradlew test jacocoTestReport sonar -Dsonar.java.source=21 -Dsonar.organization=uprzejmy -Dsonar.projectKey=Uprzejmy_KnightsOfDarkness -Dsonar.coverage.jacoco.xmlReportPaths=./build/reports/jacoco/test/jacocoTestReport.xml
       env:
