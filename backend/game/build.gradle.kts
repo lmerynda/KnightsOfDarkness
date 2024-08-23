@@ -1,8 +1,9 @@
 plugins {
     id("java")
-    id("com.adarshr.test-logger") version "4.0.0"
+    id("com.adarshr.test-logger") version "4.0.+"
     id("jacoco")
-    id("org.sonarqube") version "5.1.0.4882"
+    id("org.sonarqube") version "5.1.+"
+    id("com.github.ben-manes.versions") version "0.42.+"
 }
 
 group = "com.knightsofdarkness"
@@ -30,6 +31,14 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+sonar {
+  properties {
+    property("sonar.projectKey", "Uprzejmy_KnightsOfDarkness")
+    property("sonar.organization", "uprzejmy")
+    property("sonar.host.url", "https://sonarcloud.io")
+  }
 }
 
 tasks.jacocoTestReport {

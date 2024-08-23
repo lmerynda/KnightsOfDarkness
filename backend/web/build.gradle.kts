@@ -1,8 +1,8 @@
 plugins {
     id("java")
-	id("com.adarshr.test-logger") version "4.0.0"
-	id("org.springframework.boot") version "3.3.2"
-	id("io.spring.dependency-management") version "1.1.4"
+	id("com.adarshr.test-logger") version "4.0.+"
+	id("org.springframework.boot") version "3.3.+"
+	id("io.spring.dependency-management") version "1.1.+"
 }
 
 group = "com.knightsofdarkness"
