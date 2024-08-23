@@ -45,9 +45,6 @@ const Train: React.FC = () => {
     // some units don't have their buildings so it's not a limiting factor
     const maxUnitsToAfford = openPositions ? Math.min(openPositions, howManyUnitsCanAfford(unit)) : howManyUnitsCanAfford(unit);
 
-    const x = 
-        5;
-
     setUnitsCounts(prevCounts => ({
       ...prevCounts,
       [unit]: maxUnitsToAfford,
