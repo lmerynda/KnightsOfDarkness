@@ -18,6 +18,10 @@ jobs:
         node-version: [20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
+    defaults:
+        run:
+            working-directory: browser  # Set the working directory for all run actions
+
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -27,10 +31,6 @@ jobs:
         cache: 'npm'
 
     - run: npm ci
-      working-directory: browser
     - run: npm run build
-      working-directory: browser
     - run: npm run build:types
-      working-directory: browser
     - run: npm ci:lint
-      working-directory: browser
