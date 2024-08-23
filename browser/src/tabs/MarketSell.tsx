@@ -5,52 +5,49 @@ import MarketPost from "../components/MarketPost";
 import { withdrawMarketOfferRequest } from "../game-api-client/MarketApi";
 
 const MarketSell: React.FC = () => {
-    const kingdomContext = useContext(KingdomContext);
-    // ask someone how to better solve it, null object pattern?
-    if (kingdomContext === undefined) {
-        throw new Error('Kingdom context is undefined');
-    }
+  const kingdomContext = useContext(KingdomContext);
+  // ask someone how to better solve it, null object pattern?
+  if (kingdomContext === undefined) {
+    throw new Error("Kingdom context is undefined");
+  }
 
-    const handleWithdraw = async (id: string) => {
-        const data = await withdrawMarketOfferRequest(id);
-        kingdomContext.reloadKingdom();
-    }
+  const handleWithdraw = async (id: string) => {
+    const data = await withdrawMarketOfferRequest(id);
+    kingdomContext.reloadKingdom();
+  };
 
-    return (
-        <div>
-            <h1>Market Sell</h1>
-            <MarketPost />
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Kingdom</TableCell>
-                        <TableCell>Resource</TableCell>
-                        <TableCell>Price</TableCell>
-                        <TableCell>Count</TableCell>
-                        <TableCell>Actions</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {kingdomContext.kingdom.marketOffers.map((data) => (
-                        <TableRow key={data.id}>
-                            <TableCell>{data.sellerName}</TableCell>
-                            <TableCell>{data.resource}</TableCell>
-                            <TableCell>{data.price}</TableCell>
-                            <TableCell>{data.count}</TableCell>
-                            <TableCell>
-                                <Button
-                                    variant="contained"
-                                    onClick={() => handleWithdraw(data.id)}
-                                >
-                                    Withdraw
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
-    );
+  return (
+    <div>
+      <h1>Market Sell</h1>
+      <MarketPost />
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Kingdom</TableCell>
+            <TableCell>Resource</TableCell>
+            <TableCell>Price</TableCell>
+            <TableCell>Count</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {kingdomContext.kingdom.marketOffers.map(data => (
+            <TableRow key={data.id}>
+              <TableCell>{data.sellerName}</TableCell>
+              <TableCell>{data.resource}</TableCell>
+              <TableCell>{data.price}</TableCell>
+              <TableCell>{data.count}</TableCell>
+              <TableCell>
+                <Button variant="contained" onClick={() => handleWithdraw(data.id)}>
+                  Withdraw
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
 };
 
 export default MarketSell;

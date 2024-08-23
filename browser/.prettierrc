@@ -1,0 +1,6 @@
+{
+    "printWidth": 140,
+    "proseWrap": "preserve",
+    "arrowParens": "avoid",
+    "htmlWhitespaceSensitivity": "ignore"
+}
