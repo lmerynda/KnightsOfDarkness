@@ -35,5 +35,5 @@ jobs:
       working-directory: browser
     - run: npm run build:types
       working-directory: browser
-    - run: npm ci:lint
+    - run: npm run ci:lint
       working-directory: browser
