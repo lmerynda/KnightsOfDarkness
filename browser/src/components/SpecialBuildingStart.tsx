@@ -27,6 +27,7 @@ const SpecialBuildingStart: React.FC = () => {
   }
 
   const handleStartSpecialBuilding = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const data = await startSpecialBuildingRequest(newBuilding);
     setNewBuilding("goldShaft");
     kingdomContext.reloadKingdom();

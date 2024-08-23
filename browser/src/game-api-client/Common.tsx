@@ -7,15 +7,11 @@ const unauthenticateAndRedirectToLogin = (): never => {
 };
 
 export const handleResponse = async (requestFunction: RequestFunction): Promise<Response> => {
-  try {
-    const response = await requestFunction();
-    if (response.status === 401) {
-      unauthenticateAndRedirectToLogin();
-    }
-    return response;
-  } catch (error) {
-    throw error;
+  const response = await requestFunction();
+  if (response.status === 401) {
+    unauthenticateAndRedirectToLogin();
   }
+  return response;
 };
 
 export const fetchData =
@@ -23,6 +19,7 @@ export const fetchData =
   () =>
     fetch(url, options);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handlePostRequest = (url: string, data: any): Promise<Response> =>
   handleResponse(() =>
     fetchData(url, {

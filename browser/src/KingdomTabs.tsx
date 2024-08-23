@@ -1,7 +1,6 @@
-// src/TabsComponent.tsx
 import React from "react";
 import { AppBar, Tabs, Tab, Box } from "@mui/material";
-import { Route, Routes, Link, Navigate, BrowserRouter as Router } from "react-router-dom";
+import { Route, Routes, Link, Navigate } from "react-router-dom";
 import Build from "./tabs/Build";
 import Train from "./tabs/Train";
 import Overview from "./tabs/Overview";

@@ -11,6 +11,7 @@ export type TrainingResponse = {
 };
 
 export type GameConfigResponse = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 };
 

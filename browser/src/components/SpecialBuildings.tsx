@@ -47,12 +47,14 @@ const SpecialBuilding: React.FC = () => {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const data = await buildSpecialBuildingRequest(id, buildingPoints);
 
     clearForm(id);
     kingdomContext.reloadKingdom();
   };
   const handleDemolish = async (id: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const data = await demolishSpecialBuildingRequest(id);
     kingdomContext.reloadKingdom();
   };

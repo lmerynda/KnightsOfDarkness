@@ -13,6 +13,7 @@ const BuyLand: React.FC = () => {
   }
 
   const handleSubmit = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const data = await buyLandRequest(buyAmount);
     setBuyAmount(0);
     kingdomContext.reloadKingdom();
