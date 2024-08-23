@@ -25,7 +25,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
     - run: npm ci
+      working-directory: browser
     - run: npm run build
+      working-directory: browser
     - run: npm run build:types
+      working-directory: browser
     - run: npm ci:lint
+      working-directory: browser
