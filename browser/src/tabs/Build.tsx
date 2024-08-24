@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button } from "@mui/material";
 import React, { useContext, useState } from "react";
-import { buildings } from "../GameTypes";
+import { Building, buildings } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 import { buildRequest } from "../game-api-client/KingdomApi";
 import BuildReport from "../components/BuildReport";
@@ -32,6 +32,26 @@ const Build: React.FC = () => {
     setBuildingCounts({});
   };
 
+  const howManyBuildingsCanAfford = (building: Building) => {
+    const singleBuildingCost = kingdomContext.gameConfig.buildingPointCosts[building];
+    const buildingPoints = kingdomContext.kingdom.resources.buildingPoints;
+    const maxToAfford = buildingPoints / singleBuildingCost;
+    return maxToAfford;
+  };
+
+  const handleMaxInput = (building: Building) => {
+    const buildingOccupants = getBuildingOccupants(building, kingdomContext.kingdom);
+    const totalCapacity = getTotalCapacity(building, kingdomContext.kingdom, kingdomContext.gameConfig);
+    const openPositions = totalCapacity - buildingOccupants;
+
+    const maxBuildingsToAfford = howManyBuildingsCanAfford(building);
+    const maxBuildings = Math.min(maxBuildingsToAfford, openPositions);
+    setBuildingCounts(prevCounts => ({
+      ...prevCounts,
+      [building]: maxBuildings,
+    }));
+  };
+
   return (
     <div>
       <h1>Build</h1>
@@ -45,6 +65,7 @@ const Build: React.FC = () => {
             <TableCell>Occupancy</TableCell>
             <TableCell>Cost</TableCell>
             <TableCell>Build Plan</TableCell>
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -64,6 +85,11 @@ const Build: React.FC = () => {
                   onChange={e => handleCountChange(building, parseInt(e.target.value))}
                   inputProps={{ min: 0 }}
                 />
+              </TableCell>
+              <TableCell>
+                <Button variant="contained" onClick={() => handleMaxInput(building)}>
+                  Max
+                </Button>
               </TableCell>
             </TableRow>
           ))}
