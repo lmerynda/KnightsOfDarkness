@@ -31,4 +31,6 @@ public interface IMarketOfferRepository {
     List<MarketTransaction> getTransactionsByResourceAndTimeRange(MarketResource resource, Instant hourAgo, Instant now);
 
     void addTransactionTimeRangeAverage(MarketTransactionTimeRangeAverage averageSaleRecord);
+
+    List<MarketTransactionTimeRangeAverage> getTransactionTimeRangeAverages(MarketResource resource, int limit);
 }

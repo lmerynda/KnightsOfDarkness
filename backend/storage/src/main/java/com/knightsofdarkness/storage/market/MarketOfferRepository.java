@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -95,5 +96,12 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     {
         var averageSaleRecordEntity = MarketTransactionTimeRangeAveragesEntity.fromDomainModel(averageSaleRecord);
         transactionAveragesJpaRepository.save(averageSaleRecordEntity);
+    }
+
+    @Override
+    public List<MarketTransactionTimeRangeAverage> getTransactionTimeRangeAverages(MarketResource resource, int limit)
+    {
+        PageRequest pageable = PageRequest.of(0, limit);
+        return transactionAveragesJpaRepository.findTopByResourceOrderByToDateDesc(resource, pageable).stream().map(MarketTransactionTimeRangeAveragesEntity::toDomainModel).toList();
     }
 }

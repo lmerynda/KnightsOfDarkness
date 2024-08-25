@@ -41,4 +41,9 @@ public class MarketTransactionTimeRangeAveragesEntity {
         return new MarketTransactionTimeRangeAveragesEntity(averageSaleRecord.getId(), averageSaleRecord.getResource(), averageSaleRecord.getAveragePrice(), averageSaleRecord.getVolume(), averageSaleRecord.getFrom(),
                 averageSaleRecord.getTo());
     }
+
+    public MarketTransactionTimeRangeAverage toDomainModel()
+    {
+        return new MarketTransactionTimeRangeAverage(id, resource, averagePrice, volume, fromDate, toDate);
+    }
 }

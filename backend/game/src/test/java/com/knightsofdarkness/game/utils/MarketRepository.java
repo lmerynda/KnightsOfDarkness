@@ -86,4 +86,11 @@ public class MarketRepository implements IMarketOfferRepository {
         // XXX Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'addTransactionTimeRangeAverage'");
     }
+
+    @Override
+    public List<MarketTransactionTimeRangeAverage> getTransactionTimeRangeAverages(MarketResource resource, int limit)
+    {
+        // XXX Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getTransactionTimeRangeAveragesByResource'");
+    }
 }

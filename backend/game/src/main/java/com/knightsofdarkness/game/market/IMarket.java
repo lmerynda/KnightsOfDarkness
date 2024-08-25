@@ -25,4 +25,6 @@ public interface IMarket {
     MarketOfferBuyResult buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount);
 
     void updateMarketTransactionsAverages(Instant from, Instant to);
+
+    double getLast24TransactionAverage(MarketResource resource);
 }

@@ -90,6 +90,7 @@ public class BlacksmithBot implements IBot {
     public void passTurn()
     {
         runPrePassTurnActions();
+        log.info("[BlacksmithBot] transaction average for last 24 entires for tools is {}", market.getLast24TransactionAverage(MarketResource.tools));
         kingdom.passTurn();
     }
 

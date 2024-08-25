@@ -132,7 +132,19 @@ public class Market implements IMarket {
             {
                 log.info("[Market Data Update] Resource: {} no transactions within specified range from {} to {}", resource, from, to);
             }
-
         }
+    }
+
+    public double getLast24TransactionAverage(MarketResource resource)
+    {
+        var transactions = offersRepository.getTransactionTimeRangeAverages(resource, 24);
+        if (transactions.isEmpty())
+        {
+            log.info("[Market Data] No transactions for resource {} in last 24 hours", resource);
+            return 0;
+        }
+        var weightedAverage = (double) transactions.stream().mapToInt(t -> t.averagePrice * t.volume).sum() / transactions.stream().mapToInt(t -> t.volume).sum();
+        log.info("[Market Data] Last 24 hours weighted average for resource {} is: {}", resource, weightedAverage);
+        return weightedAverage;
     }
 }
