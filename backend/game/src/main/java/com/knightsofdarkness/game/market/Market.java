@@ -135,7 +135,7 @@ public class Market implements IMarket {
         }
     }
 
-    public double getLast24TransactionAverage(MarketResource resource)
+    public double getLast24TransactionAverages(MarketResource resource)
     {
         var transactions = offersRepository.getTransactionTimeRangeAverages(resource, 24);
         if (transactions.isEmpty())

@@ -26,5 +26,5 @@ public interface IMarket {
 
     void updateMarketTransactionsAverages(Instant from, Instant to);
 
-    double getLast24TransactionAverage(MarketResource resource);
+    double getLast24TransactionAverages(MarketResource resource);
 }

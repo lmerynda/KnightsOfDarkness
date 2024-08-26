@@ -80,17 +80,29 @@ public class BlacksmithBot implements IBot {
 
         if (toolsAmount > 0)
         {
-            market.addOffer(kingdom, MarketResource.tools, (int) (toolsAmount * percentage), 140);
+            market.addOffer(kingdom, MarketResource.tools, (int) (toolsAmount * percentage), runPricingAlgorithm());
         }
 
         return toolsAmount;
+    }
+
+    private int runPricingAlgorithm()
+    {
+        int priceIfUnknown = 140; // TODO move it to game constant
+        double average = market.getLast24TransactionAverages(MarketResource.tools);
+        average = average != 0.0 ? average : priceIfUnknown;
+        // final price is a random int (average*0.9) to (average*1.1)
+        int finalPrice = (int) Math.round(average * (0.9 + Math.random() * 0.2));
+        int minimumMarketPrice = 5; // TODO move it to game constant
+        finalPrice = Math.max(finalPrice, minimumMarketPrice);
+        return finalPrice;
     }
 
     @Override
     public void passTurn()
     {
         runPrePassTurnActions();
-        log.info("[BlacksmithBot] transaction average for last 24 entires for tools is {}", market.getLast24TransactionAverage(MarketResource.tools));
+        log.info("[BlacksmithBot] transaction average for last 24 entires for tools is {}", market.getLast24TransactionAverages(MarketResource.tools));
         kingdom.passTurn();
     }
 
