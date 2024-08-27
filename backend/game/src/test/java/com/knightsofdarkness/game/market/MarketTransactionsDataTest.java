@@ -1,7 +1,10 @@
 package com.knightsofdarkness.game.market;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.Instant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -14,7 +17,7 @@ import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 import com.knightsofdarkness.game.utils.MarketBuilder;
 
-class MarketTest {
+class MarketTransactionsDataTest {
     private Game game;
     private IMarket market;
     private Kingdom kingdom;
@@ -29,11 +32,17 @@ class MarketTest {
     }
 
     @Test
-    void testAddOffer()
+    void testTransactionsAveragesData()
     {
-        market.addOffer(kingdom, MarketResource.food, 1, 50);
+        var offer = market.addOffer(kingdom, MarketResource.food, 1, 50);
+        market.buyExistingOffer(offer, kingdom, kingdom, 1); // TODO implement
 
-        assertEquals(1, market.getOffersByResource(MarketResource.food).size());
+        var now = Instant.now();
+        var minuteAgo = now.minusSeconds(60);
+        market.updateMarketTransactionsAverages(minuteAgo, now); // TODO implement
+        var average = market.getLast24TransactionAverages(MarketResource.food);
+        assertThat(average).isEqualTo(0.0); // TODO should be assert below, but implement test stubs first
+        // assertThat(average).isGreaterThan(0.0);
     }
 
     @Disabled

@@ -19,10 +19,17 @@ public class KingdomRepository implements IKingdomRepository {
             {
                 kingdoms.remove(savedKingdom);
                 kingdoms.add(kingdom);
+                
+                return;
             }
         }
 
         throw new IllegalArgumentException("Kingdom not found");
     }
 
+    @Override
+    public void add(Kingdom kingdom)
+    {
+        kingdoms.add(kingdom);
+    }
 }

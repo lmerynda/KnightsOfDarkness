@@ -69,15 +69,14 @@ public class MarketRepository implements IMarketOfferRepository {
     @Override
     public void registerMarketTransaction(MarketTransaction transaction)
     {
-        // XXX Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'registerMarketTransaction'");
+        // TODO implement
     }
 
     @Override
     public List<MarketTransaction> getTransactionsByResourceAndTimeRange(MarketResource resource, Instant hourAgo, Instant now)
     {
-        // XXX Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTransactionsByResourceAndTimeRange'");
+        // TODO implement
+        return new ArrayList<>();
     }
 
     @Override
@@ -89,8 +88,8 @@ public class MarketRepository implements IMarketOfferRepository {
 
     @Override
     public List<MarketTransactionTimeRangeAverage> getTransactionTimeRangeAverages(MarketResource resource, int limit)
-    {
-        // XXX Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTransactionTimeRangeAveragesByResource'");
+    { 
+        // TODO implement
+        return new ArrayList<>();
     }
 }

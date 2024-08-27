@@ -1,21 +1,20 @@
 package com.knightsofdarkness.game;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.IMarket;
+import com.knightsofdarkness.game.storage.IKingdomRepository;
 
 public class Game {
     GameConfig config;
     IMarket market;
-    List<Kingdom> kingdoms = new ArrayList<>();
+    IKingdomRepository kingdomRepository;
 
-    public Game(GameConfig config, IMarket market)
+    public Game(GameConfig config, IMarket market, IKingdomRepository kingdomRepository)
     {
         this.config = config;
         this.market = market;
+        this.kingdomRepository = kingdomRepository;
     }
 
     public GameConfig getConfig()
@@ -30,6 +29,6 @@ public class Game {
 
     public void addKingdom(Kingdom kingdom)
     {
-        this.kingdoms.add(kingdom);
+        kingdomRepository.add(kingdom);
     }
 }
