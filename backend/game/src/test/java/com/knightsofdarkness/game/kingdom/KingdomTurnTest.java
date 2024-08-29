@@ -65,8 +65,8 @@ class KingdomTurnTest {
     {
         var blacksmithCount = 10;
         var blacksmithProductionRate = config.production().getProductionRate(UnitName.blacksmith);
-        var ironToSpend = blacksmithCount * blacksmithProductionRate; // TODO how much iron is spent per one tool should be in config
-        var kingdom = kingdomBuilder.withResource(ResourceName.iron, ironToSpend).withUnit(UnitName.blacksmith, blacksmithCount).build();
+        var kingdom = kingdomBuilder.withUnit(UnitName.blacksmith, blacksmithCount).build();
+        kingdom.getResources().setCount(ResourceName.iron, kingdom.getIronUpkeep(1.0));
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
         kingdom.passTurn();
@@ -80,23 +80,22 @@ class KingdomTurnTest {
     void passTurn_withEnoughIronAndNoIronProduction_shouldConsumeExactAmountOfIron()
     {
         var blacksmithCount = 10;
-        var blacksmithProductionRate = config.production().getProductionRate(UnitName.blacksmith);
-        var ironToSpend = blacksmithCount * blacksmithProductionRate; // TODO how much iron is spent per one tool should be in config
-        var kingdom = kingdomBuilder.withResource(ResourceName.iron, ironToSpend).withUnit(UnitName.blacksmith, blacksmithCount).withUnit(UnitName.ironMiner, 0).build();
+        var kingdom = kingdomBuilder.withUnit(UnitName.blacksmith, blacksmithCount).withUnit(UnitName.ironMiner, 0).build();
+        var ironUpkeep = kingdom.getIronUpkeep(1.0);
+        kingdom.getResources().setCount(ResourceName.iron, ironUpkeep);
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
         kingdom.passTurn();
 
-        assertEquals(resourcesBeforeTurn.get(ResourceName.iron) - ironToSpend, kingdom.getResources().getCount(ResourceName.iron));
+        assertEquals(resourcesBeforeTurn.get(ResourceName.iron) - ironUpkeep, kingdom.getResources().getCount(ResourceName.iron));
     }
 
     @Test
     void passTurn_withNotEnoughIronAndNoIronProduction_shouldConsumeAllTheRemainingIron()
     {
         var blacksmithCount = 10;
-        var blacksmithProductionRate = config.production().getProductionRate(UnitName.blacksmith);
-        var necessaryIron = blacksmithCount * blacksmithProductionRate; // TODO how much iron is spent per one tool should be in config
-        var kingdom = kingdomBuilder.withResource(ResourceName.iron, necessaryIron - 1).withUnit(UnitName.blacksmith, blacksmithCount).withUnit(UnitName.ironMiner, 0).build();
+        var kingdom = kingdomBuilder.withUnit(UnitName.blacksmith, blacksmithCount).withUnit(UnitName.ironMiner, 0).build();
+        kingdom.getResources().setCount(ResourceName.iron, kingdom.getIronUpkeep(1.0) - 1);
 
         kingdom.passTurn();
 
@@ -108,8 +107,8 @@ class KingdomTurnTest {
     {
         var blacksmithCount = 10;
         var blacksmithProductionRate = config.production().getProductionRate(UnitName.blacksmith);
-        var necessaryIron = blacksmithCount * blacksmithProductionRate; // TODO how much iron is spent per one tool should be in config
-        var kingdom = kingdomBuilder.withResource(ResourceName.iron, necessaryIron / 2).withUnit(UnitName.blacksmith, blacksmithCount).withUnit(UnitName.ironMiner, 0).build();
+        var kingdom = kingdomBuilder.withUnit(UnitName.blacksmith, blacksmithCount).withUnit(UnitName.ironMiner, 0).build();
+        kingdom.getResources().setCount(ResourceName.iron, kingdom.getIronUpkeep(1.0) / 2);
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
         kingdom.passTurn();
@@ -125,7 +124,8 @@ class KingdomTurnTest {
         var blacksmithCount = 10;
         var blacksmithProductionRate = config.production().getProductionRate(UnitName.blacksmith);
         var ironMinerProductionRate = config.production().getProductionRate(UnitName.ironMiner);
-        var ironMinerCount = blacksmithCount * blacksmithProductionRate / ironMinerProductionRate; // TODO how much iron is spent per one tool should be in config
+        var ironToSpendPerToolProduction = 1;
+        var ironMinerCount = blacksmithCount * blacksmithProductionRate / ironMinerProductionRate * ironToSpendPerToolProduction;
         var kingdom = kingdomBuilder.withResource(ResourceName.iron, 0).withUnit(UnitName.blacksmith, blacksmithCount).withUnit(UnitName.ironMiner, ironMinerCount).build();
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
@@ -142,7 +142,8 @@ class KingdomTurnTest {
         var blacksmithCount = 10;
         var blacksmithProductionRate = config.production().getProductionRate(UnitName.blacksmith);
         var ironMinerProductionRate = config.production().getProductionRate(UnitName.ironMiner);
-        var ironMinerCount = blacksmithCount * blacksmithProductionRate / ironMinerProductionRate; // TODO how much iron is spent per one tool should be in config
+        var ironToSpendPerToolProduction = 1;
+        var ironMinerCount = blacksmithCount * blacksmithProductionRate / ironMinerProductionRate * ironToSpendPerToolProduction;
         var kingdom = kingdomBuilder.withResource(ResourceName.iron, 0).withUnit(UnitName.blacksmith, blacksmithCount).withUnit(UnitName.ironMiner, ironMinerCount).build();
 
         kingdom.passTurn();
@@ -176,8 +177,8 @@ class KingdomTurnTest {
             var countBeforeTurn = resourcesBeforeTurn.get(resourceName);
             var countAfterTurn = kingdom.getResources().getCount(resourceName);
             assertThat(countBeforeTurn)
-                .withFailMessage("%s after production %d should not be lower than before %s", resourceName, countAfterTurn, countBeforeTurn)
-                .isLessThan(countAfterTurn);
+                    .withFailMessage("%s after production %d should not be lower than before %s", resourceName, countAfterTurn, countBeforeTurn)
+                    .isLessThan(countAfterTurn);
         }
     }
 
