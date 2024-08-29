@@ -36,20 +36,14 @@ class MarketTest {
         assertEquals(1, market.getOffersByResource(MarketResource.food).size());
     }
 
-    @Disabled
     @Test
-    void testThreeOffers()
+    void testAddThreeOffers()
     {
-        var kingdom = new KingdomBuilder(game).build();
-        IMarket market = new MarketBuilder().build();
+        market.addOffer(kingdom, MarketResource.food, 1, 50);
+        market.addOffer(kingdom, MarketResource.food, 1, 60);
+        market.addOffer(kingdom, MarketResource.food, 1, 1);
 
-        market.addOffer(kingdom, MarketResource.food, 100, 50);
-        market.addOffer(kingdom, MarketResource.food, 100, 50);
-        market.addOffer(kingdom, MarketResource.food, 100, 50);
-        market.addOffer(kingdom, MarketResource.food, 100, 51);
-        market.addOffer(kingdom, MarketResource.food, 100, 52);
-
-        assertEquals(5, market.getOffersByResource(MarketResource.food).size());
+        assertEquals(3, market.getOffersByResource(MarketResource.food).size());
     }
 
     @Disabled
