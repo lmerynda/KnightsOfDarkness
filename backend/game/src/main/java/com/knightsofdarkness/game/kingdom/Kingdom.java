@@ -40,6 +40,11 @@ public class Kingdom {
         return kingdomBuildAction.build(buildingsToBuild);
     }
 
+    public KingdomBuildings demolish(KingdomBuildings buildingsToDemolish)
+    {
+        return kingdomBuildAction.demolish(buildingsToDemolish);
+    }
+
     public int getBuildingCapacity(BuildingName name)
     {
         return buildings.getCapacity(name, config.buildingCapacity().getCapacity(name));

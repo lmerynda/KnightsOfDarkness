@@ -45,4 +45,23 @@ public class KingdomBuildAction {
 
         return howManyToBuild;
     }
+
+    public KingdomBuildings demolish(KingdomBuildings buildingsToDemolish)
+    {
+        KingdomBuildings buildingsDemolished = new KingdomBuildings();
+        var buildingNames = EnumSet.copyOf(buildingsToDemolish.buildings.keySet());
+        for (var buildingName : buildingNames)
+        {
+            var demolishCount = buildingsToDemolish.getCount(buildingName);
+            if (demolishCount > 0)
+            {
+                // should building demolishing cost building points?
+                var howManyToDemolish = Math.min(demolishCount, kingdom.getBuildings().getCount(buildingName));
+                buildingsDemolished.addCount(buildingName, howManyToDemolish);
+                kingdom.getBuildings().subtractCount(buildingName, howManyToDemolish);
+            }
+        }
+
+        return buildingsDemolished;
+    }
 }

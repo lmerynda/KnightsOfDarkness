@@ -63,10 +63,10 @@ public class KingdomService {
     }
 
     @Transactional
-    public ResponseEntity<KingdomBuildingsDto> build(String name, KingdomBuildingsDto buildings)
+    public ResponseEntity<KingdomBuildingsDto> build(String kingdomName, KingdomBuildingsDto buildings)
     {
-        log.info("[" + name + "] building " + buildings.toString());
-        Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(name);
+        log.info("[" + kingdomName + "] building " + buildings.toString());
+        Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
             return ResponseEntity.notFound().build();
@@ -77,6 +77,22 @@ public class KingdomService {
         var buildingsBuilt = kingdom.build(buildings.toDomain());
         kingdomRepository.update(kingdom);
         return ResponseEntity.ok(KingdomBuildingsDto.fromDomain(buildingsBuilt));
+    }
+
+    public ResponseEntity<KingdomBuildingsDto> demolish(String kingdomName, KingdomBuildingsDto buildings)
+    {
+        log.info("[" + kingdomName + "] demolishing " + buildings.toString());
+        Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        var kingdom = maybeKingdom.get();
+
+        var buildingsDemolished = kingdom.demolish(buildings.toDomain());
+        kingdomRepository.update(kingdom);
+        return ResponseEntity.ok(KingdomBuildingsDto.fromDomain(buildingsDemolished));
     }
 
     @Transactional

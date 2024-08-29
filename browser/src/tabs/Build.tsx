@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button } from 
 import React, { useContext, useState } from "react";
 import { Building, buildings } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
-import { buildRequest } from "../game-api-client/KingdomApi";
+import { buildRequest, demolishRequest } from "../game-api-client/KingdomApi";
 import BuildReport from "../components/BuildReport";
 import SpecialBuilding from "../components/SpecialBuildings";
 import { getBuildingOccupants, getTotalCapacity } from "../GameUtils";
@@ -27,6 +27,13 @@ const Build: React.FC = () => {
   const handleSubmit = async () => {
     const data = await buildRequest(buildingCounts);
     setLastBuildReport(data);
+    kingdomContext.reloadKingdom();
+    setBuildingCounts({});
+  };
+
+  const handleDemolish = async () => {
+    const data = await demolishRequest(buildingCounts);
+    setLastBuildReport(data); // TODO it should be demolish report, think how to generalize
     kingdomContext.reloadKingdom();
     setBuildingCounts({});
   };
@@ -96,6 +103,9 @@ const Build: React.FC = () => {
       </Table>
       <Button variant="contained" onClick={handleSubmit}>
         Build
+      </Button>
+      <Button color="error" variant="contained" onClick={handleDemolish}>
+        Demolish
       </Button>
       <SpecialBuilding />
     </div>

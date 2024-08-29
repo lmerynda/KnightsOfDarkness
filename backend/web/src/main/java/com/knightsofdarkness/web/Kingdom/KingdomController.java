@@ -87,6 +87,18 @@ public class KingdomController {
         return kingdomService.build(currentUser.kingdom, buildings);
     }
 
+    @PostMapping("/demolish")
+    ResponseEntity<KingdomBuildingsDto> kingdomDemolish(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
+    {
+        if (currentUser == null)
+        {
+            log.error("User not read from authentication context");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.demolish(currentUser.kingdom, buildings);
+    }
+
     @PostMapping("/start-special-building")
     ResponseEntity<KingdomSpecialBuilding> kingdomStartSpecialBuilding(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingStartDto specialBuildingStartDto)
     {

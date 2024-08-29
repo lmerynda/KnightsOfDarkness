@@ -85,6 +85,32 @@ export async function buildRequest(data: { [building: string]: number }): Promis
   }
 }
 
+// TODO should we have demolishRespone? or should the return be request agnostic as we just return the map?
+export async function demolishRequest(data: { [building: string]: number }): Promise<BuildResponse> {
+  try {
+    const response = await handleResponse(
+      fetchData(`${GAME_API}/kingdom/demolish`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+        },
+        body: JSON.stringify(data),
+      }),
+    );
+
+    if (response.ok) {
+      console.log(`demolish request successful`);
+      return response.json();
+    }
+
+    throw new Error(`request failed, status: ${response.status}`);
+  } catch (error) {
+    console.error("demolish error:", error);
+    throw error;
+  }
+}
+
 export async function trainRequest(data: { [unit: string]: number }): Promise<TrainingResponse> {
   try {
     const response = await handleResponse(
