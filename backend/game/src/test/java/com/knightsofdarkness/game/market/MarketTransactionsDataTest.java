@@ -32,6 +32,23 @@ class MarketTransactionsDataTest {
     }
 
     @Test
+    void testMarketBuyRegistersTransaction()
+    {
+        var resource = MarketResource.food;
+        var offer = market.addOffer(kingdom, resource, 1, 50);
+        market.buyExistingOffer(offer, kingdom, kingdom, 1);
+
+        Instant now = Instant.now();
+        Instant minuteAgo = now.minusSeconds(60);
+        var transactions = market.getTransactionsByResourceAndTimeRange(resource, minuteAgo, now);
+        assertThat(transactions.size()).isGreaterThanOrEqualTo(1);
+        var lastTransaction = transactions.get(0);
+
+        assertEquals(50, lastTransaction.price);
+        assertEquals(1, lastTransaction.count);
+    }
+
+    @Test
     void testTransactionsAveragesData()
     {
         var offer = market.addOffer(kingdom, MarketResource.food, 1, 50);

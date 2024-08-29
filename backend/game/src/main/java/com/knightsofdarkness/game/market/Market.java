@@ -1,9 +1,8 @@
 package com.knightsofdarkness.game.market;
 
-import java.util.Optional;
-
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -146,5 +145,10 @@ public class Market implements IMarket {
         var weightedAverage = (double) transactions.stream().mapToInt(t -> t.averagePrice * t.volume).sum() / transactions.stream().mapToInt(t -> t.volume).sum();
         log.info("[Market Data] Last 24 hours weighted average for resource {} is: {}", resource, weightedAverage);
         return weightedAverage;
+    }
+
+    public List<MarketTransaction> getTransactionsByResourceAndTimeRange(MarketResource resource, Instant from, Instant to)
+    {
+        return offersRepository.getTransactionsByResourceAndTimeRange(resource, from, to);
     }
 }

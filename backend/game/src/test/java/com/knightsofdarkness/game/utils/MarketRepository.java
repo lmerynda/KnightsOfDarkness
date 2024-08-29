@@ -19,6 +19,7 @@ import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 public class MarketRepository implements IMarketOfferRepository {
     private static final Logger log = LoggerFactory.getLogger(MarketRepository.class);
     List<MarketOffer> offers = new ArrayList<>();
+    List<MarketTransaction> transactions = new ArrayList<>();
 
     @Override
     public MarketOffer add(MarketOffer marketOffer)
@@ -69,14 +70,18 @@ public class MarketRepository implements IMarketOfferRepository {
     @Override
     public void registerMarketTransaction(MarketTransaction transaction)
     {
-        // TODO implement
+        transactions.add(transaction);
     }
 
     @Override
     public List<MarketTransaction> getTransactionsByResourceAndTimeRange(MarketResource resource, Instant hourAgo, Instant now)
     {
-        // TODO implement
-        return new ArrayList<>();
+        return transactions.stream()
+                .filter(transaction -> transaction.getResource().equals(resource))
+                .filter(transaction -> transaction.getDate().isAfter(hourAgo))
+                .filter(transaction -> transaction.getDate().isBefore(now))
+                .sorted((left, right) -> right.getDate().compareTo(left.getDate()))
+                .toList();
     }
 
     @Override
@@ -88,7 +93,7 @@ public class MarketRepository implements IMarketOfferRepository {
 
     @Override
     public List<MarketTransactionTimeRangeAverage> getTransactionTimeRangeAverages(MarketResource resource, int limit)
-    { 
+    {
         // TODO implement
         return new ArrayList<>();
     }

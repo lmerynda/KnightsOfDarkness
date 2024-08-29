@@ -13,7 +13,7 @@ import com.knightsofdarkness.game.market.MarketResource;
 
 @Repository
 public interface MarketTransactionJpaRepository extends JpaRepository<MarketTransactionEntity, UUID> {
-    @Query("SELECT t FROM MarketTransactionEntity t WHERE t.resource = :resource AND t.date >= :startTime AND t.date < :endTime")
+    @Query("SELECT t FROM MarketTransactionEntity t WHERE t.resource = :resource AND t.date >= :startTime AND t.date < :endTime ORDER BY t.date DESC")
     List<MarketTransactionEntity> findTransactionsForResourceAndTimeRange(
             @Param("resource") MarketResource resource,
             @Param("startTime") Instant startTime,
