@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.game.Game;
@@ -12,7 +11,6 @@ import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
-import com.knightsofdarkness.game.utils.MarketBuilder;
 
 class MarketTest {
     private Game game;

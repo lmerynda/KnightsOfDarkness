@@ -1,14 +1,10 @@
 package com.knightsofdarkness.game.utils;
 
-import java.util.Optional;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.game.market.MarketOffer;
 import com.knightsofdarkness.game.market.MarketResource;
@@ -17,7 +13,6 @@ import com.knightsofdarkness.game.market.MarketTransactionTimeRangeAverage;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 
 public class MarketRepository implements IMarketOfferRepository {
-    private static final Logger log = LoggerFactory.getLogger(MarketRepository.class);
     List<MarketOffer> offers = new ArrayList<>();
     List<MarketTransaction> transactions = new ArrayList<>();
     List<MarketTransactionTimeRangeAverage> transactionTimeRangeAverages = new ArrayList<>();
@@ -52,7 +47,6 @@ public class MarketRepository implements IMarketOfferRepository {
 
     public List<MarketOffer> getOffersByKingdomName(String name)
     {
-        // TODO use kingdom repository to get kingdom by id and then get offers by kingdom
         return offers.stream().filter(offer -> offer.getSeller().getName().equals(name)).toList();
     }
 
@@ -65,7 +59,12 @@ public class MarketRepository implements IMarketOfferRepository {
     @Override
     public void update(MarketOffer marketOffer)
     {
-        log.info("should update offer with id: " + marketOffer.getId());
+        var existingOffer = offers.stream().filter(offer -> offer.getId() == marketOffer.getId()).findFirst();
+        if(existingOffer.isPresent())
+        {
+            offers.remove(existingOffer.get());
+            offers.add(marketOffer);
+        }
     }
 
     @Override
