@@ -46,127 +46,96 @@ class MarketTest {
         assertEquals(3, market.getOffersByResource(MarketResource.food).size());
     }
 
-    @Disabled
     @Test
     void testRemoveOffer()
     {
-        var kingdom = new KingdomBuilder(game).build();
-        IMarket market = new MarketBuilder().build();
         var offer = market.addOffer(kingdom, MarketResource.food, 100, 50);
+        assertEquals(1, market.getOffersByResource(MarketResource.food).size());
 
         market.removeOffer(offer);
 
         assertEquals(0, market.getOffersByResource(MarketResource.food).size());
     }
 
-    @Disabled
     @Test
     void testRemoveThreeOffers()
     {
-        var kingdom = new KingdomBuilder(game).build();
-        IMarket market = new MarketBuilder().build();
         var offer1 = market.addOffer(kingdom, MarketResource.food, 100, 50);
-        var offer2 = market.addOffer(kingdom, MarketResource.food, 100, 50);
-        var offer3 = market.addOffer(kingdom, MarketResource.food, 100, 51);
-        market.addOffer(kingdom, MarketResource.food, 100, 51);
-        market.addOffer(kingdom, MarketResource.food, 100, 51);
+        var offer2 = market.addOffer(kingdom, MarketResource.food, 100, 60);
+        var offer3 = market.addOffer(kingdom, MarketResource.food, 100, 1);
+        assertEquals(3, market.getOffersByResource(MarketResource.food).size());
 
         market.removeOffer(offer1);
         market.removeOffer(offer2);
         market.removeOffer(offer3);
 
-        assertEquals(2, market.getOffersByResource(MarketResource.food).size());
-    }
-
-    @Test
-    @Disabled
-    void buyingOffer_whenNoOffersExist_shouldNotBuyAnything()
-    {
-        var kingdom = new KingdomBuilder(game).build();
-        IMarket market = new MarketBuilder().build();
-
-        var offer = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 100);
-
-        var amountBought = market.buyExistingOffer(offer, kingdom, kingdom, 100);
-
         assertEquals(0, market.getOffersByResource(MarketResource.food).size());
-        assertEquals(0, amountBought);
     }
 
-    @Disabled
     @Test
     void buyingOffer_whenOneOfferExistsAndHasEnoughAmount_shouldSellEntireRequestedAmountAndStillHasOfferAvailable()
     {
-        var kingdom = new KingdomBuilder(game).build();
-        IMarket market = new MarketBuilder().build();
+        market.addOffer(kingdom, MarketResource.food, 100, 50);
+        var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
+        assertTrue(maybeOffer.isPresent());
+        var offer = maybeOffer.get();
 
-        market.addOffer(kingdom, MarketResource.food, 111, 100);
-        var offers = market.getOffersByResource(MarketResource.food);
-        assertTrue(!offers.isEmpty());
+        market.buyExistingOffer(offer, kingdom, kingdom, 99);
 
-        var amountBought = market.buyExistingOffer(offers.get(0), kingdom, kingdom, 100);
+        var cheapestOffer = market.getCheapestOfferByResource(MarketResource.food);
+        assertTrue(cheapestOffer.isPresent());
 
-        assertEquals(1, market.getOffersByResource(MarketResource.food).size());
-        assertEquals(100, amountBought);
+        assertEquals(offer.getId(), cheapestOffer.get().getId());
     }
 
     @Test
-    @Disabled
     void buyingOffer_whenOneOfferExistsAndHasExactlyTheSameAmount_shouldSellEntireRequestedAmountAndHasNoOffersAvailable()
     {
-        var kingdom = new KingdomBuilder(game).build();
-        IMarket market = new MarketBuilder().build();
-
-        market.addOffer(kingdom, MarketResource.food, 100, 100);
-        var offers = market.getOffersByResource(MarketResource.food);
-        assertTrue(!offers.isEmpty());
-
-        var amountBought = market.buyExistingOffer(offers.get(0), kingdom, kingdom, 100);
-
-        assertEquals(0, market.getOffersByResource(MarketResource.food).size());
-        assertEquals(100, amountBought);
-    }
-
-    @Disabled
-    @Test
-    void buyingOffer_whenOfferExist_shouldReduceTheAmountStillAvailableByTheAmountBought()
-    {
-        var kingdom = new KingdomBuilder(game).build();
-        IMarket market = new MarketBuilder().build();
-
-        market.addOffer(kingdom, MarketResource.food, 100, 100);
-        var offers = market.getOffersByResource(MarketResource.food);
-        assertTrue(!offers.isEmpty());
-        var offer = offers.get(0);
-
-        var result = market.buyExistingOffer(offer, kingdom, kingdom, 20);
-
-        assertEquals(1, market.getOffersByResource(MarketResource.food).size());
-        assertEquals(100 - result.count, offer.getCount());
-    }
-
-    @Test
-    @Disabled
-    void buyingOffer_whenMultipleOffersExistAndBuyersTakeTheEntireOne_shouldReduceNumberOfAvailableOffersByOne()
-    {
-        var kingdom = new KingdomBuilder(game).build();
-        IMarket market = new MarketBuilder().build();
-
-        market.addOffer(kingdom, MarketResource.food, 100, 100);
-        market.addOffer(kingdom, MarketResource.food, 100, 200);
-        var offers = market.getOffersByResource(MarketResource.food);
-        assertTrue(!offers.isEmpty());
-        var offer = offers.get(0);
+        market.addOffer(kingdom, MarketResource.food, 100, 50);
+        var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
+        assertTrue(maybeOffer.isPresent());
+        var offer = maybeOffer.get();
 
         market.buyExistingOffer(offer, kingdom, kingdom, 100);
 
-        assertEquals(1, market.getOffersByResource(MarketResource.food).size());
+        var cheapestOffer = market.getCheapestOfferByResource(MarketResource.food);
+        assertTrue(cheapestOffer.isEmpty());
+    }
+
+    @Test
+    void buyingOffer_whenOfferExist_shouldReduceTheAmountStillAvailableByTheAmountBought()
+    {
+        market.addOffer(kingdom, MarketResource.food, 100, 50);
+        var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
+        assertTrue(maybeOffer.isPresent());
+        var offer = maybeOffer.get();
+
+        market.buyExistingOffer(offer, kingdom, kingdom, 90);
+
+        var cheapestOffer = market.getCheapestOfferByResource(MarketResource.food);
+        assertTrue(cheapestOffer.isPresent());
+        assertEquals(offer.getId(), cheapestOffer.get().getId());
+        assertEquals(10, cheapestOffer.get().count);
+    }
+
+    @Test
+    void buyingOffer_whenMultipleOffersExistAndBuyersTakeTheEntireOne_shouldReduceNumberOfAvailableOffersByOne()
+    {
+        market.addOffer(kingdom, MarketResource.food, 100, 50);
+        market.addOffer(kingdom, MarketResource.food, 100, 60);
+        market.addOffer(kingdom, MarketResource.food, 100, 70);
+        var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
+        assertTrue(maybeOffer.isPresent());
+        var offer = maybeOffer.get();
+
+        market.buyExistingOffer(offer, kingdom, kingdom, 100);
+
+        assertEquals(2, market.getOffersByResource(MarketResource.food).size());
     }
 
     @Test
     void offerComparator_withFirstOfferHigher_shouldReturnMoreThanZero()
     {
-        var kingdom = new KingdomBuilder(game).build();
         var offer1 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 2);
         var offer2 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
 
@@ -176,7 +145,6 @@ class MarketTest {
     @Test
     void offerComparator_withFirstOfferLower_shouldReturnLessThanZero()
     {
-        var kingdom = new KingdomBuilder(game).build();
         var offer1 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
         var offer2 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 2);
 
@@ -186,7 +154,6 @@ class MarketTest {
     @Test
     void offerComparator_withTheSamePricedOffers_shouldReturnZero()
     {
-        var kingdom = new KingdomBuilder(game).build();
         var offer1 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
         var offer2 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
 
@@ -196,7 +163,6 @@ class MarketTest {
     @Test
     void offerComparator_withTheSameOffer_shouldReturnZero()
     {
-        var kingdom = new KingdomBuilder(game).build();
         var offer = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
 
         assertEquals(0, Market.offerComparator(offer, offer));
@@ -205,42 +171,22 @@ class MarketTest {
     @Test
     void findCheapestOffer_withNoOffers_shouldReturnEmpty()
     {
-        IMarket market = new MarketBuilder().build();
-
         var emptyOffer = market.getCheapestOfferByResource(MarketResource.food);
 
         assertTrue(emptyOffer.isEmpty());
     }
 
-    @Disabled
-    @Test
-    void findCheapestOffer_withOnlyOneOffer_shouldReturnThatOffer()
-    {
-        var kingdom = new KingdomBuilder(game).build();
-        IMarket market = new MarketBuilder().build();
-        market.addOffer(kingdom, MarketResource.food, 100, 1);
-
-        var onlyOffer = market.getCheapestOfferByResource(MarketResource.food);
-
-        assertTrue(onlyOffer.isPresent());
-        assertEquals(100, onlyOffer.get().count);
-        assertEquals(1, onlyOffer.get().price);
-    }
-
-    @Disabled
     @Test
     void findCheapestOffer_withAFewOffers_shouldReturnTheCheapestOne()
     {
-        var kingdom = new KingdomBuilder(game).build();
-        IMarket market = new MarketBuilder().build();
         market.addOffer(kingdom, MarketResource.food, 100, 2);
         market.addOffer(kingdom, MarketResource.food, 100, 2);
         market.addOffer(kingdom, MarketResource.food, 100, 3);
         market.addOffer(kingdom, MarketResource.food, 100, 4);
-        market.addOffer(kingdom, MarketResource.food, 100, 1);
+        var offer = market.addOffer(kingdom, MarketResource.food, 100, 1);
 
         var cheapestOffer = market.getCheapestOfferByResource(MarketResource.food);
 
-        assertEquals(1, cheapestOffer.get().price);
+        assertEquals(offer.id, cheapestOffer.get().id);
     }
 }
