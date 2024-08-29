@@ -20,6 +20,7 @@ public class MarketRepository implements IMarketOfferRepository {
     private static final Logger log = LoggerFactory.getLogger(MarketRepository.class);
     List<MarketOffer> offers = new ArrayList<>();
     List<MarketTransaction> transactions = new ArrayList<>();
+    List<MarketTransactionTimeRangeAverage> transactionTimeRangeAverages = new ArrayList<>();
 
     @Override
     public MarketOffer add(MarketOffer marketOffer)
@@ -85,16 +86,17 @@ public class MarketRepository implements IMarketOfferRepository {
     }
 
     @Override
-    public void addTransactionTimeRangeAverage(MarketTransactionTimeRangeAverage averageSaleRecord)
+    public void addTransactionTimeRangeAverage(MarketTransactionTimeRangeAverage averageTransactionRecord)
     {
-        // XXX Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addTransactionTimeRangeAverage'");
+        transactionTimeRangeAverages.add(averageTransactionRecord);
     }
 
     @Override
     public List<MarketTransactionTimeRangeAverage> getTransactionTimeRangeAverages(MarketResource resource, int limit)
     {
-        // TODO implement
-        return new ArrayList<>();
+        return transactionTimeRangeAverages.stream()
+                .filter(average -> average.getResource().equals(resource))
+                .limit(limit)
+                .toList();
     }
 }

@@ -52,14 +52,13 @@ class MarketTransactionsDataTest {
     void testTransactionsAveragesData()
     {
         var offer = market.addOffer(kingdom, MarketResource.food, 1, 50);
-        market.buyExistingOffer(offer, kingdom, kingdom, 1); // TODO implement
+        market.buyExistingOffer(offer, kingdom, kingdom, 1);
 
         var now = Instant.now();
         var minuteAgo = now.minusSeconds(60);
-        market.updateMarketTransactionsAverages(minuteAgo, now); // TODO implement
+        market.updateMarketTransactionsAverages(minuteAgo, now);
         var average = market.getLast24TransactionAverages(MarketResource.food);
-        assertThat(average).isEqualTo(0.0); // TODO should be assert below, but implement test stubs first
-        // assertThat(average).isGreaterThan(0.0);
+        assertEquals(50.0, average);
     }
 
     @Disabled
