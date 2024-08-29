@@ -16,13 +16,12 @@ const Build: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleCountChange = (building: string, count: number) => {
-    if (count >= 0) {
-      setBuildingCounts(prevCounts => ({
-        ...prevCounts,
-        [building]: count,
-      }));
-    }
+  const handleCountChange = (building: string, value: string) => {
+    const newValue = parseInt(value) || 0;
+    setBuildingCounts(prevCounts => ({
+      ...prevCounts,
+      [building]: newValue,
+    }));
   };
 
   const handleSubmit = async () => {
@@ -82,7 +81,7 @@ const Build: React.FC = () => {
                 <Input
                   type="number"
                   value={buildingCounts[building] || 0}
-                  onChange={e => handleCountChange(building, parseInt(e.target.value))}
+                  onChange={e => handleCountChange(building, e.target.value)}
                   inputProps={{ min: 0 }}
                 />
               </TableCell>

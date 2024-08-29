@@ -15,13 +15,12 @@ const Train: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleCountChange = (unit: string, count: number) => {
-    if (count >= 0) {
-      setUnitsCounts(prevCounts => ({
-        ...prevCounts,
-        [unit]: count,
-      }));
-    }
+  const handleCountChange = (unit: string, value: string) => {
+    const newValue = parseInt(value) || 0;
+    setUnitsCounts(prevCounts => ({
+      ...prevCounts,
+      [unit]: newValue,
+    }));
   };
 
   const handleSubmit = async () => {
@@ -79,7 +78,7 @@ const Train: React.FC = () => {
                 <Input
                   type="number"
                   value={unitCounts[unit] || 0}
-                  onChange={e => handleCountChange(unit, parseInt(e.target.value))}
+                  onChange={e => handleCountChange(unit, e.target.value)}
                   inputProps={{ min: 0 }}
                 />
               </TableCell>
