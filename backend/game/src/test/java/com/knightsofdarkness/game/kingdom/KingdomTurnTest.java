@@ -1,5 +1,6 @@
 package com.knightsofdarkness.game.kingdom;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -8,7 +9,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.game.Game;
@@ -151,7 +151,6 @@ class KingdomTurnTest {
     }
 
     @Test
-    @Disabled
     void passTurnAllProductionTest()
     {
         for (var unitName : UnitName.getProductionUnits())
@@ -160,7 +159,15 @@ class KingdomTurnTest {
         }
 
         var kingdom = kingdomBuilder.build();
+        // first turn pass to clear the initial resources count, building points is a bit of a special case
+        kingdom.passTurn();
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
+        // count food for upkeep
+        resourcesBeforeTurn.put(ResourceName.food, resourcesBeforeTurn.get(ResourceName.food) - kingdom.getFoodUpkeep());
+        // count iron for upkeep
+        resourcesBeforeTurn.put(ResourceName.iron, resourcesBeforeTurn.get(ResourceName.iron) - kingdom.getIronUpkeep(1.0));
+        // building points will just refresh on new turn, remove them by one to make sureafter new turn we have more
+        resourcesBeforeTurn.put(ResourceName.buildingPoints, resourcesBeforeTurn.get(ResourceName.buildingPoints) - 1);
         kingdom.passTurn();
 
         for (var unitName : UnitName.getProductionUnits())
@@ -168,17 +175,9 @@ class KingdomTurnTest {
             var resourceName = config.production().getResource(unitName);
             var countBeforeTurn = resourcesBeforeTurn.get(resourceName);
             var countAfterTurn = kingdom.getResources().getCount(resourceName);
-            // TODO move away food eating and iron consumption logic from this test - no
-            // "ifs" allowed
-            var spentDuringTurn = 0;
-            if (resourceName == ResourceName.food)
-            {
-                spentDuringTurn = kingdom.getFoodUpkeep();
-            } else if (resourceName == ResourceName.iron)
-            {
-                spentDuringTurn = kingdom.getUnits().getCount(UnitName.blacksmith); // TODO as in the normal code, resource spending ratios should be in config file
-            }
-            assertTrue(countBeforeTurn < countAfterTurn + spentDuringTurn, "Resource " + resourceName + " before turn was " + countBeforeTurn + " and should be smaller than after production " + countAfterTurn);
+            assertThat(countBeforeTurn)
+                .withFailMessage("%s after production %d should not be lower than before %s", resourceName, countAfterTurn, countBeforeTurn)
+                .isLessThan(countAfterTurn);
         }
     }
 
