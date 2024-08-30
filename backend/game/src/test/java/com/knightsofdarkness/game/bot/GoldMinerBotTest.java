@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.game.Game;
@@ -60,17 +59,15 @@ class GoldMinerBotTest {
     }
 
     @Test
-    @Disabled
-    // TODO bring back option to run all training until it's not possible to train
-    // anymore
     void afterTrainingNoNewUnitCanBeTrainedTest()
     {
         var kingdom = kingdomBuilder.build();
+        game.addKingdom(kingdom);
         var toTrain = new KingdomUnits();
         toTrain.addCount(UnitName.goldMiner, 1);
 
         var bot = new GoldMinerBot(kingdom, game.getMarket());
-        bot.doActionCycle();
+        bot.doAllActions();
 
         var trainedUnits = kingdom.train(toTrain);
 

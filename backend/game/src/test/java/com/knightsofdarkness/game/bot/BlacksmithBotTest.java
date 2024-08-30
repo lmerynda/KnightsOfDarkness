@@ -33,7 +33,7 @@ class BlacksmithBotTest {
     @Test
     void simulateTenTurnsTest()
     {
-        var kingdom = kingdomBuilder.withResource(ResourceName.turns, 36).build();
+        var kingdom = kingdomBuilder.withResource(ResourceName.turns, 10).build();
         var blacksmithsBefore = kingdom.getUnits().getCount(UnitName.blacksmith);
         var unusedLandBefore = kingdom.getUnusedLand();
         var workshopsBefore = kingdom.getBuildings().getCount(BuildingName.workshop);
@@ -42,7 +42,7 @@ class BlacksmithBotTest {
 
         KingdomPrinter.printResourcesHeader();
         KingdomPrinter.printLineSeparator();
-        for (var i = 0; i < 36; i++)
+        for (var i = 0; i < 10; i++)
         {
             bot.doActionCycle();
             bot.passTurn();

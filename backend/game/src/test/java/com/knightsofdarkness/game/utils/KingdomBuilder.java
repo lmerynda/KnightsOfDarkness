@@ -23,7 +23,30 @@ public class KingdomBuilder {
     public KingdomBuilder(Game game)
     {
         this.name = "test-kingdom";
+        var startingConfiguration = game.getConfig().kingdomStartConfiguration();
         this.resources = new KingdomResources();
+        for (var resource : ResourceName.values())
+        {
+            this.resources.setCount(resource, startingConfiguration.resources().getCount(resource));
+        }
+
+        this.buildings = new KingdomBuildings();
+        for (var building : BuildingName.values())
+        {
+            this.buildings.setCount(building, startingConfiguration.buildings().getCount(building));
+        }
+
+        this.units = new KingdomUnits();
+        for (var unit : UnitName.values())
+        {
+            this.units.setCount(unit, startingConfiguration.units().getCount(unit));
+        }
+
+        this.game = game;
+    }
+
+    public KingdomBuilder withRichConfiguration()
+    {
         for (var resource : ResourceName.values())
         {
             this.resources.setCount(resource, 500000);
@@ -31,20 +54,18 @@ public class KingdomBuilder {
         this.resources.setCount(ResourceName.gold, 10000000);
         this.resources.setCount(ResourceName.unemployed, 10000);
 
-        this.buildings = new KingdomBuildings();
         for (var building : BuildingName.values())
         {
             this.buildings.setCount(building, 200);
         }
         this.buildings.setCount(BuildingName.house, 4100);
 
-        this.units = new KingdomUnits();
         for (var unit : UnitName.values())
         {
             this.units.setCount(unit, 1000);
         }
 
-        this.game = game;
+        return this;
     }
 
     public KingdomBuilder withResource(ResourceName resource, int count)

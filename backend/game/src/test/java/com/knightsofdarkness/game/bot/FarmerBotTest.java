@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.game.Game;
@@ -16,7 +15,7 @@ import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
-public class FarmerBotTest {
+class FarmerBotTest {
     private static Game game;
     private KingdomBuilder kingdomBuilder;
 
@@ -33,7 +32,6 @@ public class FarmerBotTest {
     }
 
     @Test
-    @Disabled
     void simulateTenTurnsTest()
     {
         var kingdom = kingdomBuilder.withResource(ResourceName.turns, 10).build();
@@ -59,16 +57,15 @@ public class FarmerBotTest {
     }
 
     @Test
-    @Disabled
-    // TODO make sure train is available
     void afterTrainingNoNewUnitCanBeTrainedTest()
     {
         var kingdom = kingdomBuilder.build();
+        game.addKingdom(kingdom);
         var toTrain = new KingdomUnits();
         toTrain.addCount(UnitName.farmer, 1);
 
-        // var bot = new FarmerBot(kingdom);
-        // bot.train();
+        var bot = new FarmerBot(kingdom, game.getMarket());
+        bot.doAllActions();
 
         var trainedUnits = kingdom.train(toTrain);
 

@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.Game;
+import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
 class KingdomTrainTest {
@@ -102,7 +102,11 @@ class KingdomTrainTest {
     @Test
     void trainAllUnitsTest()
     {
-        var kingdom = kingdomBuilder.build();
+        var kingdom = kingdomBuilder.withRichConfiguration().build();
+        for (var buildingName : BuildingName.values())
+        {
+            kingdom.getBuildings().addCount(buildingName, 1);
+        }
         var toTrain = new KingdomUnits();
         for (var unitName : UnitName.values())
         {
