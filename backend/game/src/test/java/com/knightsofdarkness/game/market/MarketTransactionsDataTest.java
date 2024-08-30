@@ -53,7 +53,7 @@ class MarketTransactionsDataTest {
         var now = Instant.now();
         var minuteAgo = now.minusSeconds(60);
         market.updateMarketTransactionsAverages(minuteAgo, now);
-        var average = market.getLast24TransactionAverages(MarketResource.food);
+        double average = market.getLast24TransactionAverages(MarketResource.food).orElse(0.0);
         assertEquals(50.0, average);
     }
 }
