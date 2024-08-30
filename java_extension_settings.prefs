@@ -14,3 +14,5 @@ org.eclipse.jdt.core.formatter.brace_position_for_lambda_body=next_line
 org.eclipse.jdt.core.formatter.brace_position_for_method_declaration=next_line
 org.eclipse.jdt.core.formatter.brace_position_for_switch=next_line
 org.eclipse.jdt.core.formatter.comment.line_length=240
+org.eclipse.jdt.core.formatter.tabulation.char=space
+org.eclipse.jdt.core.formatter.indentation.size=4
