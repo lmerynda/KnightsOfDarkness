@@ -9,8 +9,8 @@ import com.knightsofdarkness.game.market.IMarket;
 public class GoldMinerBot implements IBot {
     private final Kingdom kingdom;
     private final IMarket market;
-    private final double builderToSpecialistRatio = 0.1;
-    private final double housesToSpecialistBuildingRatio = 0.6;
+    private static final double builderToSpecialistRatio = 0.1;
+    private static final double housesToSpecialistBuildingRatio = 0.6;
 
     public GoldMinerBot(Kingdom kingdom, IMarket market)
     {
@@ -41,18 +41,17 @@ public class GoldMinerBot implements IBot {
     @Override
     public boolean doActionCycle()
     {
-        int actionResultsAggregate = 0;
+        int hasAnythingHappened = 0;
 
-        actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom, market);
-        actionResultsAggregate += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 15 + 20); // TODO calculate this from training cost configuration
-        actionResultsAggregate += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
-        actionResultsAggregate += BotFunctions.trainUnits(kingdom, UnitName.goldMiner, 5);
-        actionResultsAggregate += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
-        actionResultsAggregate += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.goldMine, 1);
-        actionResultsAggregate += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
+        hasAnythingHappened += BotFunctions.buyFoodForUpkeep(kingdom, market);
+        hasAnythingHappened += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 15 + 20); // TODO calculate this from training cost configuration
+        hasAnythingHappened += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
+        hasAnythingHappened += BotFunctions.trainUnits(kingdom, UnitName.goldMiner, 5);
+        hasAnythingHappened += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
+        hasAnythingHappened += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.goldMine, 1);
+        hasAnythingHappened += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
 
-        boolean hasAnythingHappen = actionResultsAggregate > 0;
-        return hasAnythingHappen;
+        return hasAnythingHappened > 0;
     }
 
     @Override

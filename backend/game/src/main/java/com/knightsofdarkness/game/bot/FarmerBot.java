@@ -10,8 +10,8 @@ import com.knightsofdarkness.game.market.MarketResource;
 public class FarmerBot implements IBot {
     private final Kingdom kingdom;
     private final IMarket market;
-    private final double builderToSpecialistRatio = 0.05;
-    private final double housesToSpecialistBuildingRatio = 0.55;
+    private static final double builderToSpecialistRatio = 0.05;
+    private static final double housesToSpecialistBuildingRatio = 0.55;
 
     public FarmerBot(Kingdom kingdom, IMarket market)
     {
@@ -46,18 +46,17 @@ public class FarmerBot implements IBot {
     @Override
     public boolean doActionCycle()
     {
-        int actionResultsAggregate = 0;
+        int hasAnythingHappened = 0;
 
-        actionResultsAggregate += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 5 + 20);
+        hasAnythingHappened += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 5 + 20);
         // TODO calculate this from training cost configuration
-        actionResultsAggregate += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
-        actionResultsAggregate += BotFunctions.trainUnits(kingdom, UnitName.farmer, 5);
-        actionResultsAggregate += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
-        actionResultsAggregate += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.farm, 1);
-        actionResultsAggregate += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
+        hasAnythingHappened += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
+        hasAnythingHappened += BotFunctions.trainUnits(kingdom, UnitName.farmer, 5);
+        hasAnythingHappened += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
+        hasAnythingHappened += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.farm, 1);
+        hasAnythingHappened += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
 
-        boolean hasAnythingHappen = actionResultsAggregate > 0;
-        return hasAnythingHappen;
+        return hasAnythingHappened > 0;
     }
 
     private int postFoodOffer()

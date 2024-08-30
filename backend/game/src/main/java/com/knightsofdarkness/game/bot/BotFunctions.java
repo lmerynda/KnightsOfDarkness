@@ -15,6 +15,10 @@ import com.knightsofdarkness.game.market.MarketResource;
 public class BotFunctions {
     private static final Logger log = LoggerFactory.getLogger(BotFunctions.class);
 
+    private BotFunctions()
+    {
+    }
+
     public static int buyFoodForUpkeep(Kingdom kingdom, IMarket market)
     {
         var foodAmount = kingdom.getResources().getCount(ResourceName.food);
