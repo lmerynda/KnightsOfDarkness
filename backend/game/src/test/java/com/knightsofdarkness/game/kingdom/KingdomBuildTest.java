@@ -111,4 +111,18 @@ class KingdomBuildTest {
 
         assertEquals(buildingsCountBeforeBuild, kingdom.getBuildings().countAll());
     }
+
+    @Test
+    void demolishHouseTest()
+    {
+        var kingdom = kingdomBuilder.build();
+        var housesBeforeDemolish = kingdom.getBuildings().getCount(BuildingName.house);
+
+        var toDemolish = new KingdomBuildings();
+        toDemolish.addCount(BuildingName.house, 1);
+
+        kingdom.demolish(toDemolish);
+
+        assertEquals(housesBeforeDemolish - 1, kingdom.getBuildings().getCount(BuildingName.house));
+    }
 }
