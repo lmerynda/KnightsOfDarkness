@@ -1,23 +1,20 @@
 package com.knightsofdarkness.game.bot;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.kingdom.BuildingName;
-import com.knightsofdarkness.game.kingdom.KingdomUnits;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 import com.knightsofdarkness.game.utils.KingdomPrinter;
 
-class GoldMinerBotTest {
+class BlacksmithBotTest {
     private static Game game;
     private KingdomBuilder kingdomBuilder;
 
@@ -37,11 +34,11 @@ class GoldMinerBotTest {
     void simulateTenTurnsTest()
     {
         var kingdom = kingdomBuilder.withResource(ResourceName.turns, 36).build();
-        var goldMinersBefore = kingdom.getUnits().getCount(UnitName.goldMiner);
+        var blacksmithsBefore = kingdom.getUnits().getCount(UnitName.blacksmith);
         var unusedLandBefore = kingdom.getUnusedLand();
-        var goldMinesBefore = kingdom.getBuildings().getCount(BuildingName.goldMine);
+        var workshopsBefore = kingdom.getBuildings().getCount(BuildingName.workshop);
 
-        var bot = new GoldMinerBot(kingdom, game.getMarket());
+        var bot = new BlacksmithBot(kingdom, game.getMarket());
 
         KingdomPrinter.printResourcesHeader();
         KingdomPrinter.printLineSeparator();
@@ -52,28 +49,10 @@ class GoldMinerBotTest {
             KingdomPrinter.kingdomInfoPrinter(kingdom);
         }
 
-        var goldMinersAfter = kingdom.getUnits().getCount(UnitName.goldMiner);
-        var goldMinesAfter = kingdom.getBuildings().getCount(BuildingName.goldMine);
-        assertTrue(goldMinersAfter > goldMinersBefore, "There were supposed to be new trained units, before " + goldMinersBefore + " after " + goldMinersAfter);
+        var blacksmithsAfter = kingdom.getUnits().getCount(UnitName.blacksmith);
+        var workshopsAfter = kingdom.getBuildings().getCount(BuildingName.workshop);
+        assertTrue(blacksmithsAfter > blacksmithsBefore, "There were supposed to be new trained units, before " + blacksmithsBefore + " after " + blacksmithsAfter);
         assertTrue(kingdom.getUnusedLand() < unusedLandBefore, "The land was supposed to be used, available before " + unusedLandBefore + " after " + kingdom.getUnusedLand());
-        assertTrue(goldMinesAfter > goldMinesBefore, "There were supposed to be new gold mines built, before " + goldMinesBefore + " after " + goldMinesAfter);
-    }
-
-    @Test
-    @Disabled
-    // TODO bring back option to run all training until it's not possible to train
-    // anymore
-    void afterTrainingNoNewUnitCanBeTrainedTest()
-    {
-        var kingdom = kingdomBuilder.build();
-        var toTrain = new KingdomUnits();
-        toTrain.addCount(UnitName.goldMiner, 1);
-
-        var bot = new GoldMinerBot(kingdom, game.getMarket());
-        bot.doActionCycle();
-
-        var trainedUnits = kingdom.train(toTrain);
-
-        assertEquals(0, trainedUnits.countAll());
+        assertTrue(workshopsAfter > workshopsBefore, "There were supposed to be new woirkshops built, before " + workshopsBefore + " after " + workshopsAfter);
     }
 }
