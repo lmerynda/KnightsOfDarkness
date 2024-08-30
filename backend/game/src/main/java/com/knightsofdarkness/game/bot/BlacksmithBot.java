@@ -1,5 +1,7 @@
 package com.knightsofdarkness.game.bot;
 
+import java.util.Random;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +16,11 @@ public class BlacksmithBot implements IBot {
     private static final Logger log = LoggerFactory.getLogger(BlacksmithBot.class);
     private final Kingdom kingdom;
     private final IMarket market;
-    private final double builderToSpecialistRatio = 0.07;
-    private final double housesToSpecialistBuildingRatio = 0.6;
+    private static final double builderToSpecialistRatio = 0.07;
+    private static final double housesToSpecialistBuildingRatio = 0.6;
+    private final Random random = new Random();
+    private static final int toolsPriceIfUnknown = 140;
+    private static final int minimumMarketPrice = 5;
 
     public BlacksmithBot(Kingdom kingdom, IMarket market)
     {
@@ -26,7 +31,6 @@ public class BlacksmithBot implements IBot {
     @Override
     public boolean doUpkeepActions()
     {
-
         int actionResultsAggregate = 0;
         actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom, market);
         actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
@@ -59,19 +63,18 @@ public class BlacksmithBot implements IBot {
     @Override
     public boolean doActionCycle()
     {
-        int actionResultsAggregate = 0;
-        actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom, market);
-        actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
-        actionResultsAggregate += BotFunctions.trainUnits(kingdom, UnitName.blacksmith, 3);
-        actionResultsAggregate += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
-        actionResultsAggregate += BotFunctions.trainUnits(kingdom, UnitName.blacksmith, 2);
-        actionResultsAggregate += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
-        actionResultsAggregate += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.workshop, 1);
-        actionResultsAggregate += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
-        actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
+        int hasAnythingHappened = 0;
+        hasAnythingHappened += BotFunctions.buyFoodForUpkeep(kingdom, market);
+        hasAnythingHappened += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
+        hasAnythingHappened += BotFunctions.trainUnits(kingdom, UnitName.blacksmith, 3);
+        hasAnythingHappened += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
+        hasAnythingHappened += BotFunctions.trainUnits(kingdom, UnitName.blacksmith, 2);
+        hasAnythingHappened += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
+        hasAnythingHappened += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.workshop, 1);
+        hasAnythingHappened += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
+        hasAnythingHappened += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
 
-        boolean hasAnythingHappen = actionResultsAggregate > 0;
-        return hasAnythingHappen;
+        return hasAnythingHappened > 0;
     }
 
     private int postToolsOffer(double percentage)
@@ -88,12 +91,10 @@ public class BlacksmithBot implements IBot {
 
     private int runPricingAlgorithm()
     {
-        int priceIfUnknown = 140; // TODO move it to game constant
         double average = market.getLast24TransactionAverages(MarketResource.tools);
-        average = average != 0.0 ? average : priceIfUnknown;
+        average = average != 0.0 ? average : toolsPriceIfUnknown;
         // final price is a random int (average*0.9) to (average*1.1)
-        int finalPrice = (int) Math.round(average * (0.9 + Math.random() * 0.2));
-        int minimumMarketPrice = 5; // TODO move it to game constant
+        int finalPrice = (int) Math.round(average * (0.9 + random.nextInt(21) / 100.0));
         finalPrice = Math.max(finalPrice, minimumMarketPrice);
         return finalPrice;
     }
