@@ -2,7 +2,7 @@ package com.knightsofdarkness.game;
 
 import java.util.UUID;
 
-public class Id {
+public final class Id {
     private Id()
     {
     }

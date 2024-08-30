@@ -14,13 +14,13 @@ import com.knightsofdarkness.game.market.MarketResource;
 
 public class BlacksmithBot implements IBot {
     private static final Logger log = LoggerFactory.getLogger(BlacksmithBot.class);
-    private final Kingdom kingdom;
-    private final IMarket market;
     private static final double builderToSpecialistRatio = 0.07;
     private static final double housesToSpecialistBuildingRatio = 0.6;
-    private final Random random = new Random();
     private static final double toolsPriceIfUnknown = 140.0;
     private static final int minimumMarketPrice = 5;
+    private final Kingdom kingdom;
+    private final IMarket market;
+    private final Random random = new Random();
 
     public BlacksmithBot(Kingdom kingdom, IMarket market)
     {

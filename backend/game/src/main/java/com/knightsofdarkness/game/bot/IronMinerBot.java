@@ -8,10 +8,10 @@ import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
 
 public class IronMinerBot implements IBot {
-    private final Kingdom kingdom;
-    private final IMarket market;
     private static final double builderToSpecialistRatio = 0.1;
     private static final double housesToSpecialistBuildingRatio = 0.6;
+    private final Kingdom kingdom;
+    private final IMarket market;
 
     public IronMinerBot(Kingdom kingdom, IMarket market)
     {

@@ -14,9 +14,9 @@ import jakarta.transaction.Transactional;
 
 @Component
 public class MarketDataUpdater {
-    private final Logger log = LoggerFactory.getLogger(MarketDataUpdater.class);
     private static final int fiveSeconds = 5000;
     private static final int periodicity = fiveSeconds; // 60 * 60 * 1000; TODO fix after testing
+    private final Logger log = LoggerFactory.getLogger(MarketDataUpdater.class);
 
     IMarket market;
 
