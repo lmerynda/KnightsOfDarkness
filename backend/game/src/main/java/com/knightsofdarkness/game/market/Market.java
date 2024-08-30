@@ -96,7 +96,7 @@ public class Market implements IMarket {
         if (offer.count == 0)
         {
             // TODO this should be debug log
-            log.info("Offer sold completely, removing " + offer);
+            log.info("Offer sold completely, removing {}", offer);
             offersRepository.remove(offer);
         } else
         {
