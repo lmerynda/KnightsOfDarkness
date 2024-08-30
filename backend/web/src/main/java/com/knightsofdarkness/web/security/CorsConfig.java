@@ -1,6 +1,5 @@
 package com.knightsofdarkness.web.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -10,11 +9,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class CorsConfig {
 
-    @Autowired
-    private CorsProperties corsProperties;
-
     @Bean
-    public CorsConfigurationSource corsConfigurationSource()
+    public CorsConfigurationSource corsConfigurationSource(CorsProperties corsProperties)
     {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
