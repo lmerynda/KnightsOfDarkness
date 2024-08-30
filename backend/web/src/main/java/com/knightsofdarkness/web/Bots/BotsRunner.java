@@ -35,7 +35,7 @@ public class BotsRunner {
     }
 
     // Runs every 10 seconds (units are in milliseconds)
-    @Scheduled(fixedRate = 50000)
+    @Scheduled(fixedRate = 1000 * 60)
     @Transactional
     public void runEvery10Seconds()
     {
@@ -51,7 +51,7 @@ public class BotsRunner {
 
             var kingdom = botKingdom.get();
             // TODO redo this funny code...
-IBot bot = switch (botName)
+            IBot bot = switch (botName)
             {
                 case "BlacksmithBot" -> new BlacksmithBot(kingdom, market);
                 case "IronMinerBot" -> new IronMinerBot(kingdom, market);
