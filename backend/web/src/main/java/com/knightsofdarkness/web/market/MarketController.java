@@ -42,7 +42,7 @@ public class MarketController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -68,7 +68,7 @@ public class MarketController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -80,10 +80,15 @@ public class MarketController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         return marketService.withdraw(id, currentUser.getKingdom());
+    }
+
+    private void logUserUnauthenticated()
+    {
+        log.error("User not read from authentication context");
     }
 }

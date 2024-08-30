@@ -37,17 +37,15 @@ public class MarketService {
     @Transactional
     public void createOffers(List<MarketOfferDto> offers)
     {
-        log.info("Creating new offers");
         for (var offer : offers)
         {
-            log.info(offer.toString());
             var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
             if (kingdom.isPresent())
             {
                 market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
             } else
             {
-                log.warn("Kingdom with name " + offer.sellerName + " not found");
+                log.warn("Kingdom with name {} not found", offer.sellerName);
             }
         }
     }
@@ -55,14 +53,14 @@ public class MarketService {
     @Transactional
     public void createOffer(MarketOfferDto offer)
     {
-        log.info("Creating new offer" + offer.toString());
+        log.info("Creating new offer {}", offer);
         var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
         if (kingdom.isPresent())
         {
             market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
         } else
         {
-            log.warn("Kingdom with name " + offer.sellerName + " not found");
+            log.warn("Kingdom with name {} not found", offer.sellerName);
         }
     }
 
@@ -74,16 +72,16 @@ public class MarketService {
         allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.iron));
         allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.tools));
         allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.weapons));
-        log.info("Found " + allOffers.size() + " offers");
+        log.info("Found {} offers", allOffers.size());
 
         return allOffers;
     }
 
     public List<MarketOfferDto> getAllOffersByResource(MarketResource resource)
     {
-        log.info("Getting all offers for " + resource);
+        log.info("Getting all offers for {}", resource);
         var allOffers = marketOfferReadRepository.getOffersByResource(resource);
-        log.info("Found " + allOffers.size() + " offers for " + resource);
+        log.info("Found {} offers for {}", allOffers.size(), resource);
         return allOffers;
     }
 
@@ -104,7 +102,7 @@ public class MarketService {
         // to avoid complications in persistence layer deserialization
         var seller = offer.getSeller().getName().equals(buyerName) ? buyer : offer.getSeller();
 
-        log.info("Transaction on " + offer + " with " + buyerName + " and amount " + amount);
+        log.info("Transaction on {} with {} and amount {}", offer, buyerName, amount);
 
         var result = market.buyExistingOffer(offer, seller, buyer, amount);
 
@@ -112,9 +110,8 @@ public class MarketService {
         return ResponseEntity.ok(result);
     }
 
-    // TODO verify if offer belongs to active kingdom
     @Transactional
-    public ResponseEntity<Boolean> withdraw(UUID id, String kingdom)
+    public ResponseEntity<Boolean> withdraw(UUID id, String kingdomName)
     {
         var maybeOffer = market.findOfferById(id);
         if (maybeOffer.isEmpty())
@@ -124,12 +121,12 @@ public class MarketService {
         }
 
         var offer = maybeOffer.get();
-        if (!offer.getSeller().getName().equals(kingdom))
+        if (!offer.getSeller().getName().equals(kingdomName))
         {
-            log.warn("Offer does not belong to kingdom " + kingdom);
+            log.warn("Offer does not belong to kingdom {}", kingdomName);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        log.info("Withdrawing offer " + offer);
+        log.info("Withdrawing offer {}", offer);
 
         market.removeOffer(offer);
         return ResponseEntity.ok(true);
