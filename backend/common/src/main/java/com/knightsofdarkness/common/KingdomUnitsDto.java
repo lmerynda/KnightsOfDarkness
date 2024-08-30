@@ -20,6 +20,7 @@ public class KingdomUnitsDto {
     {
     }
 
+    @SuppressWarnings("java:S107")
     public KingdomUnitsDto(int goldMiners, int ironMiners, int farmers, int blacksmiths, int builders, int carriers, int guards, int spies, int infantry, int bowmen, int cavalry)
     {
         this.goldMiners = goldMiners;

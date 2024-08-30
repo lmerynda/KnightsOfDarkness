@@ -19,6 +19,7 @@ public class KingdomResourcesDto {
     {
     }
 
+    @SuppressWarnings("java:S107")
     public KingdomResourcesDto(int land, int buildingPoints, int unemployed, int gold, int iron, int food, int tools, int weapons, int turns)
     {
         this.land = land;

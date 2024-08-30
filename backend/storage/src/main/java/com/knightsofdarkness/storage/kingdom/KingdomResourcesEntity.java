@@ -22,6 +22,7 @@ class KingdomResourcesEntity {
     {
     }
 
+    @SuppressWarnings("java:S107")
     public KingdomResourcesEntity(int land, int buildingPoints, int unemployed, int gold, int iron, int food, int tool, int weapons, int turn)
     {
         this.land = land;
