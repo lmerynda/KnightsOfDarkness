@@ -63,7 +63,7 @@ public class BlacksmithBot implements IBot {
     @Override
     public boolean doActionCycle()
     {
-        int hasAnythingHappened = 0;
+        var hasAnythingHappened = 0;
         hasAnythingHappened += BotFunctions.buyFoodForUpkeep(kingdom, market);
         hasAnythingHappened += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
         hasAnythingHappened += BotFunctions.trainUnits(kingdom, UnitName.blacksmith, 3);

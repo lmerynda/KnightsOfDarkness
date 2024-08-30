@@ -46,7 +46,7 @@ public class FarmerBot implements IBot {
     @Override
     public boolean doActionCycle()
     {
-        int hasAnythingHappened = 0;
+        var hasAnythingHappened = 0;
 
         hasAnythingHappened += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 5 + 20);
         // TODO calculate this from training cost configuration

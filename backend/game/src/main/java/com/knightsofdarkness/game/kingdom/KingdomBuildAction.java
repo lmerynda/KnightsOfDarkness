@@ -17,7 +17,7 @@ public class KingdomBuildAction {
      */
     public KingdomBuildings build(KingdomBuildings buildingsToBuild)
     {
-        KingdomBuildings buildingsBuilt = new KingdomBuildings();
+        var buildingsBuilt = new KingdomBuildings();
         // by using EnumSet we make sure the names are ordered as specified in the enum declaration
         var buildingNames = EnumSet.copyOf(buildingsToBuild.buildings.keySet());
         for (var buildingName : buildingNames)
@@ -48,7 +48,7 @@ public class KingdomBuildAction {
 
     public KingdomBuildings demolish(KingdomBuildings buildingsToDemolish)
     {
-        KingdomBuildings buildingsDemolished = new KingdomBuildings();
+        var buildingsDemolished = new KingdomBuildings();
         var buildingNames = EnumSet.copyOf(buildingsToDemolish.buildings.keySet());
         for (var buildingName : buildingNames)
         {

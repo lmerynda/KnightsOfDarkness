@@ -41,7 +41,7 @@ public class GoldMinerBot implements IBot {
     @Override
     public boolean doActionCycle()
     {
-        int hasAnythingHappened = 0;
+        var hasAnythingHappened = 0;
 
         hasAnythingHappened += BotFunctions.buyFoodForUpkeep(kingdom, market);
         hasAnythingHappened += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 15 + 20); // TODO calculate this from training cost configuration

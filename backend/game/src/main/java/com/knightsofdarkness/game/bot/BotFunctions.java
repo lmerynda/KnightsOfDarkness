@@ -12,7 +12,7 @@ import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
 
-public class BotFunctions {
+public final class BotFunctions {
     private static final Logger log = LoggerFactory.getLogger(BotFunctions.class);
 
     private BotFunctions()
