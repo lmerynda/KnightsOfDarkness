@@ -1,8 +1,9 @@
 package com.knightsofdarkness.game.market;
 
+import java.util.Optional;
+
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -119,7 +120,7 @@ public class Market implements IMarket {
         for (var resource : MarketResource.values())
         {
             var transactions = offersRepository.getTransactionsByResourceAndTimeRange(resource, from, to);
-            log.info("Transactions for resource {} between: {} - {}: ", resource, from, to, transactions.size());
+            log.info("Transactions for resource {} between: {} - {}: {}", resource, from, to, transactions.size());
             var volume = transactions.stream().mapToInt(t -> t.count).sum();
             if (volume > 0)
             {
@@ -134,17 +135,17 @@ public class Market implements IMarket {
         }
     }
 
-    public double getLast24TransactionAverages(MarketResource resource)
+    public Optional<Double> getLast24TransactionAverages(MarketResource resource)
     {
         var transactions = offersRepository.getTransactionTimeRangeAverages(resource, 24);
         if (transactions.isEmpty())
         {
             log.info("[Market Data] No transactions for resource {} in last 24 hours", resource);
-            return 0;
+            return Optional.empty();
         }
         var weightedAverage = (double) transactions.stream().mapToInt(t -> t.averagePrice * t.volume).sum() / transactions.stream().mapToInt(t -> t.volume).sum();
         log.info("[Market Data] Last 24 hours weighted average for resource {} is: {}", resource, weightedAverage);
-        return weightedAverage;
+        return Optional.of(weightedAverage);
     }
 
     public List<MarketTransaction> getTransactionsByResourceAndTimeRange(MarketResource resource, Instant from, Instant to)

@@ -19,7 +19,7 @@ public class BlacksmithBot implements IBot {
     private static final double builderToSpecialistRatio = 0.07;
     private static final double housesToSpecialistBuildingRatio = 0.6;
     private final Random random = new Random();
-    private static final int toolsPriceIfUnknown = 140;
+    private static final double toolsPriceIfUnknown = 140.0;
     private static final int minimumMarketPrice = 5;
 
     public BlacksmithBot(Kingdom kingdom, IMarket market)
@@ -91,9 +91,8 @@ public class BlacksmithBot implements IBot {
 
     private int runPricingAlgorithm()
     {
-        double average = market.getLast24TransactionAverages(MarketResource.tools);
-        average = average != 0.0 ? average : toolsPriceIfUnknown;
-        // final price is a random int (average*0.9) to (average*1.1)
+        double average = market.getLast24TransactionAverages(MarketResource.tools).orElse(toolsPriceIfUnknown);
+        // final price is a average * random int [0.9,1.1]
         int finalPrice = (int) Math.round(average * (0.9 + random.nextInt(21) / 100.0));
         finalPrice = Math.max(finalPrice, minimumMarketPrice);
         return finalPrice;
