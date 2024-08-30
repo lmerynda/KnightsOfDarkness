@@ -8,7 +8,6 @@ import com.knightsofdarkness.common.KingdomDto;
 import com.knightsofdarkness.common.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.storage.market.MarketOfferEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,7 +42,7 @@ public class KingdomEntity {
     {
     }
 
-    public KingdomEntity(String name, KingdomResourcesEntity resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, KingdomUnitsEntity units, List<MarketOfferEntity> marketOffers,
+    public KingdomEntity(String name, KingdomResourcesEntity resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, KingdomUnitsEntity units,
             KingdomTurnReportEntity lastTurnReport)
     {
         this.name = name;
@@ -57,8 +56,7 @@ public class KingdomEntity {
     public Kingdom toDomainModel(GameConfig gameConfig)
     {
         var specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDomainModel).collect(Collectors.toList());
-        var kingdom = new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), specialBuildings, units.toDomainModel(), lastTurnReport.toDomainModel());
-        return kingdom;
+        return new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), specialBuildings, units.toDomainModel(), lastTurnReport.toDomainModel());
     }
 
     public KingdomDto toDto()
@@ -75,8 +73,7 @@ public class KingdomEntity {
                 KingdomBuildingsEntity.fromDomainModel(kingdom.getBuildings()),
                 new ArrayList<>(),
                 KingdomUnitsEntity.fromDomainModel(kingdom.getUnits()),
-                new ArrayList<>(),
-                KingdomTurnReportEntity.fromDomainModel(kingdom.getLastTurnReport()));
+                        KingdomTurnReportEntity.fromDomainModel(kingdom.getLastTurnReport()));
 
         var specialBuildings = kingdom.getSpecialBuildings().stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDomainModel(specialBuilding, kingdomEntity)).toList();
         kingdomEntity.specialBuildings = specialBuildings;

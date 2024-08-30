@@ -56,7 +56,7 @@ public class MarketOfferEntity {
         return new MarketOfferDto(id, kingdom.getName(), resource, count, price);
     }
 
-    public MarketOffer toDomainModel(GameConfig gameConfig, Kingdom kingdom)
+    public MarketOffer toDomainModel(Kingdom kingdom)
     {
         return new MarketOffer(id, kingdom, resource, count, price);
     }
