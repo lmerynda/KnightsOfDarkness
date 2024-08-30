@@ -64,7 +64,7 @@ public class KingdomController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -80,7 +80,7 @@ public class KingdomController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -92,7 +92,7 @@ public class KingdomController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -104,7 +104,7 @@ public class KingdomController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -116,7 +116,7 @@ public class KingdomController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -128,7 +128,7 @@ public class KingdomController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -140,7 +140,7 @@ public class KingdomController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -152,13 +152,11 @@ public class KingdomController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        var passTurnResult = kingdomService.passTurn(currentUser.kingdom);
-
-        return passTurnResult;
+        return kingdomService.passTurn(currentUser.kingdom);
     }
 
     @PostMapping(value = "/buy-land", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -166,12 +164,15 @@ public class KingdomController {
     {
         if (currentUser == null)
         {
-            log.error("User not read from authentication context");
+            logUserUnauthenticated();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        var landTransaction = kingdomService.buyLand(currentUser.kingdom, amount);
+        return kingdomService.buyLand(currentUser.kingdom, amount);
+    }
 
-        return landTransaction;
+    private void logUserUnauthenticated()
+    {
+        log.error("User not read from authentication context");
     }
 }

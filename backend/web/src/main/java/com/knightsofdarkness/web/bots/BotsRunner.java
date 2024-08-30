@@ -14,11 +14,8 @@ import com.knightsofdarkness.game.bot.FarmerBot;
 import com.knightsofdarkness.game.bot.GoldMinerBot;
 import com.knightsofdarkness.game.bot.IBot;
 import com.knightsofdarkness.game.bot.IronMinerBot;
-import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
-import com.knightsofdarkness.web.kingdom.KingdomService;
-import com.knightsofdarkness.web.market.MarketService;
 
 @Component
 public class BotsRunner {
@@ -28,7 +25,7 @@ public class BotsRunner {
     private final IMarket market;
     private final List<String> botNames = Arrays.asList("BlacksmithBot", "FarmerBot", "IronMinerBot", "GoldMinerBot");
 
-    public BotsRunner(KingdomService kingdomService, MarketService marketService, KingdomRepository kingdomRepository, IMarket market, GameConfig gameConfig)
+    public BotsRunner(KingdomRepository kingdomRepository, IMarket market)
     {
         this.kingdomRepository = kingdomRepository;
         this.market = market;
@@ -72,7 +69,6 @@ public class BotsRunner {
         passTurn(bot);
     }
 
-    @Transactional
     boolean runActions(IBot bot)
     {
         var kingdom = bot.getKingdom();
@@ -81,7 +77,6 @@ public class BotsRunner {
         return result;
     }
 
-    @Transactional
     void passTurn(IBot bot)
     {
         var kingdom = bot.getKingdom();

@@ -85,7 +85,7 @@ public class GameInitializer implements CommandLineRunner {
         }
     }
 
-    private final String defaultKingdomPayload = """
+    private static final String defaultKingdomPayload = """
             {
                 "name": "default_kingdom_name",
                         "resources": {
@@ -128,7 +128,7 @@ public class GameInitializer implements CommandLineRunner {
             }
             """;
 
-    private final String marketOffersPayload = """
+    private static final String marketOffersPayload = """
             [
                 {
                     "sellerName": "uprzejmy",

@@ -20,6 +20,7 @@ public class KingdomBuildingsDto {
     {
     }
 
+    @SuppressWarnings("java:S107")
     public KingdomBuildingsDto(int houses, int goldMines, int ironMines, int workshops, int farms, int markets, int barracks, int guardHouses, int spyGuilds, int towers, int castles)
     {
         this.houses = houses;

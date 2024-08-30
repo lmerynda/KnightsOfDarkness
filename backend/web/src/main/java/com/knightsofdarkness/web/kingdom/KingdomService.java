@@ -42,7 +42,7 @@ public class KingdomService {
     @Transactional
     public KingdomDto createKingdom(KingdomDto kingdom)
     {
-        log.info("Creating new kingdom " + kingdom.toString());
+        log.info("Creating new kingdom {}", kingdom);
 
         kingdomRepository.add(kingdom.toDomain(gameConfig));
         return kingdom;
@@ -50,7 +50,7 @@ public class KingdomService {
 
     public Optional<KingdomDto> getKingdomByName(String name)
     {
-        log.info("Looking for a kingdom with name " + name);
+        log.info("Looking for a kingdom with name {}", name);
         var maybeKingdom = kingdomReadRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
@@ -65,7 +65,7 @@ public class KingdomService {
     @Transactional
     public ResponseEntity<KingdomBuildingsDto> build(String kingdomName, KingdomBuildingsDto buildings)
     {
-        log.info("[" + kingdomName + "] building " + buildings.toString());
+        log.info("[{}] building {}", kingdomName, buildings);
         Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
@@ -81,7 +81,7 @@ public class KingdomService {
 
     public ResponseEntity<KingdomBuildingsDto> demolish(String kingdomName, KingdomBuildingsDto buildings)
     {
-        log.info("[" + kingdomName + "] demolishing " + buildings.toString());
+        log.info("[{}] demolishing {}", kingdomName, buildings);
         Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
@@ -98,7 +98,7 @@ public class KingdomService {
     @Transactional
     public ResponseEntity<KingdomUnitsDto> train(String name, KingdomUnitsDto unitsToTrain)
     {
-        log.info("[" + name + "] training " + unitsToTrain.toString());
+        log.info("[{}] training {}", name, unitsToTrain);
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
         if (kingdom.isEmpty())
         {
@@ -114,7 +114,7 @@ public class KingdomService {
     @Transactional
     public ResponseEntity<KingdomTurnReport> passTurn(String name)
     {
-        log.info("[" + name + "] passing turn ");
+        log.info("[{}] passing turn", name);
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
         if (kingdom.isEmpty())
         {
@@ -131,7 +131,6 @@ public class KingdomService {
         }
 
         kingdomRepository.update(kingdom.get());
-        log.info(passedTurnResult.get().toString());
 
         return ResponseEntity.ok(passedTurnResult.get());
     }
@@ -139,7 +138,7 @@ public class KingdomService {
     @Transactional
     public ResponseEntity<LandTransaction> buyLand(String name, int amount)
     {
-        log.info("[" + name + "] buying land");
+        log.info("[{}] buying land {}", name, amount);
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
         if (kingdom.isEmpty())
         {
