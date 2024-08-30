@@ -24,8 +24,6 @@ public class GameMarketService {
     @Bean
     public IMarket market()
     {
-        Market market = new Market(marketOfferRepository, kingdomRepository);
-        System.out.println("Market created");
-        return market;
+        return new Market(marketOfferRepository, kingdomRepository);
     }
 }

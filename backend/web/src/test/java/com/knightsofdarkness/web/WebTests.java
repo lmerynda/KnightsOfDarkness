@@ -31,7 +31,7 @@ import com.knightsofdarkness.game.market.MarketResource;
 { "com.knightsofdarkness.*" })
 @EntityScan(basePackages =
 { "com.knightsofdarkness.*" })
-public class WebTests {
+class WebTests {
     @Autowired
     private MockMvc mockMvc;
 
