@@ -4,6 +4,7 @@ import { KingdomContext } from "../Kingdom";
 import { MarketOfferData, MarketResource, OfferBuyer } from "../GameTypes";
 import { buyMarketOfferRequest, fetchMarketDataRequest, MarketOfferBuyResponse } from "../game-api-client/MarketApi";
 import MarketOfferBuyReport from "./MarketOfferBuyReport";
+import { marketRefreshInterval } from "../Consts";
 
 export type MarketBuyResourceProps = {
   resource: MarketResource;
@@ -34,6 +35,13 @@ const MarketBuyResource: React.FC<MarketBuyResourceProps> = (props: MarketBuyRes
 
   React.useEffect(() => {
     reloadMarket();
+    const interval = setInterval(() => {
+      reloadMarket();
+    }, marketRefreshInterval);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [props.resource]);
 
   const clearForm = (id: string) => {
