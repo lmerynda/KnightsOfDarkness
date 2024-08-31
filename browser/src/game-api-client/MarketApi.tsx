@@ -22,7 +22,7 @@ export async function fetchMarketDataRequest(): Promise<MarketOfferData[]> {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
       }),
     );
@@ -47,7 +47,7 @@ export async function buyMarketOfferRequest(id: string, offerBuyer: OfferBuyer):
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
         body: JSON.stringify(offerBuyer),
       }),
@@ -73,7 +73,7 @@ export async function withdrawMarketOfferRequest(id: string): Promise<MarketOffe
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
         body: JSON.stringify({}),
       }),
@@ -99,7 +99,7 @@ export async function createMarketOfferRequest(offer: CreateMarketOfferData): Pr
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
         body: JSON.stringify(offer),
       }),

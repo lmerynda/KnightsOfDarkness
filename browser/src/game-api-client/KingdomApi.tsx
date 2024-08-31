@@ -17,7 +17,7 @@ export async function fetchKingdomDataRequest(): Promise<KingdomData> {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
       }),
     );
@@ -43,7 +43,7 @@ export async function passTurnRequest(): Promise<Response> {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
       }),
     );
@@ -67,7 +67,7 @@ export async function buildRequest(data: { [building: string]: number }): Promis
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
         body: JSON.stringify(data),
       }),
@@ -93,7 +93,7 @@ export async function demolishRequest(data: { [building: string]: number }): Pro
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
         body: JSON.stringify(data),
       }),
@@ -118,7 +118,7 @@ export async function trainRequest(data: { [unit: string]: number }): Promise<Tr
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
         body: JSON.stringify(data),
       }),
@@ -143,7 +143,7 @@ export async function buyLandRequest(buyAmount: number): Promise<Response> {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
         body: JSON.stringify(buyAmount),
       }),
@@ -168,7 +168,7 @@ export async function startSpecialBuildingRequest(specialBuildingType: string): 
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
 
         body: JSON.stringify({ name: specialBuildingType }),
@@ -194,7 +194,7 @@ export async function buildSpecialBuildingRequest(id: string, buildingPoints: nu
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
 
         body: JSON.stringify({ id: id, buildingPoints: buildingPoints }),
@@ -220,7 +220,7 @@ export async function demolishSpecialBuildingRequest(id: string): Promise<Respon
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
 
         body: JSON.stringify({ id: id }),

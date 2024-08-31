@@ -7,7 +7,7 @@ import TrainingReport from "../components/TrainingReport";
 import { getOpenPositions } from "../GameUtils";
 
 const Train: React.FC = () => {
-  const [unitCounts, setUnitsCounts] = useState<{ [unit: string]: number }>({});
+  const [unitCounts, setUnitCounts] = useState<{ [unit: string]: number }>({});
   const [lastTrainingReport, setLastTrainingReport] = useState<{ [unit: string]: number }>({});
   const kingdomContext = useContext(KingdomContext);
   // ask someone how to better solve it, null object pattern?
@@ -17,7 +17,7 @@ const Train: React.FC = () => {
 
   const handleCountChange = (unit: string, value: string) => {
     const newValue = parseInt(value) || 0;
-    setUnitsCounts(prevCounts => ({
+    setUnitCounts(prevCounts => ({
       ...prevCounts,
       [unit]: newValue,
     }));
@@ -27,7 +27,7 @@ const Train: React.FC = () => {
     const data = await trainRequest(unitCounts);
     setLastTrainingReport(data);
     kingdomContext.reloadKingdom();
-    setUnitsCounts({});
+    setUnitCounts({});
   };
 
   const howManyUnitsCanAfford = (unit: Unit) => {
@@ -44,7 +44,7 @@ const Train: React.FC = () => {
     // some units don't have their buildings so it's not a limiting factor
     const maxUnitsToAfford = openPositions ? Math.min(openPositions, howManyUnitsCanAfford(unit)) : howManyUnitsCanAfford(unit);
 
-    setUnitsCounts(prevCounts => ({
+    setUnitCounts(prevCounts => ({
       ...prevCounts,
       [unit]: maxUnitsToAfford,
     }));
@@ -73,7 +73,7 @@ const Train: React.FC = () => {
               <TableCell>{kingdomContext.gameConfig.trainingCost[unit].gold}</TableCell>
               <TableCell>{kingdomContext.gameConfig.trainingCost[unit].tools}</TableCell>
               <TableCell>{kingdomContext.gameConfig.trainingCost[unit].weapons}</TableCell>
-              <TableCell>{getOpenPositions(unit, kingdomContext.kingdom, kingdomContext.gameConfig) || "N/A"}</TableCell>
+              <TableCell>{getOpenPositions(unit, kingdomContext.kingdom, kingdomContext.gameConfig) ?? "N/A"}</TableCell>
               <TableCell>
                 <Input
                   type="number"

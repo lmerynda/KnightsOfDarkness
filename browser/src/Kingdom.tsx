@@ -12,7 +12,7 @@ import { fetchGameConfigRequest } from "./game-api-client/GameApi";
 export type KingdomContextType = {
   kingdom: KingdomData;
   gameConfig: GameConfig;
-  reloadKingdom: () => void;
+  reloadKingdom: () => Promise<void>;
 };
 
 export const KingdomContext = React.createContext<KingdomContextType | undefined>(undefined);

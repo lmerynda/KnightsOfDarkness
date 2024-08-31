@@ -22,7 +22,7 @@ export async function fetchGameConfigRequest(): Promise<GameConfig> {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
       }),
     );
