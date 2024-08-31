@@ -1,9 +1,12 @@
 package com.knightsofdarkness.storage.market;
 
-import java.util.List;
 import java.util.Optional;
+
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.common.MarketOfferDto;
@@ -20,6 +23,13 @@ public class MarketOfferReadRepository {
     public List<MarketOfferDto> getOffersByResource(MarketResource resource)
     {
         var offers = jpaRepository.findByResource(resource);
+        return offers.stream().map(MarketOfferEntity::toDto).toList();
+    }
+
+    public List<MarketOfferDto> findCheapestOffersByResource(MarketResource resource, int limit)
+    {
+        Pageable pageable = PageRequest.of(0, limit);
+        var offers = jpaRepository.findByResourceOrderByPriceAsc(resource, pageable);
         return offers.stream().map(MarketOfferEntity::toDto).toList();
     }
 

@@ -51,6 +51,7 @@ public class MarketController {
         return ResponseEntity.ok(offer);
     }
 
+    @Deprecated
     @GetMapping("/market")
     List<MarketOfferDto> getAllOffers()
     {
@@ -58,9 +59,9 @@ public class MarketController {
     }
 
     @GetMapping("/market/{resource}")
-    List<MarketOfferDto> getAllOffersByResource(@PathVariable MarketResource resource)
+    List<MarketOfferDto> getOffersByResource(@PathVariable MarketResource resource)
     {
-        return marketService.getAllOffersByResource(resource);
+        return marketService.getOffersByResource(resource);
     }
 
     @PostMapping("/market/{id}/buy")

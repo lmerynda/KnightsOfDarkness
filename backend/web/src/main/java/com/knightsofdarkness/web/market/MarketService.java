@@ -64,6 +64,7 @@ public class MarketService {
         }
     }
 
+    @Deprecated
     public List<MarketOfferDto> getAllOffers()
     {
         log.info("Getting all offers");
@@ -77,10 +78,10 @@ public class MarketService {
         return allOffers;
     }
 
-    public List<MarketOfferDto> getAllOffersByResource(MarketResource resource)
+    public List<MarketOfferDto> getOffersByResource(MarketResource resource)
     {
-        log.info("Getting all offers for {}", resource);
-        var allOffers = marketOfferReadRepository.getOffersByResource(resource);
+        log.info("Getting last 7 offers for {}", resource);
+        var allOffers = marketOfferReadRepository.findCheapestOffersByResource(resource, 2); // TODO make limit a game constant
         log.info("Found {} offers for {}", allOffers.size(), resource);
         return allOffers;
     }
