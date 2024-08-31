@@ -57,7 +57,6 @@ const Kingdom: React.FC = () => {
       ) : (
         <div>Loading...</div>
       )}
-      ;
     </Box>
   );
 };
