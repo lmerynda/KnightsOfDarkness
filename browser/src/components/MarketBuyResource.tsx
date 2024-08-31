@@ -28,10 +28,10 @@ const MarketBuyResource: React.FC<MarketBuyResourceProps> = (props: MarketBuyRes
     }));
   };
 
-  const reloadMarket = async () => {
+  const reloadMarket = React.useCallback(async () => {
     const data = await fetchMarketDataRequest(props.resource);
     setMarketData(data);
-  };
+  }, [props.resource]);
 
   React.useEffect(() => {
     reloadMarket();
@@ -42,7 +42,7 @@ const MarketBuyResource: React.FC<MarketBuyResourceProps> = (props: MarketBuyRes
     return () => {
       clearInterval(interval);
     };
-  }, [props.resource]);
+  }, [props.resource, reloadMarket]);
 
   const clearForm = (id: string) => {
     setBuyInputs(prevInputs => ({

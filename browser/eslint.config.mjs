@@ -15,5 +15,8 @@ export default [
         version: "detect",
       },
     },
+    rules: {
+      "react-hooks/exhaustive-deps": "warn",
+    },
   },
 ];
