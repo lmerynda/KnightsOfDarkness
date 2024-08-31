@@ -15,10 +15,10 @@ export type MarketOfferBuyResponse = {
   totalCost: number;
 };
 
-export async function fetchMarketDataRequest(): Promise<MarketOfferData[]> {
+export async function fetchMarketDataRequest(resource: MarketResource): Promise<MarketOfferData[]> {
   try {
     const response = await handleResponse(
-      fetchData(`${GAME_API}/market`, {
+      fetchData(`${GAME_API}/market/${resource}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

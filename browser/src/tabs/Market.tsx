@@ -14,7 +14,7 @@ const Market: React.FC = () => {
         <Tab label="Sell" component={Link} value="/market/sell" to="/market/sell" />
       </Tabs>
       <Routes>
-        <Route path="buy" element={<MarketBuy />} />
+        <Route path="buy/*" element={<MarketBuy />} />
         <Route path="sell" element={<MarketSell />} />
         <Route path="*" element={<Navigate to="/market/buy" />} />
       </Routes>
