@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.common.MarketOfferDto;
+import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketOfferBuyResult;
 import com.knightsofdarkness.game.market.MarketResource;
@@ -21,17 +22,17 @@ import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
 @Service
 public class MarketService {
     private final Logger log = LoggerFactory.getLogger(MarketService.class);
-
     private final IMarket market;
-
     private final KingdomRepository kingdomRepository;
     private final MarketOfferReadRepository marketOfferReadRepository;
+    private final GameConfig gameConfig;
 
-    public MarketService(IMarket market, KingdomRepository kingdomRepository, MarketOfferReadRepository marketOfferReadRepository)
+    public MarketService(IMarket market, KingdomRepository kingdomRepository, MarketOfferReadRepository marketOfferReadRepository, GameConfig gameConfig)
     {
         this.market = market;
         this.kingdomRepository = kingdomRepository;
         this.marketOfferReadRepository = marketOfferReadRepository;
+        this.gameConfig = gameConfig;
     }
 
     @Transactional
@@ -81,7 +82,7 @@ public class MarketService {
     public List<MarketOfferDto> getOffersByResource(MarketResource resource)
     {
         log.info("Getting last 7 offers for {}", resource);
-        var allOffers = marketOfferReadRepository.findCheapestOffersByResource(resource, 2); // TODO make limit a game constant
+        var allOffers = marketOfferReadRepository.findCheapestOffersByResource(resource, gameConfig.market().numberOfOffers());
         log.info("Found {} offers for {}", allOffers.size(), resource);
         return allOffers;
     }

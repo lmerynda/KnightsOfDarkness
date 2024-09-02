@@ -7,7 +7,8 @@ public record GameConfig(
         TrainingCost trainingCost,
         Production production,
         KingdomStartConfiguration kingdomStartConfiguration,
-        SpecialBuildingCosts specialBuildingCosts)
+        SpecialBuildingCosts specialBuildingCosts,
+        Market market)
 {
 }
 // @formatter:on 

@@ -149,5 +149,8 @@
       "rate": 1000,
       "resource": "buildingPoints"
     }
+  },
+  "market" : {
+    "numberOfOffers": 7
   }
 }
