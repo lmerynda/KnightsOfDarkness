@@ -9,7 +9,7 @@ public class TestGame {
     {
         var config = Initializer.readGameConfig();
         var kingdomRepository = new KingdomRepository();
-        var market = new MarketBuilder().withKingdomRepository(kingdomRepository).build();
+        var market = new MarketBuilder(config).withKingdomRepository(kingdomRepository).build();
 
         return new Game(config, market, kingdomRepository);
     }

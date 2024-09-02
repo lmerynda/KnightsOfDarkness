@@ -22,6 +22,8 @@ public interface IMarketOfferRepository {
 
     List<MarketOffer> getOffersByKingdomName(String name);
 
+    int getOffersCountByKingdomNameAndResource(String kingdomName, MarketResource resource);
+
     Optional<MarketOffer> findById(UUID marketOfferId);
 
     void update(MarketOffer marketOffer);

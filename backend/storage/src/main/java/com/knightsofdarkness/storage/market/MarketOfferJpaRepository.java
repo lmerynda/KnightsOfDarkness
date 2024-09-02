@@ -20,4 +20,6 @@ public interface MarketOfferJpaRepository extends JpaRepository<MarketOfferEntit
     Optional<MarketOfferEntity> findFirstByResourceOrderByPriceAsc(MarketResource resource);
 
     List<MarketOfferEntity> findByResourceOrderByPriceAsc(MarketResource resource, Pageable pageable);
+
+    int countByKingdomNameAndResource(String kingdomName, MarketResource resource);
 }

@@ -13,7 +13,6 @@ public class KingdomMarketAction {
 
     public int postOffer(MarketResource resource, int count)
     {
-        // TODO in game configuration add limit on number of offers from a single kingdom
         var maxToPost = Math.min(count, kingdom.getResources().getCount(ResourceName.from(resource)));
         if (maxToPost > 0)
         {

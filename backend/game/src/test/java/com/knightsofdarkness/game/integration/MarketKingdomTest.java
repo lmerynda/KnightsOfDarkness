@@ -13,7 +13,7 @@ import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
-public class MarketKingdomTest {
+class MarketKingdomTest {
     private Game game;
     private IMarket market;
     private Kingdom kingdom;

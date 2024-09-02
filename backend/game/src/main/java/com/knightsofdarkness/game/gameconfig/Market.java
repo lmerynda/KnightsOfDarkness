@@ -1,4 +1,4 @@
 package com.knightsofdarkness.game.gameconfig;
 
-public record Market(int numberOfOffers) {
+public record Market(int visibleMarketOffersCap, int maxKingdomOffers) {
 }

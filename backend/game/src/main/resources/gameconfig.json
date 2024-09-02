@@ -151,7 +151,8 @@
     }
   },
   "market" : {
-    "numberOfOffers": 7
+    "visibleMarketOffersCap": 7,
+    "maxKingdomOffers": 10
   },
   "common": {
     "specialBuildingPerLevelProductionBonus" : 0.2

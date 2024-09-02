@@ -104,4 +104,10 @@ public class MarketOfferRepository implements IMarketOfferRepository {
         PageRequest pageable = PageRequest.of(0, limit);
         return transactionAveragesJpaRepository.findTopByResourceOrderByToDateDesc(resource, pageable).stream().map(MarketTransactionTimeRangeAveragesEntity::toDomainModel).toList();
     }
+
+    @Override
+    public int getOffersCountByKingdomNameAndResource(String kingdomName, MarketResource resource)
+    {
+        return jpaRepository.countByKingdomNameAndResource(kingdomName, resource);
+    }
 }

@@ -58,7 +58,7 @@ public class MarketService {
         var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
         if (kingdom.isPresent())
         {
-            market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
+            market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price); // TODO signal if the offer was not created
         } else
         {
             log.warn("Kingdom with name {} not found", offer.sellerName);
@@ -82,7 +82,7 @@ public class MarketService {
     public List<MarketOfferDto> getOffersByResource(MarketResource resource)
     {
         log.info("Getting last 7 offers for {}", resource);
-        var allOffers = marketOfferReadRepository.findCheapestOffersByResource(resource, gameConfig.market().numberOfOffers());
+        var allOffers = marketOfferReadRepository.findCheapestOffersByResource(resource, gameConfig.market().visibleMarketOffersCap());
         log.info("Found {} offers for {}", allOffers.size(), resource);
         return allOffers;
     }

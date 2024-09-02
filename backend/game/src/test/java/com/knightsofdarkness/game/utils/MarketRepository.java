@@ -1,9 +1,10 @@
 package com.knightsofdarkness.game.utils;
 
+import java.util.Optional;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.knightsofdarkness.game.market.MarketOffer;
@@ -97,5 +98,14 @@ public class MarketRepository implements IMarketOfferRepository {
                 .filter(average -> average.getResource().equals(resource))
                 .limit(limit)
                 .toList();
+    }
+
+    @Override
+    public int getOffersCountByKingdomNameAndResource(String kingdomName, MarketResource resource)
+    {
+        return (int) offers.stream()
+                .filter(offer -> offer.getSeller().getName().equals(kingdomName))
+                .filter(offer -> offer.getResource().equals(resource))
+                .count();
     }
 }
