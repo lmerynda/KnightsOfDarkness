@@ -100,8 +100,7 @@ public class Kingdom {
 
     public int getFoodUpkeep()
     {
-        // TODO move magic value to config
-        return units.countAll() * 10;
+        return units.countAll() * config.common().foodUpkeepPerUnit();
     }
 
     public KingdomResources getResources()

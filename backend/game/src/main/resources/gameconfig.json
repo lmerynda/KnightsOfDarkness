@@ -156,6 +156,7 @@
   },
   "common": {
     "specialBuildingPerLevelProductionBonus" : 0.2,
-    "maxTurns": 36
+    "maxTurns": 36,
+    "foodUpkeepPerUnit": 10
   }
 }
