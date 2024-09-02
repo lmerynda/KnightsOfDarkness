@@ -157,6 +157,8 @@
   "common": {
     "specialBuildingPerLevelProductionBonus" : 0.2,
     "maxTurns": 36,
-    "foodUpkeepPerUnit": 10
+    "foodUpkeepPerUnit": 10,
+    "ironConsumptionPerProductionUnit": 1,
+    "specialBuildingMaxCount": 5
   }
 }
