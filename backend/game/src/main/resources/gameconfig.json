@@ -155,6 +155,7 @@
     "maxKingdomOffers": 10
   },
   "common": {
-    "specialBuildingPerLevelProductionBonus" : 0.2
+    "specialBuildingPerLevelProductionBonus" : 0.2,
+    "maxTurns": 36
   }
 }

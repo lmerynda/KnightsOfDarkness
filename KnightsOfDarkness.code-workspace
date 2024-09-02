@@ -30,6 +30,8 @@
 			{
 				"column": 160,
 			}
-		]
+        ],
+        "todo-tree.tree.showCountsInTree": true,
+        "todo-tree.tree.scanMode": "workspace only"
 	}
 }

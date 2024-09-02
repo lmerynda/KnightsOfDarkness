@@ -1,5 +1,5 @@
 package com.knightsofdarkness.game.gameconfig;
 
-public record Common(double specialBuildingPerLevelProductionBonus) {
+public record Common(double specialBuildingPerLevelProductionBonus, int maxTurns) {
 
 }

@@ -97,7 +97,7 @@ public class GameInitializer implements CommandLineRunner {
                     "weapons": 100,
                     "buildingPoints": 10000,
                     "unemployed": 20,
-                    "turns": 36
+                    "turns": 20
                 },
                 "buildings": {
                     "houses": 10,

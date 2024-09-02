@@ -62,8 +62,7 @@ public class Kingdom {
 
     public void addTurn()
     {
-        // TODO make it game constant
-        if (resources.getCount(ResourceName.turns) < 36)
+        if (!hasMaxTurns())
         {
             resources.addCount(ResourceName.turns, 1);
         }
@@ -156,8 +155,7 @@ public class Kingdom {
 
     public boolean hasMaxTurns()
     {
-        // TODO make max turns a game constant
-        return resources.getCount(ResourceName.turns) >= 36;
+        return resources.getCount(ResourceName.turns) >= config.common().maxTurns();
     }
 
     public Optional<KingdomSpecialBuilding> startSpecialBuilding(SpecialBuildingType name)
