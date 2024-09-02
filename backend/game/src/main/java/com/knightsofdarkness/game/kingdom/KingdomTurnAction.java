@@ -107,9 +107,8 @@ public class KingdomTurnAction {
                 .filter(b -> b.getBuildingType() == specialBuildingType)
                 .mapToInt(KingdomSpecialBuilding::getLevel).sum();
 
-        // TODO move bonus to game constants, 20% per special building level
-        // think about how it has worked in the past
-        return 1 + summedLevels * 0.2;
+        // TODO think about how bonuses have worked in the past
+        return 1 + summedLevels * kingdom.getConfig().common().specialBuildingPerLevelProductionBonus();
     }
 
     private void getNewPeople()

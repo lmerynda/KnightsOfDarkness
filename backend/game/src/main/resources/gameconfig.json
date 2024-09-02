@@ -152,5 +152,8 @@
   },
   "market" : {
     "numberOfOffers": 7
+  },
+  "common": {
+    "specialBuildingPerLevelProductionBonus" : 0.2
   }
 }
