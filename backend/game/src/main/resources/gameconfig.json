@@ -152,13 +152,15 @@
   },
   "market" : {
     "visibleMarketOffersCap": 7,
-    "maxKingdomOffers": 10
+    "maxKingdomOffers": 10,
+    "marketAveragePeriodicity": 5000 
   },
   "common": {
     "specialBuildingPerLevelProductionBonus" : 0.2,
     "maxTurns": 36,
     "foodUpkeepPerUnit": 10,
     "ironConsumptionPerProductionUnit": 1,
-    "specialBuildingMaxCount": 5
+    "specialBuildingMaxCount": 5,
+    "newTurnPeriodicity": 10000
   }
 }

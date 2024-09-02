@@ -5,6 +5,7 @@ public record Common(
         int maxTurns,
         int foodUpkeepPerUnit,
         int ironConsumptionPerProductionUnit,
-        int specialBuildingMaxCount) {
+        int specialBuildingMaxCount,
+        int newTurnPeriodicity) {
 
 }
