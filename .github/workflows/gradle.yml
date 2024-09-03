@@ -61,6 +61,7 @@ jobs:
       uses: dorny/test-reporter@v1
       with:
         name: Test Results
+        reporter: java-junit
         path: backend/game/build/test-results/test/*.xml
         fail-on-error: false
     - name: Upload Coverage to Codecov
