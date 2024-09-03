@@ -64,6 +64,8 @@ jobs:
         reporter: java-junit
         path: backend/game/build/test-results/test/*.xml
         fail-on-error: false
+        only-summary: 'true'
+        use-actions-summary: 'true'
     - name: Upload Coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
