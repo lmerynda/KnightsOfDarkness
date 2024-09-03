@@ -1,10 +1,11 @@
 package com.knightsofdarkness.game.gameconfig;
 
 import java.io.IOException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Initializer {
+    private Initializer() {}
+
     public static GameConfig readGameConfig()
     {
         var mapper = new ObjectMapper();

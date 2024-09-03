@@ -252,4 +252,26 @@ class KingdomTurnTest {
         // then we try to pass turn which is not available
         assertTrue(kingdom.passTurn().isEmpty());
     }
+
+    @Test
+    void whenTurnCountBelowMaximum_addingTurn_shouldResultInMoreTurnsAvailable()
+    {
+        var kingdom = kingdomBuilder.build();
+        var numberOfTurns = kingdom.getResources().getCount(ResourceName.turns);
+
+        kingdom.addTurn();
+
+        assertEquals(numberOfTurns + 1, kingdom.getResources().getCount(ResourceName.turns));
+    }
+
+    @Test
+    void whenTurnCountReachesMaximum_addingTurn_shouldNotChangeTurnCount()
+    {
+        var kingdom = kingdomBuilder.withResource(ResourceName.turns, config.common().maxTurns()).build();
+        var numberOfTurns = kingdom.getResources().getCount(ResourceName.turns);
+
+        kingdom.addTurn();
+
+        assertEquals(numberOfTurns, kingdom.getResources().getCount(ResourceName.turns));
+    }
 }
