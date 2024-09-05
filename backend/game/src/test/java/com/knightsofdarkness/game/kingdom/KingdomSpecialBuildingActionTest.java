@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.game.Game;
+import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
@@ -77,5 +78,31 @@ class KingdomSpecialBuildingActionTest {
 
         var lowestLevelSpecialBuilding = kingdom.getLowestLevelSpecialBuilding();
         assertEquals(newSpecialBuilding.get().getId(), lowestLevelSpecialBuilding.get().getId());
+    }
+
+    @Test
+    void whenKingdomHasOneSpecialBuildings_demolishingIt_shouldReduceNumberOfSpecialBuildingsByOne()
+    {
+        var newSpecialBuilding = kingdom.startSpecialBuilding(SpecialBuildingType.goldShaft);
+        int initialSpecialBuildingsCount = kingdom.getSpecialBuildings().size();
+        assertEquals(1, initialSpecialBuildingsCount);
+
+        kingdom.demolishSpecialBuilding(newSpecialBuilding.get().getId());
+
+        int currentSpecialBuildingsCount = kingdom.getSpecialBuildings().size();
+        assertEquals(initialSpecialBuildingsCount - 1, currentSpecialBuildingsCount);
+    }
+
+    @Test
+    void demolishingSpecialBuilding_withInvalidId_shouldNotChangeSpecialBuildingsCount()
+    {
+        kingdom.startSpecialBuilding(SpecialBuildingType.goldShaft);
+        int initialSpecialBuildingsCount = kingdom.getSpecialBuildings().size();
+        assertEquals(1, initialSpecialBuildingsCount);
+
+        kingdom.demolishSpecialBuilding(Id.generate());
+
+        int currentSpecialBuildingsCount = kingdom.getSpecialBuildings().size();
+        assertEquals(initialSpecialBuildingsCount, currentSpecialBuildingsCount);
     }
 }
