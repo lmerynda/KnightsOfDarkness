@@ -71,6 +71,18 @@ class MarketTest {
     }
 
     @Test
+    void whenMaxOffersForResourceIsReached_newOfferShouldNotBeCreated()
+    {
+        for (int i = 0; i < game.getConfig().market().maxKingdomOffers(); i++)
+        {
+            market.addOffer(kingdom, MarketResource.food, 100, 50);
+        }
+
+        var maybeOffer = market.addOffer(kingdom, MarketResource.food, 100, 50);
+        assertTrue(maybeOffer.isEmpty());
+    }
+
+    @Test
     void buyingOffer_whenOneOfferExistsAndHasEnoughAmount_shouldSellEntireRequestedAmountAndStillHasOfferAvailable()
     {
         market.addOffer(kingdom, MarketResource.food, 100, 50);
