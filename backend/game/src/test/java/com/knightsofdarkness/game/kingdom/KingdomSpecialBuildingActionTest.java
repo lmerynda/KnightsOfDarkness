@@ -11,7 +11,7 @@ import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
-class KingdomStartSpecialBuildingActionTest {
+class KingdomSpecialBuildingActionTest {
     private static Game game;
     private KingdomBuilder kingdomBuilder;
     private Kingdom kingdom;
@@ -54,5 +54,28 @@ class KingdomStartSpecialBuildingActionTest {
         kingdom.startSpecialBuilding(SpecialBuildingType.goldShaft);
 
         assertEquals(specialBuildingsCount, kingdom.getSpecialBuildings().size());
+    }
+
+    @Test
+    void whenKingdomHasNoSpecialBuildings_getLowestLevel_shouldReturnEmpty()
+    {
+        int specialBuildingsCount = kingdom.getSpecialBuildings().size();
+        assertEquals(0, specialBuildingsCount);
+
+        assertTrue(kingdom.getLowestLevelSpecialBuilding().isEmpty());
+    }
+
+    @Test
+    void whenKingdomHasOneSpecialBuildings_getLowestLevel_shouldReturnIt()
+    {
+        int specialBuildingsCount = kingdom.getSpecialBuildings().size();
+        assertEquals(0, specialBuildingsCount);
+
+        var newSpecialBuilding = kingdom.startSpecialBuilding(SpecialBuildingType.goldShaft);
+
+        assertTrue(newSpecialBuilding.isPresent());
+
+        var lowestLevelSpecialBuilding = kingdom.getLowestLevelSpecialBuilding();
+        assertEquals(newSpecialBuilding.get().getId(), lowestLevelSpecialBuilding.get().getId());
     }
 }
