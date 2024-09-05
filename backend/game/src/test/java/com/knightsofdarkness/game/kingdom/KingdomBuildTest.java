@@ -15,6 +15,7 @@ class KingdomBuildTest {
     private static Game game;
     private static GameConfig config;
     private KingdomBuilder kingdomBuilder;
+    private Kingdom kingdom;
 
     @BeforeAll
     static void beforeAll()
@@ -26,13 +27,13 @@ class KingdomBuildTest {
     @BeforeEach
     void setUp()
     {
-        this.kingdomBuilder = new KingdomBuilder(game);
+        kingdomBuilder = new KingdomBuilder(game);
+        kingdom = kingdomBuilder.build();
     }
 
     @Test
     void buildSanityTest()
     {
-        var kingdom = kingdomBuilder.build();
         var buildingPointsBeforeBuild = kingdom.getResources().getCount(ResourceName.buildingPoints);
         var toBuild = new KingdomBuildings();
 
@@ -44,7 +45,6 @@ class KingdomBuildTest {
     @Test
     void buildHousesAndGoldMinesTest()
     {
-        var kingdom = kingdomBuilder.build();
         var housesBeforeBuild = kingdom.getBuildings().getCount(BuildingName.house);
         var goldMinesBeforeBuild = kingdom.getBuildings().getCount(BuildingName.goldMine);
         var buildingPointsBeforeBuild = kingdom.getResources().getCount(ResourceName.buildingPoints);
@@ -70,7 +70,6 @@ class KingdomBuildTest {
     @Test
     void whenBuildingFiveBuildings_KingdomShouldHaveFiveLessUnusedLand()
     {
-        var kingdom = kingdomBuilder.build();
         var unusedLandBeforeBuild = kingdom.getUnusedLand();
 
         var housesToBuild = 5;
@@ -85,7 +84,6 @@ class KingdomBuildTest {
     @Test
     void buildingCount()
     {
-        var kingdom = kingdomBuilder.build();
         var existingBuildingsCount = kingdom.getBuildings().countAll();
 
         var toBuild = new KingdomBuildings();
@@ -102,7 +100,6 @@ class KingdomBuildTest {
     @Test
     void whenAllTheLandIsUsed_shouldNotBeAbleToBuild()
     {
-        var kingdom = kingdomBuilder.build();
         var buildingsCountBeforeBuild = kingdom.getBuildings().countAll();
         kingdom.getResources().setCount(ResourceName.land, buildingsCountBeforeBuild);
         var toBuild = new KingdomBuildings();
@@ -116,7 +113,6 @@ class KingdomBuildTest {
     @Test
     void demolishHouseTest()
     {
-        var kingdom = kingdomBuilder.build();
         var housesBeforeDemolish = kingdom.getBuildings().getCount(BuildingName.house);
 
         var toDemolish = new KingdomBuildings();
