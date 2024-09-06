@@ -105,4 +105,61 @@ class KingdomSpecialBuildingActionTest {
         int currentSpecialBuildingsCount = kingdom.getSpecialBuildings().size();
         assertEquals(initialSpecialBuildingsCount, currentSpecialBuildingsCount);
     }
+
+    @Test
+    void whenSpecialBuildingIsMaxLevel_buildSpecialBuilding_shouldNotSpendPoints()
+    {
+        var specialBuilding = kingdom.startSpecialBuilding(SpecialBuildingType.goldShaft).get();
+        specialBuilding.level = 5;
+        specialBuilding.isMaxLevel = true;
+
+        int pointsSpent = kingdom.buildSpecialBuilding(specialBuilding, 100);
+
+        assertEquals(0, pointsSpent);
+    }
+
+    @Test
+    void whenBuildingPointsSufficient_buildSpecialBuilding_shouldCompleteBuilding()
+    {
+        var specialBuilding = kingdom.startSpecialBuilding(SpecialBuildingType.goldShaft).get();
+        specialBuilding.buildingPointsRequired = 100;
+        specialBuilding.buildingPointsPut = 50;
+        kingdom.getResources().addCount(ResourceName.buildingPoints, 100);
+
+        int pointsSpent = kingdom.buildSpecialBuilding(specialBuilding, 100);
+
+        assertEquals(50, pointsSpent);
+        assertEquals(0, specialBuilding.buildingPointsPut);
+        assertEquals(1, specialBuilding.level);
+    }
+
+    @Test
+    void whenBuildingPointsNotSufficient_buildSpecialBuilding_shouldPartiallyCompleteBuilding()
+    {
+        var specialBuilding = kingdom.startSpecialBuilding(SpecialBuildingType.goldShaft).get();
+        specialBuilding.buildingPointsRequired = 100;
+        specialBuilding.buildingPointsPut = 50;
+        kingdom.getResources().addCount(ResourceName.buildingPoints, 30);
+
+        int pointsSpent = kingdom.buildSpecialBuilding(specialBuilding, 30);
+
+        assertEquals(30, pointsSpent);
+        assertEquals(80, specialBuilding.buildingPointsPut);
+        assertEquals(0, specialBuilding.level);
+    }
+
+    @Test
+    void whenMaxLevelOfSpecialBuildingIsReached_completingBuilding_shouldSetBuildingPointsRequiredToZero()
+    {
+        var specialBuilding = kingdom.startSpecialBuilding(SpecialBuildingType.goldShaft).get();
+        specialBuilding.buildingPointsRequired = 100;
+        specialBuilding.buildingPointsPut = 100;
+        specialBuilding.level = 4;
+        kingdom.getResources().addCount(ResourceName.buildingPoints, 100);
+
+        kingdom.buildSpecialBuilding(specialBuilding, 100);
+
+        assertEquals(0, specialBuilding.buildingPointsRequired);
+        assertTrue(specialBuilding.isMaxLevel);
+    }
 }
