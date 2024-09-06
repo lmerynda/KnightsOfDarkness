@@ -274,4 +274,15 @@ class KingdomTurnTest {
 
         assertEquals(numberOfTurns, kingdom.getResources().getCount(ResourceName.turns));
     }
+
+    @Test
+    void passingTurn_shouldSaveReport()
+    {
+        var kingdom = kingdomBuilder.build();
+        var report = kingdom.passTurn().get();
+
+        var savedReport = kingdom.getLastTurnReport();
+
+        assertEquals(report, savedReport);
+    }
 }
