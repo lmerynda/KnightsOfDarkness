@@ -31,6 +31,7 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    jvmArgs("-ea")
     reports {
         junitXml.required.set(true)
     }
