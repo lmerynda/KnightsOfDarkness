@@ -20,7 +20,6 @@ class KingdomMarketTest {
     static void beforeAll()
     {
         game = new TestGame().get();
-        
     }
 
     @BeforeEach
@@ -100,5 +99,18 @@ class KingdomMarketTest {
         int kingdomFood = kingdom.getResources().getCount(ResourceName.food);
         assertEquals(0, postedFood);
         assertEquals(initialFood, kingdomFood);
+    }
+
+    @Test
+    void whenOfferDoesNotBelongToKingdom_withdrawingIt_shouldNotAddKingdomResourcesBack()
+    {
+        var foreignKingdom = new KingdomBuilder(game).withName("foreignKingdo").build();
+        game.addKingdom(foreignKingdom);
+        var market = game.getMarket();
+        var offer = market.addOffer(foreignKingdom, MarketResource.food, 100, 50).get();
+        kingdom.getResources().setCount(ResourceName.food, 1000);
+        kingdom.withdrawMarketOffer(offer);
+        int kingdomFood = kingdom.getResources().getCount(ResourceName.food);
+        assertEquals(1000, kingdomFood);
     }
 }

@@ -20,7 +20,6 @@ public class KingdomMarketAction {
         }
 
         return maxToPost;
-        // TODO test above scenarios
     }
 
     public void acceptOffer(int goldValue)
