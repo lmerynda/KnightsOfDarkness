@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.TestGame;
+import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
 class KingdomMarketTest {
@@ -88,5 +89,16 @@ class KingdomMarketTest {
         int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
         assertThat(reservedGold).isLessThan(amount * price);
         assertThat(kingdomGold).isEqualTo(initialGold - reservedGold);
+    }
+
+    @Test
+    void whenKingdomDoesNotHaveAnyFood_postMarketOffer_shouldNotPostOfferAndShouldNotRemoveResources()
+    {
+        kingdom.getResources().setCount(ResourceName.food, 0);
+        int initialFood = kingdom.getResources().getCount(ResourceName.food);
+        int postedFood = kingdom.postMarketOffer(MarketResource.food, 100);
+        int kingdomFood = kingdom.getResources().getCount(ResourceName.food);
+        assertEquals(0, postedFood);
+        assertEquals(initialFood, kingdomFood);
     }
 }
