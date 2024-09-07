@@ -238,6 +238,20 @@ class KingdomTurnTest {
     }
 
     @Test
+    void passTurn_withInsufficientHousing_shouldSendPeopleToExile()
+    {
+        var kingdom = kingdomBuilder.build();
+        kingdom.passTurn();
+
+        var beforeTurn = kingdom.getResources().getCount(ResourceName.unemployed);
+        kingdom.getBuildings().subtractCount(BuildingName.house, 1);
+        kingdom.passTurn();
+
+        var afterTurn = kingdom.getResources().getCount(ResourceName.unemployed);
+        assertTrue(beforeTurn > afterTurn, "Expected number of unemployed to reduce due to insufficient housing");
+    }
+
+    @Test
     void passMoreTurnsThanMaximumTest()
     {
         var kingdom = kingdomBuilder.build();

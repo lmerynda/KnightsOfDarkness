@@ -122,8 +122,6 @@ public class KingdomTurnAction {
             results.arrivingPeople = arrivingPeople;
         } else if (housingCapacity < peopleCount)
         {
-            // TODO test
-            // TODO fire workers here
             int exiledPeople = peopleCount - housingCapacity;
             kingdom.getResources().subtractCount(ResourceName.unemployed, exiledPeople);
             results.exiledPeople = exiledPeople;
