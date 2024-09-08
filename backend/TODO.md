@@ -17,6 +17,7 @@
 1. Creating market offer should have minimum value
 1. Small kingdom bonus should be based on used land instead of total land
 1. We do a lot of calculations for small kingdom bonus, maybe we should have a table of consts for each land value?
+1. Browser module was created using react tools which is deprecated. Migrate to current standard project organization
 
 ## Ideas
 
