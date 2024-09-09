@@ -47,8 +47,13 @@ public class MarketController {
         }
 
         offer.sellerName = currentUser.getKingdom();
-        marketService.createOffer(offer);
-        return ResponseEntity.ok(offer);
+        var createdOffer = marketService.createOffer(offer);
+        if (createdOffer.isEmpty())
+        {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        return ResponseEntity.ok(createdOffer.get());
     }
 
     @Deprecated

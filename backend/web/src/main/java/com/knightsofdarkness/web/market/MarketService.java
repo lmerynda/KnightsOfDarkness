@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.market;
 
+import java.util.Optional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,28 +43,29 @@ public class MarketService {
         for (var offer : offers)
         {
             var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
-            if (kingdom.isPresent())
-            {
-                market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
-            } else
+            if (kingdom.isEmpty())
             {
                 log.warn("Kingdom with name {} not found", offer.sellerName);
+                continue;
             }
+
+            market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
         }
     }
 
     @Transactional
-    public void createOffer(MarketOfferDto offer)
+    public Optional<MarketOfferDto> createOffer(MarketOfferDto offer)
     {
         log.info("Creating new offer {}", offer);
         var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
-        if (kingdom.isPresent())
-        {
-            market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price); // TODO signal if the offer was not created
-        } else
+        if (kingdom.isEmpty())
         {
             log.warn("Kingdom with name {} not found", offer.sellerName);
+            return Optional.empty();
         }
+
+        var createdOffer = market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
+        return createdOffer.map(MarketOfferDto::fromDomain);
     }
 
     @Deprecated
