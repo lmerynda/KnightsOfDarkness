@@ -73,8 +73,7 @@ public class KingdomTurnAction {
     private void doProduction(double nourishmentProductionFactor)
     {
         var productionConfig = kingdom.getConfig().production();
-        var land = kingdom.getResources().getCount(ResourceName.land);
-        var productionBonus = getKingdomSizeProductionBonus(land);
+        var productionBonus = getKingdomSizeProductionBonus(kingdom.getOccupiedLand());
 
         for (var unitName : UnitName.getProductionUnits())
         {

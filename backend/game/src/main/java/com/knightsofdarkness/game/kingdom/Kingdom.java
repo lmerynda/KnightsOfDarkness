@@ -78,6 +78,11 @@ public class Kingdom {
         return resources.getCount(ResourceName.land) - buildings.countAll();
     }
 
+    public int getOccupiedLand()
+    {
+        return buildings.countAll();
+    }
+
     public LandTransaction buyLand(int count)
     {
         return kingdomOtherAction.buyLand(count);
