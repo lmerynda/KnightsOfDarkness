@@ -18,6 +18,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":game"))
 }
 
 tasks.withType<Test> {

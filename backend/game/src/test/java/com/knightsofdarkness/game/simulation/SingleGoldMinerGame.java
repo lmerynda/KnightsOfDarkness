@@ -26,7 +26,7 @@ public class SingleGoldMinerGame {
         game.addKingdom(goldMinerBot.getKingdom());
 
         var infiniteFarmerKingdom = kingdomBuilder.withName("InfiniteFarmer").withResource(ResourceName.food, 1000000).build();
-        game.getMarket().addOffer(infiniteFarmerKingdom, MarketResource.food, 1000000, 5);
+        game.getMarket().createOffer(infiniteFarmerKingdom, MarketResource.food, 1000000, 5);
 
         KingdomPrinter.printResourcesHeader();
         KingdomPrinter.printLineSeparator();

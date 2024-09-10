@@ -20,7 +20,7 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation(project(":game"))
-    implementation(project(":common"))
+    implementation(project(":common_legacy"))
 }
 
 tasks.withType<Test> {

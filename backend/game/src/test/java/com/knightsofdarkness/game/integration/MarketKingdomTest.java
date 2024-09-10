@@ -30,7 +30,7 @@ class MarketKingdomTest {
     @Test
     void whenKingdomMakesOneOffer_thenTheSameOfferShouldAppearOnMarket()
     {
-        market.addOffer(kingdom, MarketResource.food, 100, 100);
+        market.createOffer(kingdom, MarketResource.food, 100, 100);
         var foodOffers = market.getOffersByResource(MarketResource.food);
         assertEquals(1, foodOffers.size());
         assertEquals(kingdom, foodOffers.get(0).getSeller());

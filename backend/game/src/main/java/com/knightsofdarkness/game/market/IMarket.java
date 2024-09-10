@@ -10,7 +10,7 @@ import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public interface IMarket {
 
-    Optional<MarketOffer> addOffer(Kingdom kingdom, MarketResource resource, int count, int price);
+    Optional<MarketOffer> createOffer(Kingdom kingdom, MarketResource resource, int count, int price);
 
     void removeOffer(MarketOffer offer);
 

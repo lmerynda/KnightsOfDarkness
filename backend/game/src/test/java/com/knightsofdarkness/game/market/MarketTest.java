@@ -29,7 +29,7 @@ class MarketTest {
     @Test
     void testAddOffer()
     {
-        market.addOffer(kingdom, MarketResource.food, 1, 50);
+        market.createOffer(kingdom, MarketResource.food, 1, 50);
 
         assertEquals(1, market.getOffersByResource(MarketResource.food).size());
     }
@@ -37,9 +37,9 @@ class MarketTest {
     @Test
     void testAddThreeOffers()
     {
-        market.addOffer(kingdom, MarketResource.food, 1, 50);
-        market.addOffer(kingdom, MarketResource.food, 1, 60);
-        market.addOffer(kingdom, MarketResource.food, 1, 1);
+        market.createOffer(kingdom, MarketResource.food, 1, 50);
+        market.createOffer(kingdom, MarketResource.food, 1, 60);
+        market.createOffer(kingdom, MarketResource.food, 1, 1);
 
         assertEquals(3, market.getOffersByResource(MarketResource.food).size());
     }
@@ -47,7 +47,7 @@ class MarketTest {
     @Test
     void testRemoveOffer()
     {
-        var offer = market.addOffer(kingdom, MarketResource.food, 100, 50).get();
+        var offer = market.createOffer(kingdom, MarketResource.food, 100, 50).get();
         assertEquals(1, market.getOffersByResource(MarketResource.food).size());
 
         market.removeOffer(offer);
@@ -58,9 +58,9 @@ class MarketTest {
     @Test
     void testRemoveThreeOffers()
     {
-        var offer1 = market.addOffer(kingdom, MarketResource.food, 100, 50).get();
-        var offer2 = market.addOffer(kingdom, MarketResource.food, 100, 60).get();
-        var offer3 = market.addOffer(kingdom, MarketResource.food, 100, 1).get();
+        var offer1 = market.createOffer(kingdom, MarketResource.food, 100, 50).get();
+        var offer2 = market.createOffer(kingdom, MarketResource.food, 100, 60).get();
+        var offer3 = market.createOffer(kingdom, MarketResource.food, 100, 1).get();
         assertEquals(3, market.getOffersByResource(MarketResource.food).size());
 
         market.removeOffer(offer1);
@@ -75,17 +75,17 @@ class MarketTest {
     {
         for (int i = 0; i < game.getConfig().market().maxKingdomOffers(); i++)
         {
-            market.addOffer(kingdom, MarketResource.food, 100, 50);
+            market.createOffer(kingdom, MarketResource.food, 100, 50);
         }
 
-        var maybeOffer = market.addOffer(kingdom, MarketResource.food, 100, 50);
+        var maybeOffer = market.createOffer(kingdom, MarketResource.food, 100, 50);
         assertTrue(maybeOffer.isEmpty());
     }
 
     @Test
     void buyingOffer_whenOneOfferExistsAndHasEnoughAmount_shouldSellEntireRequestedAmountAndStillHasOfferAvailable()
     {
-        market.addOffer(kingdom, MarketResource.food, 100, 50);
+        market.createOffer(kingdom, MarketResource.food, 100, 50);
         var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
         assertTrue(maybeOffer.isPresent());
         var offer = maybeOffer.get();
@@ -101,7 +101,7 @@ class MarketTest {
     @Test
     void buyingOffer_whenOneOfferExistsAndHasExactlyTheSameAmount_shouldSellEntireRequestedAmountAndHasNoOffersAvailable()
     {
-        market.addOffer(kingdom, MarketResource.food, 100, 50);
+        market.createOffer(kingdom, MarketResource.food, 100, 50);
         var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
         assertTrue(maybeOffer.isPresent());
         var offer = maybeOffer.get();
@@ -115,7 +115,7 @@ class MarketTest {
     @Test
     void buyingOffer_whenOfferExist_shouldReduceTheAmountStillAvailableByTheAmountBought()
     {
-        market.addOffer(kingdom, MarketResource.food, 100, 50);
+        market.createOffer(kingdom, MarketResource.food, 100, 50);
         var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
         assertTrue(maybeOffer.isPresent());
         var offer = maybeOffer.get();
@@ -131,9 +131,9 @@ class MarketTest {
     @Test
     void buyingOffer_whenMultipleOffersExistAndBuyersTakeTheEntireOne_shouldReduceNumberOfAvailableOffersByOne()
     {
-        market.addOffer(kingdom, MarketResource.food, 100, 50);
-        market.addOffer(kingdom, MarketResource.food, 100, 60);
-        market.addOffer(kingdom, MarketResource.food, 100, 70);
+        market.createOffer(kingdom, MarketResource.food, 100, 50);
+        market.createOffer(kingdom, MarketResource.food, 100, 60);
+        market.createOffer(kingdom, MarketResource.food, 100, 70);
         var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
         assertTrue(maybeOffer.isPresent());
         var offer = maybeOffer.get();
@@ -189,11 +189,11 @@ class MarketTest {
     @Test
     void findCheapestOffer_withAFewOffers_shouldReturnTheCheapestOne()
     {
-        market.addOffer(kingdom, MarketResource.food, 100, 2);
-        market.addOffer(kingdom, MarketResource.food, 100, 2);
-        market.addOffer(kingdom, MarketResource.food, 100, 3);
-        market.addOffer(kingdom, MarketResource.food, 100, 4);
-        var offer = market.addOffer(kingdom, MarketResource.food, 100, 1).get();
+        market.createOffer(kingdom, MarketResource.food, 100, 2);
+        market.createOffer(kingdom, MarketResource.food, 100, 2);
+        market.createOffer(kingdom, MarketResource.food, 100, 3);
+        market.createOffer(kingdom, MarketResource.food, 100, 4);
+        var offer = market.createOffer(kingdom, MarketResource.food, 100, 1).get();
 
         var cheapestOffer = market.getCheapestOfferByResource(MarketResource.food);
 

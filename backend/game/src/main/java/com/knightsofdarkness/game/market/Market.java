@@ -29,7 +29,7 @@ public class Market implements IMarket {
     }
 
     @Override
-    public Optional<MarketOffer> addOffer(Kingdom kingdom, MarketResource resource, int count, int price)
+    public Optional<MarketOffer> createOffer(Kingdom kingdom, MarketResource resource, int count, int price)
     {
         int offerCount = offersRepository.getOffersCountByKingdomNameAndResource(kingdom.getName(), resource);
         if (offerCount >= gameConfig.market().maxKingdomOffers())

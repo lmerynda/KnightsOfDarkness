@@ -49,7 +49,7 @@ public class MarketService {
                 continue;
             }
 
-            market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
+            market.createOffer(kingdom.get(), offer.resource, offer.count, offer.price);
         }
     }
 
@@ -64,7 +64,7 @@ public class MarketService {
             return Optional.empty();
         }
 
-        var createdOffer = market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
+        var createdOffer = market.createOffer(kingdom.get(), offer.resource, offer.count, offer.price);
         return createdOffer.map(MarketOfferDto::fromDomain);
     }
 

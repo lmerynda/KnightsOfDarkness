@@ -67,7 +67,7 @@ public class FarmerBot implements IBot {
 
         if (amountToOffer > 0)
         {
-            market.addOffer(kingdom, MarketResource.food, amountToOffer, 15);
+            market.createOffer(kingdom, MarketResource.food, amountToOffer, 15);
         }
 
         return amountToOffer;

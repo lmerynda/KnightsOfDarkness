@@ -83,7 +83,7 @@ public class BlacksmithBot implements IBot {
 
         if (toolsAmount > 0)
         {
-            market.addOffer(kingdom, MarketResource.tools, (int) (toolsAmount * percentage), runPricingAlgorithm());
+            market.createOffer(kingdom, MarketResource.tools, (int) (toolsAmount * percentage), runPricingAlgorithm());
         }
 
         return toolsAmount;
