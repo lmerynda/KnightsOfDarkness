@@ -1,5 +1,7 @@
 package com.knightsofdarkness.common.market;
 
-public record CreateOfferResult(String message, boolean success, OfferDto offer) {
+import java.util.Optional;
+
+public record CreateOfferResult(String message, boolean success, Optional<OfferDto> data) {
 
 }

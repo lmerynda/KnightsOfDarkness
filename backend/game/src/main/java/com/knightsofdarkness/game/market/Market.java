@@ -9,7 +9,9 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knightsofdarkness.common.market.CreateOfferResult;
 import com.knightsofdarkness.game.Id;
+import com.knightsofdarkness.game.Utils;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.storage.IKingdomRepository;
@@ -29,20 +31,20 @@ public class Market implements IMarket {
     }
 
     @Override
-    public Optional<MarketOffer> createOffer(Kingdom kingdom, MarketResource resource, int count, int price)
+    public CreateOfferResult createOffer(Kingdom kingdom, MarketResource resource, int count, int price)
     {
         int offerCount = offersRepository.getOffersCountByKingdomNameAndResource(kingdom.getName(), resource);
         if (offerCount >= gameConfig.market().maxKingdomOffers())
         {
             log.info("Kingdom {} already has {} offers for resource {}", kingdom.getName(), offerCount, resource);
-            return Optional.empty();
+            return new CreateOfferResult(Utils.format("Your kingdom already has maximum number of offers for {}", resource), false, Optional.empty());
         }
         var countToOffer = kingdom.postMarketOffer(resource, count); // TODO, what if the kingdom doesn't have enough resources?
         var offer = new MarketOffer(Id.generate(), kingdom, resource, countToOffer, price);
         offersRepository.add(offer);
         kingdomRepository.update(kingdom);
 
-        return Optional.of(offer);
+        return new CreateOfferResult(Utils.format("Offer created for {} {} at price {}", countToOffer, resource, price), true, Optional.empty()); // TODO, create actual offer
     }
 
     @Override

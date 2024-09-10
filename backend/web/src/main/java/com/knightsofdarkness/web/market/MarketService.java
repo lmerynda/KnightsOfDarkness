@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.knightsofdarkness.common.market.MarketOfferDto;
+import com.knightsofdarkness.common_legacy.market.MarketOfferDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.MarketOfferBuyResult;
