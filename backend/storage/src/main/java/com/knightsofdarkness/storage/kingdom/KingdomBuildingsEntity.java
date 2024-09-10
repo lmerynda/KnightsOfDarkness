@@ -1,6 +1,6 @@
 package com.knightsofdarkness.storage.kingdom;
 
-import com.knightsofdarkness.common.KingdomBuildingsDto;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.KingdomBuildings;
 

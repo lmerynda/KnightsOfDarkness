@@ -1,4 +1,4 @@
-package com.knightsofdarkness.common;
+package com.knightsofdarkness.common.market;
 
 import java.util.UUID;
 

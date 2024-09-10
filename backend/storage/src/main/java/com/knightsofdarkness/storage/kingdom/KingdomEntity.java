@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.knightsofdarkness.common.KingdomDto;
-import com.knightsofdarkness.common.KingdomSpecialBuildingDto;
+import com.knightsofdarkness.common.kingdom.KingdomDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 

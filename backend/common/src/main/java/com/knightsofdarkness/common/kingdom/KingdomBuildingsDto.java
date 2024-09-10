@@ -1,4 +1,4 @@
-package com.knightsofdarkness.common;
+package com.knightsofdarkness.common.kingdom;
 
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.KingdomBuildings;

@@ -2,7 +2,7 @@ package com.knightsofdarkness.storage.kingdom;
 
 import java.util.UUID;
 
-import com.knightsofdarkness.common.KingdomSpecialBuildingDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.game.kingdom.SpecialBuildingType;
 

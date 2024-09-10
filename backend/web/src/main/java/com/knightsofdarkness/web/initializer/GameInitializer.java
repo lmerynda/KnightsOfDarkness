@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.knightsofdarkness.common.KingdomDto;
-import com.knightsofdarkness.common.KingdomSpecialBuildingStartDto;
-import com.knightsofdarkness.common.MarketOfferDto;
+import com.knightsofdarkness.common.kingdom.KingdomDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
+import com.knightsofdarkness.common.market.MarketOfferDto;
 import com.knightsofdarkness.game.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.web.kingdom.KingdomService;
 import com.knightsofdarkness.web.market.MarketService;

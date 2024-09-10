@@ -1,8 +1,9 @@
-package com.knightsofdarkness.common;
+package com.knightsofdarkness.common.kingdom;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.knightsofdarkness.common.market.MarketOfferDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;

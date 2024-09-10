@@ -1,4 +1,4 @@
-package com.knightsofdarkness.common;
+package com.knightsofdarkness.common.market;
 
 public class MarketBuyerDto {
     public int count;

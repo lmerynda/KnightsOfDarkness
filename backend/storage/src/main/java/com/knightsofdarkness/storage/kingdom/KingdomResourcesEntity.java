@@ -1,6 +1,6 @@
 package com.knightsofdarkness.storage.kingdom;
 
-import com.knightsofdarkness.common.KingdomResourcesDto;
+import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 

@@ -8,12 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.knightsofdarkness.common.KingdomBuildingsDto;
-import com.knightsofdarkness.common.KingdomDto;
-import com.knightsofdarkness.common.KingdomSpecialBuildingBuildDto;
-import com.knightsofdarkness.common.KingdomSpecialBuildingDemolishDto;
-import com.knightsofdarkness.common.KingdomSpecialBuildingStartDto;
-import com.knightsofdarkness.common.KingdomUnitsDto;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.common.kingdom.KingdomDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingBuildDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDemolishDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
+import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
