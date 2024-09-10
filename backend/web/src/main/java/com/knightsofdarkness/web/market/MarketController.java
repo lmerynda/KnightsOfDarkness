@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.knightsofdarkness.common.market.CreateOfferResult;
 import com.knightsofdarkness.common_legacy.market.MarketBuyerDto;
 import com.knightsofdarkness.common_legacy.market.MarketOfferDto;
 import com.knightsofdarkness.game.market.MarketOfferBuyResult;
@@ -38,7 +39,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/create")
-    ResponseEntity<MarketOfferDto> createOffer(@AuthenticationPrincipal UserData currentUser, @RequestBody MarketOfferDto offer)
+    ResponseEntity<CreateOfferResult> createOffer(@AuthenticationPrincipal UserData currentUser, @RequestBody MarketOfferDto offer)
     {
         if (currentUser == null)
         {
@@ -48,12 +49,8 @@ public class MarketController {
 
         offer.sellerName = currentUser.getKingdom();
         var createdOffer = marketService.createOffer(offer);
-        if (createdOffer.isEmpty())
-        {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
 
-        return ResponseEntity.ok(createdOffer.get());
+        return ResponseEntity.ok(createdOffer);
     }
 
     @Deprecated

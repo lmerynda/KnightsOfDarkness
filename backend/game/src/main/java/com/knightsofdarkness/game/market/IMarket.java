@@ -15,6 +15,8 @@ public interface IMarket {
 
     void removeOffer(MarketOffer offer);
 
+    void removeOffer(UUID id);
+
     List<MarketOffer> getOffersByResource(MarketResource resource);
 
     Optional<MarketOffer> getCheapestOfferByResource(MarketResource resource);

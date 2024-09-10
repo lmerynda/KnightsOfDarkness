@@ -1,10 +1,9 @@
 package com.knightsofdarkness.web.market;
 
-import java.util.Optional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.knightsofdarkness.common.market.CreateOfferResult;
 import com.knightsofdarkness.common_legacy.market.MarketOfferDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
@@ -20,6 +20,7 @@ import com.knightsofdarkness.game.market.MarketOfferBuyResult;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
+import com.knightsofdarkness.game.Utils;
 
 @Service
 public class MarketService {
@@ -54,18 +55,17 @@ public class MarketService {
     }
 
     @Transactional
-    public Optional<MarketOfferDto> createOffer(MarketOfferDto offer)
+    public CreateOfferResult createOffer(MarketOfferDto offer)
     {
         log.info("Creating new offer {}", offer);
         var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
         if (kingdom.isEmpty())
         {
             log.warn("Kingdom with name {} not found", offer.sellerName);
-            return Optional.empty();
+            return CreateOfferResult.failure(Utils.format("Kingdom with name {} not found", offer.sellerName), Optional.empty());
         }
 
-        var createdOffer = market.createOffer(kingdom.get(), offer.resource, offer.count, offer.price);
-        return createdOffer.map(MarketOfferDto::fromDomain);
+        return market.createOffer(kingdom.get(), offer.resource, offer.count, offer.price);
     }
 
     @Deprecated

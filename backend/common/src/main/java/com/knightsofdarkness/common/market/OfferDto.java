@@ -2,9 +2,5 @@ package com.knightsofdarkness.common.market;
 
 import java.util.UUID;
 
-public class OfferDto {
-    public UUID id;
-    public String sellerName;
-    public int count;
-    public int price;
+public record OfferDto(UUID id, String sellerName, String resource, int count, int price) {
 }

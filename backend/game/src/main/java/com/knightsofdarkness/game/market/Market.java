@@ -44,12 +44,23 @@ public class Market implements IMarket {
         offersRepository.add(offer);
         kingdomRepository.update(kingdom);
 
-        return new CreateOfferResult(Utils.format("Offer created for {} {} at price {}", countToOffer, resource, price), true, Optional.empty()); // TODO, create actual offer
+        return CreateOfferResult.success(Utils.format("Offer created for {} {} at price {}", countToOffer, resource, price), offer.toDto());
     }
 
     @Override
     public void removeOffer(MarketOffer offer)
     {
+        var seller = offer.seller;
+        seller.withdrawMarketOffer(offer);
+        kingdomRepository.update(seller);
+        offersRepository.remove(offer);
+    }
+
+    // TODO result should be a report
+    @Override
+    public void removeOffer(UUID offerId)
+    {
+        var offer = offersRepository.findById(offerId).get(); // TODO validation
         var seller = offer.seller;
         seller.withdrawMarketOffer(offer);
         kingdomRepository.update(seller);
