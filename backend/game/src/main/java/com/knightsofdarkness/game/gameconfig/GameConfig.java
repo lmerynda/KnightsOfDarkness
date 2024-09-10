@@ -8,8 +8,8 @@ public record GameConfig(
         Production production,
         KingdomStartConfiguration kingdomStartConfiguration,
         SpecialBuildingCosts specialBuildingCosts,
-        Market market,
-        Common common)
+        MarketConfig market,
+                Common common)
 {
 }
 // @formatter:on 
