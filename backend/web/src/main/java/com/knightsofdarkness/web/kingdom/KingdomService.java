@@ -108,10 +108,10 @@ public class KingdomService {
             return ResponseEntity.notFound().build();
         }
 
-        var unitsTrained = kingdom.get().train(unitsToTrain.toDomain());
+        var unitsTrained = kingdom.get().train(unitsToTrain);
         kingdomRepository.update(kingdom.get());
 
-        return ResponseEntity.ok(KingdomUnitsDto.fromDomain(unitsTrained));
+        return ResponseEntity.ok(unitsTrained);
     }
 
     @Transactional

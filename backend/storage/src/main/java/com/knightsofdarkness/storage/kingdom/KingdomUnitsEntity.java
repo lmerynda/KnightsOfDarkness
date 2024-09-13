@@ -81,17 +81,17 @@ public class KingdomUnitsEntity {
     public static KingdomUnitsEntity fromDto(KingdomUnitsDto dto)
     {
         return new KingdomUnitsEntity(
-                dto.goldMiners,
-                dto.ironMiners,
-                dto.farmers,
-                dto.blacksmiths,
-                dto.builders,
-                dto.carriers,
-                dto.guards,
-                dto.spies,
-                dto.infantry,
-                dto.bowmen,
-                dto.cavalry);
+                dto.getCount(UnitName.goldMiner),
+                dto.getCount(UnitName.ironMiner),
+                dto.getCount(UnitName.farmer),
+                dto.getCount(UnitName.blacksmith),
+                dto.getCount(UnitName.builder),
+                dto.getCount(UnitName.carrier),
+                dto.getCount(UnitName.guard),
+                dto.getCount(UnitName.spy),
+                dto.getCount(UnitName.infantry),
+                dto.getCount(UnitName.bowmen),
+                dto.getCount(UnitName.cavalry));
     }
 
 }

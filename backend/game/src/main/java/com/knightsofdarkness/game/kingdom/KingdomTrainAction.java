@@ -1,8 +1,7 @@
 package com.knightsofdarkness.game.kingdom;
 
-import java.util.EnumSet;
-
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.game.gameconfig.UnitTrainingCost;
@@ -15,13 +14,11 @@ public class KingdomTrainAction {
         this.kingdom = kingdom;
     }
 
-    public KingdomUnits train(KingdomUnits unitsToTrain)
+    public KingdomUnitsDto train(KingdomUnitsDto unitsToTrain)
     {
-        var trainedUnits = new KingdomUnits();
-        // by using EnumSet we make sure the names are ordered as specified in the enum
-        // declaration
-        var unitNames = EnumSet.copyOf(unitsToTrain.units.keySet());
-        for (var unitName : unitNames)
+        var trainedUnits = new KingdomUnitsDto();
+
+        for (var unitName : UnitName.values())
         {
             var trainingCost = kingdom.getConfig().trainingCost().getTrainingCost(unitName);
             var maximumToAfford = calculateMaximumToAfford(kingdom.getResources(), trainingCost);
@@ -40,7 +37,7 @@ public class KingdomTrainAction {
             kingdom.getResources().subtractCount(ResourceName.weapons, howManyToTrain * trainingCost.weapons());
             kingdom.getResources().subtractCount(ResourceName.unemployed, howManyToTrain);
             kingdom.getUnits().addCount(unitName, howManyToTrain);
-            trainedUnits.addCount(unitName, howManyToTrain);
+            trainedUnits.setCount(unitName, howManyToTrain);
         }
 
         return trainedUnits;
