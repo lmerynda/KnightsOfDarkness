@@ -3,7 +3,6 @@ package com.knightsofdarkness.web.market;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,6 @@ import com.knightsofdarkness.game.market.MarketOfferBuyResult;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
-import com.knightsofdarkness.game.Utils;
 
 @Service
 public class MarketService {
@@ -43,14 +41,7 @@ public class MarketService {
     {
         for (var offer : offers)
         {
-            var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
-            if (kingdom.isEmpty())
-            {
-                log.warn("Kingdom with name {} not found", offer.sellerName);
-                continue;
-            }
-
-            market.createOffer(kingdom.get(), offer.resource, offer.count, offer.price);
+            market.createOffer(offer.sellerName, offer.resource, offer.count, offer.price);
         }
     }
 
@@ -58,14 +49,8 @@ public class MarketService {
     public CreateOfferResult createOffer(MarketOfferDto offer)
     {
         log.info("Creating new offer {}", offer);
-        var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
-        if (kingdom.isEmpty())
-        {
-            log.warn("Kingdom with name {} not found", offer.sellerName);
-            return CreateOfferResult.failure(Utils.format("Kingdom with name {} not found", offer.sellerName), Optional.empty());
-        }
 
-        return market.createOffer(kingdom.get(), offer.resource, offer.count, offer.price);
+        return market.createOffer(offer.sellerName, offer.resource, offer.count, offer.price);
     }
 
     @Deprecated

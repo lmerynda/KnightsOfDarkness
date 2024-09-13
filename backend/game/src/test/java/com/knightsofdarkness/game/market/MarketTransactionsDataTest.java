@@ -33,7 +33,7 @@ class MarketTransactionsDataTest {
     void testMarketBuyRegistersTransaction()
     {
         var resource = MarketResource.food;
-        var offer = market.createOffer(kingdom, resource, 1, 50).data().get();
+        var offer = market.createOffer(kingdom.getName(), resource, 1, 50).data().get();
         // market.buyExistingOffer(offer, kingdom, kingdom, 1);
 
         Instant now = Instant.now();
@@ -50,7 +50,7 @@ class MarketTransactionsDataTest {
     @Test
     void testTransactionsAveragesData()
     {
-        var offer = market.createOffer(kingdom, MarketResource.food, 1, 50).data().get();
+        var offer = market.createOffer(kingdom.getName(), MarketResource.food, 1, 50).data().get();
         // market.buyExistingOffer(offer, kingdom, kingdom, 1);
 
         var now = Instant.now();

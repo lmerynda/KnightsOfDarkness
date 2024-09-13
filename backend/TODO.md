@@ -22,6 +22,7 @@
 1. There is a mix of layer responsibility between controller and service, DTOs should be translated in controller but often are in service, as well as ResponseEntity
 1. In some cases (MarketController.createOffer as an example) we use http codes for valid request, but problematic domain action, in such a case http status should be just normal
 1. More validations?
+1. Make up mind about amount vs count, it's all mixed up
 
 ## Ideas
 

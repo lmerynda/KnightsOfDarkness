@@ -2,8 +2,8 @@ package com.knightsofdarkness.game.market;
 
 import java.util.UUID;
 
-import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.common.market.OfferDto;
+import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public class MarketOffer {
     UUID id;
@@ -48,7 +48,7 @@ public class MarketOffer {
 
     public OfferDto toDto()
     {
-        return new OfferDto(id, seller.getName(), resource.toString(), count, price);
+        return new OfferDto(id, seller.getName(), resource.toMarketResource(), count, price);
     }
 
     public String toString()

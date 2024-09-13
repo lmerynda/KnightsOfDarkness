@@ -37,7 +37,7 @@ export const marketResources = ["food", "iron", "tools", "weapons"] as const;
 export type MarketResource = (typeof marketResources)[number];
 
 export const specialBuildingTypes = ["goldShaft", "ironShaft", "forge", "granary"] as const;
-export type SpecialBuildingType = (typeof units)[number];
+export type SpecialBuildingType = (typeof specialBuildingTypes)[number];
 export type SpecialBuilding = {
   id: string;
   buildingType: SpecialBuildingType;

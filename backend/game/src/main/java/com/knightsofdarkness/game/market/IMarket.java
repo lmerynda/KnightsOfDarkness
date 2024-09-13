@@ -11,7 +11,7 @@ import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public interface IMarket {
 
-    CreateOfferResult createOffer(Kingdom kingdom, MarketResource resource, int count, int price);
+    CreateOfferResult createOffer(String kingdomName, MarketResource resource, int count, int price);
 
     void removeOffer(MarketOffer offer);
 

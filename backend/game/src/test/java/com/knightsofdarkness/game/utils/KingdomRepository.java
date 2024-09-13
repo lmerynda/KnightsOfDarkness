@@ -1,5 +1,7 @@
 package com.knightsofdarkness.game.utils;
 
+import java.util.Optional;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,12 @@ import com.knightsofdarkness.game.storage.IKingdomRepository;
 public class KingdomRepository implements IKingdomRepository {
 
     List<Kingdom> kingdoms = new ArrayList<>();
+
+    @Override
+    public Optional<Kingdom> getKingdomByName(String name)
+    {
+        return kingdoms.stream().filter(kingdom -> kingdom.getName().equals(name)).findFirst();
+    }
 
     @Override
     public void update(Kingdom kingdom)

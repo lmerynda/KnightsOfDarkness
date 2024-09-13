@@ -64,7 +64,7 @@ public class IronMinerBot implements IBot {
 
         if (ironAmount > 0)
         {
-            market.createOffer(kingdom, MarketResource.iron, ironAmount, 25);
+            market.createOffer(kingdom.getName(), MarketResource.iron, ironAmount, 25);
         }
 
         return ironAmount;

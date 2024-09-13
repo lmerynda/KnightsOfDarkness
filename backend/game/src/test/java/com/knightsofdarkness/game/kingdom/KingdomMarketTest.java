@@ -109,7 +109,7 @@ class KingdomMarketTest {
         var foreignKingdom = new KingdomBuilder(game).withName("foreignKingdo").build();
         game.addKingdom(foreignKingdom);
         var market = game.getMarket();
-        var offer = market.createOffer(foreignKingdom, MarketResource.food, 100, 50).data().get();
+        var offer = market.createOffer(foreignKingdom.getName(), MarketResource.food, 100, 50).data().get();
         kingdom.getResources().setCount(ResourceName.food, 1000);
         // kingdom.withdrawMarketOffer(offer);
         int kingdomFood = kingdom.getResources().getCount(ResourceName.food);
