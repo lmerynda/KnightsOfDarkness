@@ -2,7 +2,7 @@ package com.knightsofdarkness.game.market;
 
 import java.util.UUID;
 
-import com.knightsofdarkness.common.market.OfferDto;
+import com.knightsofdarkness.common.market.MarketOfferDto;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public class MarketOffer {
@@ -46,9 +46,9 @@ public class MarketOffer {
         return id;
     }
 
-    public OfferDto toDto()
+    public MarketOfferDto toDto()
     {
-        return new OfferDto(id, seller.getName(), resource.toMarketResource(), count, price);
+        return new MarketOfferDto(id, seller.getName(), resource.toMarketResource(), count, price);
     }
 
     public String toString()

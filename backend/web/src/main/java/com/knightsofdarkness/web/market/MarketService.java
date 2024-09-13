@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.knightsofdarkness.common.market.CreateOfferResult;
+import com.knightsofdarkness.common.market.CreateMarketOfferResult;
 import com.knightsofdarkness.common.market.MarketOfferBuyResult;
 import com.knightsofdarkness.common_legacy.market.MarketOfferDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -46,7 +46,7 @@ public class MarketService {
     }
 
     @Transactional
-    public CreateOfferResult createOffer(MarketOfferDto offer)
+    public CreateMarketOfferResult createOffer(MarketOfferDto offer)
     {
         log.info("Creating new offer {}", offer);
 
