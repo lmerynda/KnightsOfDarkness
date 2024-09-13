@@ -44,7 +44,7 @@ public class Market implements IMarket {
         int offerCount = offersRepository.getOffersCountByKingdomNameAndResource(kingdom.getName(), resource);
         if (offerCount >= gameConfig.market().maxKingdomOffers())
         {
-            log.info("Kingdom {} already has {} offers for resource {}", kingdom.getName(), offerCount, resource);
+            log.info("Kingdom {} already has max {} offers for resource {}", kingdom.getName(), offerCount, resource);
             return CreateOfferResult.failure(Utils.format("Your kingdom already has maximum number of offers for {}", resource), Optional.empty());
         }
         var countToOffer = kingdom.postMarketOffer(resource, count); // TODO, what if the kingdom doesn't have enough resources?
