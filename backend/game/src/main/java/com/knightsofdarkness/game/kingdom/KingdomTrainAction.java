@@ -2,6 +2,9 @@ package com.knightsofdarkness.game.kingdom;
 
 import java.util.EnumSet;
 
+import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.game.gameconfig.UnitTrainingCost;
 
 public class KingdomTrainAction {

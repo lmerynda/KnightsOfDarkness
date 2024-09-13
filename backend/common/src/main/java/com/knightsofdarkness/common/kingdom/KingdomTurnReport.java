@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.kingdom;
+package com.knightsofdarkness.common.kingdom;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -11,6 +11,7 @@ public class KingdomTurnReport {
     public double kingdomSizeProductionBonus = 0.0;
     public double nourishmentProductionFactor = 1.0;
     public Map<ResourceName, Double> specialBuildingBonus = new EnumMap<>(ResourceName.class);
+
     public String toString()
     {
         return "KingdomTurnReport{" +

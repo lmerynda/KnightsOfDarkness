@@ -1,6 +1,6 @@
 package com.knightsofdarkness.game.gameconfig;
 
-import com.knightsofdarkness.game.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.BuildingName;
 
 public record KingdomStartingBuildings(int house, int goldMine, int ironMine, int workshop, int farm, int market, int barracks, int guardHouse, int spyGuild, int tower, int castle) {
     public int getCount(BuildingName name)

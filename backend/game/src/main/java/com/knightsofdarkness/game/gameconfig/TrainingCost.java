@@ -1,6 +1,6 @@
 package com.knightsofdarkness.game.gameconfig;
 
-import com.knightsofdarkness.game.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitName;
 
 public record TrainingCost(UnitTrainingCost goldMiners, UnitTrainingCost ironMiners, UnitTrainingCost farmers, UnitTrainingCost blacksmiths, UnitTrainingCost builders, UnitTrainingCost carriers,
         UnitTrainingCost guards, UnitTrainingCost spies, UnitTrainingCost infantry, UnitTrainingCost bowmen, UnitTrainingCost cavalry) {

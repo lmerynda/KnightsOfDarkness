@@ -1,6 +1,6 @@
 package com.knightsofdarkness.game.gameconfig;
 
-import com.knightsofdarkness.game.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.ResourceName;
 
 public record KingdomStartingResources(int land, int buildingPoints, int unemployed, int gold, int iron, int food, int tools, int weapons, int turns) {
     public int getCount(ResourceName name)

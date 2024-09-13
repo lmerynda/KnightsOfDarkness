@@ -1,10 +1,10 @@
-package com.knightsofdarkness.game.kingdom;
+package com.knightsofdarkness.common.kingdom;
 
 public enum SpecialBuildingType
 {
     goldShaft, ironShaft, granary, forge, warehouse, emptyBuilding;
 
-    static SpecialBuildingType fromResource(ResourceName resourceName)
+    public static SpecialBuildingType fromResource(ResourceName resourceName)
     {
         return switch (resourceName)
         {

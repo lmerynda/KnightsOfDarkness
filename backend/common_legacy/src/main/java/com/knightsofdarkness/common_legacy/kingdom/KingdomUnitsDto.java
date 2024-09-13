@@ -1,7 +1,7 @@
 package com.knightsofdarkness.common_legacy.kingdom;
 
+import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
-import com.knightsofdarkness.game.kingdom.UnitName;
 
 public class KingdomUnitsDto {
     public int goldMiners;

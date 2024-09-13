@@ -3,6 +3,8 @@ package com.knightsofdarkness.game.kingdom;
 import java.util.EnumMap;
 import java.util.Map;
 
+import com.knightsofdarkness.common.kingdom.UnitName;
+
 public class KingdomUnits {
     Map<UnitName, Integer> units = new EnumMap<>(UnitName.class);
 

@@ -5,8 +5,8 @@ import java.util.Map;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
-import com.knightsofdarkness.game.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.common.kingdom.ResourceName;
 
 import jakarta.persistence.Embeddable;
 

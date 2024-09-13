@@ -2,16 +2,16 @@ package com.knightsofdarkness.game.utils;
 
 import java.util.ArrayList;
 
+import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.game.Game;
-import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomBuildings;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
-import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
-import com.knightsofdarkness.game.kingdom.ResourceName;
-import com.knightsofdarkness.game.kingdom.UnitName;
 
 public class KingdomBuilder {
     private final KingdomResources resources;

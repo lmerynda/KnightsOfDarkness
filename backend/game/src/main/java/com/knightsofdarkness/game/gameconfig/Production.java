@@ -1,7 +1,7 @@
 package com.knightsofdarkness.game.gameconfig;
 
-import com.knightsofdarkness.game.kingdom.ResourceName;
-import com.knightsofdarkness.game.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.UnitName;
 
 public record Production(UnitProduction goldMiner, UnitProduction ironMiner, UnitProduction farmer, UnitProduction blacksmith, UnitProduction builder) {
     public int getProductionRate(UnitName name)

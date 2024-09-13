@@ -5,11 +5,11 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
-import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.game.kingdom.ResourceName;
-import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.market.IMarket;
 
 public class BlacksmithBot implements IBot {

@@ -1,6 +1,6 @@
 package com.knightsofdarkness.game.gameconfig;
 
-import com.knightsofdarkness.game.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitName;
 
 public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, int blacksmith, int farmer, int carrier, int guard, int spy, int bowmen, int infantry, int cavalry) {
     public int getCount(UnitName name)

@@ -2,8 +2,8 @@ package com.knightsofdarkness.common_legacy.kingdom;
 
 import java.util.UUID;
 
+import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
-import com.knightsofdarkness.game.kingdom.SpecialBuildingType;
 
 public class KingdomSpecialBuildingDto {
     public UUID id;

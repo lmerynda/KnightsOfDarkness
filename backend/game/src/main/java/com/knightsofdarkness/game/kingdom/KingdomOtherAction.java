@@ -1,5 +1,8 @@
 package com.knightsofdarkness.game.kingdom;
 
+import com.knightsofdarkness.common.kingdom.LandTransaction;
+import com.knightsofdarkness.common.kingdom.ResourceName;
+
 public class KingdomOtherAction {
 
     private final Kingdom kingdom;

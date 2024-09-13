@@ -3,11 +3,11 @@ package com.knightsofdarkness.common_legacy.kingdom;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.market.MarketOfferDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
-import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
 
 public class KingdomDto {
     public String name;

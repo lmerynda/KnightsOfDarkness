@@ -1,6 +1,6 @@
 package com.knightsofdarkness.game.gameconfig;
 
-import com.knightsofdarkness.game.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.ResourceName;
 
 public record UnitTrainingCost(int gold, int tools, int weapons) {
     public int getTrainingCost(ResourceName name)

@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.kingdom;
+package com.knightsofdarkness.common.kingdom;
 
 public enum BuildingName
 {

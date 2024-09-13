@@ -1,6 +1,6 @@
 package com.knightsofdarkness.common_legacy.kingdom;
 
-import com.knightsofdarkness.game.kingdom.SpecialBuildingType;
+import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 
 public class KingdomSpecialBuildingStartDto {
     public SpecialBuildingType name;

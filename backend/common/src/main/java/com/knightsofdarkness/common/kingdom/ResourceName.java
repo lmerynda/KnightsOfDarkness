@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.kingdom;
+package com.knightsofdarkness.common.kingdom;
 
 import java.util.Set;
 
@@ -13,7 +13,7 @@ public enum ResourceName
         return Set.of(gold, iron, food, tools, weapons, buildingPoints);
     }
 
-    static ResourceName from(MarketResource resource)
+    public static ResourceName from(MarketResource resource)
     {
         return switch (resource)
         {

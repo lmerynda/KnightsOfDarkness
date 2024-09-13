@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.gameconfig.GameConfig;

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.common_legacy.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common_legacy.kingdom.KingdomDto;
 import com.knightsofdarkness.common_legacy.kingdom.KingdomSpecialBuildingBuildDto;
@@ -17,8 +19,6 @@ import com.knightsofdarkness.common_legacy.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
-import com.knightsofdarkness.game.kingdom.KingdomTurnReport;
-import com.knightsofdarkness.game.kingdom.LandTransaction;
 import com.knightsofdarkness.storage.kingdom.KingdomReadRepository;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.storage.market.MarketOfferReadRepository;

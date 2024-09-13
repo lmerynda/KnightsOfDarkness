@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.bot.BlacksmithBot;
 import com.knightsofdarkness.game.bot.FarmerBot;
 import com.knightsofdarkness.game.bot.GoldMinerBot;
 import com.knightsofdarkness.game.bot.IBot;
 import com.knightsofdarkness.game.bot.IronMinerBot;
-import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 import com.knightsofdarkness.game.utils.KingdomPrinter;
 

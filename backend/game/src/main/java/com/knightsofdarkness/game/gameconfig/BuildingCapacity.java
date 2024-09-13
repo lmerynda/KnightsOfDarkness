@@ -1,6 +1,6 @@
 package com.knightsofdarkness.game.gameconfig;
 
-import com.knightsofdarkness.game.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.BuildingName;
 
 public record BuildingCapacity(int houses, int goldMines, int ironMines, int workshops, int farms, int markets, int barracks, int guardHouses, int spyGuilds, int towers, int castles) {
     public int getCapacity(BuildingName name)

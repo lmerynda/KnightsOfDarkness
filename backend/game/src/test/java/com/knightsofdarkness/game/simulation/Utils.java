@@ -1,9 +1,9 @@
 package com.knightsofdarkness.game.simulation;
 
+import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.game.Game;
-import com.knightsofdarkness.game.kingdom.BuildingName;
-import com.knightsofdarkness.game.kingdom.ResourceName;
-import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
 public class Utils {

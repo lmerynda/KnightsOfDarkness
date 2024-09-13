@@ -1,5 +1,6 @@
 package com.knightsofdarkness.game.kingdom;
 
+import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.market.MarketOffer;
 

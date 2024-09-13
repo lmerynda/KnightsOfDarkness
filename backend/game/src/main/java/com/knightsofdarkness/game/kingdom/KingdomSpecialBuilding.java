@@ -2,6 +2,8 @@ package com.knightsofdarkness.game.kingdom;
 
 import java.util.UUID;
 
+import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
+
 public class KingdomSpecialBuilding {
     UUID id;
     SpecialBuildingType buildingType;

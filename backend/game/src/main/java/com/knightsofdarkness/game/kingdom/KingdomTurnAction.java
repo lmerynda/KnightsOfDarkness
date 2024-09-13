@@ -5,6 +5,12 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
+import com.knightsofdarkness.common.kingdom.UnitName;
+
 public class KingdomTurnAction {
     private static final Logger log = LoggerFactory.getLogger(KingdomTurnAction.class);
     private final Kingdom kingdom;

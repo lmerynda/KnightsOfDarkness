@@ -3,6 +3,8 @@ package com.knightsofdarkness.game.kingdom;
 import java.util.EnumMap;
 import java.util.Map;
 
+import com.knightsofdarkness.common.kingdom.ResourceName;
+
 public class KingdomResources {
     Map<ResourceName, Integer> resources = new EnumMap<>(ResourceName.class);
 
