@@ -90,7 +90,7 @@ public final class BotFunctions {
         assert unusedLand >= 0;
         if (unusedLand < 2)
         {
-            return kingdom.buyLand(2).amount;
+            return kingdom.buyLand(2).amount();
         }
 
         return 0;

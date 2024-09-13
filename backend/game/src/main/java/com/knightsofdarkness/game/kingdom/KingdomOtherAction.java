@@ -25,8 +25,8 @@ public class KingdomOtherAction {
 
         var transaction = calculateCost(initialLand, count, availableGold);
 
-        kingdom.getResources().subtractCount(ResourceName.gold, transaction.cost);
-        kingdom.getResources().addCount(ResourceName.land, transaction.amount);
+        kingdom.getResources().subtractCount(ResourceName.gold, transaction.cost());
+        kingdom.getResources().addCount(ResourceName.land, transaction.amount());
 
         return transaction;
     }
