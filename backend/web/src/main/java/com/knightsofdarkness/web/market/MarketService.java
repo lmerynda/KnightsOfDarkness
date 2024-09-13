@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.common.market.CreateMarketOfferResult;
 import com.knightsofdarkness.common.market.MarketOfferBuyResult;
-import com.knightsofdarkness.common_legacy.market.MarketOfferDto;
+import com.knightsofdarkness.common.market.MarketOfferDto;
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
-import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
 
@@ -41,16 +41,16 @@ public class MarketService {
     {
         for (var offer : offers)
         {
-            market.createOffer(offer.sellerName, offer.resource, offer.count, offer.price);
+            market.createOffer(offer.sellerName(), offer.resource(), offer.count(), offer.price());
         }
     }
 
     @Transactional
-    public CreateMarketOfferResult createOffer(MarketOfferDto offer)
+    public CreateMarketOfferResult createOffer(MarketOfferDto offer, String sellerName)
     {
         log.info("Creating new offer {}", offer);
 
-        return market.createOffer(offer.sellerName, offer.resource, offer.count, offer.price);
+        return market.createOffer(sellerName, offer.resource(), offer.count(), offer.price());
     }
 
     @Deprecated

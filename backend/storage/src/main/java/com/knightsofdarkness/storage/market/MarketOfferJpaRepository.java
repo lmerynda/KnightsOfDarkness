@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.knightsofdarkness.game.market.MarketResource;
+import com.knightsofdarkness.common.market.MarketResource;
 
 @Repository
 public interface MarketOfferJpaRepository extends JpaRepository<MarketOfferEntity, UUID> {

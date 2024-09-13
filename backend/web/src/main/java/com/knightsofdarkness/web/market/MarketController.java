@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.common.market.MarketOfferBuyDto;
 import com.knightsofdarkness.common.market.MarketOfferBuyResult;
-import com.knightsofdarkness.common_legacy.market.MarketBuyerDto;
-import com.knightsofdarkness.common_legacy.market.MarketOfferDto;
-import com.knightsofdarkness.game.market.MarketResource;
+import com.knightsofdarkness.common.market.MarketOfferDto;
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
@@ -47,8 +47,7 @@ public class MarketController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        offer.sellerName = currentUser.getKingdom();
-        var createdOffer = marketService.createOffer(offer);
+        var createdOffer = marketService.createOffer(offer, currentUser.getKingdom());
 
         return ResponseEntity.ok(createdOffer);
     }
@@ -67,7 +66,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/{id}/buy")
-    ResponseEntity<MarketOfferBuyResult> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id, @RequestBody MarketBuyerDto buyerData)
+    ResponseEntity<MarketOfferBuyResult> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id, @RequestBody MarketOfferBuyDto buyerData)
     {
         if (currentUser == null)
         {

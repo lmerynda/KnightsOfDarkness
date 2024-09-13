@@ -8,9 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.TestGame;
-import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
 class KingdomMarketTest {

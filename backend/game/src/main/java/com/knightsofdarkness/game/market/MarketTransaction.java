@@ -3,6 +3,8 @@ package com.knightsofdarkness.game.market;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.knightsofdarkness.common.market.MarketResource;
+
 public class MarketTransaction {
     UUID id;
     MarketResource resource;

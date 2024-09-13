@@ -1,7 +1,7 @@
 package com.knightsofdarkness.game.kingdom;
 
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.market.MarketOffer;
-import com.knightsofdarkness.game.market.MarketResource;
 
 public class KingdomMarketAction {
     private final Kingdom kingdom;

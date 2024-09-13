@@ -1,11 +1,11 @@
 package com.knightsofdarkness.game.bot;
 
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.market.IMarket;
-import com.knightsofdarkness.game.market.MarketResource;
 
 public class IronMinerBot implements IBot {
     private static final double builderToSpecialistRatio = 0.1;

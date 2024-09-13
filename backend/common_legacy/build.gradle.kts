@@ -18,6 +18,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":common"))
     implementation(project(":game"))
 }
 

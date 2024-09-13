@@ -7,9 +7,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
-import com.knightsofdarkness.game.market.MarketResource;
 
 public class Kingdom {
     private final String name;

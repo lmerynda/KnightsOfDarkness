@@ -9,9 +9,9 @@ import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
-import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.market.MarketTransaction;
 import com.knightsofdarkness.game.market.MarketTransactionTimeRangeAverage;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;

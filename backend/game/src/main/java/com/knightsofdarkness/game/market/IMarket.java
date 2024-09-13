@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import com.knightsofdarkness.common.market.CreateMarketOfferResult;
 import com.knightsofdarkness.common.market.MarketOfferBuyResult;
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public interface IMarket {

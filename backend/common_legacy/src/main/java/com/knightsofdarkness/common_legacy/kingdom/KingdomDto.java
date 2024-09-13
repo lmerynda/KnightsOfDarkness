@@ -3,7 +3,7 @@ package com.knightsofdarkness.common_legacy.kingdom;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.knightsofdarkness.common_legacy.market.MarketOfferDto;
+import com.knightsofdarkness.common.market.MarketOfferDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
