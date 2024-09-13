@@ -79,7 +79,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/{id}/withdraw")
-    ResponseEntity<Boolean> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
+    ResponseEntity<Boolean> withdrawOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
     {
         if (currentUser == null)
         {
