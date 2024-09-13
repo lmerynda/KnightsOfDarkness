@@ -29,7 +29,6 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation(project(":common"))
-    implementation(project(":common_legacy"))
     implementation(project(":game"))
 	implementation(project(":storage"))
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

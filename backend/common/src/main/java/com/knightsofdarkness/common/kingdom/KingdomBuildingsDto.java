@@ -1,6 +1,5 @@
-package com.knightsofdarkness.common_legacy.kingdom;
+package com.knightsofdarkness.common.kingdom;
 
-import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.KingdomBuildings;
 
 public class KingdomBuildingsDto {

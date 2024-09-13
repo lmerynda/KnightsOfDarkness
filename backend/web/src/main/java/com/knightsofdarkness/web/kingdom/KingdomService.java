@@ -2,21 +2,22 @@ package com.knightsofdarkness.web.kingdom;
 
 import java.util.Optional;
 
+import java.util.ArrayList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
-import com.knightsofdarkness.common_legacy.kingdom.Converter;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomBuildingsDto;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomDto;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
@@ -45,10 +46,18 @@ public class KingdomService {
     {
         log.info("Creating new kingdom {}", kingdomDto);
 
-        var kingdom = Converter.newKingdomFromDto(kingdomDto, gameConfig);
+        var kingdom = newKingdomFromDto(kingdomDto, gameConfig);
         kingdomRepository.add(kingdom);
         // TODO I bet the return value should be different
         return kingdomDto;
+    }
+
+    private Kingdom newKingdomFromDto(KingdomDto dto, GameConfig config)
+    {
+        // TODO new kingdom doesn't have turn reports or special buildings, this is domain level information and should be there
+        dto.lastTurnReport = new KingdomTurnReport();
+        dto.specialBuildings = new ArrayList<>();
+        return new Kingdom(dto.name, config, dto.resources.toDomain(), dto.buildings.toDomain(), new ArrayList<>(), dto.units.toDomain(), dto.lastTurnReport);
     }
 
     public Optional<KingdomDto> getKingdomByName(String name)

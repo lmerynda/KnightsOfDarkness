@@ -1,7 +1,7 @@
 package com.knightsofdarkness.storage.kingdom;
 
+import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
 
 import jakarta.persistence.Embeddable;

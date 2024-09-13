@@ -1,6 +1,5 @@
-package com.knightsofdarkness.common_legacy.kingdom;
+package com.knightsofdarkness.common.kingdom;
 
-import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
 
 public class KingdomResourcesDto {

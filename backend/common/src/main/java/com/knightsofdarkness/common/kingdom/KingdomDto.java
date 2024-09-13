@@ -1,9 +1,7 @@
-package com.knightsofdarkness.common_legacy.kingdom;
+package com.knightsofdarkness.common.kingdom;
 
 import java.util.List;
 
-import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
-import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.market.MarketOfferDto;
 
 public class KingdomDto {
