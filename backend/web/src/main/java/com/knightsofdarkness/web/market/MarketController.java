@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.common.market.CreateOfferResult;
+import com.knightsofdarkness.common.market.MarketOfferBuyResult;
 import com.knightsofdarkness.common_legacy.market.MarketBuyerDto;
 import com.knightsofdarkness.common_legacy.market.MarketOfferDto;
-import com.knightsofdarkness.game.market.MarketOfferBuyResult;
 import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.web.user.UserData;
 

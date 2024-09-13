@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.common.market.CreateOfferResult;
+import com.knightsofdarkness.common.market.MarketOfferBuyResult;
 import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.Utils;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -111,7 +112,7 @@ public class Market implements IMarket {
         if (buyerAmount == 0)
         {
             log.info("Not enough gold to buy any amount of resource");
-            return new MarketOfferBuyResult(offer.resource, buyerAmount, offer.price, buyerGold);
+            return new MarketOfferBuyResult(offer.resource.toMarketResource(), buyerAmount, offer.price, buyerGold);
         }
         offer.count -= buyerAmount;
         seller.acceptMarketOffer(buyerGold);
@@ -119,7 +120,7 @@ public class Market implements IMarket {
 
         assert (offer.count >= 0);
 
-        var result = new MarketOfferBuyResult(offer.resource, buyerAmount, offer.price, buyerGold);
+        var result = new MarketOfferBuyResult(offer.resource.toMarketResource(), buyerAmount, offer.price, buyerGold);
 
         kingdomRepository.update(seller);
         kingdomRepository.update(buyer);
