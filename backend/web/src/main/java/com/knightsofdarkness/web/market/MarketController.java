@@ -74,7 +74,7 @@ public class MarketController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return marketService.buyOffer(id, buyerData.count, currentUser.getKingdom());
+        return marketService.buyOffer(id, buyerData.count(), currentUser.getKingdom());
     }
 
     @PostMapping("/market/{id}/withdraw")
