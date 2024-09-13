@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.knightsofdarkness.common.market.BuyMarketOfferResult;
 import com.knightsofdarkness.common.market.CreateMarketOfferResult;
-import com.knightsofdarkness.common.market.MarketOfferBuyResult;
 import com.knightsofdarkness.common.market.MarketOfferDto;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -76,7 +76,7 @@ public class MarketService {
     }
 
     @Transactional
-    public ResponseEntity<MarketOfferBuyResult> buyOffer(UUID id, int amount, String buyerName)
+    public ResponseEntity<BuyMarketOfferResult> buyOffer(UUID id, int amount, String buyerName)
     {
         var maybeOffer = market.findOfferById(id);
         var maybeBuyerKingdom = kingdomRepository.getKingdomByName(buyerName);

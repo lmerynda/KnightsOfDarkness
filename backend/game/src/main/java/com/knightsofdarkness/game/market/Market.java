@@ -9,8 +9,8 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knightsofdarkness.common.market.BuyMarketOfferResult;
 import com.knightsofdarkness.common.market.CreateMarketOfferResult;
-import com.knightsofdarkness.common.market.MarketOfferBuyResult;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.Utils;
@@ -103,7 +103,7 @@ public class Market implements IMarket {
 
     // TODO make a LOT of tests for this
     @Override
-    public MarketOfferBuyResult buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount)
+    public BuyMarketOfferResult buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount)
     {
         log.info("Transaction request: buyer: {} seller: {} amount: {} offer: {}", buyer.getName(), seller.getName(), amount, offer);
         var maxToSell = Math.min(offer.count, amount);
@@ -113,7 +113,7 @@ public class Market implements IMarket {
         if (buyerAmount == 0)
         {
             log.info("Not enough gold to buy any amount of resource");
-            return new MarketOfferBuyResult(offer.resource, buyerAmount, offer.price, buyerGold);
+            return new BuyMarketOfferResult(offer.resource, buyerAmount, offer.price, buyerGold);
         }
         offer.count -= buyerAmount;
         seller.acceptMarketOffer(buyerGold);
@@ -121,7 +121,7 @@ public class Market implements IMarket {
 
         assert (offer.count >= 0);
 
-        var result = new MarketOfferBuyResult(offer.resource, buyerAmount, offer.price, buyerGold);
+        var result = new BuyMarketOfferResult(offer.resource, buyerAmount, offer.price, buyerGold);
 
         kingdomRepository.update(seller);
         kingdomRepository.update(buyer);

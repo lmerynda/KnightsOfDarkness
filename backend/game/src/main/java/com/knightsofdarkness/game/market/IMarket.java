@@ -6,8 +6,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import com.knightsofdarkness.common.market.BuyMarketOfferResult;
 import com.knightsofdarkness.common.market.CreateMarketOfferResult;
-import com.knightsofdarkness.common.market.MarketOfferBuyResult;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
@@ -27,7 +27,7 @@ public interface IMarket {
 
     Optional<MarketOffer> findOfferById(UUID id);
 
-    MarketOfferBuyResult buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount);
+    BuyMarketOfferResult buyExistingOffer(MarketOffer offer, Kingdom seller, Kingdom buyer, int amount);
 
     void updateMarketTransactionsAverages(Instant from, Instant to);
 
