@@ -18,7 +18,6 @@ import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
-import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.storage.kingdom.KingdomReadRepository;
@@ -28,14 +27,12 @@ import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
 @Service
 public class KingdomService {
     private final Logger log = LoggerFactory.getLogger(KingdomService.class);
-    private final GameConfig gameConfig;
     private final KingdomRepository kingdomRepository;
     private final KingdomReadRepository kingdomReadRepository;
     private final MarketOfferReadRepository marketOfferReadRepository;
 
-    public KingdomService(GameConfig gameConfig, KingdomRepository kingdomRepository, KingdomReadRepository kingdomReadRepository, MarketOfferReadRepository marketOfferReadRepository)
+    public KingdomService(KingdomRepository kingdomRepository, KingdomReadRepository kingdomReadRepository, MarketOfferReadRepository marketOfferReadRepository)
     {
-        this.gameConfig = gameConfig;
         this.kingdomRepository = kingdomRepository;
         this.kingdomReadRepository = kingdomReadRepository;
         this.marketOfferReadRepository = marketOfferReadRepository;
@@ -46,18 +43,12 @@ public class KingdomService {
     {
         log.info("Creating new kingdom {}", kingdomDto);
 
-        var kingdom = newKingdomFromDto(kingdomDto, gameConfig);
-        kingdomRepository.add(kingdom);
+        // TODO new kingdom doesn't have turn reports or special buildings, this is domain level information and should be there
+        kingdomDto.lastTurnReport = new KingdomTurnReport();
+        kingdomDto.specialBuildings = new ArrayList<>();
+        kingdomRepository.add(kingdomDto);
         // TODO I bet the return value should be different
         return kingdomDto;
-    }
-
-    private Kingdom newKingdomFromDto(KingdomDto dto, GameConfig config)
-    {
-        // TODO new kingdom doesn't have turn reports or special buildings, this is domain level information and should be there
-        dto.lastTurnReport = new KingdomTurnReport();
-        dto.specialBuildings = new ArrayList<>();
-        return new Kingdom(dto.name, config, dto.resources.toDomain(), dto.buildings.toDomain(), new ArrayList<>(), dto.units.toDomain(), dto.lastTurnReport);
     }
 
     public Optional<KingdomDto> getKingdomByName(String name)
@@ -86,9 +77,9 @@ public class KingdomService {
 
         var kingdom = maybeKingdom.get();
 
-        var buildingsBuilt = kingdom.build(buildings.toDomain());
+        var buildingsBuilt = kingdom.build(buildings);
         kingdomRepository.update(kingdom);
-        return ResponseEntity.ok(KingdomBuildingsDto.fromDomain(buildingsBuilt));
+        return ResponseEntity.ok(buildingsBuilt);
     }
 
     public ResponseEntity<KingdomBuildingsDto> demolish(String kingdomName, KingdomBuildingsDto buildings)
@@ -102,9 +93,9 @@ public class KingdomService {
 
         var kingdom = maybeKingdom.get();
 
-        var buildingsDemolished = kingdom.demolish(buildings.toDomain());
+        var buildingsDemolished = kingdom.demolish(buildings);
         kingdomRepository.update(kingdom);
-        return ResponseEntity.ok(KingdomBuildingsDto.fromDomain(buildingsDemolished));
+        return ResponseEntity.ok(buildingsDemolished);
     }
 
     @Transactional

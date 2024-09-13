@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.TestGame;
@@ -37,7 +38,7 @@ class KingdomBuildTest {
     void buildSanityTest()
     {
         var buildingPointsBeforeBuild = kingdom.getResources().getCount(ResourceName.buildingPoints);
-        var toBuild = new KingdomBuildings();
+        var toBuild = new KingdomBuildingsDto();
 
         kingdom.build(toBuild);
 
@@ -53,9 +54,9 @@ class KingdomBuildTest {
 
         var housesToBuild = 5;
         var goldMinesToBuild = 2;
-        var toBuild = new KingdomBuildings();
-        toBuild.addCount(BuildingName.house, housesToBuild);
-        toBuild.addCount(BuildingName.goldMine, goldMinesToBuild);
+        var toBuild = new KingdomBuildingsDto();
+        toBuild.setCount(BuildingName.house, housesToBuild);
+        toBuild.setCount(BuildingName.goldMine, goldMinesToBuild);
 
         kingdom.build(toBuild);
 
@@ -75,8 +76,8 @@ class KingdomBuildTest {
         var unusedLandBeforeBuild = kingdom.getUnusedLand();
 
         var housesToBuild = 5;
-        var toBuild = new KingdomBuildings();
-        toBuild.addCount(BuildingName.house, housesToBuild);
+        var toBuild = new KingdomBuildingsDto();
+        toBuild.setCount(BuildingName.house, housesToBuild);
 
         kingdom.build(toBuild);
 
@@ -88,11 +89,11 @@ class KingdomBuildTest {
     {
         var existingBuildingsCount = kingdom.getBuildings().countAll();
 
-        var toBuild = new KingdomBuildings();
-        toBuild.addCount(BuildingName.house, 1);
-        toBuild.addCount(BuildingName.farm, 3);
-        toBuild.addCount(BuildingName.goldMine, 2);
-        toBuild.addCount(BuildingName.workshop, 1);
+        var toBuild = new KingdomBuildingsDto();
+        toBuild.setCount(BuildingName.house, 1);
+        toBuild.setCount(BuildingName.farm, 3);
+        toBuild.setCount(BuildingName.goldMine, 2);
+        toBuild.setCount(BuildingName.workshop, 1);
 
         kingdom.build(toBuild);
 
@@ -104,8 +105,8 @@ class KingdomBuildTest {
     {
         var buildingsCountBeforeBuild = kingdom.getBuildings().countAll();
         kingdom.getResources().setCount(ResourceName.land, buildingsCountBeforeBuild);
-        var toBuild = new KingdomBuildings();
-        toBuild.addCount(BuildingName.house, 1);
+        var toBuild = new KingdomBuildingsDto();
+        toBuild.setCount(BuildingName.house, 1);
 
         kingdom.build(toBuild);
 
@@ -117,8 +118,8 @@ class KingdomBuildTest {
     {
         var housesBeforeDemolish = kingdom.getBuildings().getCount(BuildingName.house);
 
-        var toDemolish = new KingdomBuildings();
-        toDemolish.addCount(BuildingName.house, 1);
+        var toDemolish = new KingdomBuildingsDto();
+        toDemolish.setCount(BuildingName.house, 1);
 
         kingdom.demolish(toDemolish);
 

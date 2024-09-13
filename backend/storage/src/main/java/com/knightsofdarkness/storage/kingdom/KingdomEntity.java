@@ -81,6 +81,22 @@ public class KingdomEntity {
         return kingdomEntity;
     }
 
+    public static KingdomEntity fromDto(KingdomDto dto)
+    {
+        var kingdomEntity = new KingdomEntity(
+                dto.name,
+                KingdomResourcesEntity.fromDto(dto.resources),
+                KingdomBuildingsEntity.fromDto(dto.buildings),
+                new ArrayList<>(),
+                KingdomUnitsEntity.fromDto(dto.units),
+                KingdomTurnReportEntity.fromDto(dto.lastTurnReport));
+
+        var specialBuildings = dto.specialBuildings.stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDto(specialBuilding, kingdomEntity)).toList();
+        kingdomEntity.specialBuildings = specialBuildings;
+
+        return kingdomEntity;
+    }
+
     public String getName()
     {
         return name;

@@ -78,4 +78,20 @@ public class KingdomUnitsEntity {
                 kingdomUnits.getCount(UnitName.cavalry));
     }
 
+    public static KingdomUnitsEntity fromDto(KingdomUnitsDto dto)
+    {
+        return new KingdomUnitsEntity(
+                dto.goldMiners,
+                dto.ironMiners,
+                dto.farmers,
+                dto.blacksmiths,
+                dto.builders,
+                dto.carriers,
+                dto.guards,
+                dto.spies,
+                dto.infantry,
+                dto.bowmen,
+                dto.cavalry);
+    }
+
 }

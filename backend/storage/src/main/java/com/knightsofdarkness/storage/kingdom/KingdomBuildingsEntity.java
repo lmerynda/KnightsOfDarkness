@@ -24,6 +24,7 @@ class KingdomBuildingsEntity {
     {
     }
 
+    @SuppressWarnings("java:S107")
     public KingdomBuildingsEntity(int houses, int goldMines, int ironMines, int workshops, int farms, int markets, int barracks, int guardHouses, int spyGuilds, int towers, int castles)
     {
         this.houses = houses;
@@ -75,5 +76,21 @@ class KingdomBuildingsEntity {
                 kingdomBuildings.getCount(BuildingName.spyGuild),
                 kingdomBuildings.getCount(BuildingName.tower),
                 kingdomBuildings.getCount(BuildingName.castle));
+    }
+
+    public static KingdomBuildingsEntity fromDto(KingdomBuildingsDto dto)
+    {
+        return new KingdomBuildingsEntity(
+                dto.getCount(BuildingName.house),
+                dto.getCount(BuildingName.goldMine),
+                dto.getCount(BuildingName.ironMine),
+                dto.getCount(BuildingName.workshop),
+                dto.getCount(BuildingName.farm),
+                dto.getCount(BuildingName.market),
+                dto.getCount(BuildingName.barracks),
+                dto.getCount(BuildingName.guardHouse),
+                dto.getCount(BuildingName.spyGuild),
+                dto.getCount(BuildingName.tower),
+                dto.getCount(BuildingName.castle));
     }
 }

@@ -1,8 +1,7 @@
 package com.knightsofdarkness.game.kingdom;
 
-import java.util.EnumSet;
-
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 
 public class KingdomBuildAction {
@@ -18,17 +17,15 @@ public class KingdomBuildAction {
      * 
      * @return the buildings that were built
      */
-    public KingdomBuildings build(KingdomBuildings buildingsToBuild)
+    public KingdomBuildingsDto build(KingdomBuildingsDto buildingsToBuild)
     {
-        var buildingsBuilt = new KingdomBuildings();
-        // by using EnumSet we make sure the names are ordered as specified in the enum declaration
-        var buildingNames = EnumSet.copyOf(buildingsToBuild.buildings.keySet());
-        for (var buildingName : buildingNames)
+        var buildingsBuilt = new KingdomBuildingsDto();
+        for (var buildingName : BuildingName.values())
         {
             if(buildingsToBuild.getCount(buildingName) > 0)
             {
                 var howManyWereBuilt = build(buildingName, buildingsToBuild.getCount(buildingName));
-                buildingsBuilt.addCount(buildingName, howManyWereBuilt);
+                buildingsBuilt.setCount(buildingName, howManyWereBuilt);
             }
         }
 
@@ -49,18 +46,17 @@ public class KingdomBuildAction {
         return howManyToBuild;
     }
 
-    public KingdomBuildings demolish(KingdomBuildings buildingsToDemolish)
+    public KingdomBuildingsDto demolish(KingdomBuildingsDto buildingsToDemolish)
     {
-        var buildingsDemolished = new KingdomBuildings();
-        var buildingNames = EnumSet.copyOf(buildingsToDemolish.buildings.keySet());
-        for (var buildingName : buildingNames)
+        var buildingsDemolished = new KingdomBuildingsDto();
+        for (var buildingName : BuildingName.values())
         {
             var demolishCount = buildingsToDemolish.getCount(buildingName);
             if (demolishCount > 0)
             {
                 // should building demolishing cost building points?
                 var howManyToDemolish = Math.min(demolishCount, kingdom.getBuildings().getCount(buildingName));
-                buildingsDemolished.addCount(buildingName, howManyToDemolish);
+                buildingsDemolished.setCount(buildingName, howManyToDemolish);
                 kingdom.getBuildings().subtractCount(buildingName, howManyToDemolish);
             }
         }

@@ -63,4 +63,10 @@ public class KingdomSpecialBuildingEntity {
     {
         return new KingdomSpecialBuildingDto(id, buildingType, level, buildingPointsPut, buildingPointsRequired, isMaxLevel);
     }
+
+    public static KingdomSpecialBuildingEntity fromDto(KingdomSpecialBuildingDto kingdomSpecialBuildingDto, KingdomEntity kingdomEntity)
+    {
+        return new KingdomSpecialBuildingEntity(kingdomSpecialBuildingDto.id(), kingdomEntity, kingdomSpecialBuildingDto.buildingType(), kingdomSpecialBuildingDto.level(), kingdomSpecialBuildingDto.buildingPointsPut(),
+                kingdomSpecialBuildingDto.buildingPointsRequired(), kingdomSpecialBuildingDto.isMaxLevel());
+    }
 }

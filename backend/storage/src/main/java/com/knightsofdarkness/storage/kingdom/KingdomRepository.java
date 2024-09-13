@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.storage.IKingdomRepository;
@@ -24,6 +25,11 @@ public class KingdomRepository implements IKingdomRepository {
     public void add(Kingdom kingdom)
     {
         jpaRepository.save(KingdomEntity.fromDomainModel(kingdom));
+    }
+
+    public void add(KingdomDto kingdomDto)
+    {
+        jpaRepository.save(KingdomEntity.fromDto(kingdomDto));
     }
 
     public Optional<Kingdom> getKingdomByName(String name)

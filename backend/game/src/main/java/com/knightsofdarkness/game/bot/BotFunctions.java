@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.game.kingdom.KingdomBuildings;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
 import com.knightsofdarkness.game.market.IMarket;
 
@@ -111,8 +111,8 @@ public final class BotFunctions {
 
         var lackingCapacity = desiredFreeCapacity - freeCapacity;
         var buildingsToBuild = (int) Math.ceil((double) lackingCapacity / perBuildingCapacity);
-        var kingdomBuildings = new KingdomBuildings();
-        kingdomBuildings.addCount(building, buildingsToBuild);
+        var kingdomBuildings = new KingdomBuildingsDto();
+        kingdomBuildings.setCount(building, buildingsToBuild);
 
         return kingdom.build(kingdomBuildings).countAll();
     }
@@ -168,8 +168,8 @@ public final class BotFunctions {
             return 0;
         }
 
-        var kingdomBuildings = new KingdomBuildings();
-        kingdomBuildings.addCount(BuildingName.house, count);
+        var kingdomBuildings = new KingdomBuildingsDto();
+        kingdomBuildings.setCount(BuildingName.house, count);
 
         return kingdom.build(kingdomBuildings).countAll();
     }

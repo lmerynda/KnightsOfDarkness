@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.common.kingdom.ResourceName;
@@ -41,12 +42,12 @@ public class Kingdom {
         this.specialBuildings = specialBuildings;
     }
 
-    public KingdomBuildings build(KingdomBuildings buildingsToBuild)
+    public KingdomBuildingsDto build(KingdomBuildingsDto buildingsToBuild)
     {
         return kingdomBuildAction.build(buildingsToBuild);
     }
 
-    public KingdomBuildings demolish(KingdomBuildings buildingsToDemolish)
+    public KingdomBuildingsDto demolish(KingdomBuildingsDto buildingsToDemolish)
     {
         return kingdomBuildAction.demolish(buildingsToDemolish);
     }

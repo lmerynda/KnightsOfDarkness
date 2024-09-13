@@ -1,105 +1,52 @@
 package com.knightsofdarkness.common.kingdom;
 
-import com.knightsofdarkness.game.kingdom.KingdomBuildings;
+import java.util.EnumMap;
+import java.util.Map;
 
 public class KingdomBuildingsDto {
-    public int houses;
-    public int goldMines;
-    public int ironMines;
-    public int workshops;
-    public int farms;
-    public int markets;
-    public int barracks;
-    public int guardHouses;
-    public int spyGuilds;
-    public int towers;
-    public int castles;
+    Map<BuildingName, Integer> buildings = new EnumMap<>(BuildingName.class);
 
     public KingdomBuildingsDto()
     {
+        for (var name : BuildingName.values())
+        {
+            buildings.put(name, 0);
+        }
+    }
+
+    public int getCount(BuildingName name)
+    {
+        return buildings.get(name);
+    }
+
+    public void setCount(BuildingName name, int count)
+    {
+        buildings.put(name, count);
     }
 
     @SuppressWarnings("java:S107")
     public KingdomBuildingsDto(int houses, int goldMines, int ironMines, int workshops, int farms, int markets, int barracks, int guardHouses, int spyGuilds, int towers, int castles)
     {
-        this.houses = houses;
-        this.goldMines = goldMines;
-        this.ironMines = ironMines;
-        this.workshops = workshops;
-        this.farms = farms;
-        this.markets = markets;
-        this.barracks = barracks;
-        this.guardHouses = guardHouses;
-        this.spyGuilds = spyGuilds;
-        this.towers = towers;
-        this.castles = castles;
-    }
-
-    public KingdomBuildings toDomain()
-    {
-        var kingdomBuildings = new KingdomBuildings();
-        kingdomBuildings.setCount(BuildingName.house, houses);
-        kingdomBuildings.setCount(BuildingName.goldMine, goldMines);
-        kingdomBuildings.setCount(BuildingName.ironMine, ironMines);
-        kingdomBuildings.setCount(BuildingName.workshop, workshops);
-        kingdomBuildings.setCount(BuildingName.farm, farms);
-        kingdomBuildings.setCount(BuildingName.market, markets);
-        kingdomBuildings.setCount(BuildingName.barracks, barracks);
-        kingdomBuildings.setCount(BuildingName.guardHouse, guardHouses);
-        kingdomBuildings.setCount(BuildingName.spyGuild, spyGuilds);
-        kingdomBuildings.setCount(BuildingName.tower, towers);
-        kingdomBuildings.setCount(BuildingName.castle, castles);
-        return kingdomBuildings;
-    }
-
-    public static KingdomBuildingsDto fromDomain(KingdomBuildings kingdomBuildings)
-    {
-        return new KingdomBuildingsDto(
-                kingdomBuildings.getCount(BuildingName.house),
-                kingdomBuildings.getCount(BuildingName.goldMine),
-                kingdomBuildings.getCount(BuildingName.ironMine),
-                kingdomBuildings.getCount(BuildingName.workshop),
-                kingdomBuildings.getCount(BuildingName.farm),
-                kingdomBuildings.getCount(BuildingName.market),
-                kingdomBuildings.getCount(BuildingName.barracks),
-                kingdomBuildings.getCount(BuildingName.guardHouse),
-                kingdomBuildings.getCount(BuildingName.spyGuild),
-                kingdomBuildings.getCount(BuildingName.tower),
-                kingdomBuildings.getCount(BuildingName.castle));
+        buildings.put(BuildingName.house, houses);
+        buildings.put(BuildingName.goldMine, goldMines);
+        buildings.put(BuildingName.ironMine, ironMines);
+        buildings.put(BuildingName.workshop, workshops);
+        buildings.put(BuildingName.farm, farms);
+        buildings.put(BuildingName.market, markets);
+        buildings.put(BuildingName.barracks, barracks);
+        buildings.put(BuildingName.guardHouse, guardHouses);
+        buildings.put(BuildingName.spyGuild, spyGuilds);
+        buildings.put(BuildingName.tower, towers);
+        buildings.put(BuildingName.castle, castles);
     }
 
     public String toString()
     {
-        return "KingdomBuildingsDto{" +
-                "houses=" + houses +
-                ", goldMines=" + goldMines +
-                ", ironMines=" + ironMines +
-                ", workshops=" + workshops +
-                ", farms=" + farms +
-                ", markets=" + markets +
-                ", barracks=" + barracks +
-                ", guardHouses=" + guardHouses +
-                ", spyGuilds=" + spyGuilds +
-                ", towers=" + towers +
-                ", castles=" + castles +
-                '}';
+        return buildings.toString();
     }
 
     public int countAll()
     {
-        // huehue, it hurts, fix please
-        int count = 0;
-        count += houses;
-        count += goldMines;
-        count += ironMines;
-        count += workshops;
-        count += farms;
-        count += markets;
-        count += barracks;
-        count += guardHouses;
-        count += spyGuilds;
-        count += towers;
-        count += castles;
-        return count;
+        return buildings.values().stream().mapToInt(Integer::intValue).sum();
     }
 }
