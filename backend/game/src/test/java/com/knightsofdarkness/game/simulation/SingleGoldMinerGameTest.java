@@ -5,14 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.bot.GoldMinerBot;
 import com.knightsofdarkness.game.kingdom.ResourceName;
-import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 import com.knightsofdarkness.game.utils.KingdomPrinter;
 
-public class SingleGoldMinerGame {
+class SingleGoldMinerGameTest {
     @Disabled
     @Test
     void simulateTenTurnsTest()
@@ -26,7 +26,7 @@ public class SingleGoldMinerGame {
         game.addKingdom(goldMinerBot.getKingdom());
 
         var infiniteFarmerKingdom = kingdomBuilder.withName("InfiniteFarmer").withResource(ResourceName.food, 1000000).build();
-        game.getMarket().addOffer(infiniteFarmerKingdom, MarketResource.food, 1000000, 5);
+        game.getMarket().createOffer(infiniteFarmerKingdom.getName(), MarketResource.food, 1000000, 5);
 
         KingdomPrinter.printResourcesHeader();
         KingdomPrinter.printLineSeparator();

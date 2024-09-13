@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":common"))
+    implementation(project(":game"))
 }
 
 tasks.withType<Test> {

@@ -1,4 +1,4 @@
-package com.knightsofdarkness.common.kingdom;
+package com.knightsofdarkness.common_legacy.kingdom;
 
 import java.util.ArrayList;
 import java.util.List;

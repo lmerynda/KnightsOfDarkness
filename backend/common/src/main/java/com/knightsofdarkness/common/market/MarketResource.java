@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.market;
+package com.knightsofdarkness.common.market;
 
 public enum MarketResource
 {

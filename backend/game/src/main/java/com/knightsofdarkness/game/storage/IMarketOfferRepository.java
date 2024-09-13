@@ -6,8 +6,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.market.MarketOffer;
-import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.game.market.MarketTransaction;
 import com.knightsofdarkness.game.market.MarketTransactionTimeRangeAverage;
 

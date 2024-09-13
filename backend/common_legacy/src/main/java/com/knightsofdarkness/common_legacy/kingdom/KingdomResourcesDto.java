@@ -1,4 +1,4 @@
-package com.knightsofdarkness.common.kingdom;
+package com.knightsofdarkness.common_legacy.kingdom;
 
 import com.knightsofdarkness.game.kingdom.KingdomResources;
 import com.knightsofdarkness.game.kingdom.ResourceName;
@@ -51,15 +51,14 @@ public class KingdomResourcesDto {
     public static KingdomResourcesDto fromDomain(KingdomResources kingdomResources)
     {
         return new KingdomResourcesDto(
-            kingdomResources.getCount(ResourceName.land),
-            kingdomResources.getCount(ResourceName.buildingPoints),
-            kingdomResources.getCount(ResourceName.unemployed),
-            kingdomResources.getCount(ResourceName.gold),
-            kingdomResources.getCount(ResourceName.iron),
-            kingdomResources.getCount(ResourceName.food),
-            kingdomResources.getCount(ResourceName.tools),
-            kingdomResources.getCount(ResourceName.weapons),
-            kingdomResources.getCount(ResourceName.turns)
-        );
+                kingdomResources.getCount(ResourceName.land),
+                kingdomResources.getCount(ResourceName.buildingPoints),
+                kingdomResources.getCount(ResourceName.unemployed),
+                kingdomResources.getCount(ResourceName.gold),
+                kingdomResources.getCount(ResourceName.iron),
+                kingdomResources.getCount(ResourceName.food),
+                kingdomResources.getCount(ResourceName.tools),
+                kingdomResources.getCount(ResourceName.weapons),
+                kingdomResources.getCount(ResourceName.turns));
     }
 }

@@ -1,7 +1,5 @@
 package com.knightsofdarkness.web.market;
 
-import java.util.Optional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,11 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.knightsofdarkness.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.common.market.MarketOfferBuyResult;
 import com.knightsofdarkness.common.market.MarketOfferDto;
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
-import com.knightsofdarkness.game.market.MarketOfferBuyResult;
-import com.knightsofdarkness.game.market.MarketResource;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
 
@@ -42,30 +41,16 @@ public class MarketService {
     {
         for (var offer : offers)
         {
-            var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
-            if (kingdom.isEmpty())
-            {
-                log.warn("Kingdom with name {} not found", offer.sellerName);
-                continue;
-            }
-
-            market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
+            market.createOffer(offer.sellerName(), offer.resource(), offer.count(), offer.price());
         }
     }
 
     @Transactional
-    public Optional<MarketOfferDto> createOffer(MarketOfferDto offer)
+    public CreateMarketOfferResult createOffer(MarketOfferDto offer, String sellerName)
     {
         log.info("Creating new offer {}", offer);
-        var kingdom = kingdomRepository.getKingdomByName(offer.sellerName);
-        if (kingdom.isEmpty())
-        {
-            log.warn("Kingdom with name {} not found", offer.sellerName);
-            return Optional.empty();
-        }
 
-        var createdOffer = market.addOffer(kingdom.get(), offer.resource, offer.count, offer.price);
-        return createdOffer.map(MarketOfferDto::fromDomain);
+        return market.createOffer(sellerName, offer.resource(), offer.count(), offer.price());
     }
 
     @Deprecated

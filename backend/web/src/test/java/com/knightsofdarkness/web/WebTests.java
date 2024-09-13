@@ -20,9 +20,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knightsofdarkness.common.market.MarketOfferDto;
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.market.MarketOffer;
-import com.knightsofdarkness.game.market.MarketResource;
 
 @SpringBootTest
 @AutoConfigureMockMvc

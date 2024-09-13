@@ -3,7 +3,7 @@ package com.knightsofdarkness.storage.market;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.knightsofdarkness.game.market.MarketResource;
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.market.MarketTransactionTimeRangeAverage;
 
 import jakarta.persistence.Entity;

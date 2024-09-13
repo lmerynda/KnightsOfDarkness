@@ -1,11 +1,11 @@
 package com.knightsofdarkness.game.bot;
 
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.market.IMarket;
-import com.knightsofdarkness.game.market.MarketResource;
 
 public class FarmerBot implements IBot {
     private static final double builderToSpecialistRatio = 0.05;
@@ -67,7 +67,7 @@ public class FarmerBot implements IBot {
 
         if (amountToOffer > 0)
         {
-            market.addOffer(kingdom, MarketResource.food, amountToOffer, 15);
+            market.createOffer(kingdom.getName(), MarketResource.food, amountToOffer, 15);
         }
 
         return amountToOffer;

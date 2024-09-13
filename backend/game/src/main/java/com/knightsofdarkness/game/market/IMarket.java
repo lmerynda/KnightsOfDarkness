@@ -6,13 +6,18 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import com.knightsofdarkness.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.common.market.MarketOfferBuyResult;
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 
 public interface IMarket {
 
-    Optional<MarketOffer> addOffer(Kingdom kingdom, MarketResource resource, int count, int price);
+    CreateMarketOfferResult createOffer(String kingdomName, MarketResource resource, int count, int price);
 
     void removeOffer(MarketOffer offer);
+
+    void removeOffer(UUID id);
 
     List<MarketOffer> getOffersByResource(MarketResource resource);
 

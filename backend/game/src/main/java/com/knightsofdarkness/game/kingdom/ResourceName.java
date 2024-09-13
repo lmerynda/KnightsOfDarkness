@@ -2,7 +2,7 @@ package com.knightsofdarkness.game.kingdom;
 
 import java.util.Set;
 
-import com.knightsofdarkness.game.market.MarketResource;
+import com.knightsofdarkness.common.market.MarketResource;
 
 public enum ResourceName
 {

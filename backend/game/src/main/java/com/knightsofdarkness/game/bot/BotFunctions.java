@@ -3,6 +3,7 @@ package com.knightsofdarkness.game.bot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.kingdom.BuildingName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomBuildings;
@@ -10,7 +11,6 @@ import com.knightsofdarkness.game.kingdom.KingdomUnits;
 import com.knightsofdarkness.game.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.UnitName;
 import com.knightsofdarkness.game.market.IMarket;
-import com.knightsofdarkness.game.market.MarketResource;
 
 public final class BotFunctions {
     private static final Logger log = LoggerFactory.getLogger(BotFunctions.class);
@@ -39,14 +39,14 @@ public final class BotFunctions {
 
             var offer = optionalOffer.get();
             var result = market.buyExistingOffer(offer, offer.getSeller(), kingdom, amountToBuy);
-            if (result.count == 0)
+            if (result.count() == 0)
             {
                 // Could not afford, TODO tests
                 log.info("[{}] didn't have enough gold to buy food", kingdom.getName());
                 return totalBought;
             }
-            amountToBuy -= result.count;
-            totalBought += result.count;
+            amountToBuy -= result.count();
+            totalBought += result.count();
         }
 
         return totalBought;
@@ -72,13 +72,13 @@ public final class BotFunctions {
 
             var offer = optionalOffer.get();
             var result = market.buyExistingOffer(offer, offer.getSeller(), kingdom, amountToBuy);
-            if (result.count == 0)
+            if (result.count() == 0)
             {
                 // Could not afford, TODO tests
                 return totalBought;
             }
-            amountToBuy -= result.count;
-            totalBought += result.count;
+            amountToBuy -= result.count();
+            totalBought += result.count();
         }
 
         return totalBought;
@@ -135,7 +135,7 @@ public final class BotFunctions {
 
         var offer = optionalOffer.get();
         var result = market.buyExistingOffer(offer, offer.getSeller(), kingdom, count);
-        return result.count;
+        return result.count();
     }
 
     public static int trainBuilders(Kingdom kingdom, int count, double desiredBuilderToSpecialistRatio)

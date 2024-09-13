@@ -9,7 +9,11 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knightsofdarkness.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.common.market.MarketOfferBuyResult;
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.Id;
+import com.knightsofdarkness.game.Utils;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.storage.IKingdomRepository;
@@ -29,25 +33,44 @@ public class Market implements IMarket {
     }
 
     @Override
-    public Optional<MarketOffer> addOffer(Kingdom kingdom, MarketResource resource, int count, int price)
+    public CreateMarketOfferResult createOffer(String kingdomName, MarketResource resource, int count, int price)
     {
+        var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            log.warn("Kingdom with name {} not found", kingdomName);
+            return CreateMarketOfferResult.failure(Utils.format("Kingdom with name {} not found", kingdomName), Optional.empty());
+        }
+        Kingdom kingdom = maybeKingdom.get();
+
         int offerCount = offersRepository.getOffersCountByKingdomNameAndResource(kingdom.getName(), resource);
         if (offerCount >= gameConfig.market().maxKingdomOffers())
         {
-            log.info("Kingdom {} already has {} offers for resource {}", kingdom.getName(), offerCount, resource);
-            return Optional.empty();
+            log.info("Kingdom {} already has max {} offers for resource {}", kingdom.getName(), offerCount, resource);
+            return CreateMarketOfferResult.failure(Utils.format("Your kingdom already has maximum number of offers for {}", resource), Optional.empty());
         }
         var countToOffer = kingdom.postMarketOffer(resource, count); // TODO, what if the kingdom doesn't have enough resources?
         var offer = new MarketOffer(Id.generate(), kingdom, resource, countToOffer, price);
         offersRepository.add(offer);
         kingdomRepository.update(kingdom);
 
-        return Optional.of(offer);
+        return CreateMarketOfferResult.success(Utils.format("Offer created for {} {} at price {}", countToOffer, resource, price), offer.toDto());
     }
 
     @Override
     public void removeOffer(MarketOffer offer)
     {
+        var seller = offer.seller;
+        seller.withdrawMarketOffer(offer);
+        kingdomRepository.update(seller);
+        offersRepository.remove(offer);
+    }
+
+    // TODO result should be a report
+    @Override
+    public void removeOffer(UUID offerId)
+    {
+        var offer = offersRepository.findById(offerId).get(); // TODO validation
         var seller = offer.seller;
         seller.withdrawMarketOffer(offer);
         kingdomRepository.update(seller);

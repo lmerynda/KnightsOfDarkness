@@ -1,20 +1,20 @@
 package com.knightsofdarkness.common.market;
 
-public class MarketBuyerDto {
+public class MarketOfferBuyDto {
     public int count;
 
-    public MarketBuyerDto()
+    public MarketOfferBuyDto()
     {
     }
 
-    public MarketBuyerDto(int count)
+    public MarketOfferBuyDto(int count)
     {
         this.count = count;
     }
 
     public String toString()
     {
-        return "MarketBuyerDto{" +
+        return "MarketOfferBuyDto{" +
                 ", count=" + count +
                 '}';
     }

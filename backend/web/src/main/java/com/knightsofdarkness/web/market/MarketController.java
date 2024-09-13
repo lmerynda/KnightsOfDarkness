@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knightsofdarkness.common.market.MarketBuyerDto;
+import com.knightsofdarkness.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.common.market.MarketOfferBuyDto;
+import com.knightsofdarkness.common.market.MarketOfferBuyResult;
 import com.knightsofdarkness.common.market.MarketOfferDto;
-import com.knightsofdarkness.game.market.MarketOfferBuyResult;
-import com.knightsofdarkness.game.market.MarketResource;
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
@@ -38,7 +39,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/create")
-    ResponseEntity<MarketOfferDto> createOffer(@AuthenticationPrincipal UserData currentUser, @RequestBody MarketOfferDto offer)
+    ResponseEntity<CreateMarketOfferResult> createOffer(@AuthenticationPrincipal UserData currentUser, @RequestBody MarketOfferDto offer)
     {
         if (currentUser == null)
         {
@@ -46,14 +47,9 @@ public class MarketController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        offer.sellerName = currentUser.getKingdom();
-        var createdOffer = marketService.createOffer(offer);
-        if (createdOffer.isEmpty())
-        {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        var createdOffer = marketService.createOffer(offer, currentUser.getKingdom());
 
-        return ResponseEntity.ok(createdOffer.get());
+        return ResponseEntity.ok(createdOffer);
     }
 
     @Deprecated
@@ -70,7 +66,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/{id}/buy")
-    ResponseEntity<MarketOfferBuyResult> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id, @RequestBody MarketBuyerDto buyerData)
+    ResponseEntity<MarketOfferBuyResult> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id, @RequestBody MarketOfferBuyDto buyerData)
     {
         if (currentUser == null)
         {
@@ -82,7 +78,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/{id}/withdraw")
-    ResponseEntity<Boolean> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
+    ResponseEntity<Boolean> withdrawOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
     {
         if (currentUser == null)
         {
