@@ -8,13 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingBuildDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDemolishDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
+import com.knightsofdarkness.common_legacy.kingdom.Converter;
 import com.knightsofdarkness.common_legacy.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common_legacy.kingdom.KingdomDto;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomSpecialBuildingBuildDto;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomSpecialBuildingDemolishDto;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common_legacy.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
@@ -40,12 +41,14 @@ public class KingdomService {
     }
 
     @Transactional
-    public KingdomDto createKingdom(KingdomDto kingdom)
+    public KingdomDto createKingdom(KingdomDto kingdomDto)
     {
-        log.info("Creating new kingdom {}", kingdom);
+        log.info("Creating new kingdom {}", kingdomDto);
 
-        kingdomRepository.add(kingdom.toDomain(gameConfig));
-        return kingdom;
+        var kingdom = Converter.newKingdomFromDto(kingdomDto, gameConfig);
+        kingdomRepository.add(kingdom);
+        // TODO I bet the return value should be different
+        return kingdomDto;
     }
 
     public Optional<KingdomDto> getKingdomByName(String name)
@@ -165,7 +168,7 @@ public class KingdomService {
     @Transactional
     public ResponseEntity<KingdomSpecialBuilding> startSpecialBuilding(String name, KingdomSpecialBuildingStartDto specialBuildingStartDto)
     {
-        log.info("[{}] starting special building {}", name, specialBuildingStartDto.name);
+        log.info("[{}] starting special building {}", name, specialBuildingStartDto.name());
 
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
         if (kingdom.isEmpty())
@@ -173,7 +176,7 @@ public class KingdomService {
             return ResponseEntity.notFound().build();
         }
 
-        Optional<KingdomSpecialBuilding> specialBuilding = kingdom.get().startSpecialBuilding(specialBuildingStartDto.name);
+        Optional<KingdomSpecialBuilding> specialBuilding = kingdom.get().startSpecialBuilding(specialBuildingStartDto.name());
         kingdomRepository.update(kingdom.get());
         return ResponseEntity.of(specialBuilding);
     }
@@ -188,13 +191,13 @@ public class KingdomService {
         }
 
         var kingdom = maybeKingdom.get();
-        Optional<KingdomSpecialBuilding> maybeSpecialBuilding = kingdom.getSpecialBuildings().stream().filter(specialBuilding -> specialBuilding.getId().equals(specialBuildingBuildDto.id)).findFirst();
+        Optional<KingdomSpecialBuilding> maybeSpecialBuilding = kingdom.getSpecialBuildings().stream().filter(specialBuilding -> specialBuilding.getId().equals(specialBuildingBuildDto.id())).findFirst();
         if (maybeSpecialBuilding.isEmpty())
         {
             return ResponseEntity.notFound().build();
         }
 
-        var spentPoints = kingdom.buildSpecialBuilding(maybeSpecialBuilding.get(), specialBuildingBuildDto.buildingPoints);
+        var spentPoints = kingdom.buildSpecialBuilding(maybeSpecialBuilding.get(), specialBuildingBuildDto.buildingPoints());
         kingdomRepository.update(kingdom);
 
         return ResponseEntity.ok(spentPoints);
@@ -210,7 +213,7 @@ public class KingdomService {
         }
 
         var kingdom = maybeKingdom.get();
-        var demolished = kingdom.demolishSpecialBuilding(specialBuildingDemolishDto.id);
+        var demolished = kingdom.demolishSpecialBuilding(specialBuildingDemolishDto.id());
         kingdomRepository.update(kingdom);
 
         return ResponseEntity.ok(demolished);

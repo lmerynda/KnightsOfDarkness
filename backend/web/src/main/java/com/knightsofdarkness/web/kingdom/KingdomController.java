@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingBuildDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDemolishDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.common_legacy.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common_legacy.kingdom.KingdomDto;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomSpecialBuildingBuildDto;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomSpecialBuildingDemolishDto;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common_legacy.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.web.user.UserData;

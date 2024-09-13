@@ -2,8 +2,8 @@ package com.knightsofdarkness.storage.kingdom;
 
 import java.util.UUID;
 
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
-import com.knightsofdarkness.common_legacy.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 
 import jakarta.persistence.Entity;

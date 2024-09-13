@@ -1,13 +1,10 @@
 package com.knightsofdarkness.common_legacy.kingdom;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.market.MarketOfferDto;
-import com.knightsofdarkness.game.gameconfig.GameConfig;
-import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 
 public class KingdomDto {
     public String name;
@@ -38,30 +35,6 @@ public class KingdomDto {
     private void setDetails()
     {
         resources.usedLand = buildings.countAll();
-    }
-
-    public Kingdom toDomain(GameConfig config)
-    {
-        // TODO hehe, no, go back and fix this...
-        if (lastTurnReport == null)
-        {
-            lastTurnReport = new KingdomTurnReport();
-        }
-
-        // fix this too
-        if (specialBuildings == null)
-        {
-            specialBuildings = new ArrayList<>();
-        }
-        List<KingdomSpecialBuilding> specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingDto::toDomain).toList();
-        return new Kingdom(name, config, resources.toDomain(), buildings.toDomain(), specialBuildings, units.toDomain(), lastTurnReport);
-    }
-
-    public static KingdomDto fromDomain(Kingdom kingdom)
-    {
-        List<KingdomSpecialBuildingDto> specialBuildings = kingdom.getSpecialBuildings().stream().map(KingdomSpecialBuildingDto::fromDomain).toList();
-        return new KingdomDto(kingdom.getName(), KingdomResourcesDto.fromDomain(kingdom.getResources()), KingdomBuildingsDto.fromDomain(kingdom.getBuildings()), KingdomUnitsDto.fromDomain(kingdom.getUnits()), new ArrayList<>(),
-                specialBuildings, kingdom.getLastTurnReport());
     }
 
     public String toString()
