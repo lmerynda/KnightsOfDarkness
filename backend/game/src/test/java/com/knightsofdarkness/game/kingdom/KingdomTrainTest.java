@@ -109,7 +109,8 @@ class KingdomTrainTest {
         var kingdom = kingdomBuilder.withRichConfiguration().build();
         for (var buildingName : BuildingName.values())
         {
-            kingdom.getBuildings().setCount(buildingName, 1);
+            var oldCount = kingdom.getBuildings().getCount(buildingName);
+            kingdom.getBuildings().setCount(buildingName, oldCount + 1);
         }
         var toTrain = new KingdomUnitsDto();
         for (var unitName : UnitName.values())

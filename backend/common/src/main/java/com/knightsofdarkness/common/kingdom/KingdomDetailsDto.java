@@ -1,0 +1,37 @@
+package com.knightsofdarkness.common.kingdom;
+
+import java.util.EnumMap;
+import java.util.Map;
+
+public class KingdomDetailsDto {
+    Map<KingdomDetailName, Integer> details = new EnumMap<>(KingdomDetailName.class);
+
+    public KingdomDetailsDto()
+    {
+        for (var name : KingdomDetailName.values())
+        {
+            details.put(name, 0);
+        }
+    }
+
+    public int getCount(KingdomDetailName name)
+    {
+        return details.get(name);
+    }
+
+    public void setCount(KingdomDetailName name, int count)
+    {
+        details.put(name, count);
+    }
+
+    @SuppressWarnings("java:S107")
+    public KingdomDetailsDto(int usedLand)
+    {
+        details.put(KingdomDetailName.usedLand, usedLand);
+    }
+
+    public String toString()
+    {
+        return details.toString();
+    }
+}

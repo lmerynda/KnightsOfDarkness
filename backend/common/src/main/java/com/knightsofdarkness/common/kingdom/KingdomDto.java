@@ -9,6 +9,7 @@ public class KingdomDto {
     public KingdomResourcesDto resources;
     public KingdomBuildingsDto buildings;
     public KingdomUnitsDto units;
+    public KingdomDetailsDto details;
     public List<MarketOfferDto> marketOffers;
     public List<KingdomSpecialBuildingDto> specialBuildings;
     public KingdomTurnReport lastTurnReport;
@@ -32,7 +33,7 @@ public class KingdomDto {
 
     private void setDetails()
     {
-        resources.usedLand = buildings.countAll();
+        details.setCount(KingdomDetailName.usedLand, buildings.countAll());
     }
 
     public String toString()
@@ -42,6 +43,7 @@ public class KingdomDto {
                 ", resources=" + resources +
                 ", buildings=" + buildings +
                 ", units=" + units +
+                ", details=" + details +
                 ", marketOffers=" + marketOffers +
                 ", specialBuildings=" + specialBuildings +
                 '}';

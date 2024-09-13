@@ -1,63 +1,50 @@
 package com.knightsofdarkness.common.kingdom;
 
-import com.knightsofdarkness.game.kingdom.KingdomResources;
+import java.util.EnumMap;
+import java.util.Map;
 
 public class KingdomResourcesDto {
-    public int land;
-    public int usedLand;
-    public int buildingPoints;
-    public int unemployed;
-    public int gold;
-    public int iron;
-    public int food;
-    public int tools;
-    public int weapons;
-    public int turns;
+    Map<ResourceName, Integer> resources = new EnumMap<>(ResourceName.class);
 
     public KingdomResourcesDto()
     {
+        for (var name : ResourceName.values())
+        {
+            resources.put(name, 0);
+        }
+    }
+
+    public int getCount(ResourceName name)
+    {
+        return resources.get(name);
+    }
+
+    public void setCount(ResourceName name, int count)
+    {
+        resources.put(name, count);
     }
 
     @SuppressWarnings("java:S107")
     public KingdomResourcesDto(int land, int buildingPoints, int unemployed, int gold, int iron, int food, int tools, int weapons, int turns)
     {
-        this.land = land;
-        this.buildingPoints = buildingPoints;
-        this.unemployed = unemployed;
-        this.gold = gold;
-        this.iron = iron;
-        this.food = food;
-        this.tools = tools;
-        this.weapons = weapons;
-        this.turns = turns;
+        resources.put(ResourceName.land, land);
+        resources.put(ResourceName.buildingPoints, buildingPoints);
+        resources.put(ResourceName.unemployed, unemployed);
+        resources.put(ResourceName.gold, gold);
+        resources.put(ResourceName.iron, iron);
+        resources.put(ResourceName.food, food);
+        resources.put(ResourceName.tools, tools);
+        resources.put(ResourceName.weapons, weapons);
+        resources.put(ResourceName.turns, turns);
     }
 
-    public KingdomResources toDomain()
+    public String toString()
     {
-        var kingdomResources = new KingdomResources();
-        kingdomResources.setCount(ResourceName.land, land);
-        kingdomResources.setCount(ResourceName.buildingPoints, buildingPoints);
-        kingdomResources.setCount(ResourceName.unemployed, unemployed);
-        kingdomResources.setCount(ResourceName.gold, gold);
-        kingdomResources.setCount(ResourceName.iron, iron);
-        kingdomResources.setCount(ResourceName.food, food);
-        kingdomResources.setCount(ResourceName.tools, tools);
-        kingdomResources.setCount(ResourceName.weapons, weapons);
-        kingdomResources.setCount(ResourceName.turns, turns);
-        return kingdomResources;
+        return resources.toString();
     }
 
-    public static KingdomResourcesDto fromDomain(KingdomResources kingdomResources)
+    public int countAll()
     {
-        return new KingdomResourcesDto(
-                kingdomResources.getCount(ResourceName.land),
-                kingdomResources.getCount(ResourceName.buildingPoints),
-                kingdomResources.getCount(ResourceName.unemployed),
-                kingdomResources.getCount(ResourceName.gold),
-                kingdomResources.getCount(ResourceName.iron),
-                kingdomResources.getCount(ResourceName.food),
-                kingdomResources.getCount(ResourceName.tools),
-                kingdomResources.getCount(ResourceName.weapons),
-                kingdomResources.getCount(ResourceName.turns));
+        return resources.values().stream().mapToInt(Integer::intValue).sum();
     }
 }

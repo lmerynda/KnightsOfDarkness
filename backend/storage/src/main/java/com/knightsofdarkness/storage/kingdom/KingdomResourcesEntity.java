@@ -73,14 +73,14 @@ class KingdomResourcesEntity {
     public static KingdomResourcesEntity fromDto(KingdomResourcesDto dto)
     {
         return new KingdomResourcesEntity(
-                dto.land,
-                dto.buildingPoints,
-                dto.unemployed,
-                dto.gold,
-                dto.iron,
-                dto.food,
-                dto.tools,
-                dto.weapons,
-                dto.turns);
+                dto.getCount(ResourceName.land),
+                dto.getCount(ResourceName.buildingPoints),
+                dto.getCount(ResourceName.unemployed),
+                dto.getCount(ResourceName.gold),
+                dto.getCount(ResourceName.iron),
+                dto.getCount(ResourceName.food),
+                dto.getCount(ResourceName.tools),
+                dto.getCount(ResourceName.weapons),
+                dto.getCount(ResourceName.turns));
     }
 }
