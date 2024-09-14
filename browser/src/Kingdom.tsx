@@ -50,7 +50,7 @@ const Kingdom: React.FC = () => {
         <KingdomContext.Provider value={{ kingdom, gameConfig, reloadKingdom }}>
           <Sidebar {...kingdom} />
           <Box component="main" sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}>
-            <KingdomToolbar kingdomName={kingdom.name} kingdomResources={kingdom.resources} />
+            <KingdomToolbar kingdomName={kingdom.name} kingdomResources={kingdom.resources} kingdomDetails={kingdom.details} />
             <KingdomTabs />
           </Box>
         </KingdomContext.Provider>

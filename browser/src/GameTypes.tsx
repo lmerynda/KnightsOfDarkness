@@ -33,6 +33,9 @@ export type KingdomUnits = Record<Unit, number>;
 export type Resource = "food" | "gold" | "iron" | "tools" | "weapons" | "land" | "usedLand" | "buildingPoints" | "unemployed" | "turns";
 export type KingdomResources = Record<Resource, number>;
 
+export type KingdomDetail = "usedLand";
+export type KingdomDetails = Record<KingdomDetail, number>;
+
 export const marketResources = ["food", "iron", "tools", "weapons"] as const;
 export type MarketResource = (typeof marketResources)[number];
 
@@ -59,6 +62,7 @@ export type KingdomData = {
   resources: KingdomResources;
   buildings: KingdomBuildings;
   units: KingdomUnits;
+  details: KingdomDetails;
   marketOffers: MarketOfferData[];
   specialBuildings: SpecialBuilding[];
   lastTurnReport: TurnReport;

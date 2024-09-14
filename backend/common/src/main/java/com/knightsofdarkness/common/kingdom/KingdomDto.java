@@ -28,11 +28,12 @@ public class KingdomDto {
         this.marketOffers = marketOffers;
         this.specialBuildings = specialBuildings;
         this.lastTurnReport = lastTurnReport;
-        setDetails();
+        initializeDetails();
     }
 
-    private void setDetails()
+    private void initializeDetails()
     {
+        details = new KingdomDetailsDto();
         details.setCount(KingdomDetailName.usedLand, buildings.countAll());
     }
 

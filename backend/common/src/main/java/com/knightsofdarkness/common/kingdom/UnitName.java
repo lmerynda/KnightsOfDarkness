@@ -26,4 +26,23 @@ public enum UnitName
             default -> null; // TODO
         };
     }
+
+    public static UnitName from(String unit)
+    {
+        return switch (unit)
+        {
+            case "goldMiners" -> goldMiner;
+            case "ironMiners" -> ironMiner;
+            case "farmers" -> farmer;
+            case "blacksmiths" -> blacksmith;
+            case "builders" -> builder;
+            case "carriers" -> carrier;
+            case "guards" -> guard;
+            case "spies" -> spy;
+            case "infantry" -> infantry;
+            case "bowmen" -> bowmen;
+            case "cavalry" -> cavalry;
+            default -> throw new IllegalArgumentException("Unknown unit: " + unit);
+        };
+    }
 }

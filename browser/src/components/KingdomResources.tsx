@@ -1,7 +1,12 @@
 import React from "react";
-import { KingdomResources } from "../GameTypes";
+import { KingdomResources, KingdomDetails } from "../GameTypes";
 
-const KingdomResourcesView: React.FC<KingdomResources> = kingdomResources => {
+interface KingdomResourcesViewProps {
+  kingdomResources: KingdomResources;
+  kingdomDetails: KingdomDetails;
+}
+
+const KingdomResourcesView: React.FC<KingdomResourcesViewProps> = ({ kingdomResources, kingdomDetails }) => {
   return (
     <div className="resources-container">
       <span>gold: {kingdomResources.gold}</span>
@@ -10,7 +15,7 @@ const KingdomResourcesView: React.FC<KingdomResources> = kingdomResources => {
       <span>tools: {kingdomResources.tools}</span>
       <span>weapons: {kingdomResources.weapons}</span>
       <span>
-        land: {kingdomResources.usedLand} / {kingdomResources.land}
+        land: {kingdomDetails.usedLand} / {kingdomResources.land}
       </span>
       <span>unemployed: {kingdomResources.unemployed}</span>
       <span>buildingPoints: {kingdomResources.buildingPoints}</span>
@@ -18,4 +23,5 @@ const KingdomResourcesView: React.FC<KingdomResources> = kingdomResources => {
     </div>
   );
 };
+
 export default KingdomResourcesView;

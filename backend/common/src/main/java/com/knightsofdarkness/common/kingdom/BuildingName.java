@@ -19,4 +19,23 @@ public enum BuildingName
             case ironMiner -> ironMine;
         };
     }
+
+    public static BuildingName from(String building)
+    {
+        return switch (building)
+        {
+            case "houses" -> house;
+            case "goldMines" -> goldMine;
+            case "ironMines" -> ironMine;
+            case "workshops" -> workshop;
+            case "farms" -> farm;
+            case "markets" -> market;
+            case "barracks" -> barracks;
+            case "guardHouses" -> guardHouse;
+            case "spyGuilds" -> spyGuild;
+            case "towers" -> tower;
+            case "castles" -> castle;
+            default -> throw new IllegalArgumentException("Unknown building: " + building);
+        };
+    }
 }
