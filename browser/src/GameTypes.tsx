@@ -127,17 +127,5 @@ export const buildingOccupantsMap: Record<Building, readonly Unit[]> = {
   spyGuild: ["spy"],
   tower: ["bowman"],
   castle: ["infantry", "bowman", "cavalry"],
-  house: [
-    "builder",
-    "goldMiner",
-    "ironMiner",
-    "farmer",
-    "blacksmith",
-    "carrier",
-    "guard",
-    "spy",
-    "infantry",
-    "bowman",
-    "cavalry",
-  ],
+  house: ["builder", "goldMiner", "ironMiner", "farmer", "blacksmith", "carrier", "guard", "spy", "infantry", "bowman", "cavalry"],
 } as const;
