@@ -4,7 +4,7 @@ import java.util.List;
 
 public enum UnitName
 {
-    goldMiner, ironMiner, farmer, blacksmith, builder, carrier, guard, spy, infantry, bowmen, cavalry;
+    goldMiner, ironMiner, farmer, blacksmith, builder, carrier, guard, spy, infantry, bowman, cavalry;
 
     public static List<UnitName> getProductionUnits()
     {
@@ -18,7 +18,7 @@ public enum UnitName
             case market -> carrier;
             case spyGuild -> spy;
             case guardHouse -> guard;
-            case barracks -> bowmen;
+            case barracks -> bowman; // TODO it shouldn't be only bowman
             case workshop -> blacksmith;
             case farm -> farmer;
             case goldMine -> goldMiner;
@@ -31,16 +31,16 @@ public enum UnitName
     {
         return switch (unit)
         {
-            case "goldMiners" -> goldMiner;
-            case "ironMiners" -> ironMiner;
-            case "farmers" -> farmer;
-            case "blacksmiths" -> blacksmith;
-            case "builders" -> builder;
-            case "carriers" -> carrier;
-            case "guards" -> guard;
-            case "spies" -> spy;
+            case "goldMiner" -> goldMiner;
+            case "ironMiner" -> ironMiner;
+            case "farmer" -> farmer;
+            case "blacksmith" -> blacksmith;
+            case "builder" -> builder;
+            case "carrier" -> carrier;
+            case "guard" -> guard;
+            case "spy" -> spy;
             case "infantry" -> infantry;
-            case "bowmen" -> bowmen;
+            case "bowman" -> bowman;
             case "cavalry" -> cavalry;
             default -> throw new IllegalArgumentException("Unknown unit: " + unit);
         };

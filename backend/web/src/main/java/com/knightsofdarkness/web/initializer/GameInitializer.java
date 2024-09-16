@@ -100,29 +100,29 @@ public class GameInitializer implements CommandLineRunner {
                     "turns": 20
                 },
                 "buildings": {
-                    "houses": 10,
-                    "goldMines": 5,
-                    "ironMines": 5,
-                    "workshops": 5,
-                    "farms": 5,
-                    "markets": 1,
+                    "house": 10,
+                    "goldMine": 5,
+                    "ironMine": 5,
+                    "workshop": 5,
+                    "farm": 5,
+                    "market": 1,
                     "barracks": 1,
-                    "guardHouses": 1,
-                    "spyGuilds": 0,
-                    "towers": 1,
-                    "castles": 0
+                    "guardHouse": 1,
+                    "spyGuild": 0,
+                    "tower": 1,
+                    "castle": 0
                 },
                 "units": {
-                    "goldMiners": 5,
-                    "ironMiners": 5,
-                    "farmers": 5,
-                    "blacksmiths": 5,
-                    "builders": 5,
-                    "carriers": 0,
-                    "guards": 5,
-                    "spies": 0,
+                    "goldMiner": 5,
+                    "ironMiner": 5,
+                    "farmer": 5,
+                    "blacksmith": 5,
+                    "builder": 5,
+                    "carrier": 0,
+                    "guard": 5,
+                    "spy": 0,
                     "infantry": 0,
-                    "bowmen": 0,
+                    "bowman": 0,
                     "cavalry": 0
                 }
             }

@@ -24,7 +24,7 @@ export const units = [
   "guard",
   "spy",
   "infantry",
-  "bowmen",
+  "bowman",
   "cavalry",
 ] as const;
 export type Unit = (typeof units)[number];
@@ -122,11 +122,11 @@ export const buildingOccupantsMap: Record<Building, readonly Unit[]> = {
   workshop: ["blacksmith"],
   farm: ["farmer"],
   market: ["carrier"],
-  barracks: ["infantry", "bowmen", "cavalry"],
+  barracks: ["infantry", "bowman", "cavalry"],
   guardHouse: ["guard"],
   spyGuild: ["spy"],
-  tower: ["bowmen"],
-  castle: ["infantry", "bowmen", "cavalry"],
+  tower: ["bowman"],
+  castle: ["infantry", "bowman", "cavalry"],
   house: [
     "builder",
     "goldMiner",
@@ -137,7 +137,7 @@ export const buildingOccupantsMap: Record<Building, readonly Unit[]> = {
     "guard",
     "spy",
     "infantry",
-    "bowmen",
+    "bowman",
     "cavalry",
   ],
 } as const;

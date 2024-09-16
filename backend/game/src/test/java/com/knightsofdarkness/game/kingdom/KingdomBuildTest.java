@@ -63,8 +63,8 @@ class KingdomBuildTest {
         assertEquals(housesBeforeBuild + 5, kingdom.getBuildings().getCount(BuildingName.house));
         assertEquals(goldMinesBeforeBuild + 2, kingdom.getBuildings().getCount(BuildingName.goldMine));
 
-        var housesCost = housesToBuild * config.buildingPointCosts().houses();
-        var goldMinesCost = goldMinesToBuild * config.buildingPointCosts().goldMines();
+        var housesCost = housesToBuild * config.buildingPointCosts().house();
+        var goldMinesCost = goldMinesToBuild * config.buildingPointCosts().goldMine();
         var totalCost = housesCost + goldMinesCost;
 
         assertEquals(buildingPointsBeforeBuild - totalCost, kingdom.getResources().getCount(ResourceName.buildingPoints));

@@ -28,19 +28,19 @@ public class KingdomBuildingsDto {
     }
 
     @SuppressWarnings("java:S107")
-    public KingdomBuildingsDto(int houses, int goldMines, int ironMines, int workshops, int farms, int markets, int barracks, int guardHouses, int spyGuilds, int towers, int castles)
+    public KingdomBuildingsDto(int house, int goldMine, int ironMine, int workshop, int farm, int market, int barracks, int guardHouse, int spyGuild, int tower, int castle)
     {
-        buildings.put(BuildingName.house, houses);
-        buildings.put(BuildingName.goldMine, goldMines);
-        buildings.put(BuildingName.ironMine, ironMines);
-        buildings.put(BuildingName.workshop, workshops);
-        buildings.put(BuildingName.farm, farms);
-        buildings.put(BuildingName.market, markets);
+        buildings.put(BuildingName.house, house);
+        buildings.put(BuildingName.goldMine, goldMine);
+        buildings.put(BuildingName.ironMine, ironMine);
+        buildings.put(BuildingName.workshop, workshop);
+        buildings.put(BuildingName.farm, farm);
+        buildings.put(BuildingName.market, market);
         buildings.put(BuildingName.barracks, barracks);
-        buildings.put(BuildingName.guardHouse, guardHouses);
-        buildings.put(BuildingName.spyGuild, spyGuilds);
-        buildings.put(BuildingName.tower, towers);
-        buildings.put(BuildingName.castle, castles);
+        buildings.put(BuildingName.guardHouse, guardHouse);
+        buildings.put(BuildingName.spyGuild, spyGuild);
+        buildings.put(BuildingName.tower, tower);
+        buildings.put(BuildingName.castle, castle);
     }
 
     @JsonAnyGetter

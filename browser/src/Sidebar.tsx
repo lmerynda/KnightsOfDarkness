@@ -37,7 +37,7 @@ const Sidebar: React.FC<KingdomData> = kingdom => {
         <Typography variant="body1">guards: {kingdom.units.guard}</Typography>
         <Typography variant="body1">spies: {kingdom.units.spy}</Typography>
         <Typography variant="body1">infantry: {kingdom.units.infantry}</Typography>
-        <Typography variant="body1">bowmen: {kingdom.units.bowmen}</Typography>
+        <Typography variant="body1">bowmen: {kingdom.units.bowman}</Typography>
         <Typography variant="body1">cavalry: {kingdom.units.cavalry}</Typography>
       </Box>
     </Drawer>

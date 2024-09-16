@@ -5,37 +5,37 @@
     "buildingPointCosts": {
       "type": "object",
       "properties": {
-        "houses": {
+        "house": {
           "type": "integer"
         },
-        "goldMines": {
+        "goldMine": {
           "type": "integer"
         },
-        "ironMines": {
+        "ironMine": {
           "type": "integer"
         },
-        "farms": {
+        "farm": {
           "type": "integer"
         },
-        "workshops": {
+        "workshop": {
           "type": "integer"
         },
-        "markets": {
+        "market": {
           "type": "integer"
         },
         "barracks": {
           "type": "integer"
         },
-        "guardHouses": {
+        "guardHouse": {
           "type": "integer"
         },
-        "spyGuilds": {
+        "spyGuild": {
           "type": "integer"
         },
-        "castles": {
+        "castle": {
           "type": "integer"
         },
-        "towers": {
+        "tower": {
           "type": "integer"
         }
       },
@@ -173,7 +173,7 @@
             "spy": {
               "type": "integer"
             },
-            "bowmen": {
+            "bowman": {
               "type": "integer"
             },
             "infantry": {
@@ -192,7 +192,7 @@
             "carrier",
             "guard",
             "spy",
-            "bowmen",
+            "bowman",
             "infantry",
             "cavalry"
           ]
@@ -207,58 +207,58 @@
     "buildingCapacity": {
       "type": "object",
       "properties": {
-        "houses": {
+        "house": {
           "type": "integer"
         },
-        "goldMines": {
+        "goldMine": {
           "type": "integer"
         },
-        "ironMines": {
+        "ironMine": {
           "type": "integer"
         },
-        "farms": {
+        "farm": {
           "type": "integer"
         },
-        "workshops": {
+        "workshop": {
           "type": "integer"
         },
-        "markets": {
+        "market": {
           "type": "integer"
         },
         "barracks": {
           "type": "integer"
         },
-        "guardHouses": {
+        "guardHouse": {
           "type": "integer"
         },
-        "spyGuilds": {
+        "spyGuild": {
           "type": "integer"
         },
-        "castles": {
+        "castle": {
           "type": "integer"
         },
-        "towers": {
+        "tower": {
           "type": "integer"
         }
       },
       "required": [
-        "houses",
-        "goldMines",
-        "ironMines",
-        "farms",
-        "workshops",
-        "markets",
+        "house",
+        "goldMine",
+        "ironMine",
+        "farm",
+        "workshop",
+        "market",
         "barracks",
-        "guardHouses",
-        "spyGuilds",
-        "castles",
-        "towers"
+        "guardHouse",
+        "spyGuild",
+        "castle",
+        "tower"
       ]
     },
     "trainingCost": {
       "type": "object",
       "properties": {
-        "goldMiners": {
+        "goldMiner": {
           "type": "object",
           "properties": {
             "gold": {
@@ -277,7 +277,7 @@
             "weapons"
           ]
         },
-        "ironMiners": {
+        "ironMiner": {
           "type": "object",
           "properties": {
             "gold": {
@@ -296,7 +296,7 @@
             "weapons"
           ]
         },
-        "farmers": {
+        "farmer": {
           "type": "object",
           "properties": {
             "gold": {
@@ -315,7 +315,7 @@
             "weapons"
           ]
         },
-        "blacksmiths": {
+        "blacksmith": {
           "type": "object",
           "properties": {
             "gold": {
@@ -334,7 +334,7 @@
             "weapons"
           ]
         },
-        "builders": {
+        "builder": {
           "type": "object",
           "properties": {
             "gold": {
@@ -353,7 +353,7 @@
             "weapons"
           ]
         },
-        "carriers": {
+        "carrier": {
           "type": "object",
           "properties": {
             "gold": {
@@ -372,7 +372,7 @@
             "weapons"
           ]
         },
-        "guards": {
+        "guard": {
           "type": "object",
           "properties": {
             "gold": {
@@ -391,7 +391,7 @@
             "weapons"
           ]
         },
-        "spies": {
+        "spy": {
           "type": "object",
           "properties": {
             "gold": {
@@ -410,7 +410,7 @@
             "weapons"
           ]
         },
-        "bowmen": {
+        "bowman": {
           "type": "object",
           "properties": {
             "gold": {
@@ -469,15 +469,15 @@
         }
       },
       "required": [
-        "goldMiners",
-        "ironMiners",
-        "farmers",
-        "blacksmiths",
-        "builders",
-        "carriers",
-        "guards",
-        "spies",
-        "bowmen",
+        "goldMiner",
+        "ironMiner",
+        "farmer",
+        "blacksmith",
+        "builder",
+        "carrier",
+        "guard",
+        "spy",
+        "bowman",
         "infantry",
         "cavalry"
       ]

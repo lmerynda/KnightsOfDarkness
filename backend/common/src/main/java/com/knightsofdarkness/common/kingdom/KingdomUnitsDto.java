@@ -28,18 +28,18 @@ public class KingdomUnitsDto {
     }
 
     @SuppressWarnings("java:S107")
-    public KingdomUnitsDto(int goldMiners, int ironMiners, int farmers, int blacksmiths, int builders, int carriers, int guards, int spies, int infantry, int bowmen, int cavalry)
+    public KingdomUnitsDto(int goldMiner, int ironMiner, int farmer, int blacksmith, int builder, int carrier, int guard, int spy, int infantry, int bowman, int cavalry)
     {
-        units.put(UnitName.goldMiner, goldMiners);
-        units.put(UnitName.ironMiner, ironMiners);
-        units.put(UnitName.farmer, farmers);
-        units.put(UnitName.blacksmith, blacksmiths);
-        units.put(UnitName.builder, builders);
-        units.put(UnitName.carrier, carriers);
-        units.put(UnitName.guard, guards);
-        units.put(UnitName.spy, spies);
+        units.put(UnitName.goldMiner, goldMiner);
+        units.put(UnitName.ironMiner, ironMiner);
+        units.put(UnitName.farmer, farmer);
+        units.put(UnitName.blacksmith, blacksmith);
+        units.put(UnitName.builder, builder);
+        units.put(UnitName.carrier, carrier);
+        units.put(UnitName.guard, guard);
+        units.put(UnitName.spy, spy);
         units.put(UnitName.infantry, infantry);
-        units.put(UnitName.bowmen, bowmen);
+        units.put(UnitName.bowman, bowman);
         units.put(UnitName.cavalry, cavalry);
     }
 

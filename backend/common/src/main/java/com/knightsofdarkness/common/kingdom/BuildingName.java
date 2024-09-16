@@ -12,7 +12,7 @@ public enum BuildingName
             case carrier -> market;
             case spy -> spyGuild;
             case blacksmith -> workshop;
-            case bowmen, infantry, cavalry -> barracks;
+            case bowman, infantry, cavalry -> barracks;
             case farmer -> farm;
             case goldMiner -> goldMine;
             case guard -> guardHouse;
@@ -24,17 +24,17 @@ public enum BuildingName
     {
         return switch (building)
         {
-            case "houses" -> house;
-            case "goldMines" -> goldMine;
-            case "ironMines" -> ironMine;
-            case "workshops" -> workshop;
-            case "farms" -> farm;
-            case "markets" -> market;
+            case "house" -> house;
+            case "goldMine" -> goldMine;
+            case "ironMine" -> ironMine;
+            case "workshop" -> workshop;
+            case "farm" -> farm;
+            case "market" -> market;
             case "barracks" -> barracks;
-            case "guardHouses" -> guardHouse;
-            case "spyGuilds" -> spyGuild;
-            case "towers" -> tower;
-            case "castles" -> castle;
+            case "guardHouse" -> guardHouse;
+            case "spyGuild" -> spyGuild;
+            case "tower" -> tower;
+            case "castle" -> castle;
             default -> throw new IllegalArgumentException("Unknown building: " + building);
         };
     }

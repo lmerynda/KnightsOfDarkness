@@ -8,7 +8,7 @@ import com.knightsofdarkness.game.kingdom.Kingdom;
 public class KingdomPrinter {
     public static void printResourcesHeader()
     {
-        System.out.format("Kingdom         | land  |   ppl  | unemployed | builders |    farmers    |  blacksmiths  |    goldMiners   |   ironMiners  |    gold    |    food    |    tools   |    iron    | marketOffers\n");
+        System.out.format("Kingdom         | land  |   ppl  | unemployed | builders |    farmers    |  blacksmiths  |    goldMiner   |   ironMiner  |    gold    |    food    |    tools   |    iron    | marketOffers\n");
     }
 
     public static void printLineSeparator()

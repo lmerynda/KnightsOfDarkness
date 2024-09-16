@@ -8,16 +8,16 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class KingdomUnitsEntity {
-    int goldMiners;
-    int ironMiners;
-    int farmers;
-    int blacksmiths;
-    int builders;
-    int carriers;
-    int guards;
-    int spies;
+    int goldMiner;
+    int ironMiner;
+    int farmer;
+    int blacksmith;
+    int builder;
+    int carrier;
+    int guard;
+    int spy;
     int infantry;
-    int bowmen;
+    int bowman;
     int cavalry;
 
     public KingdomUnitsEntity()
@@ -25,41 +25,41 @@ public class KingdomUnitsEntity {
     }
 
     @SuppressWarnings("java:S107")
-    public KingdomUnitsEntity(int goldMiners, int ironMiners, int farmers, int blacksmiths, int builders, int carriers, int guards, int spies, int infantry, int bowmen, int cavalry)
+    public KingdomUnitsEntity(int goldMiner, int ironMiner, int farmer, int blacksmith, int builder, int carrier, int guard, int spy, int infantry, int bowman, int cavalry)
     {
-        this.goldMiners = goldMiners;
-        this.ironMiners = ironMiners;
-        this.farmers = farmers;
-        this.blacksmiths = blacksmiths;
-        this.builders = builders;
-        this.carriers = carriers;
-        this.guards = guards;
-        this.spies = spies;
+        this.goldMiner = goldMiner;
+        this.ironMiner = ironMiner;
+        this.farmer = farmer;
+        this.blacksmith = blacksmith;
+        this.builder = builder;
+        this.carrier = carrier;
+        this.guard = guard;
+        this.spy = spy;
         this.infantry = infantry;
-        this.bowmen = bowmen;
+        this.bowman = bowman;
         this.cavalry = cavalry;
     }
 
     public KingdomUnits toDomainModel()
     {
-        var kingdomUnits = new KingdomUnits();
-        kingdomUnits.setCount(UnitName.goldMiner, goldMiners);
-        kingdomUnits.setCount(UnitName.ironMiner, ironMiners);
-        kingdomUnits.setCount(UnitName.farmer, farmers);
-        kingdomUnits.setCount(UnitName.blacksmith, blacksmiths);
-        kingdomUnits.setCount(UnitName.builder, builders);
-        kingdomUnits.setCount(UnitName.carrier, carriers);
-        kingdomUnits.setCount(UnitName.guard, guards);
-        kingdomUnits.setCount(UnitName.spy, spies);
-        kingdomUnits.setCount(UnitName.infantry, infantry);
-        kingdomUnits.setCount(UnitName.bowmen, bowmen);
-        kingdomUnits.setCount(UnitName.cavalry, cavalry);
-        return kingdomUnits;
+        var kingdomUnit = new KingdomUnits();
+        kingdomUnit.setCount(UnitName.goldMiner, goldMiner);
+        kingdomUnit.setCount(UnitName.ironMiner, ironMiner);
+        kingdomUnit.setCount(UnitName.farmer, farmer);
+        kingdomUnit.setCount(UnitName.blacksmith, blacksmith);
+        kingdomUnit.setCount(UnitName.builder, builder);
+        kingdomUnit.setCount(UnitName.carrier, carrier);
+        kingdomUnit.setCount(UnitName.guard, guard);
+        kingdomUnit.setCount(UnitName.spy, spy);
+        kingdomUnit.setCount(UnitName.infantry, infantry);
+        kingdomUnit.setCount(UnitName.bowman, bowman);
+        kingdomUnit.setCount(UnitName.cavalry, cavalry);
+        return kingdomUnit;
     }
 
     public KingdomUnitsDto toDto()
     {
-        return new KingdomUnitsDto(goldMiners, ironMiners, farmers, blacksmiths, builders, carriers, guards, spies, infantry, bowmen, cavalry);
+        return new KingdomUnitsDto(goldMiner, ironMiner, farmer, blacksmith, builder, carrier, guard, spy, infantry, bowman, cavalry);
     }
 
     public static KingdomUnitsEntity fromDomainModel(KingdomUnits kingdomUnits)
@@ -74,7 +74,7 @@ public class KingdomUnitsEntity {
                 kingdomUnits.getCount(UnitName.guard),
                 kingdomUnits.getCount(UnitName.spy),
                 kingdomUnits.getCount(UnitName.infantry),
-                kingdomUnits.getCount(UnitName.bowmen),
+                kingdomUnits.getCount(UnitName.bowman),
                 kingdomUnits.getCount(UnitName.cavalry));
     }
 
@@ -90,7 +90,7 @@ public class KingdomUnitsEntity {
                 dto.getCount(UnitName.guard),
                 dto.getCount(UnitName.spy),
                 dto.getCount(UnitName.infantry),
-                dto.getCount(UnitName.bowmen),
+                dto.getCount(UnitName.bowman),
                 dto.getCount(UnitName.cavalry));
     }
 
