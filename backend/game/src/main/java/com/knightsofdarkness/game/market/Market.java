@@ -1,9 +1,8 @@
 package com.knightsofdarkness.game.market;
 
-import java.util.Optional;
-
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -12,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.knightsofdarkness.common.market.BuyMarketOfferResult;
 import com.knightsofdarkness.common.market.CreateMarketOfferResult;
 import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.common.market.RemoveMarketOfferResult;
 import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.Utils;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -58,23 +58,31 @@ public class Market implements IMarket {
     }
 
     @Override
-    public void removeOffer(MarketOffer offer)
+    public RemoveMarketOfferResult removeOffer(MarketOffer offer)
     {
         var seller = offer.seller;
         seller.withdrawMarketOffer(offer);
         kingdomRepository.update(seller);
         offersRepository.remove(offer);
+        return RemoveMarketOfferResult.success("Offer removed succesfully");
     }
 
-    // TODO result should be a report
     @Override
-    public void removeOffer(UUID offerId)
+    public RemoveMarketOfferResult removeOffer(UUID offerId)
     {
-        var offer = offersRepository.findById(offerId).get(); // TODO validation
+        var maybeOffer = offersRepository.findById(offerId);
+        if (maybeOffer.isEmpty())
+        {
+            log.warn("Offer with id {} not found", offerId);
+            return RemoveMarketOfferResult.failure(Utils.format("Requested offer not found"));
+        }
+        var offer = maybeOffer.get();
         var seller = offer.seller;
         seller.withdrawMarketOffer(offer);
         kingdomRepository.update(seller);
         offersRepository.remove(offer);
+
+        return RemoveMarketOfferResult.success("Offer removed succesfully");
     }
 
     @Override
