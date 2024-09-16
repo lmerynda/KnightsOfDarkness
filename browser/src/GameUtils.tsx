@@ -10,7 +10,7 @@ export function getTotalCapacity(building: Building, kingdom: KingdomData, gameC
 }
 
 export function getOpenPositions(unit: Unit, kingdom: KingdomData, gameConfig: GameConfig): number | undefined {
-  if (unit === "builders") {
+  if (unit === "builder") {
     return undefined;
   }
   const building = getBuildingForUnit(unit);
