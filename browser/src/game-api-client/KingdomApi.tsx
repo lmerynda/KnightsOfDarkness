@@ -1,15 +1,6 @@
 import { GAME_API } from "../Consts";
-import { KingdomBuildings, KingdomData } from "../GameTypes";
+import { BuildingActionReport, KingdomData, TrainingActionReport } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
-
-export type TrainingResponse = {
-  [unit: string]: number;
-};
-
-export type BuildingActionReport = {
-  message: string;
-  buildings: KingdomBuildings;
-};
 
 export async function fetchKingdomDataRequest(): Promise<KingdomData> {
   try {
@@ -111,7 +102,7 @@ export async function demolishRequest(data: { [building: string]: number }): Pro
   }
 }
 
-export async function trainRequest(data: { [unit: string]: number }): Promise<TrainingResponse> {
+export async function trainRequest(data: { [unit: string]: number }): Promise<TrainingActionReport> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/kingdom/train`, {

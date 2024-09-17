@@ -1,5 +1,5 @@
 import React from "react";
-import { BuildingActionReport } from "../game-api-client/KingdomApi";
+import { BuildingActionReport } from "../GameTypes";
 
 const BuildReport: React.FC<BuildingActionReport> = buildActionReport => {
   return (

@@ -1,8 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button } from "@mui/material";
 import React, { useContext, useState } from "react";
-import { Building, buildings } from "../GameTypes";
+import { Building, BuildingActionReport, buildings } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
-import { BuildingActionReport, buildRequest, demolishRequest } from "../game-api-client/KingdomApi";
+import { buildRequest, demolishRequest } from "../game-api-client/KingdomApi";
 import BuildReport from "../components/BuildReport";
 import SpecialBuilding from "../components/SpecialBuildings";
 import { getBuildingOccupants, getTotalCapacity } from "../GameUtils";

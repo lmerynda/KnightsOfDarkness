@@ -24,6 +24,7 @@ import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
@@ -137,7 +138,7 @@ public class KingdomController {
     }
 
     @PostMapping("/train")
-    ResponseEntity<KingdomUnitsDto> kingdomTrain(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomUnitsDto unitsToTrain)
+    ResponseEntity<KingdomUnitsActionResult> kingdomTrain(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomUnitsDto unitsToTrain)
     {
         if (currentUser == null)
         {

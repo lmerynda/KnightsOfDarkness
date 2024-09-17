@@ -1,9 +1,11 @@
 package com.knightsofdarkness.game.kingdom;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.game.Utils;
 import com.knightsofdarkness.game.gameconfig.UnitTrainingCost;
 
 public class KingdomTrainAction {
@@ -14,7 +16,7 @@ public class KingdomTrainAction {
         this.kingdom = kingdom;
     }
 
-    public KingdomUnitsDto train(KingdomUnitsDto unitsToTrain)
+    public KingdomUnitsActionResult train(KingdomUnitsDto unitsToTrain)
     {
         var trainedUnits = new KingdomUnitsDto();
 
@@ -40,7 +42,7 @@ public class KingdomTrainAction {
             trainedUnits.setCount(unitName, howManyToTrain);
         }
 
-        return trainedUnits;
+        return new KingdomUnitsActionResult(Utils.format("Succesfully trained {} units", trainedUnits.countAll()), trainedUnits);
     }
 
     private int calculateMaximumToAfford(KingdomResources resources, UnitTrainingCost trainingCost)

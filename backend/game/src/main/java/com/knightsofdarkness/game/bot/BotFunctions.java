@@ -122,7 +122,7 @@ public final class BotFunctions {
         var toTrain = new KingdomUnitsDto();
         toTrain.setCount(unit, count);
         var trainedUnits = kingdom.train(toTrain);
-        return trainedUnits.countAll();
+        return trainedUnits.units().countAll();
     }
 
     public static int buyToolsToMaintainCount(IMarket market, Kingdom kingdom, int count)
@@ -153,7 +153,7 @@ public final class BotFunctions {
         var toTrain = new KingdomUnitsDto();
         toTrain.setCount(UnitName.builder, count);
         var trainedUnits = kingdom.train(toTrain);
-        return trainedUnits.countAll();
+        return trainedUnits.units().countAll();
     }
 
     public static int buildHouses(Kingdom kingdom, int count, double desiredHousesToSpecialistBuildingRatio)

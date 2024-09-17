@@ -129,3 +129,13 @@ export const buildingOccupantsMap: Record<Building, readonly Unit[]> = {
   castle: ["infantry", "bowman", "cavalry"],
   house: ["builder", "goldMiner", "ironMiner", "farmer", "blacksmith", "carrier", "guard", "spy", "infantry", "bowman", "cavalry"],
 } as const;
+
+export type TrainingActionReport = {
+  message: string;
+  units: KingdomUnits;
+};
+
+export type BuildingActionReport = {
+  message: string;
+  buildings: KingdomBuildings;
+};

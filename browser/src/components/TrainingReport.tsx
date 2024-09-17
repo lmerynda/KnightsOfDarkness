@@ -1,14 +1,15 @@
 import React from "react";
-import { TrainingResponse } from "../game-api-client/KingdomApi";
+import { TrainingActionReport } from "../GameTypes";
 
-const TrainingReport: React.FC<TrainingResponse> = trainingResponse => {
+const TrainingReport: React.FC<TrainingActionReport> = trainingResponse => {
   return (
     <div>
-      {Object.keys(trainingResponse).length > 0 && (
+      {Object.keys(trainingResponse.units).length > 0 && (
         <div>
           <h2>Training Report</h2>
+          <span>{trainingResponse.message}</span>
           <ul>
-            {Object.entries(trainingResponse).map(([unit, count]) => {
+            {Object.entries(trainingResponse.units).map(([unit, count]) => {
               if (count > 0) {
                 return (
                   <li key={unit}>

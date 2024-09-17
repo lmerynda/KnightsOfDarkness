@@ -71,6 +71,6 @@ class GoldMinerBotTest {
 
         var trainedUnits = kingdom.train(toTrain);
 
-        assertEquals(0, trainedUnits.countAll());
+        assertEquals(0, trainedUnits.units().countAll());
     }
 }

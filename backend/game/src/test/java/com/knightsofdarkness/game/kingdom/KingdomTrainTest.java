@@ -37,7 +37,7 @@ class KingdomTrainTest {
         var kingdom = kingdomBuilder.build();
         var toTrain = new KingdomUnitsDto();
 
-        var trainedUnits = kingdom.train(toTrain);
+        var trainedUnits = kingdom.train(toTrain).units();
 
         assertEquals(0, trainedUnits.countAll());
     }
@@ -49,7 +49,7 @@ class KingdomTrainTest {
         var toTrain = new KingdomUnitsDto();
         toTrain.setCount(UnitName.goldMiner, 10);
 
-        var trainedUnits = kingdom.train(toTrain);
+        var trainedUnits = kingdom.train(toTrain).units();
 
         assertEquals(10, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -61,7 +61,7 @@ class KingdomTrainTest {
         var toTrain = new KingdomUnitsDto();
         toTrain.setCount(UnitName.goldMiner, 10);
 
-        var trainedUnits = kingdom.train(toTrain);
+        var trainedUnits = kingdom.train(toTrain).units();
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -73,7 +73,7 @@ class KingdomTrainTest {
         var toTrain = new KingdomUnitsDto();
         toTrain.setCount(UnitName.goldMiner, 10);
 
-        var trainedUnits = kingdom.train(toTrain);
+        var trainedUnits = kingdom.train(toTrain).units();
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -85,7 +85,7 @@ class KingdomTrainTest {
         var toTrain = new KingdomUnitsDto();
         toTrain.setCount(UnitName.goldMiner, 10);
 
-        var trainedUnits = kingdom.train(toTrain);
+        var trainedUnits = kingdom.train(toTrain).units();
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -97,7 +97,7 @@ class KingdomTrainTest {
         var toTrain = new KingdomUnitsDto();
         toTrain.setCount(UnitName.goldMiner, 10);
 
-        var trainedUnits = kingdom.train(toTrain);
+        var trainedUnits = kingdom.train(toTrain).units();
 
         assertTrue(trainedUnits.countAll() > 0, "At least one unit should have been trained");
         assertTrue(trainedUnits.countAll() < 10, "Number of trained units was supposed to be smaller than desired");
@@ -118,7 +118,7 @@ class KingdomTrainTest {
             toTrain.setCount(unitName, 1);
         }
 
-        var trainedUnits = kingdom.train(toTrain);
+        var trainedUnits = kingdom.train(toTrain).units();
 
         for (var unitName : UnitName.values())
         {
@@ -134,7 +134,7 @@ class KingdomTrainTest {
         var toTrain = new KingdomUnitsDto();
         toTrain.setCount(UnitName.goldMiner, 1);
 
-        var trainedUnits = kingdom.train(toTrain);
+        var trainedUnits = kingdom.train(toTrain).units();
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -146,7 +146,7 @@ class KingdomTrainTest {
         var toTrain = new KingdomUnitsDto();
         toTrain.setCount(UnitName.goldMiner, 1);
 
-        var trainedUnits = kingdom.train(toTrain);
+        var trainedUnits = kingdom.train(toTrain).units();
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }

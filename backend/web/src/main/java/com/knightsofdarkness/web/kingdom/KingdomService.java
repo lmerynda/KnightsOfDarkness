@@ -1,8 +1,7 @@
 package com.knightsofdarkness.web.kingdom;
 
-import java.util.Optional;
-
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +16,7 @@ import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.game.kingdom.Kingdom;
@@ -100,7 +100,7 @@ public class KingdomService {
     }
 
     @Transactional
-    public ResponseEntity<KingdomUnitsDto> train(String name, KingdomUnitsDto unitsToTrain)
+    public ResponseEntity<KingdomUnitsActionResult> train(String name, KingdomUnitsDto unitsToTrain)
     {
         log.info("[{}] training {}", name, unitsToTrain);
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);

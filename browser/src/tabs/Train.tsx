@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Button, Input } from "@mui/material";
 import React, { useContext, useState } from "react";
-import { Unit, units } from "../GameTypes";
+import { TrainingActionReport, Unit, units } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 import { trainRequest } from "../game-api-client/KingdomApi";
 import TrainingReport from "../components/TrainingReport";
@@ -8,7 +8,7 @@ import { getOpenPositions } from "../GameUtils";
 
 const Train: React.FC = () => {
   const [unitCounts, setUnitCounts] = useState<{ [unit: string]: number }>({});
-  const [lastTrainingReport, setLastTrainingReport] = useState<{ [unit: string]: number }>({});
+  const [lastTrainingReport, setLastTrainingReport] = useState<TrainingActionReport | undefined>(undefined);
   const kingdomContext = useContext(KingdomContext);
   // ask someone how to better solve it, null object pattern?
   if (kingdomContext === undefined) {
@@ -24,8 +24,8 @@ const Train: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    const data = await trainRequest(unitCounts);
-    setLastTrainingReport(data);
+    const response = await trainRequest(unitCounts);
+    setLastTrainingReport(response);
     kingdomContext.reloadKingdom();
     setUnitCounts({});
   };
@@ -53,7 +53,8 @@ const Train: React.FC = () => {
   return (
     <div>
       <h1>Train</h1>
-      <TrainingReport {...lastTrainingReport} />
+      {lastTrainingReport && <TrainingReport {...lastTrainingReport} />}
+
       <Table>
         <TableHead>
           <TableRow>

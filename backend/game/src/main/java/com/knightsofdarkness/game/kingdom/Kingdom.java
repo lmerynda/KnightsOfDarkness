@@ -11,6 +11,7 @@ import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.common.kingdom.ResourceName;
@@ -59,7 +60,7 @@ public class Kingdom {
         return buildings.getCapacity(name, config.buildingCapacity().getCapacity(name));
     }
 
-    public KingdomUnitsDto train(KingdomUnitsDto unitsToTrain)
+    public KingdomUnitsActionResult train(KingdomUnitsDto unitsToTrain)
     {
         return kingdomTrainAction.train(unitsToTrain);
     }
