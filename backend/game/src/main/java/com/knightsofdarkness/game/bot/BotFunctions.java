@@ -114,7 +114,7 @@ public final class BotFunctions {
         var kingdomBuildings = new KingdomBuildingsDto();
         kingdomBuildings.setCount(building, buildingsToBuild);
 
-        return kingdom.build(kingdomBuildings).countAll();
+        return kingdom.build(kingdomBuildings).buildings().countAll();
     }
 
     public static int trainUnits(Kingdom kingdom, UnitName unit, int count)
@@ -171,7 +171,7 @@ public final class BotFunctions {
         var kingdomBuildings = new KingdomBuildingsDto();
         kingdomBuildings.setCount(BuildingName.house, count);
 
-        return kingdom.build(kingdomBuildings).countAll();
+        return kingdom.build(kingdomBuildings).buildings().countAll();
     }
 
     public static boolean doesHaveEnoughFoodForNextTurn(Kingdom kingdom)

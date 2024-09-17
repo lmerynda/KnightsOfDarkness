@@ -1,13 +1,14 @@
 import { GAME_API } from "../Consts";
-import { KingdomData } from "../GameTypes";
+import { KingdomBuildings, KingdomData } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
-
-export type BuildResponse = {
-  [building: string]: number;
-};
 
 export type TrainingResponse = {
   [unit: string]: number;
+};
+
+export type BuildingActionReport = {
+  message: string;
+  buildings: KingdomBuildings;
 };
 
 export async function fetchKingdomDataRequest(): Promise<KingdomData> {
@@ -60,7 +61,7 @@ export async function passTurnRequest(): Promise<Response> {
   }
 }
 
-export async function buildRequest(data: { [building: string]: number }): Promise<BuildResponse> {
+export async function buildRequest(data: { [building: string]: number }): Promise<BuildingActionReport> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/kingdom/build`, {
@@ -85,8 +86,7 @@ export async function buildRequest(data: { [building: string]: number }): Promis
   }
 }
 
-// TODO should we have demolishRespone? or should the return be request agnostic as we just return the map?
-export async function demolishRequest(data: { [building: string]: number }): Promise<BuildResponse> {
+export async function demolishRequest(data: { [building: string]: number }): Promise<BuildingActionReport> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/kingdom/demolish`, {

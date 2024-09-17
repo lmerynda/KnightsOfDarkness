@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingBuildDto;
@@ -66,7 +67,7 @@ public class KingdomService {
     }
 
     @Transactional
-    public ResponseEntity<KingdomBuildingsDto> build(String kingdomName, KingdomBuildingsDto buildings)
+    public ResponseEntity<KingdomBuildingsActionResult> build(String kingdomName, KingdomBuildingsDto buildings)
     {
         log.info("[{}] building {}", kingdomName, buildings);
         Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
@@ -82,7 +83,7 @@ public class KingdomService {
         return ResponseEntity.ok(buildingsBuilt);
     }
 
-    public ResponseEntity<KingdomBuildingsDto> demolish(String kingdomName, KingdomBuildingsDto buildings)
+    public ResponseEntity<KingdomBuildingsActionResult> demolish(String kingdomName, KingdomBuildingsDto buildings)
     {
         log.info("[{}] demolishing {}", kingdomName, buildings);
         Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);

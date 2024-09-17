@@ -1,14 +1,15 @@
 import React from "react";
-import { BuildResponse } from "../game-api-client/KingdomApi";
+import { BuildingActionReport } from "../game-api-client/KingdomApi";
 
-const BuildReport: React.FC<BuildResponse> = buildResponse => {
+const BuildReport: React.FC<BuildingActionReport> = buildActionReport => {
   return (
     <div>
-      {Object.keys(buildResponse).length > 0 && (
+      {Object.keys(buildActionReport.buildings).length > 0 && (
         <div>
           <h2>Build Report</h2>
+          <span>{buildActionReport.message}</span>
           <ul>
-            {Object.entries(buildResponse).map(([building, count]) => {
+            {Object.entries(buildActionReport.buildings).map(([building, count]) => {
               if (count > 0) {
                 return (
                   <li key={building}>

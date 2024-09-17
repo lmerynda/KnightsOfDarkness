@@ -1,8 +1,10 @@
 package com.knightsofdarkness.game.kingdom;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.game.Utils;
 
 public class KingdomBuildAction {
     private final Kingdom kingdom;
@@ -17,7 +19,7 @@ public class KingdomBuildAction {
      * 
      * @return the buildings that were built
      */
-    public KingdomBuildingsDto build(KingdomBuildingsDto buildingsToBuild)
+    public KingdomBuildingsActionResult build(KingdomBuildingsDto buildingsToBuild)
     {
         var buildingsBuilt = new KingdomBuildingsDto();
         for (var buildingName : BuildingName.values())
@@ -29,7 +31,7 @@ public class KingdomBuildAction {
             }
         }
 
-        return buildingsBuilt;
+        return new KingdomBuildingsActionResult((Utils.format("Succesfully built {} buildings", buildingsBuilt.countAll())), buildingsBuilt);
     }
 
     public int build(BuildingName building, int count)
@@ -46,7 +48,7 @@ public class KingdomBuildAction {
         return howManyToBuild;
     }
 
-    public KingdomBuildingsDto demolish(KingdomBuildingsDto buildingsToDemolish)
+    public KingdomBuildingsActionResult demolish(KingdomBuildingsDto buildingsToDemolish)
     {
         var buildingsDemolished = new KingdomBuildingsDto();
         for (var buildingName : BuildingName.values())
@@ -61,6 +63,6 @@ public class KingdomBuildAction {
             }
         }
 
-        return buildingsDemolished;
+        return new KingdomBuildingsActionResult(Utils.format("Succesfully demolished {} buildings", buildingsDemolished.countAll()), buildingsDemolished);
     }
 }

@@ -2,14 +2,14 @@ import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button } from 
 import React, { useContext, useState } from "react";
 import { Building, buildings } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
-import { buildRequest, demolishRequest } from "../game-api-client/KingdomApi";
+import { BuildingActionReport, buildRequest, demolishRequest } from "../game-api-client/KingdomApi";
 import BuildReport from "../components/BuildReport";
 import SpecialBuilding from "../components/SpecialBuildings";
 import { getBuildingOccupants, getTotalCapacity } from "../GameUtils";
 
 const Build: React.FC = () => {
   const [buildingCounts, setBuildingCounts] = useState<{ [building: string]: number }>({});
-  const [lastBuildReport, setLastBuildReport] = useState<{ [building: string]: number }>({});
+  const [lastBuildReport, setLastBuildReport] = useState<BuildingActionReport | undefined>(undefined);
   const kingdomContext = useContext(KingdomContext);
   // ask someone how to better solve it, null object pattern?
   if (kingdomContext === undefined) {
@@ -25,15 +25,15 @@ const Build: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    const data = await buildRequest(buildingCounts);
-    setLastBuildReport(data);
+    const response = await buildRequest(buildingCounts);
+    setLastBuildReport(response);
     kingdomContext.reloadKingdom();
     setBuildingCounts({});
   };
 
   const handleDemolish = async () => {
-    const data = await demolishRequest(buildingCounts);
-    setLastBuildReport(data); // TODO it should be demolish report, think how to generalize
+    const response = await demolishRequest(buildingCounts);
+    setLastBuildReport(response); // TODO it should be demolish report, think how to generalize
     kingdomContext.reloadKingdom();
     setBuildingCounts({});
   };
@@ -61,7 +61,7 @@ const Build: React.FC = () => {
   return (
     <div>
       <h1>Build</h1>
-      <BuildReport {...lastBuildReport} />
+      {lastBuildReport && <BuildReport {...lastBuildReport} />}
 
       <Table>
         <TableHead>

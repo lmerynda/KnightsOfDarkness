@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingBuildDto;
@@ -76,7 +77,7 @@ public class KingdomController {
     }
 
     @PostMapping("/build")
-    ResponseEntity<KingdomBuildingsDto> kingdomBuild(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
+    ResponseEntity<KingdomBuildingsActionResult> kingdomBuild(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
     {
         if (currentUser == null)
         {
@@ -88,7 +89,7 @@ public class KingdomController {
     }
 
     @PostMapping("/demolish")
-    ResponseEntity<KingdomBuildingsDto> kingdomDemolish(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
+    ResponseEntity<KingdomBuildingsActionResult> kingdomDemolish(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
     {
         if (currentUser == null)
         {
