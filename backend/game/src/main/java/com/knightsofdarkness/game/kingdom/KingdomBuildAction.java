@@ -34,7 +34,7 @@ public class KingdomBuildAction {
         return new KingdomBuildingsActionResult((Utils.format("Succesfully built {} buildings", buildingsBuilt.countAll())), buildingsBuilt);
     }
 
-    public int build(BuildingName building, int count)
+    int build(BuildingName building, int count)
     {
         // TODO tests
         var buildingCost = kingdom.getConfig().buildingPointCosts().getCost(building);
