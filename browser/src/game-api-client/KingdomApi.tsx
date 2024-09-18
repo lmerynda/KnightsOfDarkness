@@ -1,5 +1,5 @@
 import { GAME_API } from "../Consts";
-import { BuildingActionReport, KingdomData, TrainingActionReport } from "../GameTypes";
+import { BuildingActionReport, KingdomData, PassTurnReport, TrainingActionReport } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
 
 export async function fetchKingdomDataRequest(): Promise<KingdomData> {
@@ -27,8 +27,7 @@ export async function fetchKingdomDataRequest(): Promise<KingdomData> {
   }
 }
 
-// TODO return pass-turn result which we get as a response
-export async function passTurnRequest(): Promise<Response> {
+export async function passTurnRequest(): Promise<PassTurnReport> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/kingdom/pass-turn`, {

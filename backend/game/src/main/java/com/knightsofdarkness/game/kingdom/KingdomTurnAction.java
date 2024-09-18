@@ -1,11 +1,10 @@
 package com.knightsofdarkness.game.kingdom;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomPassTurnActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
@@ -22,11 +21,11 @@ public class KingdomTurnAction {
         this.results = new KingdomTurnReport();
     }
 
-    public Optional<KingdomTurnReport> passTurn()
+    public KingdomPassTurnActionResult passTurn()
     {
         if (kingdom.getResources().getCount(ResourceName.turns) <= 0)
         {
-            return Optional.empty();
+            return KingdomPassTurnActionResult.failure("Not enough turns");
         }
 
         kingdom.getResources().subtractCount(ResourceName.turns, 1);
@@ -39,7 +38,7 @@ public class KingdomTurnAction {
 
         kingdom.lastTurnReport = results;
 
-        return Optional.of(results);
+        return KingdomPassTurnActionResult.success("Turn passed", results);
     }
 
     private void resetBuildingPoints()

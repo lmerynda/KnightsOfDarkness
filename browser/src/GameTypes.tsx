@@ -139,3 +139,9 @@ export type BuildingActionReport = {
   message: string;
   buildings: KingdomBuildings;
 };
+
+export type PassTurnReport = {
+  message: string;
+  success: boolean;
+  turnReport: TurnReport | undefined;
+};

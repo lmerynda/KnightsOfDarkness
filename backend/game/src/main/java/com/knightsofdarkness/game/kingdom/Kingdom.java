@@ -10,6 +10,7 @@ import java.util.UUID;
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.common.kingdom.KingdomPassTurnActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
@@ -65,7 +66,7 @@ public class Kingdom {
         return kingdomTrainAction.train(unitsToTrain);
     }
 
-    public Optional<KingdomTurnReport> passTurn()
+    public KingdomPassTurnActionResult passTurn()
     {
         return new KingdomTurnAction(this).passTurn();
     }

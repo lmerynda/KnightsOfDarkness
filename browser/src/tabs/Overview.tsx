@@ -1,12 +1,16 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { KingdomContext } from "../Kingdom";
 import Button from "@mui/material/Button";
 import TurnReport from "../components/TurnReport";
 import BuyLand from "../components/BuyLand";
 import { passTurnRequest } from "../game-api-client/KingdomApi";
+import { PassTurnReport } from "../GameTypes";
+import { Box } from "@mui/material";
 
 const Overview: React.FC = () => {
   const kingdomContext = useContext(KingdomContext);
+  const [lastTurnReport, setLastTurnReport] = useState<PassTurnReport | undefined>(undefined);
+
   // ask someone how to better solve it, null object pattern?
   if (kingdomContext === undefined) {
     throw new Error("Kingdom context is undefined");
@@ -14,7 +18,8 @@ const Overview: React.FC = () => {
 
   const handleSubmit = async () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const data = await passTurnRequest();
+    const response = await passTurnRequest();
+    setLastTurnReport(response);
     kingdomContext.reloadKingdom();
   };
 
@@ -24,6 +29,9 @@ const Overview: React.FC = () => {
       <Button variant="contained" onClick={handleSubmit}>
         Pass Turn
       </Button>
+      {lastTurnReport && !lastTurnReport.success && (
+        <Box component="div" sx={{ display: 'inline', color: 'red' }}>{lastTurnReport.message}</Box>
+      )}
       <BuyLand />
       <TurnReport />
     </div>

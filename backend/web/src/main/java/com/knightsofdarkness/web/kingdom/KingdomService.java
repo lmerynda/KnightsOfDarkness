@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
+import com.knightsofdarkness.common.kingdom.KingdomPassTurnActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
@@ -116,7 +117,7 @@ public class KingdomService {
     }
 
     @Transactional
-    public ResponseEntity<KingdomTurnReport> passTurn(String name)
+    public ResponseEntity<KingdomPassTurnActionResult> passTurn(String name)
     {
         log.info("[{}] passing turn", name);
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
@@ -125,18 +126,13 @@ public class KingdomService {
             return ResponseEntity.notFound().build();
         }
 
-        // TODO turn report
         var passedTurnResult = kingdom.get().passTurn();
-        if (passedTurnResult.isEmpty())
+        if (passedTurnResult.success())
         {
-            // TODO this action just failed on business logic, we should not return error
-            // probably we just just miss part of the domain? PassTurn report?
-            return ResponseEntity.notFound().build();
+            kingdomRepository.update(kingdom.get());
         }
 
-        kingdomRepository.update(kingdom.get());
-
-        return ResponseEntity.ok(passedTurnResult.get());
+        return ResponseEntity.ok(passedTurnResult);
     }
 
     @Transactional

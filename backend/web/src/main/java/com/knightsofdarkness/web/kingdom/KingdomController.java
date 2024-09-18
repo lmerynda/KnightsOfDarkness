@@ -20,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
+import com.knightsofdarkness.common.kingdom.KingdomPassTurnActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
@@ -150,7 +151,7 @@ public class KingdomController {
     }
 
     @PostMapping(value = "/pass-turn", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<KingdomTurnReport> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser)
+    ResponseEntity<KingdomPassTurnActionResult> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser)
     {
         if (currentUser == null)
         {

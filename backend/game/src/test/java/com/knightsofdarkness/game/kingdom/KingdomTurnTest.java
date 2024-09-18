@@ -2,6 +2,7 @@ package com.knightsofdarkness.game.kingdom;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.EnumMap;
@@ -263,11 +264,11 @@ class KingdomTurnTest {
         // first we pass every turn that kingdom has
         for (int i = 0; i < numberOfTurns; i++)
         {
-            assertTrue(kingdom.passTurn().isPresent());
+            assertTrue(kingdom.passTurn().success());
         }
 
         // then we try to pass turn which is not available
-        assertTrue(kingdom.passTurn().isEmpty());
+        assertFalse(kingdom.passTurn().success());
     }
 
     @Test
@@ -296,10 +297,11 @@ class KingdomTurnTest {
     void passingTurn_shouldSaveReport()
     {
         var kingdom = kingdomBuilder.build();
-        var report = kingdom.passTurn().get();
+        var result = kingdom.passTurn();
+        assertTrue(result.success());
 
         var savedReport = kingdom.getLastTurnReport();
 
-        assertEquals(report, savedReport);
+        assertEquals(result.turnReport().get(), savedReport);
     }
 }
