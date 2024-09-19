@@ -1,3 +1,5 @@
+import com.adarshr.gradle.testlogger.theme.ThemeType
+
 plugins {
     id("java")
     id("com.adarshr.test-logger") version "4.0.+"
@@ -50,4 +52,9 @@ tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
     }
+}
+
+testlogger {
+    theme = ThemeType.MOCHA_PARALLEL
+    showSummary = true
 }
