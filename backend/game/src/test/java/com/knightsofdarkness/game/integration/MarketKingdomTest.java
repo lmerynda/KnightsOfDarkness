@@ -24,13 +24,14 @@ class MarketKingdomTest {
         game = new TestGame().get();
         market = game.getMarket();
         kingdom = new KingdomBuilder(game).build();
+        game.addKingdom(kingdom);
     }
 
-    @Disabled
     @Test
     void whenKingdomMakesOneOffer_thenTheSameOfferShouldAppearOnMarket()
     {
-        market.createOffer(kingdom.getName(), MarketResource.food, 100, 100);
+        var result = market.createOffer(kingdom.getName(), MarketResource.food, 100, 100);
+        assertEquals(true, result.success());
         var foodOffers = market.getOffersByResource(MarketResource.food);
         assertEquals(1, foodOffers.size());
         assertEquals(kingdom, foodOffers.get(0).getSeller());

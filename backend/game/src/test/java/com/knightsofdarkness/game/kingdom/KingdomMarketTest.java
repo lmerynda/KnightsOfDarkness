@@ -2,6 +2,7 @@ package com.knightsofdarkness.game.kingdom;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -103,16 +104,17 @@ class KingdomMarketTest {
         assertEquals(initialFood, kingdomFood);
     }
 
-    @Disabled("Fix when return types are settled")
     @Test
     void whenOfferDoesNotBelongToKingdom_withdrawingIt_shouldNotAddKingdomResourcesBack()
     {
         var foreignKingdom = new KingdomBuilder(game).withName("foreignKingdo").build();
         game.addKingdom(foreignKingdom);
         var market = game.getMarket();
-        var offer = market.createOffer(foreignKingdom.getName(), MarketResource.food, 100, 50).data().get();
+        var result = market.createOffer(foreignKingdom.getName(), MarketResource.food, 100, 50);
+        var offer = market.findOfferById(result.data().get().id());
+        assertTrue(offer.isPresent());
         kingdom.getResources().setCount(ResourceName.food, 1000);
-        // kingdom.withdrawMarketOffer(offer);
+        kingdom.withdrawMarketOffer(offer.get());
         int kingdomFood = kingdom.getResources().getCount(ResourceName.food);
         assertEquals(1000, kingdomFood);
     }
