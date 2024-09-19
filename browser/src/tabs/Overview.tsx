@@ -30,7 +30,9 @@ const Overview: React.FC = () => {
         Pass Turn
       </Button>
       {lastTurnReport && !lastTurnReport.success && (
-        <Box component="div" sx={{ display: 'inline', color: 'red' }}>{lastTurnReport.message}</Box>
+        <Box component="div" sx={{ display: "inline", color: "red" }}>
+          {lastTurnReport.message}
+        </Box>
       )}
       <BuyLand />
       <TurnReport />
