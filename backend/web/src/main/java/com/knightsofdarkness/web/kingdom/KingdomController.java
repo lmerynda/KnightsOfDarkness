@@ -1,7 +1,5 @@
 package com.knightsofdarkness.web.kingdom;
 
-import java.net.URI;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
@@ -39,19 +36,6 @@ public class KingdomController {
     public KingdomController(KingdomService kingdomService)
     {
         this.kingdomService = kingdomService;
-    }
-
-    @PostMapping("/")
-    ResponseEntity<KingdomDto> createKingdom(@RequestBody KingdomDto kingdom)
-    {
-        var createdKingdom = kingdomService.createKingdom(kingdom);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{name}")
-                .buildAndExpand(createdKingdom.name)
-                .toUri();
-
-        return ResponseEntity.created(location).body(createdKingdom);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
