@@ -26,13 +26,14 @@ public class SecurityConfig {
     {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
+                        .requestMatchers("/health").permitAll()
                         .requestMatchers("/auth/authenticate").permitAll()
                         .requestMatchers("/auth/validate-token").authenticated()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/**").authenticated() // for now, change later to allow only authenticated users
+                        .requestMatchers("/**").authenticated()
                         .anyRequest().authenticated())
-                .headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin)) // Allow frames from the same origin
+                .headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin))
                 .sessionManagement(management -> management
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
