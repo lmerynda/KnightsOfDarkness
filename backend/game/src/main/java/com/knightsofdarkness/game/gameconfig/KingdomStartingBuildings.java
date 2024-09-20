@@ -1,6 +1,7 @@
 package com.knightsofdarkness.game.gameconfig;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 
 public record KingdomStartingBuildings(int house, int goldMine, int ironMine, int workshop, int farm, int market, int barracks, int guardHouse, int spyGuild, int tower, int castle) {
     public int getCount(BuildingName name)
@@ -19,5 +20,10 @@ public record KingdomStartingBuildings(int house, int goldMine, int ironMine, in
             case tower -> tower;
             case castle -> castle;
         };
+    }
+
+    public KingdomBuildingsDto toDto()
+    {
+        return new KingdomBuildingsDto(house, goldMine, ironMine, workshop, farm, market, barracks, guardHouse, spyGuild, tower, castle);
     }
 }

@@ -1,5 +1,6 @@
 package com.knightsofdarkness.game.gameconfig;
 
+import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.UnitName;
 
 public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, int blacksmith, int farmer, int carrier, int guard, int spy, int bowman, int infantry, int cavalry) {
@@ -19,5 +20,10 @@ public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, in
             case infantry -> infantry;
             case cavalry -> cavalry;
         };
+    }
+
+    public KingdomUnitsDto toDto()
+    {
+        return new KingdomUnitsDto(goldMiner, ironMiner, builder, blacksmith, farmer, carrier, guard, spy, bowman, infantry, cavalry);
     }
 }

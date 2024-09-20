@@ -20,12 +20,12 @@ content-type: application/json
 
 ###
 
-POST http://localhost:8080/auth/authenticate
+POST http://localhost:8080/auth/register
 content-type: application/json
 
 {
-    "username": "admin",
-    "password": "admin"
+    "username": "123",
+    "password": "123"
 }
 
 ###

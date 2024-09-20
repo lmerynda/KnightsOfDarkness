@@ -1,7 +1,8 @@
 package com.knightsofdarkness.web.kingdom;
 
-import java.util.ArrayList;
 import java.util.Optional;
+
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
+import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.storage.kingdom.KingdomReadRepository;
@@ -32,12 +34,14 @@ public class KingdomService {
     private final KingdomRepository kingdomRepository;
     private final KingdomReadRepository kingdomReadRepository;
     private final MarketOfferReadRepository marketOfferReadRepository;
+    private final GameConfig gameConfig;
 
-    public KingdomService(KingdomRepository kingdomRepository, KingdomReadRepository kingdomReadRepository, MarketOfferReadRepository marketOfferReadRepository)
+    public KingdomService(KingdomRepository kingdomRepository, KingdomReadRepository kingdomReadRepository, MarketOfferReadRepository marketOfferReadRepository, GameConfig gameConfig)
     {
         this.kingdomRepository = kingdomRepository;
         this.kingdomReadRepository = kingdomReadRepository;
         this.marketOfferReadRepository = marketOfferReadRepository;
+        this.gameConfig = gameConfig;
     }
 
     @Transactional
@@ -48,6 +52,25 @@ public class KingdomService {
         // TODO new kingdom doesn't have turn reports or special buildings, this is domain level information and should be there
         kingdomDto.lastTurnReport = new KingdomTurnReport();
         kingdomDto.specialBuildings = new ArrayList<>();
+        kingdomRepository.add(kingdomDto);
+        // TODO I bet the return value should be different
+        return kingdomDto;
+    }
+
+    @Transactional
+    public KingdomDto createKingdom(String name)
+    {
+        log.info("Creating new kingdom with name {}", name);
+
+        var startConfiguration = gameConfig.kingdomStartConfiguration();
+        var kingdomDto = new KingdomDto();
+        kingdomDto.name = name;
+        kingdomDto.resources = startConfiguration.resources().toDto();
+        kingdomDto.units = startConfiguration.units().toDto();
+        kingdomDto.buildings = startConfiguration.buildings().toDto();
+        kingdomDto.lastTurnReport = new KingdomTurnReport();
+        kingdomDto.specialBuildings = new ArrayList<>();
+
         kingdomRepository.add(kingdomDto);
         // TODO I bet the return value should be different
         return kingdomDto;
