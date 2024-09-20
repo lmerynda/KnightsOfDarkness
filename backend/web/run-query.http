@@ -3,38 +3,6 @@ content-type: application/json
 
 ###
 
-POST http://localhost:8080/market_fixtures
-content-type: application/json
-
-[
-    {
-        "kingdom": null,
-        "resource": "food",
-        "count": 10000,
-        "price": 10
-    },
-    {
-        "kingdom": null,
-        "resource": "food",
-        "count": 20000,
-        "price": 30
-    },
-    {
-        "kingdom": null,
-        "resource": "iron",
-        "count": 10000,
-        "price": 50
-    },
-    {
-        "kingdom": null,
-        "resource": "iron",
-        "count": 15000,
-        "price": 70
-    }
-]
-
-###
-
 POST http://localhost:8080/kingdom/
 content-type: application/json
 
@@ -61,11 +29,6 @@ content-type: application/json
 
 {
 }
-
-###
-
-GET http://localhost:8080/market
-content-type: application/json
 
 ###
 

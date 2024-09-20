@@ -1,6 +1,5 @@
 package com.knightsofdarkness.web.market;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,12 +31,6 @@ public class MarketController {
         this.marketService = marketService;
     }
 
-    @PostMapping("/market_fixtures")
-    void createOffers(@RequestBody ArrayList<MarketOfferDto> offers)
-    {
-        marketService.createOffers(offers);
-    }
-
     @PostMapping("/market/create")
     ResponseEntity<CreateMarketOfferResult> createOffer(@AuthenticationPrincipal UserData currentUser, @RequestBody MarketOfferDto offer)
     {
@@ -50,13 +43,6 @@ public class MarketController {
         var createdOffer = marketService.createOffer(offer, currentUser.getKingdom());
 
         return ResponseEntity.ok(createdOffer);
-    }
-
-    @Deprecated
-    @GetMapping("/market")
-    List<MarketOfferDto> getAllOffers()
-    {
-        return marketService.getAllOffers();
     }
 
     @GetMapping("/market/{resource}")
