@@ -1,7 +1,5 @@
 plugins {
-	java
-	id("org.springframework.boot") version "3.2.3"
-	id("io.spring.dependency-management") version "1.1.4"
+    java
 }
 
 group = "com.knightsofdarkness"
@@ -14,7 +12,7 @@ java {
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
@@ -23,9 +21,5 @@ dependencies {
 }
 
 tasks.withType<Test> {
-	useJUnitPlatform()
-}
-
-tasks.getByName("bootJar") {
-    enabled = false
+    useJUnitPlatform()
 }

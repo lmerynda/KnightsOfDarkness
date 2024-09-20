@@ -1,7 +1,7 @@
 plugins {
-	java
-	id("org.springframework.boot") version "3.3.+"
-	id("io.spring.dependency-management") version "1.1.+"
+    java
+    id("org.springframework.boot") version "3.3.4"
+    id("io.spring.dependency-management") version "1.1.+"
 }
 
 group = "com.knightsofdarkness"
@@ -14,17 +14,17 @@ java {
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation(project(":common"))
-	implementation(project(":game"))
+    implementation(project(":game"))
 }
 
 tasks.withType<Test> {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 tasks.getByName("bootJar") {
