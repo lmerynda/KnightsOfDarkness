@@ -16,7 +16,6 @@
 
 ## Problems
 
-1. Creating market offer should have minimum value
 1. We do a lot of calculations for small kingdom bonus, maybe we should have a table of consts for each land value?
 1. Browser module was created using react tools which is deprecated. Migrate to current standard project organization
 1. There is a mix of layer responsibility between controller and service, DTOs should be translated in controller but often are in service, as well as ResponseEntity

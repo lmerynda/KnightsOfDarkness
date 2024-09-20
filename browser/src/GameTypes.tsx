@@ -76,6 +76,12 @@ export type MarketOfferData = {
   count: number;
 };
 
+export type MarketOfferCreateResult = {
+  message: string;
+  success: boolean;
+  marketOffer: MarketOfferData | undefined;
+};
+
 export type OfferBuyer = {
   count: number;
 };

@@ -1,5 +1,5 @@
 import { GAME_API } from "../Consts";
-import { MarketOfferData, MarketResource, OfferBuyer } from "../GameTypes";
+import { MarketOfferCreateResult, MarketOfferData, MarketResource, OfferBuyer } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
 
 export type CreateMarketOfferData = {
@@ -92,7 +92,7 @@ export async function withdrawMarketOfferRequest(id: string): Promise<MarketOffe
   }
 }
 
-export async function createMarketOfferRequest(offer: CreateMarketOfferData): Promise<MarketOfferData[]> {
+export async function createMarketOfferRequest(offer: CreateMarketOfferData): Promise<MarketOfferCreateResult> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/market/create`, {

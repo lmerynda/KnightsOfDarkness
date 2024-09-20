@@ -1,8 +1,9 @@
 package com.knightsofdarkness.game.market;
 
+import java.util.Optional;
+
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -48,6 +49,12 @@ public class Market implements IMarket {
         {
             log.info("Kingdom {} already has max {} offers for resource {}", kingdom.getName(), offerCount, resource);
             return CreateMarketOfferResult.failure(Utils.format("Your kingdom already has maximum number of offers for {}", resource), Optional.empty());
+        }
+
+        if (price < gameConfig.market().minPrice())
+        {
+            log.info("Price {} is lower than minimum {}", price, gameConfig.market().minPrice());
+            return CreateMarketOfferResult.failure(Utils.format("Price {} is lower than minimum {}", price, gameConfig.market().minPrice()), Optional.empty());
         }
         var countToOffer = kingdom.postMarketOffer(resource, count); // TODO, what if the kingdom doesn't have enough resources?
         var offer = new MarketOffer(Id.generate(), kingdom, resource, countToOffer, price);

@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Grid, IconButton, Input, InputAdornment, InputLabel, Typography } from "@mui/material";
 import React, { useContext } from "react";
-import { MarketResource, marketResources } from "../GameTypes";
+import { MarketOfferCreateResult, MarketResource, marketResources } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 import { CreateMarketOfferData, createMarketOfferRequest } from "../game-api-client/MarketApi";
 
@@ -9,6 +9,7 @@ const MarketPost: React.FC = () => {
   const [price, setPrice] = React.useState<number>(0);
   const defaultResource: MarketResource = "food";
   const [selectedResource, setSelectedResource] = React.useState<MarketResource>(defaultResource);
+  const [lastCreateOfferResult, setLastCreateOfferResult] = React.useState<MarketOfferCreateResult | undefined>(undefined);
   const kingdomContext = useContext(KingdomContext);
 
   // ask someone how to better solve it, null object pattern?
@@ -24,7 +25,9 @@ const MarketPost: React.FC = () => {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const data = await createMarketOfferRequest(offer);
+    const result = await createMarketOfferRequest(offer);
+    setLastCreateOfferResult(result);
+
     setSellAmount(0);
     setPrice(0);
     setSelectedResource(defaultResource);
@@ -38,6 +41,11 @@ const MarketPost: React.FC = () => {
   return (
     <div>
       <h2>Create Offer</h2>
+      {lastCreateOfferResult && (
+        <Typography variant="body1" component="p" color={lastCreateOfferResult.success ? "success" : "error"}>
+          {lastCreateOfferResult.message}
+        </Typography>
+      )}
       <Grid container spacing={2} alignItems="center">
         <Grid item>
           <ButtonGroup variant="contained">
