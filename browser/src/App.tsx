@@ -1,10 +1,10 @@
 import React from "react";
 import "./css/App.css";
 import { CssBaseline, Box, createTheme, ThemeProvider } from "@mui/material";
-import Login from "./Login";
 import Kingdom from "./Kingdom";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { GAME_API } from "./Consts";
+import Homepage from "./Homepage";
 
 const darkTheme = createTheme({
   palette: {
@@ -54,8 +54,8 @@ const App: React.FC = () => {
         <CssBaseline />
         <Router>
           <Routes>
-            <Route path="/login" element={<Login setAuthenticated={setAuthenticated} />} />
-            <Route path="/*" element={authenticated ? <Kingdom /> : <Navigate to="/login" />} />
+            <Route path="/homepage" element={<Homepage setAuthenticated={setAuthenticated} />} />
+            <Route path="/*" element={authenticated ? <Kingdom /> : <Navigate to="/homepage" />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Router>

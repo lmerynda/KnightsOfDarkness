@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.knightsofdarkness.web.kingdom.KingdomService;
 import com.knightsofdarkness.web.security.AuthRequestDto;
 import com.knightsofdarkness.web.security.AuthResponseDto;
+import com.knightsofdarkness.web.security.RegisterRequestDto;
 import com.knightsofdarkness.web.security.TokenService;
 
 @RestController
@@ -54,7 +55,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<String> register(@RequestBody AuthRequestDto registerRequest)
+    public ResponseEntity<String> register(@RequestBody RegisterRequestDto registerRequest)
     {
         log.info("register request received for user: {}", registerRequest.username);
 
@@ -63,7 +64,7 @@ public class AuthController {
             throw new IllegalArgumentException("Username already exists"); // TODO return a proper error response
         }
 
-        UserData user = new UserData(registerRequest.username, registerRequest.password, registerRequest.username); // TODO let user specify custom kingdom name
+        UserData user = new UserData(registerRequest.username, registerRequest.password, registerRequest.username);
         user.password = passwordEncoder.encode(user.getPassword());
 
         UserEntity newUser = new UserEntity(user.getUsername(), user.getPassword(), user.getKingdom());
