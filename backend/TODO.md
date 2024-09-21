@@ -5,7 +5,6 @@
 1. Resource transfers using carriers
 1. Spies
 1. Rankings and statistics
-1. Player registration
 1. Firing of professionals when there is not enough buildings
 1. Exiling of people when there is not enough houses, including professionals
 1. Messages
@@ -16,6 +15,7 @@
 
 ## Problems
 
+1. Player registration, we should rebrand from username to kingdomName, we should check if repeated password match, we should ask for email, we should make sure no kingdomNames are repeated
 1. We do a lot of calculations for small kingdom bonus, maybe we should have a table of consts for each land value?
 1. Browser module was created using react tools which is deprecated. Migrate to current standard project organization
 1. There is a mix of layer responsibility between controller and service, DTOs should be translated in controller but often are in service, as well as ResponseEntity
