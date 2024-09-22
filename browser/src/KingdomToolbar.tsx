@@ -30,6 +30,6 @@ const KingdomToolbar: React.FC<KingdomToolbarProps> = ({ kingdomName, kingdomRes
       <KingdomResourcesView kingdomResources={kingdomResources} kingdomDetails={kingdomDetails} />
     </div>
   );
-}; 
+};
 
 export default KingdomToolbar;
