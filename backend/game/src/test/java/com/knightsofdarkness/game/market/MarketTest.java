@@ -41,7 +41,7 @@ class MarketTest {
     {
         market.createOffer(kingdom.getName(), MarketResource.food, 1, 50);
         market.createOffer(kingdom.getName(), MarketResource.food, 1, 60);
-        market.createOffer(kingdom.getName(), MarketResource.food, 1, 1);
+        market.createOffer(kingdom.getName(), MarketResource.food, 1, 5);
 
         assertEquals(3, market.getOffersByResource(MarketResource.food).size());
     }
@@ -62,7 +62,7 @@ class MarketTest {
     {
         var offer1 = market.createOffer(kingdom.getName(), MarketResource.food, 100, 50).data().get();
         var offer2 = market.createOffer(kingdom.getName(), MarketResource.food, 100, 60).data().get();
-        var offer3 = market.createOffer(kingdom.getName(), MarketResource.food, 100, 1).data().get();
+        var offer3 = market.createOffer(kingdom.getName(), MarketResource.food, 100, 5).data().get();
         assertEquals(3, market.getOffersByResource(MarketResource.food).size());
 
         market.removeOffer(offer1.id());
@@ -192,11 +192,11 @@ class MarketTest {
     @Test
     void findCheapestOffer_withAFewOffers_shouldReturnTheCheapestOne()
     {
-        market.createOffer(kingdom.getName(), MarketResource.food, 100, 2);
-        market.createOffer(kingdom.getName(), MarketResource.food, 100, 2);
-        market.createOffer(kingdom.getName(), MarketResource.food, 100, 3);
-        market.createOffer(kingdom.getName(), MarketResource.food, 100, 4);
-        var offer = market.createOffer(kingdom.getName(), MarketResource.food, 100, 1).data().get();
+        market.createOffer(kingdom.getName(), MarketResource.food, 100, 6);
+        market.createOffer(kingdom.getName(), MarketResource.food, 100, 7);
+        market.createOffer(kingdom.getName(), MarketResource.food, 100, 8);
+        market.createOffer(kingdom.getName(), MarketResource.food, 100, 9);
+        var offer = market.createOffer(kingdom.getName(), MarketResource.food, 100, 5).data().get();
 
         var cheapestOffer = market.getCheapestOfferByResource(MarketResource.food);
 
