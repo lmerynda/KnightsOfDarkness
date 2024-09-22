@@ -12,7 +12,7 @@ const Homepage: React.FC<LoginProps> = ({ setAuthenticated }) => {
     <Container component="main" maxWidth="md">
       <Box my={4}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Welcome to Our Service
+          Knights of Darkness
         </Typography>
       </Box>
       <Grid container spacing={4}>
