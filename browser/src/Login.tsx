@@ -8,19 +8,19 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ setAuthenticated }) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (username === "" || password === "") {
-      console.log("Username or password is empty");
+    if (email === "" || password === "") {
+      console.log("Email or password is empty");
       return;
     }
-    console.log(`Logging in with username: ${username} and password: ${password}`);
+    console.log(`Logging in with email: ${email} and password: ${password}`);
     const authRequest = {
-      username: username,
+      email: email,
       password: password,
     };
 
@@ -56,7 +56,7 @@ const Login: React.FC<LoginProps> = ({ setAuthenticated }) => {
         Login
       </Typography>
       <Box component={"form"} onSubmit={handleSubmit} sx={{ mt: 1 }}>
-        <TextField label="User" type="text" value={username} onChange={event => setUsername(event.target.value)} required />
+        <TextField label="Email" type="text" value={email} onChange={event => setEmail(event.target.value)} required />
         <TextField label="Password" type="password" value={password} onChange={event => setPassword(event.target.value)} required />
         <Box sx={{ mt: 2 }}>
           <Button type="submit" variant="contained" color="primary">

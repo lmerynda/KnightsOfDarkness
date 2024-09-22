@@ -20,15 +20,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username)
+    public UserDetails loadUserByUsername(String email)
     {
-        UserEntity user = userService.getUserByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("Username %s not found", username)));
+        UserEntity user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("email %s not found", email)));
         return mapUserToCustomUserDetails(user);
     }
 
     private UserData mapUserToCustomUserDetails(UserEntity user)
     {
-        return new UserData(user.username, user.password, user.kingdom);
+        return new UserData(user.email, user.kingdomName, user.password);
     }
 }

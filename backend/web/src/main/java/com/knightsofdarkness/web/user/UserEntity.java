@@ -19,23 +19,20 @@ public class UserEntity {
     // @GeneratedValue(strategy = GenerationType.IDENTITY)
     public UUID id;
 
-    public String username;
+    public String email;
+    public String kingdomName;
     public String password;
-    public String kingdom;
 
-    public UserEntity(String username, String password, String kingdom)
+    public UserEntity(String email, String kingdomName, String password)
     {
-        this.username = username;
+        this.email = email;
+        this.kingdomName = kingdomName;
         this.password = password;
-        this.kingdom = kingdom;
     }
 
+    @Override
     public String toString()
     {
-        return "UserEntity{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", kingdom='" + kingdom + '\'' +
-                '}';
+        return "UserEntity [email=" + email + ", kingdomName=" + kingdomName + "]";
     }
 }

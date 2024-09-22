@@ -7,15 +7,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class UserData implements UserDetails {
-    public String username;
+    public String email;
+    public String kingdomName;
     public String password;
-    public String kingdom;
 
-    public UserData(String username, String password, String kingdom)
+    public UserData(String email, String kingdomName, String password)
     {
-        this.username = username;
+        this.email = email;
+        this.kingdomName = kingdomName;
         this.password = password;
-        this.kingdom = kingdom;
     }
 
     @Override
@@ -48,7 +48,16 @@ public class UserData implements UserDetails {
         return new ArrayList<>();
     }
 
-    @Override
+    public String getEmail()
+    {
+        return email;
+    }
+
+    public String getKingdomName()
+    {
+        return kingdomName;
+    }
+
     public String getPassword()
     {
         return password;
@@ -57,20 +66,12 @@ public class UserData implements UserDetails {
     @Override
     public String getUsername()
     {
-        return username;
-    }
-
-    public String getKingdom()
-    {
-        return kingdom;
+        return email;
     }
 
     @Override
     public String toString()
     {
-        return "UserData{" +
-                "username='" + username + '\'' +
-                ", kingdom='" + kingdom + '\'' +
-                '}';
+        return "UserData [email=" + email + ", kingdomName=" + kingdomName + ", password=" + password + "]";
     }
 }

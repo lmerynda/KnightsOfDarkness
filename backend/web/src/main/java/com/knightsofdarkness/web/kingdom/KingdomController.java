@@ -56,7 +56,7 @@ public class KingdomController {
 
         log.info("User {} requested kingdom", currentUser);
 
-        return kingdomService.getKingdomByName(currentUser.getKingdom())
+        return kingdomService.getKingdomByName(currentUser.getKingdomName())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -70,7 +70,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.build(currentUser.kingdom, buildings);
+        return kingdomService.build(currentUser.getKingdomName(), buildings);
     }
 
     @PostMapping("/demolish")
@@ -82,7 +82,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.demolish(currentUser.kingdom, buildings);
+        return kingdomService.demolish(currentUser.getKingdomName(), buildings);
     }
 
     @PostMapping("/start-special-building")
@@ -94,7 +94,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.startSpecialBuilding(currentUser.kingdom, specialBuildingStartDto);
+        return kingdomService.startSpecialBuilding(currentUser.getKingdomName(), specialBuildingStartDto);
     }
 
     @PostMapping("/demolish-special-building")
@@ -106,7 +106,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.demolishSpecialBuilding(currentUser.kingdom, specialBuildingDemolishDto);
+        return kingdomService.demolishSpecialBuilding(currentUser.getKingdomName(), specialBuildingDemolishDto);
     }
 
     @PostMapping("/build-special-building")
@@ -118,7 +118,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.buildSpecialBuilding(currentUser.kingdom, specialBuildingBuildDto);
+        return kingdomService.buildSpecialBuilding(currentUser.getKingdomName(), specialBuildingBuildDto);
     }
 
     @PostMapping("/train")
@@ -130,7 +130,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.train(currentUser.kingdom, unitsToTrain);
+        return kingdomService.train(currentUser.getKingdomName(), unitsToTrain);
     }
 
     @PostMapping(value = "/pass-turn", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -142,7 +142,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.passTurn(currentUser.kingdom);
+        return kingdomService.passTurn(currentUser.getKingdomName());
     }
 
     @PostMapping(value = "/buy-land", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -154,7 +154,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.buyLand(currentUser.kingdom, amount);
+        return kingdomService.buyLand(currentUser.getKingdomName(), amount);
     }
 
     private void logUserUnauthenticated()

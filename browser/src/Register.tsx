@@ -8,7 +8,8 @@ type Result = {
 };
 
 const Register: React.FC = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [kingdomName, setKingdomName] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [result, setResult] = useState<Result | undefined>(undefined);
@@ -20,8 +21,8 @@ const Register: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (username === "" || password === "" || repeatPassword === "") {
-      setError("Username, password, or repeat password cannot be empty");
+    if (email === "" || kingdomName === "" || password === "" || repeatPassword === "") {
+      setError("email, kingdomName, password, or repeat password cannot be empty");
       return;
     }
 
@@ -30,10 +31,11 @@ const Register: React.FC = () => {
       return;
     }
 
-    console.log(`Registering new player with username: ${username} and kingdomName: ${username}`);
+    console.log(`Registering new player with email: ${email} and kingdomName: ${kingdomName}`);
 
     const authRequest = {
-      username: username,
+      email: email,
+      kingdomName: kingdomName,
       password: password,
     };
 
@@ -46,7 +48,7 @@ const Register: React.FC = () => {
         body: JSON.stringify(authRequest),
       });
       if (response.ok) {
-        console.log(`Successfully registered new player with username: ${username}`);
+        console.log(`Successfully registered new player with email: ${email} and kingdomName: ${kingdomName}`);
         setResult({ message: "Successfully registered account, you can now log in", error: false });
       } else if (response.status === 401) {
         setError("Unauthorized");
@@ -67,7 +69,8 @@ const Register: React.FC = () => {
         Register
       </Typography>
       <Box component={"form"} onSubmit={handleSubmit} sx={{ mt: 1 }}>
-        <TextField label="Kingdom Name" type="text" value={username} onChange={event => setUsername(event.target.value)} required />
+        <TextField label="Email" type="email" value={email} onChange={event => setEmail(event.target.value)} required />
+        <TextField label="Kingdom Name" type="text" value={kingdomName} onChange={event => setKingdomName(event.target.value)} required />
         <TextField label="Password" type="password" value={password} onChange={event => setPassword(event.target.value)} required />
         <TextField
           label="Repeat-Password"
