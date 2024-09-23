@@ -40,8 +40,8 @@ public class AuthController {
     @PostMapping("/auth/authenticate")
     public AuthResponseDto login(@RequestBody AuthRequestDto loginRequest)
     {
-        log.info("login request received for user: {}", loginRequest.username);
-        var authToken = new UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password);
+        log.info("login request received for user: {}", loginRequest.email);
+        var authToken = new UsernamePasswordAuthenticationToken(loginRequest.email, loginRequest.password);
         try
         {
             Authentication authentication = authenticationManager.authenticate(authToken);
@@ -49,7 +49,7 @@ public class AuthController {
             return new AuthResponseDto(token);
         } catch (AuthenticationException e)
         {
-            log.warn("Authentication failed for user: {} with message: {}", loginRequest.username, e.getMessage());
+            log.warn("Authentication failed for user: {} with message: {}", loginRequest.email, e.getMessage());
             throw e;
         }
     }
@@ -57,19 +57,19 @@ public class AuthController {
     @PostMapping("/auth/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequestDto registerRequest)
     {
-        log.info("register request received for user: {}", registerRequest.username);
+        log.info("register request received for email: {} and kingdomName: {}", registerRequest.email, registerRequest.kingdomName);
 
-        if (userService.hasUserWithUsername(registerRequest.username))
+        if (userService.hasUserWithEmail(registerRequest.email))
         {
-            throw new IllegalArgumentException("Username already exists"); // TODO return a proper error response
+            throw new IllegalArgumentException("email already exists"); // TODO return a proper error response
         }
 
-        UserData user = new UserData(registerRequest.username, registerRequest.password, registerRequest.username);
+        UserData user = new UserData(registerRequest.email, registerRequest.kingdomName, registerRequest.password);
         user.password = passwordEncoder.encode(user.getPassword());
 
-        UserEntity newUser = new UserEntity(user.getUsername(), user.getPassword(), user.getKingdom());
+        UserEntity newUser = new UserEntity(user.email, user.getKingdomName(), user.getPassword());
         userService.saveUser(newUser);
-        kingdomService.createKingdom(user.getKingdom());
+        kingdomService.createKingdom(user.getKingdomName());
 
         return ResponseEntity.ok("User registered successfully");
     }
@@ -78,7 +78,7 @@ public class AuthController {
     public boolean validateToken(@AuthenticationPrincipal UserData currentUser)
     {
         // since this url is protected by security, if we reach here, the token is valid
-        log.info("Validate token request received for user: {}", currentUser.username);
+        log.info("Validate token request received for user: {}", currentUser.email);
         return true;
     }
 }

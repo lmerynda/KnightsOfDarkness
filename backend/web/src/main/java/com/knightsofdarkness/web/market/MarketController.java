@@ -40,7 +40,7 @@ public class MarketController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        var createdOffer = marketService.createOffer(offer, currentUser.getKingdom());
+        var createdOffer = marketService.createOffer(offer, currentUser.getKingdomName());
 
         return ResponseEntity.ok(createdOffer);
     }
@@ -60,7 +60,7 @@ public class MarketController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return marketService.buyOffer(id, buyerData.count(), currentUser.getKingdom());
+        return marketService.buyOffer(id, buyerData.count(), currentUser.getKingdomName());
     }
 
     @PostMapping("/market/{id}/withdraw")
@@ -72,7 +72,7 @@ public class MarketController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return marketService.withdraw(id, currentUser.getKingdom());
+        return marketService.withdraw(id, currentUser.getKingdomName());
     }
 
     private void logUserUnauthenticated()

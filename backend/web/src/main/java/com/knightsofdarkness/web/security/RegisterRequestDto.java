@@ -1,6 +1,7 @@
 package com.knightsofdarkness.web.security;
 
 public class RegisterRequestDto {
-    public String username;
+    public String email;
+    public String kingdomName;
     public String password;
 }

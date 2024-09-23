@@ -7,9 +7,9 @@ import java.util.List;
 public interface IUserService {
     List<UserEntity> getUsers();
 
-    Optional<UserEntity> getUserByUsername(String username);
+    Optional<UserEntity> getUserByEmail(String username);
 
-    boolean hasUserWithUsername(String username);
+    boolean hasUserWithEmail(String username);
 
     UserEntity saveUser(UserEntity user);
 

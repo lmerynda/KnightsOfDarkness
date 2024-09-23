@@ -19,15 +19,15 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Optional<UserEntity> getUserByUsername(String username)
+    public Optional<UserEntity> getUserByEmail(String email)
     {
-        return users.stream().filter(user -> user.username.equals(username)).findFirst();
+        return users.stream().filter(user -> user.email.equals(email)).findFirst();
     }
 
     @Override
-    public boolean hasUserWithUsername(String username)
+    public boolean hasUserWithEmail(String email)
     {
-        return users.stream().anyMatch(user -> user.username.equals(username));
+        return users.stream().anyMatch(user -> user.email.equals(email));
     }
 
     @Override
