@@ -67,7 +67,7 @@ public class AuthController {
         UserData user = new UserData(registerRequest.email, registerRequest.kingdomName, registerRequest.password);
         user.password = passwordEncoder.encode(user.getPassword());
 
-        UserEntity newUser = new UserEntity(user.getKingdomName(), user.getPassword(), user.getKingdomName());
+        UserEntity newUser = new UserEntity(user.email, user.getKingdomName(), user.getPassword());
         userService.saveUser(newUser);
         kingdomService.createKingdom(user.getKingdomName());
 
@@ -78,7 +78,7 @@ public class AuthController {
     public boolean validateToken(@AuthenticationPrincipal UserData currentUser)
     {
         // since this url is protected by security, if we reach here, the token is valid
-        log.info("Validate token request received for user: {}", currentUser.kingdomName);
+        log.info("Validate token request received for user: {}", currentUser.email);
         return true;
     }
 }

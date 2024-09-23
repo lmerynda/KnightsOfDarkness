@@ -36,7 +36,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain) throws ServletException, IOException
     {
-        log.info("Request to authenticate: {}", request.getRequestURI());
         try
         {
             getTokenFromRequest(request)

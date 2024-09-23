@@ -73,7 +73,7 @@ public class TokenService {
                 .expiration(Date.from(ZonedDateTime.now().plusMinutes(jwtExpirationMinutes).toInstant()))
                 .issuedAt(Date.from(ZonedDateTime.now().toInstant()))
                 .id(UUID.randomUUID().toString())
-                .subject(user.getKingdomName())
+                .subject(user.getEmail())
                 .compact();
     }
 
