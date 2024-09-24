@@ -31,6 +31,7 @@ public class KingdomTurnAction {
         kingdom.getResources().subtractCount(ResourceName.turns, 1);
         resetBuildingPoints();
         proffesionalsLeavingDueToInsufficientBuildings();
+        peopleLeavingDueToInssuficientHousing();
         double nourishmentProductionFactor = eatFood();
         results.nourishmentProductionFactor = nourishmentProductionFactor;
         doProduction(nourishmentProductionFactor);
@@ -40,6 +41,39 @@ public class KingdomTurnAction {
         kingdom.lastTurnReport = results;
 
         return KingdomPassTurnActionResult.success("Turn passed", results);
+    }
+
+    private void peopleLeavingDueToInssuficientHousing()
+    {
+        var housingCapacity = kingdom.getBuildings().getCount(BuildingName.house) * kingdom.getConfig().buildingCapacity().getCapacity(BuildingName.house);
+        var peopleCount = kingdom.getTotalPeopleCount();
+        if (housingCapacity >= peopleCount)
+        {
+            return;
+        }
+
+        int peopleToExile = peopleCount - housingCapacity;
+        int unemployed = kingdom.getResources().getCount(ResourceName.unemployed);
+        if(unemployed >= peopleToExile)
+        {
+            kingdom.getResources().subtractCount(ResourceName.unemployed, peopleToExile);
+            results.exiledPeople = peopleToExile;
+            return;
+        }
+
+        int professionalsToFire = peopleToExile - unemployed;
+        fireProfessionalsToMaintainUnemployedCount(professionalsToFire);
+
+        kingdom.getResources().subtractCount(ResourceName.unemployed, peopleToExile);
+        results.exiledPeople = peopleToExile;
+
+        return;
+    }
+
+    private void fireProfessionalsToMaintainUnemployedCount(int professionalsToFire)
+    {
+        // TODO think about how to choose which professionals to fire
+        return;
     }
 
     private void proffesionalsLeavingDueToInsufficientBuildings()
@@ -147,11 +181,6 @@ public class KingdomTurnAction {
             int arrivingPeople = housingCapacity - peopleCount;
             kingdom.getResources().addCount(ResourceName.unemployed, housingCapacity - peopleCount);
             results.arrivingPeople = arrivingPeople;
-        } else if (housingCapacity < peopleCount)
-        {
-            int exiledPeople = peopleCount - housingCapacity;
-            kingdom.getResources().subtractCount(ResourceName.unemployed, exiledPeople);
-            results.exiledPeople = exiledPeople;
         }
     }
 
