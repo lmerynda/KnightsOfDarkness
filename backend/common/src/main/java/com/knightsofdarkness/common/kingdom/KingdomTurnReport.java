@@ -11,6 +11,12 @@ public class KingdomTurnReport {
     public double kingdomSizeProductionBonus = 0.0;
     public double nourishmentProductionFactor = 1.0;
     public Map<ResourceName, Double> specialBuildingBonus = new EnumMap<>(ResourceName.class);
+    public Map<UnitName, Integer> professionalsLeaving = new EnumMap<>(UnitName.class);
+
+    public void addLeavingProfessionals(UnitName unit, int count)
+    {
+        professionalsLeaving.merge(unit, count, Integer::sum);
+    }
 
     public String toString()
     {
@@ -22,6 +28,7 @@ public class KingdomTurnReport {
                 ", kingdomSizeProductionBonus=" + kingdomSizeProductionBonus +
                 ", nourishmentProductionFactor=" + nourishmentProductionFactor +
                 ", specialBuildingBonus=" + specialBuildingBonus +
+                ", professionalsLeaving=" + professionalsLeaving +
                 '}';
     }
 }

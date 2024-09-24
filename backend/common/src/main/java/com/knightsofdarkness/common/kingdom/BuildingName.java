@@ -1,22 +1,24 @@
 package com.knightsofdarkness.common.kingdom;
 
+import java.util.Optional;
+
 public enum BuildingName
 {
     house, goldMine, ironMine, workshop, farm, market, barracks, guardHouse, spyGuild, tower, castle;
 
-    public static BuildingName getByUnit(UnitName unit)
+    public static Optional<BuildingName> getByUnit(UnitName unit)
     {
         return switch (unit)
         {
-            case builder -> null; // TODO pls fix this
-            case carrier -> market;
-            case spy -> spyGuild;
-            case blacksmith -> workshop;
-            case bowman, infantry, cavalry -> barracks;
-            case farmer -> farm;
-            case goldMiner -> goldMine;
-            case guard -> guardHouse;
-            case ironMiner -> ironMine;
+            case builder -> Optional.empty();
+            case carrier -> Optional.of(market);
+            case spy -> Optional.of(spyGuild);
+            case blacksmith -> Optional.of(workshop);
+            case bowman, infantry, cavalry -> Optional.of(barracks);
+            case farmer -> Optional.of(farm);
+            case goldMiner -> Optional.of(goldMine);
+            case guard -> Optional.of(guardHouse);
+            case ironMiner -> Optional.of(ironMine);
         };
     }
 
