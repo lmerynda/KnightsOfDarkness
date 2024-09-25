@@ -26,15 +26,15 @@ public class KingdomTrainAction {
             var maximumToAfford = calculateMaximumToAfford(kingdom.getResources(), trainingCost);
             var howManyToTrain = Math.min(unitsToTrain.getCount(unitName), maximumToAfford);
             var maybeBuildingType = BuildingName.getByUnit(unitName);
-            if(maybeBuildingType.isEmpty())
+            if(maybeBuildingType.isPresent())
             {
-                continue;
+                var buildingType = maybeBuildingType.get();
+                var buildingCapacity = kingdom.getConfig().buildingCapacity().getCapacity(buildingType);
+                var buildingOccupancy = kingdom.getUnits().getCount(unitName);
+                var freeCapacity = kingdom.getBuildings().getCount(buildingType) * buildingCapacity - buildingOccupancy;
+                howManyToTrain = Math.max(0, Math.min(howManyToTrain, freeCapacity));
             }
-            var buildingType = maybeBuildingType.get();
-            var buildingCapacity = kingdom.getConfig().buildingCapacity().getCapacity(buildingType);
-            var buildingOccupancy = kingdom.getUnits().getCount(unitName);
-            var freeCapacity = kingdom.getBuildings().getCount(buildingType) * buildingCapacity - buildingOccupancy;
-            howManyToTrain = Math.max(0, Math.min(howManyToTrain, freeCapacity));
+
             kingdom.getResources().subtractCount(ResourceName.gold, howManyToTrain * trainingCost.gold());
             kingdom.getResources().subtractCount(ResourceName.tools, howManyToTrain * trainingCost.tools());
             kingdom.getResources().subtractCount(ResourceName.weapons, howManyToTrain * trainingCost.weapons());
