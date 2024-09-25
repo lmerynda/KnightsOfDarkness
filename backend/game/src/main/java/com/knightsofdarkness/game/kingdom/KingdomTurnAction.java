@@ -1,5 +1,8 @@
 package com.knightsofdarkness.game.kingdom;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,15 +57,14 @@ public class KingdomTurnAction {
 
         int peopleToExile = peopleCount - housingCapacity;
         int unemployed = kingdom.getResources().getCount(ResourceName.unemployed);
-        if(unemployed >= peopleToExile)
+        if (unemployed >= peopleToExile)
         {
             kingdom.getResources().subtractCount(ResourceName.unemployed, peopleToExile);
             results.exiledPeople = peopleToExile;
             return;
         }
 
-        int professionalsToFire = peopleToExile - unemployed;
-        fireProfessionalsToMaintainUnemployedCount(professionalsToFire);
+        fireProfessionalsToMaintainUnemployedCount(peopleToExile);
 
         kingdom.getResources().subtractCount(ResourceName.unemployed, peopleToExile);
         results.exiledPeople = peopleToExile;
@@ -70,10 +72,52 @@ public class KingdomTurnAction {
         return;
     }
 
-    private void fireProfessionalsToMaintainUnemployedCount(int professionalsToFire)
+    private void fireProfessionalsToMaintainUnemployedCount(int peopleToExile)
     {
-        // TODO think about how to choose which professionals to fire
+        int professionalsToFire = peopleToExile - kingdom.getResources().getCount(ResourceName.unemployed);
+        fireProfessionalsBasedOnRatios(professionalsToFire);
+        professionalsToFire = peopleToExile - kingdom.getResources().getCount(ResourceName.unemployed);
+        fireProfessionalsBasedOnCount(professionalsToFire);
+
         return;
+    }
+
+    private void fireProfessionalsBasedOnRatios(int professionalsToFire)
+    {
+        var totalPopulation = kingdom.getUnits().countAll();
+        var unitsRatios = kingdom.getUnits().units.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> (double) entry.getValue() / totalPopulation));
+        for (var unit : UnitName.values())
+        {
+            // we don't want to fire more that we absolutaly have to, we'll take care of the remainder later on
+            var toFire = (int) Math.floor(unitsRatios.get(unit) * professionalsToFire);
+            kingdom.getUnits().subtractCount(unit, toFire);
+            kingdom.getResources().addCount(ResourceName.unemployed, toFire);
+            results.addLeavingProfessionals(unit, toFire);
+        }
+    }
+
+    private void fireProfessionalsBasedOnCount(int professionalsToFire)
+    {
+        while (professionalsToFire > 0)
+        {
+            for (var unit : UnitName.values())
+            {
+                if (professionalsToFire <= 0)
+                {
+                    return;
+                }
+
+                var count = kingdom.getUnits().getCount(unit);
+                if (count > 0)
+                {
+                    kingdom.getUnits().subtractCount(unit, 1);
+                    kingdom.getResources().addCount(ResourceName.unemployed, 1);
+                    results.addLeavingProfessionals(unit, 1);
+                    professionalsToFire--;
+
+                }
+            }
+        }
     }
 
     private void proffesionalsLeavingDueToInsufficientBuildings()
