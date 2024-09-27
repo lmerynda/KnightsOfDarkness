@@ -5,8 +5,6 @@
 1. Resource transfers using carriers
 1. Spies
 1. Rankings and statistics
-1. Firing of professionals when there is not enough buildings
-1. Exiling of people when there is not enough houses, including professionals
 1. Messages
 1. Notifications
 1. Coalitions

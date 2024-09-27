@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.game.Game;
@@ -303,5 +305,55 @@ class KingdomTurnTest {
         var savedReport = kingdom.getLastTurnReport();
 
         assertEquals(result.turnReport().get(), savedReport);
+    }
+
+    @Test
+    void passTurn_withInsufficientProfessionalBuildingCapacity_shouldFireExceedingNumber()
+    {
+        var kingdom = kingdomBuilder.build();
+        kingdom.passTurn();
+
+        trainGoldMinersToReachMaxCapacity(kingdom);
+
+        var unemployedBeforeTurn = kingdom.getResources().getCount(ResourceName.unemployed);
+        var goldMinersBeforeTurnCount = kingdom.getUnits().getCount(UnitName.goldMiner);
+        var toDemolish = new KingdomBuildingsDto();
+        toDemolish.setCount(BuildingName.goldMine, 1);
+        kingdom.demolish(toDemolish);
+        kingdom.passTurn();
+        
+
+        var unemployedAfterTurn = kingdom.getResources().getCount(ResourceName.unemployed);
+        var goldMinersAfterTurnCount = kingdom.getUnits().getCount(UnitName.goldMiner);
+        assertThat(unemployedAfterTurn).isGreaterThan(unemployedBeforeTurn);
+        assertThat(goldMinersAfterTurnCount).isLessThan(goldMinersBeforeTurnCount);
+        assertThat(unemployedAfterTurn - unemployedBeforeTurn).isEqualTo(goldMinersBeforeTurnCount - goldMinersAfterTurnCount);
+    }
+
+    @Test
+    void passTurn_withInsufficientHousesAndEnoughBuildingCapacity_shouldExileOnlyUnemployed()
+    {
+        var kingdom = kingdomBuilder.build();
+        kingdom.passTurn();
+
+        var unemployedBeforeTurn = kingdom.getResources().getCount(ResourceName.unemployed);
+        var toDemolish = new KingdomBuildingsDto();
+        toDemolish.setCount(BuildingName.house, 1);
+        kingdom.demolish(toDemolish);
+
+        kingdom.passTurn();
+
+        var unemployedAfterTurn = kingdom.getResources().getCount(ResourceName.unemployed);
+        assertThat(unemployedAfterTurn).isLessThan(unemployedBeforeTurn);
+    }
+
+    private void trainGoldMinersToReachMaxCapacity(Kingdom kingdom)
+    {
+        var currentGoldMinersCount = kingdom.getUnits().getCount(UnitName.goldMiner);
+        var goldMinersCapacity = kingdom.getBuildingCapacity(BuildingName.goldMine);
+        var unitsToTrain = new KingdomUnitsDto();
+        unitsToTrain.setCount(UnitName.goldMiner, goldMinersCapacity - currentGoldMinersCount);
+        kingdom.train(unitsToTrain);
+        kingdom.passTurn();
     }
 }
