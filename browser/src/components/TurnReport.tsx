@@ -17,6 +17,17 @@ const TurnReport: React.FC = () => {
         <Typography variant="body1">Food consumed: {lastTurnReport.foodConsumed}</Typography>
         <Typography variant="body1">Arriving people: {lastTurnReport.arrivingPeople}</Typography>
         <Typography variant="body1">Exiled People: {lastTurnReport.exiledPeople}</Typography>
+        <Typography variant="h6">Professionals Left</Typography>
+        <div style={{ marginLeft: "1rem" }}>
+          {Object.entries(lastTurnReport.professionalsLeaving)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            .filter(([unit, quantity]) => quantity > 0)
+            .map(([unit, quantity]) => (
+              <Typography variant="body1" key={unit}>
+                {unit}: {quantity}
+              </Typography>
+            ))}
+        </div>
         <Typography variant="body1">Kingdom size production bonus: {lastTurnReport.kingdomSizeProductionBonus}</Typography>
         <Typography variant="body1">Nourishment production factor: {lastTurnReport.nourishmentProductionFactor}</Typography>
         <Typography variant="h6">Resources Produced</Typography>

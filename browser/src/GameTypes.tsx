@@ -94,6 +94,7 @@ export type TurnReport = {
   kingdomSizeProductionBonus: number;
   nourishmentProductionFactor: number;
   specialBuildingBonus: SpecialBuildingBonus;
+  professionalsLeaving: KingdomUnits;
 };
 
 export type TrainingCost = Record<

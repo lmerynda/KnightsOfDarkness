@@ -7,6 +7,7 @@ import org.hibernate.type.SqlTypes;
 
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.UnitName;
 
 import jakarta.persistence.Embeddable;
 
@@ -21,6 +22,8 @@ public class KingdomTurnReportEntity {
     public double nourishmentProductionFactor;
     @JdbcTypeCode(SqlTypes.JSON)
     public Map<ResourceName, Double> specialBuildingBonus;
+    @JdbcTypeCode(SqlTypes.JSON)
+    public Map<UnitName, Integer> professionalsLeaving;
 
     public KingdomTurnReport toDto()
     {
@@ -32,6 +35,7 @@ public class KingdomTurnReportEntity {
         kingdomTurnPassedResults.kingdomSizeProductionBonus = kingdomSizeProductionBonus;
         kingdomTurnPassedResults.nourishmentProductionFactor = nourishmentProductionFactor;
         kingdomTurnPassedResults.specialBuildingBonus = specialBuildingBonus;
+        kingdomTurnPassedResults.professionalsLeaving = professionalsLeaving;
         return kingdomTurnPassedResults;
     }
 
@@ -51,6 +55,7 @@ public class KingdomTurnReportEntity {
         kingdomTurnReportEntity.kingdomSizeProductionBonus = kingdomTurnPassedResults.kingdomSizeProductionBonus;
         kingdomTurnReportEntity.nourishmentProductionFactor = kingdomTurnPassedResults.nourishmentProductionFactor;
         kingdomTurnReportEntity.specialBuildingBonus = kingdomTurnPassedResults.specialBuildingBonus;
+        kingdomTurnReportEntity.professionalsLeaving = kingdomTurnPassedResults.professionalsLeaving;
         return kingdomTurnReportEntity;
     }
 
@@ -70,6 +75,7 @@ public class KingdomTurnReportEntity {
                 ", kingdomSizeProductionBonus=" + kingdomSizeProductionBonus +
                 ", nourishmentProductionFactor=" + nourishmentProductionFactor +
                 ", specialBuildingBonus=" + specialBuildingBonus +
+                ", professionalsLeaving=" + professionalsLeaving +
                 '}';
     }
 
