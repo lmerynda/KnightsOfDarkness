@@ -9,8 +9,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.knightsofdarkness.storage.user.UserEntity;
 import com.knightsofdarkness.web.user.IUserService;
-import com.knightsofdarkness.web.user.UserEntity;
 
 @Component
 public class UserInitializer implements CommandLineRunner {

@@ -2,44 +2,50 @@ package com.knightsofdarkness.web.user;
 
 import java.util.Optional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.knightsofdarkness.storage.user.UserEntity;
+import com.knightsofdarkness.storage.user.UserJpaRepository;
+
 @Service
 public class UserService implements IUserService {
 
-    List<UserEntity> users = new ArrayList<>();
+    private final UserJpaRepository userRepository;
+
+    public UserService(UserJpaRepository userRepository)
+    {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public List<UserEntity> getUsers()
     {
-        return users;
+        return userRepository.findAll();
     }
 
     @Override
     public Optional<UserEntity> getUserByEmail(String email)
     {
-        return users.stream().filter(user -> user.email.equals(email)).findFirst();
+        return userRepository.findById(email);
     }
 
     @Override
     public boolean hasUserWithEmail(String email)
     {
-        return users.stream().anyMatch(user -> user.email.equals(email));
+        return userRepository.existsById(email);
     }
 
     @Override
     public UserEntity saveUser(UserEntity user)
     {
-        users.add(user);
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
     public void deleteUser(UserEntity user)
     {
-        users.remove(user);
+        userRepository.delete(user);
     }
 }
