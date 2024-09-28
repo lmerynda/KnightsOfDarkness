@@ -68,8 +68,6 @@ public class KingdomTurnAction {
 
         kingdom.getResources().subtractCount(ResourceName.unemployed, peopleToExile);
         results.exiledPeople = peopleToExile;
-
-        return;
     }
 
     private void fireProfessionalsToMaintainUnemployedCount(int peopleToExile)
@@ -78,8 +76,6 @@ public class KingdomTurnAction {
         fireProfessionalsBasedOnRatios(professionalsToFire);
         professionalsToFire = peopleToExile - kingdom.getResources().getCount(ResourceName.unemployed);
         fireProfessionalsBasedOnCount(professionalsToFire);
-
-        return;
     }
 
     private void fireProfessionalsBasedOnRatios(int professionalsToFire)
