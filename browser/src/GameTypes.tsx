@@ -152,3 +152,10 @@ export type PassTurnReport = {
   success: boolean;
   turnReport: TurnReport | undefined;
 };
+
+export type Notification = {
+  id: string;
+  title: string;
+  message: string;
+  dateTime: number;
+};

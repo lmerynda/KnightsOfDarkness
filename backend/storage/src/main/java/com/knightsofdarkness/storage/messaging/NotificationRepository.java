@@ -28,6 +28,7 @@ public class NotificationRepository implements INotificationRepository {
     @Override
     public List<NotificationDto> findByKingdom(String kingdomName)
     {
-        return jpaRepository.findByKingdomName(kingdomName);
+        var notifications = jpaRepository.findByKingdomName(kingdomName);
+        return notifications.stream().map(NotificationEntity::toDto).toList();
     }
 }

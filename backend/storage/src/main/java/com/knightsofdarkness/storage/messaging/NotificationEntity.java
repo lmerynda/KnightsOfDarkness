@@ -3,6 +3,8 @@ package com.knightsofdarkness.storage.messaging;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.knightsofdarkness.common.messaging.NotificationDto;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -24,5 +26,10 @@ public class NotificationEntity {
         this.kingdomName = kingdomName;
         this.message = message;
         this.date = date;
+    }
+
+    public NotificationDto toDto()
+    {
+        return new NotificationDto(id, kingdomName, message, date);
     }
 }
