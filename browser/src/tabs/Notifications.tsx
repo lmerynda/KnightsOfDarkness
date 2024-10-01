@@ -13,10 +13,10 @@ const Notifications: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const reloadNotifications = async () => {
+  const reloadNotifications = React.useCallback(async () => {
     const data = await fetchNotificationsRequest();
     setNotifications(data);
-  };
+  }, []);
 
   React.useEffect(() => {
     reloadNotifications();
