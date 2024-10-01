@@ -20,6 +20,7 @@
 1. There is a mix of layer responsibility between controller and service, DTOs should be translated in controller but often are in service, as well as ResponseEntity
 1. More validations?
 1. Make up mind about amount vs count, it's all mixed up
+1. Show the cost of buying land near the transaction form
 
 ## Ideas
 

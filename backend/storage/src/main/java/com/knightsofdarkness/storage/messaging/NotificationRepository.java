@@ -1,10 +1,12 @@
 package com.knightsofdarkness.storage.messaging;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
-import com.knightsofdarkness.game.Id;
+import com.knightsofdarkness.common.messaging.NotificationDto;
 import com.knightsofdarkness.game.storage.INotificationRepository;
 
 @Repository
@@ -17,9 +19,15 @@ public class NotificationRepository implements INotificationRepository {
     }
 
     @Override
-    public void create(String kingdomName, String message)
+    public void create(UUID id, String kingdomName, String message, Instant dateTime)
     {
-        NotificationEntity entity = new NotificationEntity(Id.generate(), kingdomName, message, Instant.now());
+        NotificationEntity entity = new NotificationEntity(id, kingdomName, message, dateTime);
         jpaRepository.save(entity);
+    }
+
+    @Override
+    public List<NotificationDto> findByKingdom(String kingdomName)
+    {
+        return jpaRepository.findByKingdomName(kingdomName);
     }
 }

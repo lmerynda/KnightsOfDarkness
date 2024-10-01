@@ -17,22 +17,22 @@ import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.Utils;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.game.messaging.INotificationSystem;
 import com.knightsofdarkness.game.storage.IKingdomRepository;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
-import com.knightsofdarkness.game.storage.INotificationRepository;
 
 public class Market implements IMarket {
     private static final Logger log = LoggerFactory.getLogger(Market.class);
     IMarketOfferRepository offersRepository;
     IKingdomRepository kingdomRepository;
-    INotificationRepository notificationRepository;
+    INotificationSystem notificationSystem;
     GameConfig gameConfig;
 
-    public Market(IMarketOfferRepository repository, IKingdomRepository kingdomRepository, INotificationRepository notificationRepository, GameConfig gameConfig)
+    public Market(IMarketOfferRepository repository, IKingdomRepository kingdomRepository, INotificationSystem notificationSystem, GameConfig gameConfig)
     {
         this.offersRepository = repository;
         this.kingdomRepository = kingdomRepository;
-        this.notificationRepository = notificationRepository;
+        this.notificationSystem = notificationSystem;
         this.gameConfig = gameConfig;
     }
 
@@ -157,7 +157,7 @@ public class Market implements IMarket {
         offersRepository.registerMarketTransaction(transaction);
 
         var message = Utils.format("Transaction: {} bought {} {} for {} gold", buyer.getName(), buyerAmount, offer.resource, buyerGold);
-        notificationRepository.create(seller.getName(), message);
+        notificationSystem.create(seller.getName(), message);
 
         return result;
     }

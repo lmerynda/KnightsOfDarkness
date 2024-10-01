@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 public class NotificationEntity {
     @Id
     private UUID id;
-    private String kingdom;
+    private String kingdomName;
     private String message;
     private Instant date;
 
@@ -18,10 +18,10 @@ public class NotificationEntity {
     {
     }
 
-    public NotificationEntity(UUID id, String kingdom, String message, Instant date)
+    public NotificationEntity(UUID id, String kingdomName, String message, Instant date)
     {
         this.id = id;
-        this.kingdom = kingdom;
+        this.kingdomName = kingdomName;
         this.message = message;
         this.date = date;
     }
