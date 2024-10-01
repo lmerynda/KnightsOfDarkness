@@ -18,7 +18,7 @@ const KingdomTabs: React.FC = () => {
           <Tab label="Build" value="/build" to="/build" component={Link} />
           <Tab label="Train" value="/train" to="/train" component={Link} />
           <Tab label="Market" value="/market/*" to="/market/*" component={Link} />
-          <Tab label="Notifications" value="/notifications/*" to="/notifications/*" component={Link} />
+          <Tab label="Notifications" value="/notifications" to="/notifications" component={Link} />
         </Tabs>
       </AppBar>
       <Routes>
@@ -26,7 +26,7 @@ const KingdomTabs: React.FC = () => {
         <Route path="/build" element={<Build />} />
         <Route path="/train" element={<Train />} />
         <Route path="/market/*" element={<Market />} />
-        <Route path="/notifications/*" element={<Notifications />} />
+        <Route path="/notifications" element={<Notifications />} />
         <Route path="*" element={<Navigate to="/overview" />} />
       </Routes>
     </Box>
