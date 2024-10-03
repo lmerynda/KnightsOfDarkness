@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.common.messaging.NotificationDto;
@@ -26,9 +27,10 @@ public class NotificationRepository implements INotificationRepository {
     }
 
     @Override
-    public List<NotificationDto> findByKingdom(String kingdomName)
+    public List<NotificationDto> findByKingdom(String kingdomName, int limit)
     {
-        var notifications = jpaRepository.findByKingdomName(kingdomName);
+        PageRequest pageable = PageRequest.of(0, limit);
+        var notifications = jpaRepository.findByKingdomName(kingdomName, pageable);
         return notifications.stream().map(NotificationEntity::toDto).toList();
     }
 }

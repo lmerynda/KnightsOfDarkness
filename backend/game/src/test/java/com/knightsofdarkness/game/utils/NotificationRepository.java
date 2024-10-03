@@ -26,8 +26,8 @@ public class NotificationRepository implements INotificationRepository {
     }
 
     @Override
-    public List<NotificationDto> findByKingdom(String kingdomName)
+    public List<NotificationDto> findByKingdom(String kingdomName, int limit)
     {
-        return notifications.getOrDefault(kingdomName, new ArrayList<>());
+        return notifications.getOrDefault(kingdomName, new ArrayList<>()).stream().limit(limit).toList();
     }
 }

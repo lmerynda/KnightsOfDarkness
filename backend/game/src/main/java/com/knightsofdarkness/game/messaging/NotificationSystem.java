@@ -24,6 +24,7 @@ public class NotificationSystem implements INotificationSystem {
     @Override
     public List<NotificationDto> getNotifications(String kingdomName)
     {
-        return notificationRepository.findByKingdom(kingdomName);
+        int limit = 15;
+        return notificationRepository.findByKingdom(kingdomName, limit);
     }
 }

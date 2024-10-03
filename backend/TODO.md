@@ -21,6 +21,10 @@
 1. More validations?
 1. Make up mind about amount vs count, it's all mixed up
 1. Show the cost of buying land near the transaction form
+1. Market offer should show total value
+1. Clicking MAX on buildings does max based on occupancy instead of calculating based on cost
+1. Buy report has price per unit two times
+1. Token doesn't autoextend with use, just hard expires after 15 minutes
 
 ## Ideas
 

@@ -9,5 +9,5 @@ import com.knightsofdarkness.common.messaging.NotificationDto;
 public interface INotificationRepository {
     void create(UUID id, String kingdomName, String message, Instant dateTime);
 
-    List<NotificationDto> findByKingdom(String kingdomName);
+    public List<NotificationDto> findByKingdom(String kingdomName, int limit);
 }
