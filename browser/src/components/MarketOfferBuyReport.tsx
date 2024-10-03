@@ -6,10 +6,10 @@ const MarketOfferBuyReport: React.FC<MarketOfferBuyResponse> = buyResponse => {
     <div>
       <h2>Buy Report</h2>
       <ul>
-        <li key={buyResponse.resource}>Resource: {buyResponse.resource}</li>
-        <li key={buyResponse.count}>Amount bought: {buyResponse.count}</li>
-        <li key={buyResponse.pricePerUnit}>Price per unit: {buyResponse.pricePerUnit}</li>
-        <li key={buyResponse.totalCost}>Total cost: {buyResponse.totalCost}</li>
+        <li key="resource">Resource: {buyResponse.resource}</li>
+        <li key="count">Amount bought: {buyResponse.count}</li>
+        <li key="pricePerUnit">Price per unit: {buyResponse.pricePerUnit}</li>
+        <li key="totalCost">Total cost: {buyResponse.totalCost}</li>
       </ul>
     </div>
   );
