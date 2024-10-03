@@ -25,10 +25,10 @@ public class NotificationRepository implements INotificationRepository {
     }
 
     @Override
-    public List<NotificationDto> findByKingdom(String kingdomName, int limit)
+    public List<NotificationDto> findByKingdomNameOrderByIsReadAscDateDesc(String kingdomName, int limit)
     {
         PageRequest pageable = PageRequest.of(0, limit);
-        var notifications = jpaRepository.findByKingdomName(kingdomName, pageable);
+        var notifications = jpaRepository.findByKingdomNameOrderByIsReadAscDateDesc(kingdomName, pageable);
         return notifications.stream().map(NotificationEntity::toDto).toList();
     }
 }

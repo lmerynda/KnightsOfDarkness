@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NotificationJpaRepository extends JpaRepository<NotificationEntity, UUID> {
-    List<NotificationEntity> findByKingdomName(String kingdomName, Pageable pageable);
+    List<NotificationEntity> findByKingdomNameOrderByIsReadAscDateDesc(String kingdomName, Pageable pageable);
 }

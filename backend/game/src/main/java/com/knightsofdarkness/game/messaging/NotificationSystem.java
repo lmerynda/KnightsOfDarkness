@@ -28,6 +28,6 @@ public class NotificationSystem implements INotificationSystem {
     @Override
     public List<NotificationDto> getNotifications(String kingdomName)
     {
-        return notificationRepository.findByKingdom(kingdomName, gameConfig.common().maxNotificationsCount());
+        return notificationRepository.findByKingdomNameOrderByIsReadAscDateDesc(kingdomName, gameConfig.common().maxNotificationsCount());
     }
 }

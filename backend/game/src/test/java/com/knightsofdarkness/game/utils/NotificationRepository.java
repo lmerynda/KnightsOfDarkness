@@ -1,6 +1,7 @@
 package com.knightsofdarkness.game.utils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,12 @@ public class NotificationRepository implements INotificationRepository {
     }
 
     @Override
-    public List<NotificationDto> findByKingdom(String kingdomName, int limit)
+    public List<NotificationDto> findByKingdomNameOrderByIsReadAscDateDesc(String kingdomName, int limit)
     {
-        return notifications.getOrDefault(kingdomName, new ArrayList<>()).stream().limit(limit).toList();
+        return notifications.getOrDefault(kingdomName, new ArrayList<>()).stream()
+                .sorted(Comparator.comparing(NotificationDto::isRead)
+                        .thenComparing(Comparator.comparing(NotificationDto::date).reversed()))
+                .limit(limit)
+                .toList();
     }
 }
