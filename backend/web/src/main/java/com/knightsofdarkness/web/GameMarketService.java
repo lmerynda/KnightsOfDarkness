@@ -27,7 +27,7 @@ public class GameMarketService {
         this.kingdomRepository = kingdomRepository;
         this.gameConfig = gameConfig;
 
-        this.notificationSystem = new NotificationSystem(notificationRepository);
+        this.notificationSystem = new NotificationSystem(notificationRepository, gameConfig);
     }
 
     @Bean

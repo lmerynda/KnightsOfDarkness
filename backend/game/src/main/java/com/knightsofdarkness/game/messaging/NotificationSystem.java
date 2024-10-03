@@ -5,14 +5,17 @@ import java.util.List;
 
 import com.knightsofdarkness.common.messaging.NotificationDto;
 import com.knightsofdarkness.game.Id;
+import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.storage.INotificationRepository;
 
 public class NotificationSystem implements INotificationSystem {
     INotificationRepository notificationRepository;
+    GameConfig gameConfig;
 
-    public NotificationSystem(INotificationRepository notificationRepository)
+    public NotificationSystem(INotificationRepository notificationRepository, GameConfig gameConfig)
     {
         this.notificationRepository = notificationRepository;
+        this.gameConfig = gameConfig;
     }
 
     @Override
@@ -24,7 +27,6 @@ public class NotificationSystem implements INotificationSystem {
     @Override
     public List<NotificationDto> getNotifications(String kingdomName)
     {
-        int limit = 15;
-        return notificationRepository.findByKingdom(kingdomName, limit);
+        return notificationRepository.findByKingdom(kingdomName, gameConfig.common().maxNotificationsCount());
     }
 }

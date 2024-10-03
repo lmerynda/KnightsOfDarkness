@@ -12,7 +12,7 @@ public class TestGame {
         var config = Initializer.readGameConfig();
         var kingdomRepository = new KingdomRepository();
         var notificationRepository = new NotificationRepository();
-        var notificationSystem = new NotificationSystem(notificationRepository);
+        var notificationSystem = new NotificationSystem(notificationRepository, config);
         var market = new MarketBuilder(config, notificationSystem).withKingdomRepository(kingdomRepository).build();
 
         return new Game(config, market, kingdomRepository, notificationSystem);

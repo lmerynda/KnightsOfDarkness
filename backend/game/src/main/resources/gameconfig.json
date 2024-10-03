@@ -162,6 +162,7 @@
     "foodUpkeepPerUnit": 10,
     "ironConsumptionPerProductionUnit": 1,
     "specialBuildingMaxCount": 5,
-    "newTurnPeriodicity": 10000
+    "newTurnPeriodicity": 10000,
+    "maxNotificationsCount": 15
   }
 }
