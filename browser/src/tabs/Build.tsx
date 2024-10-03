@@ -46,12 +46,9 @@ const Build: React.FC = () => {
   };
 
   const handleMaxInput = (building: Building) => {
-    const buildingOccupants = getBuildingOccupants(building, kingdomContext.kingdom);
-    const totalCapacity = getTotalCapacity(building, kingdomContext.kingdom, kingdomContext.gameConfig);
-    const openPositions = totalCapacity - buildingOccupants;
-
+    const availableLand = kingdomContext.kingdom.resources.land - kingdomContext.kingdom.details.usedLand;
     const maxBuildingsToAfford = howManyBuildingsCanAfford(building);
-    const maxBuildings = Math.min(maxBuildingsToAfford, openPositions);
+    const maxBuildings = Math.min(maxBuildingsToAfford, availableLand);
     setBuildingCounts(prevCounts => ({
       ...prevCounts,
       [building]: maxBuildings,
