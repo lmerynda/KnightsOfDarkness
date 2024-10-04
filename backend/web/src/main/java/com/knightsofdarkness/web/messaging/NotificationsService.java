@@ -34,4 +34,10 @@ public class NotificationsService {
         log.info("Marking notification as read");
         notificationSystem.markNotificationAsRead(kingdomName, notificationId);
     }
+
+    public long countKingdomUnreadNotifications(String kingdomName)
+    {
+        log.info("Counting unread notifications for kingdom {}", kingdomName);
+        return notificationSystem.countKingdomUnreadNotifications(kingdomName);
+    }
 }

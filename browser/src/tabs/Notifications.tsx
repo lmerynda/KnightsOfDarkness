@@ -1,13 +1,14 @@
 import React, { useContext } from "react";
 import { Notification } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
-import { fetchNotificationsRequest, markNotificationAsRead } from "../game-api-client/NotificationsApi";
+import { fetchNotificationsCount, fetchNotificationsRequest, markNotificationAsRead } from "../game-api-client/NotificationsApi";
 import { notificationsRefreshInterval } from "../Consts";
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 const Notifications: React.FC = () => {
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
+  const [notificationCount, setNotificationCount] = React.useState<number>(0);
   const kingdomContext = useContext(KingdomContext);
   const theme = useTheme();
 
@@ -20,20 +21,27 @@ const Notifications: React.FC = () => {
     setNotifications(data);
   }, []);
 
+  const reloadNotificationsCount = React.useCallback(async () => {
+    const data = await fetchNotificationsCount(kingdomContext.kingdom.name);
+    setNotificationCount(data);
+  }, []);
+
   React.useEffect(() => {
     reloadNotifications();
+    reloadNotificationsCount();
     const interval = setInterval(() => {
       reloadNotifications();
+      reloadNotificationsCount();
     }, notificationsRefreshInterval);
 
     return () => {
       clearInterval(interval);
     };
-  }, [reloadNotifications]);
+  }, [reloadNotifications, reloadNotificationsCount]);
 
   return (
     <div>
-      <Typography variant="h4">Notifications</Typography>
+      <Typography variant="h4">Notifications {notificationCount > 0 ? `(${notificationCount} unread)` : ''}</Typography>
       <List>
         {notifications.map(notification => (
           <ListItem
@@ -41,6 +49,7 @@ const Notifications: React.FC = () => {
             onClick={async () => {
               await markNotificationAsRead(notification.id);
               reloadNotifications();
+              reloadNotificationsCount();
             }}
             sx={{
               backgroundColor: notification.isRead ? theme.palette.background.paper : theme.palette.action.hover,

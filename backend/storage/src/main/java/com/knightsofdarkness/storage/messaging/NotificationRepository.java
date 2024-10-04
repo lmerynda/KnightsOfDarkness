@@ -1,8 +1,7 @@
 package com.knightsofdarkness.storage.messaging;
 
-import java.util.Optional;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.PageRequest;
@@ -46,5 +45,11 @@ public class NotificationRepository implements INotificationRepository {
     {
         NotificationEntity entity = NotificationEntity.fromDto(updatedNotification);
         jpaRepository.save(entity);
+    }
+
+    @Override
+    public long countKingdomUnreadNotifications(String kingdomName)
+    {
+        return jpaRepository.countByKingdomNameAndIsReadFalse(kingdomName);
     }
 }

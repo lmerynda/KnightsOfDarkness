@@ -51,4 +51,10 @@ public class NotificationSystem implements INotificationSystem {
 
         notificationRepository.update(updatedNotification);
     }
+
+    @Override
+    public long countKingdomUnreadNotifications(String kingdomName)
+    {
+        return notificationRepository.countKingdomUnreadNotifications(kingdomName);
+    }
 }

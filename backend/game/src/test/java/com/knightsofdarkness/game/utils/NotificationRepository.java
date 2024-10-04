@@ -56,4 +56,12 @@ public class NotificationRepository implements INotificationRepository {
                 .findFirst()
                 .ifPresent(notification -> notification = updatedNotification);
     }
+
+    @Override
+    public long countKingdomUnreadNotifications(String kingdomName)
+    {
+        return notifications.getOrDefault(kingdomName, new ArrayList<>()).stream()
+                .filter(notification -> !notification.isRead())
+                .count();
+    }
 }

@@ -50,3 +50,28 @@ export async function markNotificationAsRead(notificationId: string): Promise<vo
     throw error;
   }
 }
+
+export async function fetchNotificationsCount(kingdomName: string): Promise<number> {
+  try {
+    const response = await handleResponse(
+      fetchData(`${GAME_API}/kingdom/notifications/count`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
+        },
+      }),
+    );
+
+    if (response.ok) {
+      const data = response.json();
+      console.log(`fetchNotificationsCount Request successful, status: ${response.status} data: ${JSON.stringify(data)}`);
+      return data;
+    }
+
+    throw new Error(`request failed, status: ${response.status}`);
+  } catch (error) {
+    console.error("Fetching notifications count error", error);
+    throw error;
+  }
+}
