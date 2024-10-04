@@ -1,6 +1,9 @@
 package com.knightsofdarkness.storage.messaging;
 
+import java.util.Optional;
+
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
@@ -30,5 +33,18 @@ public class NotificationRepository implements INotificationRepository {
         PageRequest pageable = PageRequest.of(0, limit);
         var notifications = jpaRepository.findByKingdomNameOrderByIsReadAscDateDesc(kingdomName, pageable);
         return notifications.stream().map(NotificationEntity::toDto).toList();
+    }
+
+    @Override
+    public Optional<NotificationDto> findById(UUID notificationId)
+    {
+        return jpaRepository.findById(notificationId).map(NotificationEntity::toDto);
+    }
+
+    @Override
+    public void update(NotificationDto updatedNotification)
+    {
+        NotificationEntity entity = NotificationEntity.fromDto(updatedNotification);
+        jpaRepository.save(entity);
     }
 }

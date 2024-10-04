@@ -26,3 +26,27 @@ export async function fetchNotificationsRequest(): Promise<Notification[]> {
     throw error;
   }
 }
+
+export async function markNotificationAsRead(notificationId: string): Promise<void> {
+  try {
+    const response = await handleResponse(
+      fetchData(`${GAME_API}/kingdom/notifications/${notificationId}/mark-as-read`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
+        },
+      }),
+    );
+
+    if (response.ok) {
+      console.log(`markNotificationAsRead Request successful, status: ${response.status}`);
+      return;
+    }
+
+    throw new Error(`request failed, status: ${response.status}`);
+  } catch (error) {
+    console.error("Marking notification as read error", error);
+    throw error;
+  }
+}

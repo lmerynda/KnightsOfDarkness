@@ -46,7 +46,7 @@ public class MarketController {
     }
 
     @GetMapping("/market/{resource}")
-    List<MarketOfferDto> getOffersByResource(@PathVariable MarketResource resource)
+    List<MarketOfferDto> getOffersByResource(@PathVariable("resource") MarketResource resource)
     {
         return marketService.getOffersByResource(resource);
     }

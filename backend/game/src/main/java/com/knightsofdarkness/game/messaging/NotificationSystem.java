@@ -2,6 +2,7 @@ package com.knightsofdarkness.game.messaging;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import com.knightsofdarkness.common.messaging.NotificationDto;
 import com.knightsofdarkness.game.Id;
@@ -29,5 +30,25 @@ public class NotificationSystem implements INotificationSystem {
     public List<NotificationDto> getNotifications(String kingdomName)
     {
         return notificationRepository.findByKingdomNameOrderByIsReadAscDateDesc(kingdomName, gameConfig.common().maxNotificationsCount());
+    }
+
+    @Override
+    public void markNotificationAsRead(String kingdomName, UUID notificationId)
+    {
+        var maybeNotification = notificationRepository.findById(notificationId);
+        if (maybeNotification.isEmpty())
+        {
+            return;
+        }
+
+        var notification = maybeNotification.get();
+        if (!notification.kingdomName().equals(kingdomName))
+        {
+            return;
+        }
+
+        var updatedNotification = new NotificationDto(notification.id(), notification.kingdomName(), notification.message(), notification.date(), true);
+
+        notificationRepository.update(updatedNotification);
     }
 }

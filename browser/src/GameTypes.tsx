@@ -158,4 +158,5 @@ export type Notification = {
   title: string;
   message: string;
   dateTime: number;
+  isRead: boolean;
 };

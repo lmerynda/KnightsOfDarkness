@@ -1,14 +1,16 @@
 import React, { useContext } from "react";
-
 import { Notification } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
-import { fetchNotificationsRequest } from "../game-api-client/NotificationsApi";
+import { fetchNotificationsRequest, markNotificationAsRead } from "../game-api-client/NotificationsApi";
 import { notificationsRefreshInterval } from "../Consts";
+import { List, ListItem, ListItemText, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 const Notifications: React.FC = () => {
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
   const kingdomContext = useContext(KingdomContext);
-  // ask someone how to better solve it, null object pattern?
+  const theme = useTheme();
+
   if (kingdomContext === undefined) {
     throw new Error("Kingdom context is undefined");
   }
@@ -31,12 +33,28 @@ const Notifications: React.FC = () => {
 
   return (
     <div>
-      <h1>Notifications</h1>
-      <ul>
+      <Typography variant="h4">Notifications</Typography>
+      <List>
         {notifications.map(notification => (
-          <li key={notification.id}>{notification.message}</li>
+          <ListItem
+            key={notification.id}
+            onClick={async () => {
+              await markNotificationAsRead(notification.id);
+              reloadNotifications();
+            }}
+            sx={{
+              backgroundColor: notification.isRead ? theme.palette.background.paper : theme.palette.action.hover,
+              fontWeight: notification.isRead ? "normal" : "bold",
+              cursor: "pointer",
+              ":hover": {
+                backgroundColor: notification.isRead ? theme.palette.action.selected : theme.palette.primary.dark,
+              },
+            }}
+          >
+            <ListItemText primary={notification.message} />
+          </ListItem>
         ))}
-      </ul>
+      </List>
     </div>
   );
 };

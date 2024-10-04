@@ -2,11 +2,14 @@ package com.knightsofdarkness.web.messaging;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.common.messaging.NotificationDto;
@@ -33,6 +36,18 @@ public class NotificationsController {
         }
 
         return notificationsService.getNotifications(currentUser.getKingdomName());
+    }
+
+    @PostMapping("/kingdom/notifications/{id}/mark-as-read")
+    void markNotificationAsRead(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return;
+        }
+
+        notificationsService.markNotificationAsRead(currentUser.getKingdomName(), id);
     }
 
     private void logUserUnauthenticated()
