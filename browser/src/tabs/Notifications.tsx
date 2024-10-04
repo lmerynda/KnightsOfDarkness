@@ -22,7 +22,7 @@ const Notifications: React.FC = () => {
   }, []);
 
   const reloadNotificationsCount = React.useCallback(async () => {
-    const data = await fetchNotificationsCount(kingdomContext.kingdom.name);
+    const data = await fetchNotificationsCount();
     setNotificationCount(data);
   }, []);
 

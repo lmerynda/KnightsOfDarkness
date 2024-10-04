@@ -51,7 +51,7 @@ export async function markNotificationAsRead(notificationId: string): Promise<vo
   }
 }
 
-export async function fetchNotificationsCount(kingdomName: string): Promise<number> {
+export async function fetchNotificationsCount(): Promise<number> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/kingdom/notifications/count`, {
