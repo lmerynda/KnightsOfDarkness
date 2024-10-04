@@ -11,4 +11,6 @@ public interface INotificationSystem {
     List<NotificationDto> getNotifications(String kingdomName);
 
     void markNotificationAsRead(String kingdomName, UUID notificationId);
+
+    long countKingdomUnreadNotifications(String kingdomName);
 }
