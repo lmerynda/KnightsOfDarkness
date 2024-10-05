@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { GAME_API } from "./Consts";
+import { registerRequest } from "./game-api-client/UserApi";
 
 type Result = {
   message: string;
@@ -33,34 +33,13 @@ const Register: React.FC = () => {
 
     console.log(`Registering new player with email: ${email} and kingdomName: ${kingdomName}`);
 
-    const authRequest = {
-      email: email,
-      kingdomName: kingdomName,
-      password: password,
-    };
-
-    try {
-      const response = await fetch(`${GAME_API}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(authRequest),
-      });
-      if (response.ok) {
-        console.log(`Successfully registered new player with email: ${email} and kingdomName: ${kingdomName}`);
-        setResult({ message: "Successfully registered account, you can now log in", error: false });
-      } else if (response.status === 401) {
-        setError("Unauthorized");
-      } else if (response.status === 500) {
-        setError("Internal Server Error");
-      } else {
-        setError("Unknown error");
-      }
-    } catch (error) {
-      console.error("Error during player registration: ", error);
-      setError("Error during registration");
+    const registerSuccess = await registerRequest(email, kingdomName, password);
+    if (registerSuccess) {
+      setResult({ message: "Successfully registered account, you can now log in", error: false });
+      return;
     }
+
+    setError("Error during registration");
   };
 
   return (

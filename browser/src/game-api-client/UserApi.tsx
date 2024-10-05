@@ -53,3 +53,32 @@ export async function authenticateRequest(email: string, password: string): Prom
     return undefined;
   }
 }
+
+export async function registerRequest(email: string, kingdomName: string, password: string): Promise<boolean> {
+  const authRequest = {
+    email: email,
+    kingdomName: kingdomName,
+    password: password,
+  };
+  try {
+    const response = await handleResponse(
+      fetchData(`${GAME_API}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(authRequest),
+      }),
+    );
+
+    if (response.ok) {
+      console.log(`register Request successful, status: ${response.status}`);
+      return true;
+    }
+
+    throw new Error(`request failed, status: ${response.status}`);
+  } catch (error) {
+    console.error("Register error", error);
+    return false;
+  }
+}
