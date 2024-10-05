@@ -1,7 +1,7 @@
 type RequestFunction = () => Promise<Response>;
 
 const unauthenticateAndRedirectToLogin = (): never => {
-  // TODO investiage if and how we should reset kingdom context here
+  localStorage.removeItem("authToken");
   window.location.href = "/login";
   throw new Error("Authentication error, redirecting to login");
 };

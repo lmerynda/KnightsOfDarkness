@@ -3,8 +3,8 @@ import "./css/App.css";
 import { CssBaseline, Box, createTheme, ThemeProvider } from "@mui/material";
 import Kingdom from "./Kingdom";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import { GAME_API } from "./Consts";
 import Homepage from "./Homepage";
+import { validateTokenRequest } from "./game-api-client/UserApi";
 
 const darkTheme = createTheme({
   palette: {
@@ -15,37 +15,18 @@ const darkTheme = createTheme({
 const App: React.FC = () => {
   const [authenticated, setAuthenticated] = React.useState<boolean | undefined>(undefined);
 
-  const validateToken = async () => {
+  const validateToken = React.useCallback(async () => {
+    console.log("App.tsx validating token");
     const token = localStorage.getItem("authToken");
-    if (token) {
-      try {
-        console.log("Validating token");
-        const response = await fetch(`${GAME_API}/auth/validate-token`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          console.log("Token is valid");
-          setAuthenticated(true);
-          return;
-        } else {
-          console.log("Token is not valid");
-        }
-      } catch (error) {
-        console.error("Error validating token: ", error);
-      }
-    }
-    setAuthenticated(false);
-  };
+    setAuthenticated(token ? await validateTokenRequest(token) : false);
+  }, [setAuthenticated]);
 
   React.useEffect(() => {
     validateToken();
-  }, []);
+  }, [validateToken]);
 
   if (authenticated === undefined) {
-    return <div>Loading...</div>;
+    return <div>Authenticating...</div>;
   }
 
   return (
