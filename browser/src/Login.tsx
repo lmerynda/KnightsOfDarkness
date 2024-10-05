@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { GAME_API } from "./Consts";
 import { useNavigate } from "react-router-dom";
+import { authenticateRequest } from "./game-api-client/UserApi";
 
 interface LoginProps {
   setAuthenticated: (isAuthenticated: boolean) => void;
@@ -18,36 +18,18 @@ const Login: React.FC<LoginProps> = ({ setAuthenticated }) => {
       console.log("Email or password is empty");
       return;
     }
-    console.log(`Logging in with email: ${email} and password: ${password}`);
-    const authRequest = {
-      email: email,
-      password: password,
-    };
+    console.log(`Logging in with email: ${email}`);
 
-    try {
-      const response = await fetch(`${GAME_API}/auth/authenticate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(authRequest),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log(`Response ok, data: ${JSON.stringify(data)}`);
-        localStorage.setItem("authToken", data.token);
-        setAuthenticated(true);
-        navigate("/");
-      } else if (response.status === 401) {
-        console.log("Unauthorized");
-      } else if (response.status === 500) {
-        console.log("Internal Server Error");
-      } else {
-        console.log("Unknown error");
-      }
-    } catch (error) {
-      console.error("Error during authentication: ", error);
+    const token = await authenticateRequest(email, password);
+    if (token) {
+      localStorage.setItem("authToken", token);
+      setAuthenticated(true);
+      navigate("/");
+      return;
     }
+
+    // TODO take login fail info back to user
+    console.log("Login error");
   };
 
   return (

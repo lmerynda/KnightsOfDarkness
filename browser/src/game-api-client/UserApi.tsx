@@ -24,3 +24,32 @@ export async function validateTokenRequest(token: string): Promise<boolean> {
     return false;
   }
 }
+
+export async function authenticateRequest(email: string, password: string): Promise<string | undefined> {
+  const authRequest = {
+    email: email,
+    password: password,
+  };
+  try {
+    const response = await handleResponse(
+      fetchData(`${GAME_API}/auth/authenticate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(authRequest),
+      }),
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(`authenticate Request successful, status: ${response.status}`);
+      return data.token;
+    }
+
+    throw new Error(`request failed, status: ${response.status}`);
+  } catch (error) {
+    console.error("Authentication error", error);
+    return undefined;
+  }
+}
