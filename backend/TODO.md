@@ -24,6 +24,11 @@
 1. Market offer should show total value
 1. Buy report has price per unit two times (no it doesn't, double check)
 1. Token doesn't autoextend with use, just hard expires after 15 minutes
+1. validate login and take error to user
+1. validate during registration, kingdom name must be unique
+1. Verify login errors
+1. Verify registration errors
+1. Verify flow around expired tokens
 
 ## Ideas
 
