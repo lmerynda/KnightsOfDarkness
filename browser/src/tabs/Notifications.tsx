@@ -41,7 +41,7 @@ const Notifications: React.FC = () => {
 
   return (
     <div>
-      <Typography variant="h4">Notifications {notificationCount > 0 ? `(${notificationCount} unread)` : ''}</Typography>
+      <Typography variant="h4">Notifications {notificationCount > 0 ? `(${notificationCount} unread)` : ""}</Typography>
       <List>
         {notifications.map(notification => (
           <ListItem
