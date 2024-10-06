@@ -17,7 +17,6 @@ const Overview: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response = await passTurnRequest();
     setLastTurnReport(response);
     kingdomContext.reloadKingdom();

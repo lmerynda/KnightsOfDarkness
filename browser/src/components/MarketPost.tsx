@@ -24,7 +24,6 @@ const MarketPost: React.FC = () => {
       count: sellAmount,
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const result = await createMarketOfferRequest(offer);
     setLastCreateOfferResult(result);
 
