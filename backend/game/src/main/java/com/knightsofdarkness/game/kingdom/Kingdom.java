@@ -14,6 +14,8 @@ import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.SendCarriersDto;
+import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
@@ -193,5 +195,30 @@ public class Kingdom {
     public boolean demolishSpecialBuilding(UUID id)
     {
         return kingdomSpecialBuildingAction.demolishSpecialBuilding(id);
+    }
+
+    public SendCarriersResult sendCarriers(SendCarriersDto sendCarriersDto)
+    {
+        var resource = sendCarriersDto.resource();
+        int singleCarrierCapacity = config.carrierCapacity().get(resource);
+        int carriersCapacity = units.getCount(UnitName.carrier) * singleCarrierCapacity;
+        if (carriersCapacity <= 0)
+        {
+            return SendCarriersResult.failure("You have not enough carriers to send");
+        }
+
+        int amountPossibleToSend = Math.min(resources.getCount(ResourceName.from(resource)), sendCarriersDto.amount());
+        int amountToSend = Math.min(amountPossibleToSend, carriersCapacity);
+
+        if (amountToSend <= 0)
+        {
+            return SendCarriersResult.failure("You have not enough resources to send");
+        }
+
+        resources.subtractCount(ResourceName.from(resource), amountToSend);
+        units.subtractCount(UnitName.carrier, (int) Math.ceil((double) amountToSend / singleCarrierCapacity));
+
+        // TODO handle turn ticks and return carriers to the kingdom
+        return SendCarriersResult.success("Carriers sent and should arrive in a few turns", new SendCarriersDto(sendCarriersDto.destinationKingdomName(), resource, amountToSend));
     }
 }

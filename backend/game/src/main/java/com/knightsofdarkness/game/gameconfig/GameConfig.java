@@ -1,5 +1,4 @@
 package com.knightsofdarkness.game.gameconfig;
-// @formatter:off 
 
 public record GameConfig(
         BuildingPointCosts buildingPointCosts,
@@ -9,7 +8,6 @@ public record GameConfig(
         KingdomStartConfiguration kingdomStartConfiguration,
         SpecialBuildingCosts specialBuildingCosts,
         MarketConfig market,
-                Common common)
-{
+        Common common,
+        CarrierCapacity carrierCapacity) {
 }
-// @formatter:on 

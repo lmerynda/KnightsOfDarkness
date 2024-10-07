@@ -21,6 +21,8 @@ import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
+import com.knightsofdarkness.common.kingdom.SendCarriersDto;
+import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
@@ -201,6 +203,7 @@ public class KingdomService {
         return ResponseEntity.of(specialBuilding);
     }
 
+    @Transactional
     public ResponseEntity<Integer> buildSpecialBuilding(String name, KingdomSpecialBuildingBuildDto specialBuildingBuildDto)
     {
         log.info("[{}] building special building {}", name, specialBuildingBuildDto);
@@ -223,6 +226,7 @@ public class KingdomService {
         return ResponseEntity.ok(spentPoints);
     }
 
+    @Transactional
     public ResponseEntity<Boolean> demolishSpecialBuilding(String name, KingdomSpecialBuildingDemolishDto specialBuildingDemolishDto)
     {
         log.info("[{}] demolishing special building {}", name, specialBuildingDemolishDto);
@@ -237,5 +241,32 @@ public class KingdomService {
         kingdomRepository.update(kingdom);
 
         return ResponseEntity.ok(demolished);
+    }
+
+    @Transactional
+    public ResponseEntity<SendCarriersResult> sendCarriers(String kingdomName, SendCarriersDto sendCarriersDto)
+    {
+        log.info("[{}] sending carriers {}", kingdomName, sendCarriersDto);
+        Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+        var kingdom = maybeKingdom.get();
+
+        // TODO no need to fetch entire kingdom, we only want to check if it exists
+        Optional<Kingdom> maybeDestinationKingdom = kingdomRepository.getKingdomByName(sendCarriersDto.destinationKingdomName());
+        if (maybeDestinationKingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        SendCarriersResult result = kingdom.sendCarriers(sendCarriersDto);
+        if (result.success())
+        {
+            kingdomRepository.update(kingdom);
+        }
+
+        return ResponseEntity.ok(result);
     }
 }

@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,6 +23,8 @@ import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
+import com.knightsofdarkness.common.kingdom.SendCarriersDto;
+import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.web.user.UserData;
 
@@ -133,7 +134,7 @@ public class KingdomController {
         return kingdomService.train(currentUser.getKingdomName(), unitsToTrain);
     }
 
-    @PostMapping(value = "/pass-turn", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/pass-turn")
     ResponseEntity<KingdomPassTurnActionResult> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser)
     {
         if (currentUser == null)
@@ -145,7 +146,7 @@ public class KingdomController {
         return kingdomService.passTurn(currentUser.getKingdomName());
     }
 
-    @PostMapping(value = "/buy-land", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/buy-land")
     ResponseEntity<LandTransaction> kingdomBuyLand(@AuthenticationPrincipal UserData currentUser, @RequestBody int amount)
     {
         if (currentUser == null)
@@ -155,6 +156,18 @@ public class KingdomController {
         }
 
         return kingdomService.buyLand(currentUser.getKingdomName(), amount);
+    }
+
+    @PostMapping(value = "/send-carriers")
+    ResponseEntity<SendCarriersResult> kingdomSendCarriers(@AuthenticationPrincipal UserData currentUser, @RequestBody SendCarriersDto sendCarriersDto)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.sendCarriers(currentUser.getKingdomName(), sendCarriersDto);
     }
 
     private void logUserUnauthenticated()

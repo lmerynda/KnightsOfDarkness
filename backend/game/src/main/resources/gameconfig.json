@@ -164,5 +164,11 @@
     "specialBuildingMaxCount": 5,
     "newTurnPeriodicity": 10000,
     "maxNotificationsCount": 15
+  },
+  "carrierCapacity": {
+    "iron": 10,
+    "food": 100,
+    "tools": 10,
+    "weapons": 10
   }
 }
