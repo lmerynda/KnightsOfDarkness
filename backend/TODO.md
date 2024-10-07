@@ -32,6 +32,7 @@
 
 ## Ideas
 
+1. Allow for trial play with just providing kingdomName
 1. Profession profile, it should inform building and training UI
 1. Random Game Events? Might not be the best idea
 1. Warning on passing turn with negative implications
