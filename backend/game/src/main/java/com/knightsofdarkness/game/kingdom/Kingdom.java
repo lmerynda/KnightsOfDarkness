@@ -2,8 +2,6 @@ package com.knightsofdarkness.game.kingdom;
 
 import java.util.Optional;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +32,7 @@ public class Kingdom {
     private final KingdomTrainAction kingdomTrainAction = new KingdomTrainAction(this);
     private final KingdomMarketAction kingdomMarketAction = new KingdomMarketAction(this);
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
+    private final KingdomSpecialBuildingAction kingdomSpecialBuildingAction = new KingdomSpecialBuildingAction(this);
 
     public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, List<KingdomSpecialBuilding> specialBuildings, KingdomUnits units, KingdomTurnReport lastTurnReport)
     {
@@ -173,15 +172,7 @@ public class Kingdom {
 
     public Optional<KingdomSpecialBuilding> startSpecialBuilding(SpecialBuildingType name)
     {
-        if (specialBuildings.size() >= config.common().specialBuildingMaxCount())
-        {
-            return Optional.empty();
-        }
-
-        var specialBuilding = new KingdomSpecialBuilding(name);
-        specialBuildings.add(specialBuilding);
-
-        return Optional.of(specialBuilding);
+        return kingdomSpecialBuildingAction.startSpecialBuilding(name);
     }
 
     public List<KingdomSpecialBuilding> getSpecialBuildings()
@@ -191,55 +182,16 @@ public class Kingdom {
 
     public Optional<KingdomSpecialBuilding> getLowestLevelSpecialBuilding()
     {
-        if (specialBuildings.isEmpty())
-        {
-            return Optional.empty();
-        }
-
-        return Optional.of(Collections.min(specialBuildings, Comparator.comparingInt(KingdomSpecialBuilding::getLevel)));
+        return kingdomSpecialBuildingAction.getLowestLevelSpecialBuilding();
     }
 
     public int buildSpecialBuilding(KingdomSpecialBuilding specialBuilding, int buildingPoints)
     {
-        if (specialBuilding.isMaxLevel())
-        {
-            // log.info("[{}] special building {} is at max level", name, specialBuilding.getBuildingType());
-            return 0;
-        }
-        // TODO encapsulate this functionality
-        var buildingPointsRemaining = specialBuilding.getBuildingPointsRequired() - specialBuilding.getBuildingPointsPut();
-        var kingdomBuildingPoints = resources.getCount(ResourceName.buildingPoints);
-        if (buildingPoints >= buildingPointsRemaining)
-        {
-            var buildingPointsToSpend = Math.min(kingdomBuildingPoints, buildingPointsRemaining);
-            resources.subtractCount(ResourceName.buildingPoints, buildingPointsToSpend);
-            specialBuilding.buildingPointsPut = 0;
-            specialBuilding.level++;
-            specialBuilding.buildingPointsRequired *= 2;
-            if (specialBuilding.level >= 5)
-            {
-                specialBuilding.isMaxLevel = true;
-                specialBuilding.buildingPointsRequired = 0;
-            }
-            return buildingPointsToSpend;
-        } else
-        {
-            var buildingPointsToSpend = Math.min(kingdomBuildingPoints, buildingPoints);
-            resources.subtractCount(ResourceName.buildingPoints, buildingPointsToSpend);
-            specialBuilding.buildingPointsPut += buildingPointsToSpend;
-            return buildingPointsToSpend;
-        }
+        return kingdomSpecialBuildingAction.buildSpecialBuilding(specialBuilding, buildingPoints);
     }
 
     public boolean demolishSpecialBuilding(UUID id)
     {
-        var specialBuilding = specialBuildings.stream().filter(sb -> sb.getId().equals(id)).findFirst();
-        if (specialBuilding.isEmpty())
-        {
-            return false;
-        }
-
-        specialBuildings.remove(specialBuilding.get());
-        return true;
+        return kingdomSpecialBuildingAction.demolishSpecialBuilding(id);
     }
 }
