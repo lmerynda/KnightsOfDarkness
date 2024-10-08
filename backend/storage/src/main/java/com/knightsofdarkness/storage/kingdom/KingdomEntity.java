@@ -42,7 +42,7 @@ public class KingdomEntity {
     {
     }
 
-    public KingdomEntity(String name, KingdomResourcesEntity resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, KingdomUnitsEntity units,
+    public KingdomEntity(String name, KingdomResourcesEntity resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, List<KingdomUnitsOnTheMoveEntity> unitsOnTheMove, KingdomUnitsEntity units,
             KingdomTurnReportEntity lastTurnReport)
     {
         this.name = name;
@@ -56,7 +56,8 @@ public class KingdomEntity {
     public Kingdom toDomainModel(GameConfig gameConfig)
     {
         var specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDomainModel).collect(Collectors.toList());
-        return new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), specialBuildings, units.toDomainModel(), lastTurnReport.toDomainModel());
+        var unitsOnTheMove = new ArrayList<UnitsOnTheMove>();
+        return new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), specialBuildings, unitsOnTheMove, units.toDomainModel(), lastTurnReport.toDomainModel());
     }
 
     public KingdomDto toDto()
@@ -73,7 +74,7 @@ public class KingdomEntity {
                 KingdomBuildingsEntity.fromDomainModel(kingdom.getBuildings()),
                 new ArrayList<>(),
                 KingdomUnitsEntity.fromDomainModel(kingdom.getUnits()),
-                        KingdomTurnReportEntity.fromDomainModel(kingdom.getLastTurnReport()));
+                KingdomTurnReportEntity.fromDomainModel(kingdom.getLastTurnReport()));
 
         var specialBuildings = kingdom.getSpecialBuildings().stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDomainModel(specialBuilding, kingdomEntity)).toList();
         kingdomEntity.specialBuildings = specialBuildings;

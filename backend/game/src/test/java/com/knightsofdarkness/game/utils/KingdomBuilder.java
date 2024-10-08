@@ -12,6 +12,7 @@ import com.knightsofdarkness.game.kingdom.KingdomBuildings;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
+import com.knightsofdarkness.game.kingdom.KingdomUnitsOnTheMove;
 
 public class KingdomBuilder {
     private final KingdomResources resources;
@@ -100,6 +101,7 @@ public class KingdomBuilder {
 
     public Kingdom build()
     {
-        return new Kingdom(name, game.getConfig(), new KingdomResources(resources), new KingdomBuildings(buildings), new ArrayList<KingdomSpecialBuilding>(), new KingdomUnits(units), new KingdomTurnReport());
+        return new Kingdom(name, game.getConfig(), new KingdomResources(resources), new KingdomBuildings(buildings), new ArrayList<KingdomSpecialBuilding>(), new ArrayList<KingdomUnitsOnTheMove>(), new KingdomUnits(units),
+                new KingdomTurnReport());
     }
 }

@@ -29,6 +29,7 @@ public class Kingdom {
     private final KingdomBuildings buildings;
     private final KingdomUnits units;
     private final List<KingdomSpecialBuilding> specialBuildings;
+    private final List<KingdomUnitsOnTheMove> unitsOnTheMove;
     KingdomTurnReport lastTurnReport; // TOOD consider making them all package-private
     private final KingdomBuildAction kingdomBuildAction = new KingdomBuildAction(this);
     private final KingdomTrainAction kingdomTrainAction = new KingdomTrainAction(this);
@@ -36,7 +37,8 @@ public class Kingdom {
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
     private final KingdomSpecialBuildingAction kingdomSpecialBuildingAction = new KingdomSpecialBuildingAction(this);
 
-    public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, List<KingdomSpecialBuilding> specialBuildings, KingdomUnits units, KingdomTurnReport lastTurnReport)
+    public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, List<KingdomSpecialBuilding> specialBuildings, List<KingdomUnitsOnTheMove> unitsOnTheMove, KingdomUnits units,
+            KingdomTurnReport lastTurnReport)
     {
         this.name = name;
         this.config = config;
@@ -45,6 +47,7 @@ public class Kingdom {
         this.units = units;
         this.lastTurnReport = lastTurnReport;
         this.specialBuildings = specialBuildings;
+        this.unitsOnTheMove = unitsOnTheMove;
     }
 
     public KingdomBuildingsActionResult build(KingdomBuildingsDto buildingsToBuild)
