@@ -1,8 +1,7 @@
 package com.knightsofdarkness.game.kingdom;
 
-import java.util.Optional;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
@@ -19,6 +18,7 @@ import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.MarketOffer;
 
@@ -29,7 +29,7 @@ public class Kingdom {
     private final KingdomBuildings buildings;
     private final KingdomUnits units;
     private final List<KingdomSpecialBuilding> specialBuildings;
-    private final List<KingdomUnitsOnTheMove> unitsOnTheMove;
+    private final List<KingdomCarriersOnTheMove> carriersOnTheMove;
     KingdomTurnReport lastTurnReport; // TOOD consider making them all package-private
     private final KingdomBuildAction kingdomBuildAction = new KingdomBuildAction(this);
     private final KingdomTrainAction kingdomTrainAction = new KingdomTrainAction(this);
@@ -37,7 +37,7 @@ public class Kingdom {
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
     private final KingdomSpecialBuildingAction kingdomSpecialBuildingAction = new KingdomSpecialBuildingAction(this);
 
-    public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, List<KingdomSpecialBuilding> specialBuildings, List<KingdomUnitsOnTheMove> unitsOnTheMove, KingdomUnits units,
+    public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, List<KingdomSpecialBuilding> specialBuildings, List<KingdomCarriersOnTheMove> carriersOnTheMove, KingdomUnits units,
             KingdomTurnReport lastTurnReport)
     {
         this.name = name;
@@ -47,7 +47,7 @@ public class Kingdom {
         this.units = units;
         this.lastTurnReport = lastTurnReport;
         this.specialBuildings = specialBuildings;
-        this.unitsOnTheMove = unitsOnTheMove;
+        this.carriersOnTheMove = carriersOnTheMove;
     }
 
     public KingdomBuildingsActionResult build(KingdomBuildingsDto buildingsToBuild)
@@ -218,10 +218,18 @@ public class Kingdom {
             return SendCarriersResult.failure("You have not enough resources to send");
         }
 
+        int carriersToSend = (int) Math.ceil((double) amountToSend / singleCarrierCapacity);
+        KingdomCarriersOnTheMove kingdomCarriersOnTheMove = new KingdomCarriersOnTheMove(Id.generate(), sendCarriersDto.destinationKingdomName(), 4, carriersToSend, sendCarriersDto.resource(), amountToSend);
+        carriersOnTheMove.add(kingdomCarriersOnTheMove);
         resources.subtractCount(ResourceName.from(resource), amountToSend);
-        units.subtractCount(UnitName.carrier, (int) Math.ceil((double) amountToSend / singleCarrierCapacity));
+        units.subtractCount(UnitName.carrier, carriersToSend);
 
         // TODO handle turn ticks and return carriers to the kingdom
         return SendCarriersResult.success("Carriers sent and should arrive in a few turns", new SendCarriersDto(sendCarriersDto.destinationKingdomName(), resource, amountToSend));
+    }
+
+    public List<KingdomCarriersOnTheMove> getCarriersOnTheMove()
+    {
+        return carriersOnTheMove;
     }
 }

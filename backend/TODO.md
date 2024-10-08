@@ -29,6 +29,7 @@
 1. Verify login errors
 1. Verify registration errors
 1. Verify flow around expired tokens
+1. Unemployed are not taken into account for max button in training
 
 ## Ideas
 

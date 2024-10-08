@@ -32,6 +32,9 @@ public class KingdomEntity {
     @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
     List<KingdomSpecialBuildingEntity> specialBuildings;
 
+    @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<KingdomCarriersOnTheMoveEntity> carriersOnTheMove;
+
     @Embedded
     KingdomUnitsEntity units;
 
@@ -42,13 +45,14 @@ public class KingdomEntity {
     {
     }
 
-    public KingdomEntity(String name, KingdomResourcesEntity resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, List<KingdomUnitsOnTheMoveEntity> unitsOnTheMove, KingdomUnitsEntity units,
+    public KingdomEntity(String name, KingdomResourcesEntity resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, List<KingdomCarriersOnTheMoveEntity> carriersOnTheMove, KingdomUnitsEntity units,
             KingdomTurnReportEntity lastTurnReport)
     {
         this.name = name;
         this.resources = resources;
         this.buildings = buildings;
         this.specialBuildings = specialBuildings;
+        this.carriersOnTheMove = carriersOnTheMove;
         this.units = units;
         this.lastTurnReport = lastTurnReport;
     }
@@ -56,8 +60,8 @@ public class KingdomEntity {
     public Kingdom toDomainModel(GameConfig gameConfig)
     {
         var specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDomainModel).collect(Collectors.toList());
-        var unitsOnTheMove = new ArrayList<UnitsOnTheMove>();
-        return new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), specialBuildings, unitsOnTheMove, units.toDomainModel(), lastTurnReport.toDomainModel());
+        var carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDomainModel).collect(Collectors.toList());
+        return new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), specialBuildings, carriersOnTheMove, units.toDomainModel(), lastTurnReport.toDomainModel());
     }
 
     public KingdomDto toDto()
@@ -73,11 +77,15 @@ public class KingdomEntity {
                 KingdomResourcesEntity.fromDomainModel(kingdom.getResources()),
                 KingdomBuildingsEntity.fromDomainModel(kingdom.getBuildings()),
                 new ArrayList<>(),
+                new ArrayList<>(),
                 KingdomUnitsEntity.fromDomainModel(kingdom.getUnits()),
                 KingdomTurnReportEntity.fromDomainModel(kingdom.getLastTurnReport()));
 
         var specialBuildings = kingdom.getSpecialBuildings().stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDomainModel(specialBuilding, kingdomEntity)).toList();
         kingdomEntity.specialBuildings = specialBuildings;
+
+        var carriersOnTheMoveEntities = kingdom.getCarriersOnTheMove().stream().map(carriersOnTheMove -> KingdomCarriersOnTheMoveEntity.fromDomainModel(carriersOnTheMove, kingdomEntity)).toList();
+        kingdomEntity.carriersOnTheMove = carriersOnTheMoveEntities;
 
         return kingdomEntity;
     }
@@ -88,6 +96,7 @@ public class KingdomEntity {
                 dto.name,
                 KingdomResourcesEntity.fromDto(dto.resources),
                 KingdomBuildingsEntity.fromDto(dto.buildings),
+                new ArrayList<>(),
                 new ArrayList<>(),
                 KingdomUnitsEntity.fromDto(dto.units),
                 KingdomTurnReportEntity.fromDto(dto.lastTurnReport));

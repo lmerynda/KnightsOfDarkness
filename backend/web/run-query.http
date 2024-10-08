@@ -29,3 +29,13 @@ content-type: application/json
 }
 
 ###
+
+POST http://localhost:8080/kingdom/send-carriers
+content-type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3Mjg0MTk5MzgsImlhdCI6MTcyODQxOTMzOCwianRpIjoiNWQzZDdiYWItMDJjZi00ZmRmLTlkOGUtNThiZGI0NzkxY2I4Iiwic3ViIjoidXByemVqbXkifQ.e2_i8ec77q4-1kbQWEVWrBZQDybqnMjGEhvpKFHbKEMoOdsIgb6G-n0P2ZBs9M6bIqGW3IfSiOFq9uIuVsQYKw
+
+{
+    "destinationKingdomName": "uprzejmy",
+    "resource": "food",
+    "amount": 100
+}
