@@ -50,11 +50,8 @@ public class NotificationRepository implements INotificationRepository {
     @Override
     public void update(NotificationDto updatedNotification)
     {
-        notifications.values().stream()
-                .flatMap(List::stream)
-                .filter(notification -> notification.id().equals(updatedNotification.id()))
-                .findFirst()
-                .ifPresent(notification -> notification = updatedNotification);
+        notifications.values().forEach(notificationList -> notificationList.removeIf(notification -> notification.id().equals(updatedNotification.id())));
+        create(updatedNotification);
     }
 
     @Override
