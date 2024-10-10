@@ -1,7 +1,8 @@
 package com.knightsofdarkness.game.kingdom;
 
-import java.util.List;
 import java.util.Optional;
+
+import java.util.List;
 import java.util.UUID;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;

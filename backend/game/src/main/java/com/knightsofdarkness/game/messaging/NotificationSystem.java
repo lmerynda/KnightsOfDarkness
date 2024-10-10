@@ -22,8 +22,8 @@ public class NotificationSystem implements INotificationSystem {
     @Override
     public void create(String kingdom, String message)
     {
-        var NotificationDto = new NotificationDto(Id.generate(), kingdom, message, Instant.now(), false);
-        notificationRepository.create(NotificationDto);
+        var notification = new NotificationDto(Id.generate(), kingdom, message, Instant.now(), false);
+        notificationRepository.create(notification);
     }
 
     @Override
