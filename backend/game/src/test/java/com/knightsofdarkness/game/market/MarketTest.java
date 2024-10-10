@@ -73,6 +73,29 @@ class MarketTest {
     }
 
     @Test
+    void createOffer_withPriceLowerThanMinimum_shouldFail()
+    {
+        int minPrice = game.getConfig().market().minPrice();
+        int lowerThanMinPrice = minPrice - 1;
+
+        var result = market.createOffer(kingdom.getName(), MarketResource.food, 100, lowerThanMinPrice);
+
+        assertFalse(result.success());
+        assertTrue(result.data().isEmpty());
+    }
+
+    @Test
+    void createOffer_withNonExistingKingdom_shouldFail()
+    {
+        String nonExistingKingdomName = "NonExistingKingdom";
+
+        var result = market.createOffer(nonExistingKingdomName, MarketResource.food, 100, 50);
+
+        assertFalse(result.success());
+        assertTrue(result.data().isEmpty());
+    }
+
+    @Test
     void whenMaxOffersForResourceIsReached_newOfferShouldNotBeCreated()
     {
         for (int i = 0; i < game.getConfig().market().maxKingdomOffers(); i++)
