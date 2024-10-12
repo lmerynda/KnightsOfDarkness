@@ -321,7 +321,6 @@ class KingdomTurnTest {
         toDemolish.setCount(BuildingName.goldMine, 1);
         kingdom.demolish(toDemolish);
         kingdom.passTurn();
-        
 
         var unemployedAfterTurn = kingdom.getResources().getCount(ResourceName.unemployed);
         var goldMinersAfterTurnCount = kingdom.getUnits().getCount(UnitName.goldMiner);
@@ -355,5 +354,59 @@ class KingdomTurnTest {
         unitsToTrain.setCount(UnitName.goldMiner, goldMinersCapacity - currentGoldMinersCount);
         kingdom.train(unitsToTrain);
         kingdom.passTurn();
+    }
+
+    @Test
+    void testPeopleLeavingDueToInsufficientHousing_noExileWhenHousingIsSufficient()
+    {
+        Kingdom kingdom = kingdomBuilder
+                .withUnit(UnitName.goldMiner, 10)
+                .withBuilding(BuildingName.house, 25)
+                .build();
+
+        var result = kingdom.passTurn();
+
+        assertEquals(0, result.turnReport().get().exiledPeople);
+    }
+
+    @Test
+    void testPeopleLeavingDueToInsufficientHousing_exileWhenHousingIsInsufficient()
+    {
+        Kingdom kingdom = kingdomBuilder
+                .withBuilding(BuildingName.house, 1)
+                .build();
+
+        var result = kingdom.passTurn();
+
+        assertEquals(0, kingdom.getResources().getCount(ResourceName.unemployed));
+        assertThat(result.turnReport().get().exiledPeople).isPositive();
+    }
+
+    @Test
+    void testPeopleLeavingDueToInsufficientHousing_partialExileWhenHousingIsPartiallySufficient()
+    {
+        Kingdom kingdom = kingdomBuilder
+                .withBuilding(BuildingName.house, 15)
+                .build();
+
+        var result = kingdom.passTurn();
+
+        assertEquals(20, result.turnReport().get().exiledPeople);
+    }
+
+    @Test
+    void testPeopleLeavingDueToInsufficientHousing_exileProfessionalsWhenHousingIsInsufficient()
+    {
+        Kingdom kingdom = kingdomBuilder
+                .withUnit(UnitName.goldMiner, 5)
+                .withUnit(UnitName.blacksmith, 5)
+                .withBuilding(BuildingName.house, 5)
+                .build();
+
+        var result = kingdom.passTurn();
+
+        assertThat(result.turnReport().get().exiledPeople).isPositive();
+        assertThat(kingdom.getUnits().getCount(UnitName.goldMiner)).isLessThan(5);
+        assertThat(kingdom.getUnits().getCount(UnitName.blacksmith)).isLessThan(5);
     }
 }

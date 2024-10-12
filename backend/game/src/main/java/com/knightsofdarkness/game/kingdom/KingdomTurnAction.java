@@ -34,7 +34,7 @@ public class KingdomTurnAction {
         kingdom.getResources().subtractCount(ResourceName.turns, 1);
         resetBuildingPoints();
         proffesionalsLeavingDueToInsufficientBuildings();
-        peopleLeavingDueToInssuficientHousing();
+        peopleLeavingDueToInsuficientHousing();
         double nourishmentProductionFactor = eatFood();
         results.nourishmentProductionFactor = nourishmentProductionFactor;
         doProduction(nourishmentProductionFactor);
@@ -46,7 +46,7 @@ public class KingdomTurnAction {
         return KingdomPassTurnActionResult.success("Turn passed", results);
     }
 
-    private void peopleLeavingDueToInssuficientHousing()
+    private void peopleLeavingDueToInsuficientHousing()
     {
         var housingCapacity = kingdom.getBuildings().getCount(BuildingName.house) * kingdom.getConfig().buildingCapacity().getCapacity(BuildingName.house);
         var peopleCount = kingdom.getTotalPeopleCount();
