@@ -40,10 +40,23 @@ public class KingdomTurnAction {
         doProduction(nourishmentProductionFactor);
         // TODO food production should happen before consumption
         getNewPeople();
+        processUnitsOnTheMove();
 
         kingdom.lastTurnReport = results;
 
         return KingdomPassTurnActionResult.success("Turn passed", results);
+    }
+
+    private void processUnitsOnTheMove()
+    {
+        var carriersOnTheMove = kingdom.getCarriersOnTheMove();
+        carriersOnTheMove.forEach((KingdomCarriersOnTheMove foo) -> foo.turnsLeft--);
+        carriersOnTheMove.stream().filter(foo -> foo.turnsLeft <= 0).forEach(foo ->
+        {
+            log.info("Carriers on the move arrived at destination: {}", foo);
+            kingdom.getUnits().addCount(UnitName.carrier, foo.carriersCount);
+        });
+        carriersOnTheMove.removeIf(foo -> foo.turnsLeft <= 0);
     }
 
     private void peopleLeavingDueToInsuficientHousing()
