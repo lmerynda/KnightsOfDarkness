@@ -5,7 +5,7 @@ plugins {
     id("com.adarshr.test-logger") version "4.0.+"
     id("jacoco")
     id("org.sonarqube") version "5.1.+"
-    id("com.github.ben-manes.versions") version "0.42.+"
+    id("com.github.ben-manes.versions") version "0.51.0"
 }
 
 group = "com.knightsofdarkness"
@@ -23,12 +23,12 @@ repositories {
 
 dependencies {
     implementation(project(":common"))
-    implementation("com.fasterxml.jackson.core:jackson-core:2.16.1")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
-    implementation("com.github.victools:jsonschema-generator:4.35.0")
-    implementation("org.json:json:20240205")
-    testImplementation(platform("org.junit:junit-bom:5.10.2"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.1")
+    implementation("com.github.victools:jsonschema-generator:4.37.0")
+    implementation("org.json:json:20240303")
+    testImplementation(platform("org.junit:junit-bom:5.11.3"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
     testImplementation("org.assertj:assertj-core:3.26.3")
 }
 
