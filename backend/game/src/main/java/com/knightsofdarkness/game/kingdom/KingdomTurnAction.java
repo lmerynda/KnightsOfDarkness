@@ -49,14 +49,14 @@ public class KingdomTurnAction {
 
     private void processUnitsOnTheMove()
     {
-        var carriersOnTheMove = kingdom.getCarriersOnTheMove();
-        carriersOnTheMove.forEach((KingdomCarriersOnTheMove foo) -> foo.turnsLeft--);
-        carriersOnTheMove.stream().filter(foo -> foo.turnsLeft <= 0).forEach(foo ->
+        var allCarriersOnTheMove = kingdom.getCarriersOnTheMove();
+        allCarriersOnTheMove.forEach((var carriersOnTheMove) -> carriersOnTheMove.turnsLeft--);
+        allCarriersOnTheMove.stream().filter(carriersOnTheMove -> carriersOnTheMove.turnsLeft <= 0).forEach(carriersOnTheMove ->
         {
-            log.info("Carriers on the move arrived at destination: {}", foo);
-            kingdom.getUnits().addCount(UnitName.carrier, foo.carriersCount);
+            log.info("Carriers on the move arrived at destination: {}", carriersOnTheMove);
+            kingdom.getUnits().addCount(UnitName.carrier, carriersOnTheMove.carriersCount);
         });
-        carriersOnTheMove.removeIf(foo -> foo.turnsLeft <= 0);
+        allCarriersOnTheMove.removeIf(carriersOnTheMove -> carriersOnTheMove.turnsLeft <= 0);
     }
 
     private void peopleLeavingDueToInsuficientHousing()
