@@ -40,7 +40,7 @@ class GoldMinerBotTest {
         var unusedLandBefore = kingdom.getUnusedLand();
         var goldMinesBefore = kingdom.getBuildings().getCount(BuildingName.goldMine);
 
-        var bot = new GoldMinerBot(kingdom, game.getMarket());
+        var bot = new GoldMinerBot(kingdom, game.getMarket(), game.getKingdomInteractor());
 
         KingdomPrinter.printResourcesHeader();
         KingdomPrinter.printLineSeparator();
@@ -66,7 +66,7 @@ class GoldMinerBotTest {
         var toTrain = new KingdomUnitsDto();
         toTrain.setCount(UnitName.goldMiner, 1);
 
-        var bot = new GoldMinerBot(kingdom, game.getMarket());
+        var bot = new GoldMinerBot(kingdom, game.getMarket(), game.getKingdomInteractor());
         bot.doAllActions();
 
         var trainedUnits = kingdom.train(toTrain);

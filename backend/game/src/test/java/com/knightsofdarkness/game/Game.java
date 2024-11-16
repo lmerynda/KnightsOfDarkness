@@ -1,6 +1,7 @@
 package com.knightsofdarkness.game;
 
 import com.knightsofdarkness.game.gameconfig.GameConfig;
+import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.messaging.INotificationSystem;
@@ -11,13 +12,15 @@ public class Game {
     IMarket market;
     IKingdomRepository kingdomRepository;
     INotificationSystem notificationSystem;
+    IKingdomInteractor kingdomInteractor;
 
-    public Game(GameConfig config, IMarket market, IKingdomRepository kingdomRepository, INotificationSystem notificationSystem)
+    public Game(GameConfig config, IMarket market, IKingdomRepository kingdomRepository, INotificationSystem notificationSystem, IKingdomInteractor kingdomInteractor)
     {
         this.config = config;
         this.market = market;
         this.kingdomRepository = kingdomRepository;
         this.notificationSystem = notificationSystem;
+        this.kingdomInteractor = kingdomInteractor;
     }
 
     public GameConfig getConfig()
@@ -33,6 +36,11 @@ public class Game {
     public INotificationSystem getNotificationSystem()
     {
         return notificationSystem;
+    }
+
+    public IKingdomInteractor getKingdomInteractor()
+    {
+        return kingdomInteractor;
     }
 
     public void addKingdom(Kingdom kingdom)

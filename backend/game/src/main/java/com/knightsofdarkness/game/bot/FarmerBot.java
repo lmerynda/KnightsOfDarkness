@@ -4,6 +4,7 @@ import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.IMarket;
 
@@ -12,11 +13,13 @@ public class FarmerBot implements IBot {
     private static final double housesToSpecialistBuildingRatio = 0.55;
     private final Kingdom kingdom;
     private final IMarket market;
+    private final IKingdomInteractor kingdomInteractor;
 
-    public FarmerBot(Kingdom kingdom, IMarket market)
+    public FarmerBot(Kingdom kingdom, IMarket market, IKingdomInteractor kingdomInteractor)
     {
         this.kingdom = kingdom;
         this.market = market;
+        this.kingdomInteractor = kingdomInteractor;
     }
 
     @Override
@@ -77,7 +80,7 @@ public class FarmerBot implements IBot {
     public void passTurn()
     {
         runPrePassTurnActions();
-        kingdom.passTurn();
+        kingdom.passTurn(kingdomInteractor);
     }
 
     private void runPrePassTurnActions()

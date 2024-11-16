@@ -20,6 +20,7 @@ import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
+import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.market.MarketOffer;
 
 public class Kingdom {
@@ -71,9 +72,9 @@ public class Kingdom {
         return kingdomTrainAction.train(unitsToTrain);
     }
 
-    public KingdomPassTurnActionResult passTurn()
+    public KingdomPassTurnActionResult passTurn(IKingdomInteractor kingdomInteractor)
     {
-        return new KingdomTurnAction(this).passTurn();
+        return new KingdomTurnAction(this, kingdomInteractor).passTurn();
     }
 
     public void addTurn()
@@ -209,5 +210,10 @@ public class Kingdom {
     public List<KingdomCarriersOnTheMove> getCarriersOnTheMove()
     {
         return carriersOnTheMove;
+    }
+
+    public void receiveResourceTransfer(MarketResource resource, int amount)
+    {
+        resources.addCount(ResourceName.from(resource), amount);
     }
 }

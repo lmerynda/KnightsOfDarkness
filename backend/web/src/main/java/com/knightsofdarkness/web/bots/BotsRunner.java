@@ -14,6 +14,7 @@ import com.knightsofdarkness.game.bot.FarmerBot;
 import com.knightsofdarkness.game.bot.GoldMinerBot;
 import com.knightsofdarkness.game.bot.IBot;
 import com.knightsofdarkness.game.bot.IronMinerBot;
+import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.storage.kingdom.KingdomRepository;
 
@@ -23,12 +24,14 @@ public class BotsRunner {
 
     private final KingdomRepository kingdomRepository;
     private final IMarket market;
+    private final IKingdomInteractor kingdomInteractor;
     private final List<String> botNames = Arrays.asList("BlacksmithBot", "FarmerBot", "IronMinerBot", "GoldMinerBot");
 
-    public BotsRunner(KingdomRepository kingdomRepository, IMarket market)
+    public BotsRunner(KingdomRepository kingdomRepository, IMarket market, IKingdomInteractor kingdomInteractor)
     {
         this.kingdomRepository = kingdomRepository;
         this.market = market;
+        this.kingdomInteractor = kingdomInteractor;
     }
 
     // Runs every 10 seconds (units are in milliseconds)
@@ -50,11 +53,11 @@ public class BotsRunner {
             // TODO redo this funny code...
             IBot bot = switch (botName)
             {
-                case "BlacksmithBot" -> new BlacksmithBot(kingdom, market);
-                case "IronMinerBot" -> new IronMinerBot(kingdom, market);
-                case "FarmerBot" -> new FarmerBot(kingdom, market);
-                case "GoldMinerBot" -> new GoldMinerBot(kingdom, market);
-                default -> new GoldMinerBot(kingdom, market);
+                case "BlacksmithBot" -> new BlacksmithBot(kingdom, market, kingdomInteractor);
+                case "IronMinerBot" -> new IronMinerBot(kingdom, market, kingdomInteractor);
+                case "FarmerBot" -> new FarmerBot(kingdom, market, kingdomInteractor);
+                case "GoldMinerBot" -> new GoldMinerBot(kingdom, market, kingdomInteractor);
+                default -> new GoldMinerBot(kingdom, market, kingdomInteractor);
             };
 
             runSingleBotActions(bot);

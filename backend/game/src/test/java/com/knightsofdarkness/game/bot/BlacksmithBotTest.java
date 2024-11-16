@@ -38,7 +38,7 @@ class BlacksmithBotTest {
         var unusedLandBefore = kingdom.getUnusedLand();
         var workshopsBefore = kingdom.getBuildings().getCount(BuildingName.workshop);
 
-        var bot = new BlacksmithBot(kingdom, game.getMarket());
+        var bot = new BlacksmithBot(kingdom, game.getMarket(), game.getKingdomInteractor());
 
         KingdomPrinter.printResourcesHeader();
         KingdomPrinter.printLineSeparator();

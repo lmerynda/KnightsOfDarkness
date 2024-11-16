@@ -24,6 +24,7 @@ import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
+import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.storage.kingdom.KingdomReadRepository;
@@ -37,13 +38,15 @@ public class KingdomService {
     private final KingdomReadRepository kingdomReadRepository;
     private final MarketOfferReadRepository marketOfferReadRepository;
     private final GameConfig gameConfig;
+    private final IKingdomInteractor kingdomInteractor;
 
-    public KingdomService(KingdomRepository kingdomRepository, KingdomReadRepository kingdomReadRepository, MarketOfferReadRepository marketOfferReadRepository, GameConfig gameConfig)
+    public KingdomService(KingdomRepository kingdomRepository, KingdomReadRepository kingdomReadRepository, MarketOfferReadRepository marketOfferReadRepository, GameConfig gameConfig, IKingdomInteractor kingdomInteractor)
     {
         this.kingdomRepository = kingdomRepository;
         this.kingdomReadRepository = kingdomReadRepository;
         this.marketOfferReadRepository = marketOfferReadRepository;
         this.gameConfig = gameConfig;
+        this.kingdomInteractor = kingdomInteractor;
     }
 
     @Transactional
@@ -151,7 +154,7 @@ public class KingdomService {
             return ResponseEntity.notFound().build();
         }
 
-        var passedTurnResult = kingdom.get().passTurn();
+        var passedTurnResult = kingdom.get().passTurn(kingdomInteractor);
         if (passedTurnResult.success())
         {
             kingdomRepository.update(kingdom.get());

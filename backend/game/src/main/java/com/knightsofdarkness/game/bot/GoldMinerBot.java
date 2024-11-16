@@ -3,6 +3,7 @@ package com.knightsofdarkness.game.bot;
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.IMarket;
 
@@ -11,11 +12,13 @@ public class GoldMinerBot implements IBot {
     private final IMarket market;
     private static final double builderToSpecialistRatio = 0.1;
     private static final double housesToSpecialistBuildingRatio = 0.6;
+    private IKingdomInteractor kingdomInteractor;
 
-    public GoldMinerBot(Kingdom kingdom, IMarket market)
+    public GoldMinerBot(Kingdom kingdom, IMarket market, IKingdomInteractor kingdomInteractor)
     {
         this.kingdom = kingdom;
         this.market = market;
+        this.kingdomInteractor = kingdomInteractor;
     }
 
     @Override
@@ -58,7 +61,7 @@ public class GoldMinerBot implements IBot {
     public void passTurn()
     {
         runPrePassTurnActions();
-        kingdom.passTurn();
+        kingdom.passTurn(kingdomInteractor);
     }
 
     private void runPrePassTurnActions()
@@ -74,12 +77,12 @@ public class GoldMinerBot implements IBot {
     public String getKingdomInfo()
     {
         return String.format("[%s] land: %d, houses: %d, gold mines: %d, gold: %d, food: %d",
-            kingdom.getName(),
-            kingdom.getResources().getCount(ResourceName.land),
-            kingdom.getBuildings().getCount(BuildingName.house),
-            kingdom.getBuildings().getCount(BuildingName.goldMine),
-            kingdom.getResources().getCount(ResourceName.gold),
-            kingdom.getResources().getCount(ResourceName.food));
+                kingdom.getName(),
+                kingdom.getResources().getCount(ResourceName.land),
+                kingdom.getBuildings().getCount(BuildingName.house),
+                kingdom.getBuildings().getCount(BuildingName.goldMine),
+                kingdom.getResources().getCount(ResourceName.gold),
+                kingdom.getResources().getCount(ResourceName.food));
     }
 
     @Override

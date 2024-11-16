@@ -8,7 +8,7 @@ class KingdomTurnActionTest {
     @Test
     void testGetBonusFactorBasedOnLand()
     {
-        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(null);
+        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(null, null);
 
         // Test for minimum land value
         double bonus1 = kingdomTurnAction.getBonusFactorBasedOnLand(1000);
@@ -34,7 +34,7 @@ class KingdomTurnActionTest {
     @Test
     void testGetKingdomSizeProductionBonus()
     {
-        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(null);
+        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(null, null);
 
         double bonusBelow100 = kingdomTurnAction.getKingdomSizeProductionBonus(99);
         double bonusAt100 = kingdomTurnAction.getKingdomSizeProductionBonus(100);

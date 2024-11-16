@@ -12,16 +12,19 @@ import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 
 public class KingdomTurnAction {
     private static final Logger log = LoggerFactory.getLogger(KingdomTurnAction.class);
     private final Kingdom kingdom;
     private final KingdomTurnReport results;
+    private final IKingdomInteractor kingdomInteractor;
 
-    public KingdomTurnAction(Kingdom kingdom)
+    public KingdomTurnAction(Kingdom kingdom, IKingdomInteractor kingdomInteractor)
     {
         this.kingdom = kingdom;
         this.results = new KingdomTurnReport();
+        this.kingdomInteractor = kingdomInteractor;
     }
 
     public KingdomPassTurnActionResult passTurn()
@@ -55,6 +58,8 @@ public class KingdomTurnAction {
         {
             log.info("Carriers on the move arrived at destination: {}", carriersOnTheMove);
             kingdom.getUnits().addCount(UnitName.carrier, carriersOnTheMove.carriersCount);
+            kingdomInteractor.transferResources(kingdom, carriersOnTheMove.targetKingdomName, carriersOnTheMove.resource, carriersOnTheMove.resourceCount);
+
         });
         allCarriersOnTheMove.removeIf(carriersOnTheMove -> carriersOnTheMove.turnsLeft <= 0);
     }

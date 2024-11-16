@@ -38,7 +38,7 @@ class IronMinerBotTest {
         var unusedLandBefore = kingdom.getUnusedLand();
         var ironMineBefore = kingdom.getBuildings().getCount(BuildingName.ironMine);
 
-        var bot = new IronMinerBot(kingdom, game.getMarket());
+        var bot = new IronMinerBot(kingdom, game.getMarket(), game.getKingdomInteractor());
 
         KingdomPrinter.printResourcesHeader();
         KingdomPrinter.printLineSeparator();

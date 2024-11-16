@@ -15,39 +15,40 @@ import com.knightsofdarkness.game.bot.IronMinerBot;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 import com.knightsofdarkness.game.utils.KingdomPrinter;
 
-public class BotGame {
+class BotGame {
     @Test
     @Disabled
     void simulateTenTurnsTest()
     {
         var game = new TestGame().get();
         var market = game.getMarket();
+        var kingdomInteractor = game.getKingdomInteractor();
         var bots = new ArrayList<IBot>();
         var numberOfTurns = 10;
         var kingdomBuilder = Utils.setupKingdomStartConfiguration(new KingdomBuilder(game), game).withResource(ResourceName.turns, numberOfTurns);
 
         var farmerKingdom = kingdomBuilder.withName("FarmerBot").build();
-        IBot farmerBot = new FarmerBot(farmerKingdom, market);
+        IBot farmerBot = new FarmerBot(farmerKingdom, market, kingdomInteractor);
         game.addKingdom(farmerKingdom);
         bots.add(farmerBot);
 
         var ironMinerKingdom = kingdomBuilder.withName("IronMinerBot").build();
-        IBot ironMinerBot = new IronMinerBot(ironMinerKingdom, market);
+        IBot ironMinerBot = new IronMinerBot(ironMinerKingdom, market, kingdomInteractor);
         game.addKingdom(ironMinerKingdom);
         bots.add(ironMinerBot);
 
         var blacksmithKingdom = kingdomBuilder.withName("BlacksmithBot").build();
-        IBot blacksmithBot = new BlacksmithBot(blacksmithKingdom, market);
+        IBot blacksmithBot = new BlacksmithBot(blacksmithKingdom, market, kingdomInteractor);
         game.addKingdom(blacksmithKingdom);
         bots.add(blacksmithBot);
 
         var goldMinerKingdom1 = kingdomBuilder.withName("GoldMinerBot1").build();
-        IBot goldMinerBot1 = new GoldMinerBot(goldMinerKingdom1, market);
+        IBot goldMinerBot1 = new GoldMinerBot(goldMinerKingdom1, market, kingdomInteractor);
         game.addKingdom(goldMinerKingdom1);
         bots.add(goldMinerBot1);
 
         var goldMinerKingdom2 = kingdomBuilder.withName("GoldMinerBot2").build();
-        IBot goldMinerBot2 = new GoldMinerBot(goldMinerKingdom2, market);
+        IBot goldMinerBot2 = new GoldMinerBot(goldMinerKingdom2, market, kingdomInteractor);
         game.addKingdom(goldMinerKingdom2);
         bots.add(goldMinerBot2);
 
