@@ -1,3 +1,5 @@
+import { Mark } from "@mui/material/Slider/useSlider.types";
+
 export const buildings = [
   "house",
   "goldMine",
@@ -66,6 +68,7 @@ export type KingdomData = {
   marketOffers: MarketOfferData[];
   specialBuildings: SpecialBuilding[];
   lastTurnReport: TurnReport;
+  carriersOnTheMove: CarriersOnTheMove[];
 };
 
 export type MarketOfferData = {
@@ -159,4 +162,14 @@ export type Notification = {
   message: string;
   dateTime: number;
   isRead: boolean;
+};
+
+export type CarriersOnTheMove = {
+  id: string;
+  from: string;
+  to: string;
+  turnsLeft: number;
+  carriersCount: number;
+  resource: MarketResource;
+  amount: number;
 };

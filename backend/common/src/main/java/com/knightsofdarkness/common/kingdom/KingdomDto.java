@@ -13,13 +13,14 @@ public class KingdomDto {
     public List<MarketOfferDto> marketOffers;
     public List<KingdomSpecialBuildingDto> specialBuildings;
     public KingdomTurnReport lastTurnReport;
+    public List<CarriersOnTheMoveDto> carriersOnTheMove;
 
     public KingdomDto()
     {
     }
 
     public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers, List<KingdomSpecialBuildingDto> specialBuildings,
-            KingdomTurnReport lastTurnReport)
+            KingdomTurnReport lastTurnReport, List<CarriersOnTheMoveDto> carriersOnTheMove)
     {
         this.name = name;
         this.resources = resources;
@@ -28,6 +29,7 @@ public class KingdomDto {
         this.marketOffers = marketOffers;
         this.specialBuildings = specialBuildings;
         this.lastTurnReport = lastTurnReport;
+        this.carriersOnTheMove = carriersOnTheMove;
         initializeDetails();
     }
 
@@ -40,13 +42,15 @@ public class KingdomDto {
     public String toString()
     {
         return "KingdomDto{" +
-                "name='" + name +
+                "name='" + name + '\'' +
                 ", resources=" + resources +
                 ", buildings=" + buildings +
                 ", units=" + units +
                 ", details=" + details +
                 ", marketOffers=" + marketOffers +
                 ", specialBuildings=" + specialBuildings +
+                ", lastTurnReport=" + lastTurnReport +
+                ", carriersOnTheMove=" + carriersOnTheMove +
                 '}';
     }
 }

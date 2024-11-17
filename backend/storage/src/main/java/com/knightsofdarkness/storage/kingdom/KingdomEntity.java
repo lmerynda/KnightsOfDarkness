@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.knightsofdarkness.common.kingdom.CarriersOnTheMoveDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -67,7 +68,8 @@ public class KingdomEntity {
     public KingdomDto toDto()
     {
         List<KingdomSpecialBuildingDto> specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDto).collect(Collectors.toList());
-        return new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), new ArrayList<>(), specialBuildings, lastTurnReport.toDto());
+        List<CarriersOnTheMoveDto> carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDto).collect(Collectors.toList());
+        return new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), new ArrayList<>(), specialBuildings, lastTurnReport.toDto(), carriersOnTheMove);
     }
 
     public static KingdomEntity fromDomainModel(Kingdom kingdom)

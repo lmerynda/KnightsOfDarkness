@@ -32,10 +32,10 @@ content-type: application/json
 
 POST http://localhost:8080/kingdom/send-carriers
 content-type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3Mjg3OTgyOTksImlhdCI6MTcyODc5NzY5OSwianRpIjoiMjg1OTZlMTUtMjVhOC00MWRlLTg4M2EtOGVjOWEyMDFmOTgwIiwic3ViIjoidXByemVqbXkifQ.bo9xegFkqUABqkDkHg2DgopldhqX-WrOO8IuY5cKKOLJj7lQ4D8wVl19U-f8WxQ_VcrFST-ZB0cXVoWf5vEXaQ
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3MzE4MjU5OTgsImlhdCI6MTczMTgyNTM5OCwianRpIjoiMzFmNzMzMjktY2Y4OS00ODE5LWIwNjctYmJmNDA5MjhkNzU5Iiwic3ViIjoidXByemVqbXkifQ.Xdz4WJOGbjZpSITW1d8rLZWCkHYBdfdVKwUAbQ5tbQHePDQP67Xs20hZ_CGMu9eS1_GNyvdPOiij1Tj3hqBm6w
 
 {
-    "destinationKingdomName": "uprzejmy",
+    "destinationKingdomName": "BlacksmithBot",
     "resource": "food",
-    "amount": 100
+    "amount": 1111
 }

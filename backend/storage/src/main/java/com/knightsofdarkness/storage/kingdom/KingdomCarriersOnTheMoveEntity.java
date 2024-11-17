@@ -2,6 +2,7 @@ package com.knightsofdarkness.storage.kingdom;
 
 import java.util.UUID;
 
+import com.knightsofdarkness.common.kingdom.CarriersOnTheMoveDto;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.kingdom.KingdomCarriersOnTheMove;
 
@@ -56,6 +57,11 @@ public class KingdomCarriersOnTheMoveEntity {
     {
         return new KingdomCarriersOnTheMoveEntity(carriersOnTheMove.getId(), kingdom, carriersOnTheMove.getTargetKingdomName(), carriersOnTheMove.getTurnsLeft(), carriersOnTheMove.getCarriersCount(),
                 carriersOnTheMove.getResource(), carriersOnTheMove.getResourceCount());
+    }
+
+    public CarriersOnTheMoveDto toDto()
+    {
+        return new CarriersOnTheMoveDto(id, kingdom.getName(), targetKingdomName, turnsLeft, carriersCount, resource, resourceCount);
     }
 
     public UUID getId()
