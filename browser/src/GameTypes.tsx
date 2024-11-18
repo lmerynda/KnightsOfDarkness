@@ -1,5 +1,3 @@
-import { Mark } from "@mui/material/Slider/useSlider.types";
-
 export const buildings = [
   "house",
   "goldMine",

@@ -15,6 +15,8 @@ export type KingdomContextType = {
   reloadKingdom: () => Promise<void>;
 };
 
+// TODO fix this lint warning
+// eslint-disable-next-line react-refresh/only-export-components
 export const KingdomContext = React.createContext<KingdomContextType | undefined>(undefined);
 
 const Kingdom: React.FC = () => {
