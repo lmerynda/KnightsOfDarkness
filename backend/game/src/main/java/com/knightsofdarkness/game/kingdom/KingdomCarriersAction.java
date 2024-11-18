@@ -16,6 +16,11 @@ public class KingdomCarriersAction {
 
     public SendCarriersResult sendCarriers(SendCarriersDto sendCarriersDto)
     {
+        if (sendCarriersDto.amount() <= 0)
+        {
+            return SendCarriersResult.failure("Amount to send must be greater than 0");
+        }
+
         var resource = sendCarriersDto.resource();
         int singleCarrierCapacity = kingdom.getConfig().carrierCapacity().get(resource);
         int carriersCapacity = kingdom.getUnits().getCount(UnitName.carrier) * singleCarrierCapacity;
@@ -39,8 +44,8 @@ public class KingdomCarriersAction {
         kingdom.getResources().subtractCount(ResourceName.from(resource), amountToSend);
         kingdom.getUnits().subtractCount(UnitName.carrier, carriersToSend);
 
-        // TODO handle turn ticks and return carriers to the kingdom
-        return SendCarriersResult.success("Carriers sent and should arrive in a few turns", new SendCarriersDto(sendCarriersDto.destinationKingdomName(), resource, amountToSend));
+        var message = amountToSend == sendCarriersDto.amount() ? "Carriers sent and should arrive in a few turns" : "Partial transfer sent, not enough carriers to carry everything requested";
+        return SendCarriersResult.success(message, new SendCarriersDto(sendCarriersDto.destinationKingdomName(), resource, amountToSend));
     }
 
     public void withdrawCarriers(KingdomCarriersOnTheMove carriersOnTheMove)

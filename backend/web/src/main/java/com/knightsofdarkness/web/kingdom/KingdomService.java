@@ -262,7 +262,7 @@ public class KingdomService {
         Optional<Kingdom> maybeDestinationKingdom = kingdomRepository.getKingdomByName(sendCarriersDto.destinationKingdomName());
         if (maybeDestinationKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(SendCarriersResult.failure("Destination kingdom does not exist"));
         }
 
         SendCarriersResult result = kingdom.sendCarriers(sendCarriersDto);

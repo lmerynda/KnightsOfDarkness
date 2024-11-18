@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import { CarriersOnTheMove } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 import { withdrawCarriers } from "../game-api-client/TransfersApi";
+import SendCarriers from "../components/SendCarriers";
 
 const Transfers: React.FC = () => {
   const [carriersOnTheMove, setCarriersOnTheMove] = React.useState<CarriersOnTheMove[]>([]);
@@ -24,6 +25,7 @@ const Transfers: React.FC = () => {
   return (
     <div>
       <Typography variant="h4">Transfers</Typography>
+      <SendCarriers />
       <Table>
         <TableHead>
           <TableRow>
