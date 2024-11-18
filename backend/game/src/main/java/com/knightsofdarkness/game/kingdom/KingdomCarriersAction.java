@@ -42,4 +42,11 @@ public class KingdomCarriersAction {
         // TODO handle turn ticks and return carriers to the kingdom
         return SendCarriersResult.success("Carriers sent and should arrive in a few turns", new SendCarriersDto(sendCarriersDto.destinationKingdomName(), resource, amountToSend));
     }
+
+    public void withdrawCarriers(KingdomCarriersOnTheMove carriersOnTheMove)
+    {
+        kingdom.getCarriersOnTheMove().remove(carriersOnTheMove);
+        kingdom.getResources().addCount(ResourceName.from(carriersOnTheMove.getResource()), carriersOnTheMove.getResourceCount());
+        kingdom.getUnits().addCount(UnitName.carrier, carriersOnTheMove.getCarriersCount());
+    }
 }

@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.kingdom;
 
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -168,6 +170,18 @@ public class KingdomController {
         }
 
         return kingdomService.sendCarriers(currentUser.getKingdomName(), sendCarriersDto);
+    }
+
+    @PostMapping(value = "/withdraw-carriers")
+    ResponseEntity<Boolean> kingdomWithdrawCarriers(@AuthenticationPrincipal UserData currentUser, @RequestBody UUID carriersOnTheMoveId)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.withdrawCarriers(currentUser.getKingdomName(), carriersOnTheMoveId);
     }
 
     private void logUserUnauthenticated()

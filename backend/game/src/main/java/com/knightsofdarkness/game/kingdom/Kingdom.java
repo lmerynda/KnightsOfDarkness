@@ -216,4 +216,9 @@ public class Kingdom {
     {
         resources.addCount(ResourceName.from(resource), amount);
     }
+
+    public void withdrawCarriers(KingdomCarriersOnTheMove carriersOnTheMove)
+    {
+        kingdomCarriersAction.withdrawCarriers(carriersOnTheMove);
+    }
 }

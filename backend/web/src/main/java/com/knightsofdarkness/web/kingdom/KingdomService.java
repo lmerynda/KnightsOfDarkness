@@ -3,6 +3,7 @@ package com.knightsofdarkness.web.kingdom;
 import java.util.Optional;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -271,5 +272,27 @@ public class KingdomService {
         }
 
         return ResponseEntity.ok(result);
+    }
+
+    @Transactional
+    public ResponseEntity<Boolean> withdrawCarriers(String kingdomName, UUID carriersOnTheMoveId)
+    {
+        log.info("[{}] withdrawing carriers {}", kingdomName, carriersOnTheMoveId);
+        Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+        var kingdom = maybeKingdom.get();
+        var carriersOnTheMove = kingdom.getCarriersOnTheMove().stream().filter(c -> c.getId().equals(carriersOnTheMoveId)).findFirst();
+        if (carriersOnTheMove.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        kingdom.withdrawCarriers(carriersOnTheMove.get());
+        kingdomRepository.update(kingdom);
+
+        return ResponseEntity.ok(true);
     }
 }
