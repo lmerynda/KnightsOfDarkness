@@ -48,16 +48,16 @@ class KingdomInteractorTest {
 
         primaryKingdom.getResources().setCount(ResourceName.food, 1000);
         primaryKingdom.getUnits().setCount(UnitName.carrier, 100);
-        var result = primaryKingdom.sendCarriers(new SendCarriersDto(secondaryKingdom.getName(), MarketResource.food, 100));
+        var data = new SendCarriersDto(secondaryKingdom.getName(), MarketResource.food, 100);
+        var result = primaryKingdom.sendCarriers(data);
         assertTrue(result.success());
 
-        var numberOfTurns = 4; // TODO make number turns for carriers to arrive a game config
+        var numberOfTurns = game.getConfig().common().turnsToDeliverResources();
         for (int i = 0; i < numberOfTurns; i++)
         {
             primaryKingdom.passTurn(kingdomInteractor);
         }
         assertEquals(0, primaryKingdom.getCarriersOnTheMove().size());
-
         assertEquals(100, secondaryKingdom.getResources().getCount(ResourceName.food));
     }
 }

@@ -29,7 +29,8 @@ public class KingdomCarriersAction {
             return SendCarriersResult.failure("You have not enough carriers to send");
         }
 
-        int amountPossibleToSend = Math.min(kingdom.getResources().getCount(ResourceName.from(resource)), sendCarriersDto.amount());
+        int resourceCount = kingdom.getResources().getCount(ResourceName.from(resource));
+        int amountPossibleToSend = Math.min(resourceCount, sendCarriersDto.amount());
         int amountToSend = Math.min(amountPossibleToSend, carriersCapacity);
 
         if (amountToSend <= 0)
@@ -39,19 +40,25 @@ public class KingdomCarriersAction {
 
         int carriersToSend = (int) Math.ceil((double) amountToSend / singleCarrierCapacity);
         // TODO make number turns for carriers to arrive a game config
-        KingdomCarriersOnTheMove carriersOnTheMove = new KingdomCarriersOnTheMove(Id.generate(), sendCarriersDto.destinationKingdomName(), 4, carriersToSend, sendCarriersDto.resource(), amountToSend);
+        int turnsLeft = kingdom.getConfig().common().turnsToDeliverResources();
+        KingdomCarriersOnTheMove carriersOnTheMove = new KingdomCarriersOnTheMove(Id.generate(),
+                sendCarriersDto.destinationKingdomName(), turnsLeft, carriersToSend, sendCarriersDto.resource(),
+                amountToSend);
         kingdom.getCarriersOnTheMove().add(carriersOnTheMove);
         kingdom.getResources().subtractCount(ResourceName.from(resource), amountToSend);
         kingdom.getUnits().subtractCount(UnitName.carrier, carriersToSend);
 
-        var message = amountToSend == sendCarriersDto.amount() ? "Carriers sent and should arrive in a few turns" : "Partial transfer sent, not enough carriers to carry everything requested";
-        return SendCarriersResult.success(message, new SendCarriersDto(sendCarriersDto.destinationKingdomName(), resource, amountToSend));
+        var message = amountToSend == sendCarriersDto.amount() ? "Carriers sent and should arrive in a few turns"
+                : "Partial transfer sent, not enough carriers to carry everything requested";
+        return SendCarriersResult.success(message,
+                new SendCarriersDto(sendCarriersDto.destinationKingdomName(), resource, amountToSend));
     }
 
     public void withdrawCarriers(KingdomCarriersOnTheMove carriersOnTheMove)
     {
         kingdom.getCarriersOnTheMove().remove(carriersOnTheMove);
-        kingdom.getResources().addCount(ResourceName.from(carriersOnTheMove.getResource()), carriersOnTheMove.getResourceCount());
+        kingdom.getResources().addCount(ResourceName.from(carriersOnTheMove.getResource()),
+                carriersOnTheMove.getResourceCount());
         kingdom.getUnits().addCount(UnitName.carrier, carriersOnTheMove.getCarriersCount());
     }
 }

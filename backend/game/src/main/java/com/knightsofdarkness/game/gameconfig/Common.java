@@ -7,6 +7,6 @@ public record Common(
         int ironConsumptionPerProductionUnit,
         int specialBuildingMaxCount,
         int newTurnPeriodicity,
-        int maxNotificationsCount) {
-
+        int maxNotificationsCount,
+        int turnsToDeliverResources) {
 }

@@ -1,174 +1,175 @@
 {
-  "buildingPointCosts": {
-    "house": 100,
-    "goldMine": 1000,
-    "ironMine": 1000,
-    "farm": 200,
-    "workshop": 100,
-    "market": 500,
-    "barracks": 2000,
-    "guardHouse": 1000,
-    "spyGuild": 1000,
-    "castle": 100000,
-    "tower": 1000
-  },
-  "specialBuildingCosts": {
-    "goldShaft": 10000,
-    "ironShaft": 10000,
-    "granary": 5000,
-    "forge": 5000,
-    "warehouse": 3000
-  },
-  "kingdomStartConfiguration": {
-    "buildings": {
-      "house": 30,
-      "goldMine": 10,
-      "ironMine": 2,
-      "farm": 5,
-      "workshop": 5,
-      "market": 0,
-      "barracks": 1,
-      "guardHouse": 1,
-      "spyGuild": 0,
-      "castle": 1,
-      "tower": 4
+    "buildingPointCosts": {
+        "house": 100,
+        "goldMine": 1000,
+        "ironMine": 1000,
+        "farm": 200,
+        "workshop": 100,
+        "market": 500,
+        "barracks": 2000,
+        "guardHouse": 1000,
+        "spyGuild": 1000,
+        "castle": 100000,
+        "tower": 1000
     },
-    "resources": {
-      "land": 100,
-      "buildingPoints": 10000,
-      "unemployed": 10,
-      "gold": 200000,
-      "food": 2000,
-      "iron": 100,
-      "tools": 500,
-      "weapons": 10,
-      "turns": 20
+    "specialBuildingCosts": {
+        "goldShaft": 10000,
+        "ironShaft": 10000,
+        "granary": 5000,
+        "forge": 5000,
+        "warehouse": 3000
     },
-    "units": {
-      "goldMiner": 30,
-      "ironMiner": 10,
-      "builder": 20,
-      "blacksmith": 10,
-      "farmer": 10,
-      "carrier": 0,
-      "guard": 5,
-      "spy": 0,
-      "bowman": 0,
-      "infantry": 0,
-      "cavalry": 0
+    "kingdomStartConfiguration": {
+        "buildings": {
+            "house": 30,
+            "goldMine": 10,
+            "ironMine": 2,
+            "farm": 5,
+            "workshop": 5,
+            "market": 0,
+            "barracks": 1,
+            "guardHouse": 1,
+            "spyGuild": 0,
+            "castle": 1,
+            "tower": 4
+        },
+        "resources": {
+            "land": 100,
+            "buildingPoints": 10000,
+            "unemployed": 10,
+            "gold": 200000,
+            "food": 2000,
+            "iron": 100,
+            "tools": 500,
+            "weapons": 10,
+            "turns": 20
+        },
+        "units": {
+            "goldMiner": 30,
+            "ironMiner": 10,
+            "builder": 20,
+            "blacksmith": 10,
+            "farmer": 10,
+            "carrier": 0,
+            "guard": 5,
+            "spy": 0,
+            "bowman": 0,
+            "infantry": 0,
+            "cavalry": 0
+        }
+    },
+    "buildingCapacity": {
+        "house": 5,
+        "goldMine": 5,
+        "ironMine": 5,
+        "farm": 5,
+        "workshop": 5,
+        "market": 50,
+        "barracks": 100,
+        "guardHouse": 10,
+        "spyGuild": 50,
+        "castle": 0,
+        "tower": 10
+    },
+    "trainingCost": {
+        "goldMiner": {
+            "gold": 4000,
+            "tools": 15,
+            "weapons": 0
+        },
+        "ironMiner": {
+            "gold": 4000,
+            "tools": 15,
+            "weapons": 0
+        },
+        "farmer": {
+            "gold": 3000,
+            "tools": 5,
+            "weapons": 0
+        },
+        "blacksmith": {
+            "gold": 7000,
+            "tools": 10,
+            "weapons": 0
+        },
+        "builder": {
+            "gold": 5000,
+            "tools": 20,
+            "weapons": 0
+        },
+        "carrier": {
+            "gold": 700,
+            "tools": 2,
+            "weapons": 0
+        },
+        "guard": {
+            "gold": 5000,
+            "tools": 0,
+            "weapons": 10
+        },
+        "spy": {
+            "gold": 10000,
+            "tools": 0,
+            "weapons": 5
+        },
+        "bowman": {
+            "gold": 15000,
+            "tools": 0,
+            "weapons": 5
+        },
+        "infantry": {
+            "gold": 15000,
+            "tools": 0,
+            "weapons": 10
+        },
+        "cavalry": {
+            "gold": 30000,
+            "tools": 0,
+            "weapons": 20
+        }
+    },
+    "production": {
+        "goldMiner": {
+            "rate": 1000,
+            "resource": "gold"
+        },
+        "ironMiner": {
+            "rate": 10,
+            "resource": "iron"
+        },
+        "farmer": {
+            "rate": 100,
+            "resource": "food"
+        },
+        "blacksmith": {
+            "rate": 10,
+            "resource": "tools"
+        },
+        "builder": {
+            "rate": 1000,
+            "resource": "buildingPoints"
+        }
+    },
+    "market": {
+        "visibleMarketOffersCap": 7,
+        "maxKingdomOffers": 10,
+        "marketAveragePeriodicity": 50000,
+        "minPrice": 5
+    },
+    "common": {
+        "specialBuildingPerLevelProductionBonus": 0.2,
+        "maxTurns": 36,
+        "foodUpkeepPerUnit": 10,
+        "ironConsumptionPerProductionUnit": 1,
+        "specialBuildingMaxCount": 5,
+        "newTurnPeriodicity": 10000,
+        "maxNotificationsCount": 15,
+        "turnsToDeliverResources": 2
+    },
+    "carrierCapacity": {
+        "iron": 10,
+        "food": 100,
+        "tools": 10,
+        "weapons": 10
     }
-  },
-  "buildingCapacity": {
-    "house": 5,
-    "goldMine": 5,
-    "ironMine": 5,
-    "farm": 5,
-    "workshop": 5,
-    "market": 50,
-    "barracks": 100,
-    "guardHouse": 10,
-    "spyGuild": 50,
-    "castle": 0,
-    "tower": 10
-  },
-  "trainingCost": {
-    "goldMiner": {
-      "gold": 4000,
-      "tools": 15,
-      "weapons": 0
-    },
-    "ironMiner": {
-      "gold": 4000,
-      "tools": 15,
-      "weapons": 0
-    },
-    "farmer": {
-      "gold": 3000,
-      "tools": 5,
-      "weapons": 0
-    },
-    "blacksmith": {
-      "gold": 7000,
-      "tools": 10,
-      "weapons": 0
-    },
-    "builder": {
-      "gold": 5000,
-      "tools": 20,
-      "weapons": 0
-    },
-    "carrier": {
-      "gold": 700,
-      "tools": 2,
-      "weapons": 0
-    },
-    "guard": {
-      "gold": 5000,
-      "tools": 0,
-      "weapons": 10
-    },
-    "spy": {
-      "gold": 10000,
-      "tools": 0,
-      "weapons": 5
-    },
-    "bowman": {
-      "gold": 15000,
-      "tools": 0,
-      "weapons": 5
-    },
-    "infantry": {
-      "gold": 15000,
-      "tools": 0,
-      "weapons": 10
-    },
-    "cavalry": {
-      "gold": 30000,
-      "tools": 0,
-      "weapons": 20
-    }
-  },
-  "production": {
-    "goldMiner": {
-      "rate": 1000,
-      "resource": "gold"
-    },
-    "ironMiner": {
-      "rate": 10,
-      "resource": "iron"
-    },
-    "farmer": {
-      "rate": 100,
-      "resource": "food"
-    },
-    "blacksmith": {
-      "rate": 10,
-      "resource": "tools"
-    },
-    "builder": {
-      "rate": 1000,
-      "resource": "buildingPoints"
-    }
-  },
-  "market" : {
-    "visibleMarketOffersCap": 7,
-    "maxKingdomOffers": 10,
-    "marketAveragePeriodicity": 50000,
-    "minPrice": 5
-  },
-  "common": {
-    "specialBuildingPerLevelProductionBonus" : 0.2,
-    "maxTurns": 36,
-    "foodUpkeepPerUnit": 10,
-    "ironConsumptionPerProductionUnit": 1,
-    "specialBuildingMaxCount": 5,
-    "newTurnPeriodicity": 10000,
-    "maxNotificationsCount": 15
-  },
-  "carrierCapacity": {
-    "iron": 10,
-    "food": 100,
-    "tools": 10,
-    "weapons": 10
-  }
 }
