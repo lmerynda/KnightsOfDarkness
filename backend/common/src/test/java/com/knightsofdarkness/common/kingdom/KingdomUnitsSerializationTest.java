@@ -11,8 +11,8 @@ class KingdomUnitsSerializationTest {
     @Test
     void serializationTest()
     {
-        var availableUnits = createUnitsMap();
-        var mobileUnits = createUnitsMap();
+        var availableUnits = createEmptyUnitsMap();
+        var mobileUnits = createEmptyUnitsMap();
 
         var kingdomUnits = new KingdomUnitsDto(availableUnits, mobileUnits);
 
@@ -26,20 +26,13 @@ class KingdomUnitsSerializationTest {
         assertEquals(new KingdomUnitsDto().toString(), kingdomUnitsDto.toString());
     }
 
-    private Map<UnitName, Integer> createUnitsMap()
+    private Map<UnitName, Integer> createEmptyUnitsMap()
     {
         var units = new EnumMap<UnitName, Integer>(UnitName.class);
-        units.put(UnitName.goldMiner, 0);
-        units.put(UnitName.ironMiner, 0);
-        units.put(UnitName.farmer, 0);
-        units.put(UnitName.blacksmith, 0);
-        units.put(UnitName.builder, 0);
-        units.put(UnitName.carrier, 0);
-        units.put(UnitName.guard, 0);
-        units.put(UnitName.spy, 0);
-        units.put(UnitName.infantry, 0);
-        units.put(UnitName.bowman, 0);
-        units.put(UnitName.cavalry, 0);
+        for (var name : UnitName.values())
+        {
+            units.put(name, 0);
+        }
         return units;
     }
 }
