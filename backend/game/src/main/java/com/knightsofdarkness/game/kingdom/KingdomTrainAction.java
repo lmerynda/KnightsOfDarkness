@@ -2,7 +2,6 @@ package com.knightsofdarkness.game.kingdom;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
-import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
@@ -19,7 +18,7 @@ public class KingdomTrainAction {
 
     public KingdomUnitsActionResult train(UnitsMapDto unitsToTrain)
     {
-        var trainedUnits = new KingdomUnitsDto();
+        var trainedUnits = new UnitsMapDto();
 
         for (var unitName : UnitName.values())
         {

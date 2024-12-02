@@ -3,6 +3,7 @@ package com.knightsofdarkness.common.kingdom;
 import java.util.EnumMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 public class UnitsMapDto {
@@ -31,6 +32,11 @@ public class UnitsMapDto {
         units.put(name, count);
     }
 
+    public int countAll()
+    {
+        return units.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
     @JsonAnySetter
     public void setUnit(String name, int count)
     {
@@ -42,6 +48,12 @@ public class UnitsMapDto {
         {
             // do nothing for now
         }
+    }
+
+    @JsonAnyGetter
+    public Map<UnitName, Integer> getUnits()
+    {
+        return units;
     }
 
     @Override
