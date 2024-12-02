@@ -99,7 +99,7 @@ export type TurnReport = {
   kingdomSizeProductionBonus: number;
   nourishmentProductionFactor: number;
   specialBuildingBonus: SpecialBuildingBonus;
-  professionalsLeaving: KingdomUnits;
+  professionalsLeaving: UnitsMap;
 };
 
 export type TrainingCost = Record<
@@ -144,7 +144,7 @@ export const buildingOccupantsMap: Record<Building, readonly Unit[]> = {
 
 export type TrainingActionReport = {
   message: string;
-  units: KingdomUnits;
+  units: UnitsMap;
 };
 
 export type BuildingActionReport = {

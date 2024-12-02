@@ -30,6 +30,7 @@
 1. Verify registration errors
 1. Verify flow around expired tokens
 1. Unemployed are not taken into account for max button in training
+1. Check if max button for buildings and others can offer partial numbers as it seem to do it
 
 ## Ideas
 

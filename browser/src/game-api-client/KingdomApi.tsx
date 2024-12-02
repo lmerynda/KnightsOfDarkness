@@ -101,7 +101,7 @@ export async function demolishRequest(data: { [building: string]: number }): Pro
   }
 }
 
-export async function trainRequest(data: UnitsMap): Promise<TrainingActionReport> {
+export async function trainRequest(data: Partial<UnitsMap>): Promise<TrainingActionReport> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/kingdom/train`, {
