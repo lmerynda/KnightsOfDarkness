@@ -1,67 +1,168 @@
 package com.knightsofdarkness.common.kingdom;
 
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@JsonSerialize(using = KingdomUnitsDto.KingdomUnitsDtoSerializer.class)
+@JsonDeserialize(using = KingdomUnitsDto.KingdomUnitsDtoDeserializer.class)
 public class KingdomUnitsDto {
-    Map<UnitName, Integer> units = new EnumMap<>(UnitName.class);
+    private Map<UnitName, Integer> availableUnits = new EnumMap<>(UnitName.class);
+    private Map<UnitName, Integer> mobileUnits = new EnumMap<>(UnitName.class);
 
     public KingdomUnitsDto()
     {
         for (var name : UnitName.values())
         {
-            units.put(name, 0);
+            availableUnits.put(name, 0);
+            mobileUnits.put(name, 0);
         }
+    }
+
+    public KingdomUnitsDto(Map<UnitName, Integer> availableUnits, Map<UnitName, Integer> mobileUnits)
+    {
+        this.availableUnits.putAll(availableUnits);
+        this.mobileUnits.putAll(mobileUnits);
     }
 
     public int getCount(UnitName name)
     {
-        return units.get(name);
+        return getAvailableCount(name);
+    }
+
+    public int getAvailableCount(UnitName name)
+    {
+        return availableUnits.get(name);
     }
 
     public void setCount(UnitName name, int count)
     {
-        units.put(name, count);
+        setAvailableCount(name, count);
     }
 
-    @SuppressWarnings("java:S107")
-    public KingdomUnitsDto(int goldMiner, int ironMiner, int farmer, int blacksmith, int builder, int carrier, int guard, int spy, int infantry, int bowman, int cavalry)
+    public void setAvailableCount(UnitName name, int count)
     {
-        units.put(UnitName.goldMiner, goldMiner);
-        units.put(UnitName.ironMiner, ironMiner);
-        units.put(UnitName.farmer, farmer);
-        units.put(UnitName.blacksmith, blacksmith);
-        units.put(UnitName.builder, builder);
-        units.put(UnitName.carrier, carrier);
-        units.put(UnitName.guard, guard);
-        units.put(UnitName.spy, spy);
-        units.put(UnitName.infantry, infantry);
-        units.put(UnitName.bowman, bowman);
-        units.put(UnitName.cavalry, cavalry);
+        availableUnits.put(name, count);
     }
 
-    @JsonAnyGetter
-    public Map<UnitName, Integer> getUnits()
+    public int getMobileCount(UnitName name)
     {
-        return units;
+        return mobileUnits.get(name);
     }
 
-    @JsonAnySetter
-    public void setResource(String key, int value)
+    public void setMobileCount(UnitName name, int count)
     {
-        units.put(UnitName.from(key), value);
+        mobileUnits.put(name, count);
     }
 
-    public String toString()
+    public int getTotalCount(UnitName name)
     {
-        return units.toString();
+        return getAvailableCount(name) + getMobileCount(name);
     }
 
     public int countAll()
     {
-        return units.values().stream().mapToInt(Integer::intValue).sum();
+        return availableUnits.values().stream().mapToInt(Integer::intValue).sum()
+                + mobileUnits.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
+    public Map<UnitName, Integer> getAvailableUnits()
+    {
+        return availableUnits;
+    }
+
+    public Map<UnitName, Integer> getMobileUnits()
+    {
+        return mobileUnits;
+    }
+
+    public void setAvailableUnits(Map<UnitName, Integer> availableUnits)
+    {
+        this.availableUnits = availableUnits;
+    }
+
+    public void setMobileUnits(Map<UnitName, Integer> mobileUnits)
+    {
+        this.mobileUnits = mobileUnits;
+    }
+
+    public String toJson()
+    {
+        try
+        {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (IOException e)
+        {
+            throw new RuntimeException("Failed to serialize KingdomUnitsDto to JSON", e);
+        }
+    }
+
+    public static KingdomUnitsDto fromJson(String json)
+    {
+        try
+        {
+            return new ObjectMapper().readValue(json, KingdomUnitsDto.class);
+        } catch (IOException e)
+        {
+            throw new RuntimeException("Failed to deserialize KingdomUnitsDto from JSON", e);
+        }
+    }
+
+    public static class KingdomUnitsDtoSerializer extends JsonSerializer<KingdomUnitsDto> {
+        @Override
+        public void serialize(KingdomUnitsDto value, JsonGenerator gen, SerializerProvider serializers) throws IOException
+        {
+            gen.writeStartObject();
+            gen.writeObjectField("availableUnits", value.getAvailableUnits());
+            gen.writeObjectField("mobileUnits", value.getMobileUnits());
+            gen.writeEndObject();
+        }
+    }
+
+    public static class KingdomUnitsDtoDeserializer extends JsonDeserializer<KingdomUnitsDto> {
+        @Override
+        public KingdomUnitsDto deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException
+        {
+            ObjectMapper mapper = (ObjectMapper) parser.getCodec();
+            JsonNode node = parser.readValueAsTree();
+            Map<UnitName, Integer> availableUnits = node.has("availableUnits") && !node.get("availableUnits").isNull()
+                    ? mapper.readValue(node.get("availableUnits").traverse(mapper), new TypeReference<EnumMap<UnitName, Integer>>()
+                    {
+                    })
+                    : new EnumMap<>(UnitName.class);
+
+            Map<UnitName, Integer> mobileUnits = node.has("mobileUnits") && !node.get("mobileUnits").isNull()
+                    ? mapper.readValue(node.get("mobileUnits").traverse(mapper), new TypeReference<EnumMap<UnitName, Integer>>()
+                    {
+                    })
+                    : new EnumMap<>(UnitName.class);
+
+            KingdomUnitsDto dto = new KingdomUnitsDto();
+            dto.setAvailableUnits(availableUnits);
+            dto.setMobileUnits(mobileUnits);
+            return dto;
+        }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "KingdomUnitsDto{" +
+                "availableUnits=" + availableUnits +
+                ", mobileUnits=" + mobileUnits +
+                '}';
     }
 }

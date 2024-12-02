@@ -19,6 +19,8 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.1")
     implementation(project(":common"))
     implementation(project(":game"))
 }

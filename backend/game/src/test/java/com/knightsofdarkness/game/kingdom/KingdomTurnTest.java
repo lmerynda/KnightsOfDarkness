@@ -14,9 +14,9 @@ import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
-import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
@@ -350,7 +350,7 @@ class KingdomTurnTest {
     {
         var currentGoldMinersCount = kingdom.getUnits().getCount(UnitName.goldMiner);
         var goldMinersCapacity = kingdom.getBuildingCapacity(BuildingName.goldMine);
-        var unitsToTrain = new KingdomUnitsDto();
+        var unitsToTrain = new UnitsMapDto();
         unitsToTrain.setCount(UnitName.goldMiner, goldMinersCapacity - currentGoldMinersCount);
         kingdom.train(unitsToTrain);
         kingdom.passTurn(game.getKingdomInteractor());

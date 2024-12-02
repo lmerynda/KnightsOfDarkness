@@ -11,13 +11,13 @@ import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomPassTurnActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
-import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.interactions.IKingdomInteractor;
@@ -67,7 +67,7 @@ public class Kingdom {
         return buildings.getCapacity(name, config.buildingCapacity().getCapacity(name));
     }
 
-    public KingdomUnitsActionResult train(KingdomUnitsDto unitsToTrain)
+    public KingdomUnitsActionResult train(UnitsMapDto unitsToTrain)
     {
         return kingdomTrainAction.train(unitsToTrain);
     }

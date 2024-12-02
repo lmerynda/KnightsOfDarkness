@@ -8,9 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
-import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.TestGame;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
@@ -63,7 +63,7 @@ class GoldMinerBotTest {
     {
         var kingdom = kingdomBuilder.build();
         game.addKingdom(kingdom);
-        var toTrain = new KingdomUnitsDto();
+        var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.goldMiner, 1);
 
         var bot = new GoldMinerBot(kingdom, game.getMarket(), game.getKingdomInteractor());

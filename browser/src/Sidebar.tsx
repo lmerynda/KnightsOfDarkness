@@ -28,17 +28,17 @@ const Sidebar: React.FC<KingdomData> = kingdom => {
         <Typography variant="body1">towers: {kingdom.buildings.tower}</Typography>
         <Typography variant="body1">castles: {kingdom.buildings.castle}</Typography>
         <Typography variant="h6">units</Typography>
-        <Typography variant="body1">goldMiners: {kingdom.units.goldMiner}</Typography>
-        <Typography variant="body1">ironMiners: {kingdom.units.ironMiner}</Typography>
-        <Typography variant="body1">farmers: {kingdom.units.farmer}</Typography>
-        <Typography variant="body1">blacksmiths: {kingdom.units.blacksmith}</Typography>
-        <Typography variant="body1">builders: {kingdom.units.builder}</Typography>
-        <Typography variant="body1">carriers: {kingdom.units.carrier}</Typography>
-        <Typography variant="body1">guards: {kingdom.units.guard}</Typography>
-        <Typography variant="body1">spies: {kingdom.units.spy}</Typography>
-        <Typography variant="body1">infantry: {kingdom.units.infantry}</Typography>
-        <Typography variant="body1">bowmen: {kingdom.units.bowman}</Typography>
-        <Typography variant="body1">cavalry: {kingdom.units.cavalry}</Typography>
+        <Typography variant="body1">goldMiners: {kingdom.units.availableUnits.goldMiner}</Typography>
+        <Typography variant="body1">ironMiners: {kingdom.units.availableUnits.ironMiner}</Typography>
+        <Typography variant="body1">farmers: {kingdom.units.availableUnits.farmer}</Typography>
+        <Typography variant="body1">blacksmiths: {kingdom.units.availableUnits.blacksmith}</Typography>
+        <Typography variant="body1">builders: {kingdom.units.availableUnits.builder}</Typography>
+        <Typography variant="body1">carriers: {kingdom.units.availableUnits.carrier}</Typography>
+        <Typography variant="body1">guards: {kingdom.units.availableUnits.guard}</Typography>
+        <Typography variant="body1">spies: {kingdom.units.availableUnits.spy}</Typography>
+        <Typography variant="body1">infantry: {kingdom.units.availableUnits.infantry}</Typography>
+        <Typography variant="body1">bowmen: {kingdom.units.availableUnits.bowman}</Typography>
+        <Typography variant="body1">cavalry: {kingdom.units.availableUnits.cavalry}</Typography>
       </Box>
     </Drawer>
   );

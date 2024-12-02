@@ -20,10 +20,10 @@ import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
-import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.common.kingdom.SendCarriersResult;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.kingdom.Kingdom;
@@ -130,7 +130,7 @@ public class KingdomService {
     }
 
     @Transactional
-    public ResponseEntity<KingdomUnitsActionResult> train(String name, KingdomUnitsDto unitsToTrain)
+    public ResponseEntity<KingdomUnitsActionResult> train(String name, UnitsMapDto unitsToTrain)
     {
         log.info("[{}] training {}", name, unitsToTrain);
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);

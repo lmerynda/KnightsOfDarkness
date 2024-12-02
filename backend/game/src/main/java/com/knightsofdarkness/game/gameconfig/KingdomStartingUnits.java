@@ -24,6 +24,18 @@ public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, in
 
     public KingdomUnitsDto toDto()
     {
-        return new KingdomUnitsDto(goldMiner, ironMiner, builder, blacksmith, farmer, carrier, guard, spy, bowman, infantry, cavalry);
+        var map = new KingdomUnitsDto();
+        map.setCount(UnitName.goldMiner, goldMiner);
+        map.setCount(UnitName.ironMiner, ironMiner);
+        map.setCount(UnitName.builder, builder);
+        map.setCount(UnitName.blacksmith, blacksmith);
+        map.setCount(UnitName.farmer, farmer);
+        map.setCount(UnitName.carrier, carrier);
+        map.setCount(UnitName.guard, guard);
+        map.setCount(UnitName.spy, spy);
+        map.setCount(UnitName.bowman, bowman);
+        map.setCount(UnitName.infantry, infantry);
+        map.setCount(UnitName.cavalry, cavalry);
+        return map;
     }
 }

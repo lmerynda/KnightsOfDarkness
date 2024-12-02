@@ -28,7 +28,11 @@ export const units = [
   "cavalry",
 ] as const;
 export type Unit = (typeof units)[number];
-export type KingdomUnits = Record<Unit, number>;
+export type UnitsMap = Record<Unit, number>;
+export type KingdomUnits = {
+  availableUnits: UnitsMap;
+  mobileUnits: UnitsMap;
+};
 
 export type Resource = "food" | "gold" | "iron" | "tools" | "weapons" | "land" | "usedLand" | "buildingPoints" | "unemployed" | "turns";
 export type KingdomResources = Record<Resource, number>;

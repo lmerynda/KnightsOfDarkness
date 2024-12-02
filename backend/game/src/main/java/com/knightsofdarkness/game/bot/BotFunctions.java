@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
-import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.market.IMarket;
@@ -119,7 +119,7 @@ public final class BotFunctions {
 
     public static int trainUnits(Kingdom kingdom, UnitName unit, int count)
     {
-        var toTrain = new KingdomUnitsDto();
+        var toTrain = new UnitsMapDto();
         toTrain.setCount(unit, count);
         var trainedUnits = kingdom.train(toTrain);
         return trainedUnits.units().countAll();
@@ -150,7 +150,7 @@ public final class BotFunctions {
             return 0;
         }
 
-        var toTrain = new KingdomUnitsDto();
+        var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.builder, count);
         var trainedUnits = kingdom.train(toTrain);
         return trainedUnits.units().countAll();

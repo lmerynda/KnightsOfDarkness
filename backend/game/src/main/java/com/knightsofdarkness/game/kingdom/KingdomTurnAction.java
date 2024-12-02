@@ -1,8 +1,5 @@
 package com.knightsofdarkness.game.kingdom;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,8 +95,7 @@ public class KingdomTurnAction {
 
     private void fireProfessionalsBasedOnRatios(int professionalsToFire)
     {
-        var totalPopulation = kingdom.getUnits().countAll();
-        var unitsRatios = kingdom.getUnits().units.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> (double) entry.getValue() / totalPopulation));
+        var unitsRatios = kingdom.getUnits().getUnitsRatios();
         for (var unit : UnitName.values())
         {
             // we don't want to fire more that we absolutaly have to, we'll take care of the remainder later on

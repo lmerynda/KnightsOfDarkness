@@ -5,6 +5,7 @@ import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.game.Utils;
 import com.knightsofdarkness.game.gameconfig.UnitTrainingCost;
 
@@ -16,7 +17,7 @@ public class KingdomTrainAction {
         this.kingdom = kingdom;
     }
 
-    public KingdomUnitsActionResult train(KingdomUnitsDto unitsToTrain)
+    public KingdomUnitsActionResult train(UnitsMapDto unitsToTrain)
     {
         var trainedUnits = new KingdomUnitsDto();
 
@@ -26,7 +27,7 @@ public class KingdomTrainAction {
             var maximumToAfford = calculateMaximumToAfford(kingdom.getResources(), trainingCost);
             var howManyToTrain = Math.min(unitsToTrain.getCount(unitName), maximumToAfford);
             var maybeBuildingType = BuildingName.getByUnit(unitName);
-            if(maybeBuildingType.isPresent())
+            if (maybeBuildingType.isPresent())
             {
                 var buildingType = maybeBuildingType.get();
                 var buildingCapacity = kingdom.getConfig().buildingCapacity().getCapacity(buildingType);

@@ -81,7 +81,7 @@ public class GameInitializer implements CommandLineRunner {
         } catch (Exception e)
         {
             e.printStackTrace();
-            throw new RuntimeException("Failed to generate kingdom");
+            throw new RuntimeException("Failed to generate marketOffers");
         }
     }
 
@@ -113,17 +113,32 @@ public class GameInitializer implements CommandLineRunner {
                     "castle": 0
                 },
                 "units": {
-                    "goldMiner": 5,
-                    "ironMiner": 5,
-                    "farmer": 5,
-                    "blacksmith": 5,
-                    "builder": 5,
-                    "carrier": 0,
-                    "guard": 5,
-                    "spy": 0,
-                    "infantry": 0,
-                    "bowman": 0,
-                    "cavalry": 0
+                    "availableUnits": {
+                        "goldMiner": 5,
+                        "ironMiner": 5,
+                        "builder": 5,
+                        "blacksmith": 5,
+                        "farmer": 5,
+                        "carrier": 0,
+                        "guard": 0,
+                        "spy": 0,
+                        "bowman": 0,
+                        "infantry": 0,
+                        "cavalry": 0
+                    },
+                    "mobileUnits": {
+                        "goldMiner": 0,
+                        "ironMiner": 0,
+                        "builder": 0,
+                        "blacksmith": 0,
+                        "farmer": 0,
+                        "carrier": 0,
+                        "guard": 0,
+                        "spy": 0,
+                        "bowman": 0,
+                        "infantry": 0,
+                        "cavalry": 0
+                    }
                 }
             }
             """;

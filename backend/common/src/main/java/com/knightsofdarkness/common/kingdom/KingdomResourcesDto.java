@@ -53,9 +53,12 @@ public class KingdomResourcesDto {
         resources.put(ResourceName.from(key), value);
     }
 
+    @Override
     public String toString()
     {
-        return resources.toString();
+        return "KingdomResourcesDto{" +
+                "resources=" + resources +
+                '}';
     }
 
     public int countAll()

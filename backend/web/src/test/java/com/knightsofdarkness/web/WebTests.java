@@ -1,11 +1,7 @@
 package com.knightsofdarkness.web;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.List;
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -16,13 +12,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.knightsofdarkness.common.market.MarketOfferDto;
-import com.knightsofdarkness.common.market.MarketResource;
-import com.knightsofdarkness.game.Id;
-import com.knightsofdarkness.game.market.MarketOffer;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,41 +24,12 @@ class WebTests {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
-    @Disabled
-    void foo() throws Exception
+    void healthTest() throws Exception
     {
-        MarketOffer offer1 = new MarketOffer(Id.generate(), null, MarketResource.food, 10, 100);
         this.mockMvc.perform(MockMvcRequestBuilders
-                .post("/market/add")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(offer1)))
+                .get("/health")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
-        MarketOffer offer2 = new MarketOffer(Id.generate(), null, MarketResource.iron, 30, 100);
-        this.mockMvc.perform(MockMvcRequestBuilders
-                .post("/market/add")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(offer2)))
-                .andExpect(status().isOk());
-
-        var foodResult = this.mockMvc.perform(MockMvcRequestBuilders
-                        .get("/market/food")
-                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk());
-        List<MarketOfferDto> foodOffers = objectMapper.readValue(foodResult.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOfferDto>>() {
-        });
-        assertEquals(1, foodOffers.size());
-
-        var ironResult = this.mockMvc.perform(MockMvcRequestBuilders
-                        .get("/market/iron")
-                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk());
-        List<MarketOfferDto> ironOffers = objectMapper.readValue(ironResult.andReturn().getResponse().getContentAsString(), new TypeReference<List<MarketOfferDto>>() {
-        });
-        assertEquals(1, ironOffers.size());
     }
 }

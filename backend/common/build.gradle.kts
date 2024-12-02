@@ -1,5 +1,9 @@
+import com.adarshr.gradle.testlogger.theme.ThemeType
+
 plugins {
-    java
+    id("java")
+    id("com.adarshr.test-logger") version "4.0.+"
+    id("jacoco")
 }
 
 group = "com.knightsofdarkness"
@@ -18,8 +22,26 @@ repositories {
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.18.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.18.1")
+    testImplementation(platform("org.junit:junit-bom:5.11.3"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
+    testImplementation("org.assertj:assertj-core:3.26.3")
 }
 
-tasks.withType<Test> {
+tasks.test {
     useJUnitPlatform()
+    jvmArgs("-ea")
+    reports {
+        junitXml.required.set(true)
+    }
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(true)
+    }
+}
+
+testlogger {
+    theme = ThemeType.MOCHA_PARALLEL
+    showSummary = true
 }
