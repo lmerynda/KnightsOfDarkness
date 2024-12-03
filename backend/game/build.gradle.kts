@@ -30,6 +30,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.11.3"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
     testImplementation("org.assertj:assertj-core:3.26.3")
+    implementation("com.google.code.gson:gson:2.11.0")
 }
 
 tasks.test {
