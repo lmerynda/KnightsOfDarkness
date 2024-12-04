@@ -19,8 +19,13 @@ repositories {
 }
 
 dependencies {
+    implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+        exclude(group = "com.fasterxml.jackson.core", module = "jackson-databind")
+        exclude(group = "com.fasterxml.jackson.core", module = "jackson-annotations")
+        exclude(group = "com.fasterxml.jackson.core", module = "jackson-core")
+    }
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework:spring-context")
     implementation("jakarta.persistence:jakarta.persistence-api")

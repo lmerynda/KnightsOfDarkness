@@ -3,9 +3,6 @@ package com.knightsofdarkness.common.kingdom;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-
 public class KingdomBuildingsDto {
     Map<BuildingName, Integer> buildings = new EnumMap<>(BuildingName.class);
 
@@ -43,13 +40,11 @@ public class KingdomBuildingsDto {
         buildings.put(BuildingName.castle, castle);
     }
 
-    @JsonAnyGetter
     public Map<BuildingName, Integer> getBuildings()
     {
         return buildings;
     }
 
-    @JsonAnySetter
     public void setBuilding(String key, int value)
     {
         buildings.put(BuildingName.from(key), value);

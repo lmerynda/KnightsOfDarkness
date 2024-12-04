@@ -2,6 +2,7 @@ package com.knightsofdarkness.storage.kingdom;
 
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
+import com.knightsofdarkness.storage.GsonFactory;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -23,12 +24,13 @@ public class KingdomUnitsEntity {
 
     public KingdomUnitsDto toDto()
     {
-        return KingdomUnitsDto.fromJson(unitsJson);
+        return GsonFactory.createGson().fromJson(unitsJson, KingdomUnitsDto.class);
     }
 
     public static KingdomUnitsEntity fromDto(KingdomUnitsDto dto)
     {
-        return new KingdomUnitsEntity(dto.toJson());
+        String unitsJson = GsonFactory.createGson().toJson(dto, KingdomUnitsDto.class);
+        return new KingdomUnitsEntity(unitsJson);
     }
 
     public KingdomUnits toDomainModel()
@@ -40,6 +42,7 @@ public class KingdomUnitsEntity {
     public static KingdomUnitsEntity fromDomainModel(KingdomUnits units)
     {
         var dto = new KingdomUnitsDto(units.getAvailableUnits(), units.getMobileUnits());
-        return new KingdomUnitsEntity(dto.toJson());
+        String unitsJson = GsonFactory.createGson().toJson(dto, KingdomUnitsDto.class);
+        return new KingdomUnitsEntity(unitsJson);
     }
 }

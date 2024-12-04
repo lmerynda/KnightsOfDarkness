@@ -1,0 +1,27 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class GsonConfig {
+    @Bean
+    public Gson gson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(new TypeToken<EnumMap<UnitName, String>>() {}.getType(), new EnumMapGsonAdapter<>(UnitName.class))
+                .registerTypeAdapter(new TypeToken<EnumMap<ResourceName, Integer>>() {}.getType(), new EnumMapGsonAdapter<>(ResourceName.class))
+                .registerTypeAdapter(new TypeToken<EnumMap<MarketResource, Integer>>() {}.getType(), new EnumMapGsonAdapter<>(MarketResource.class))
+                .registerTypeAdapter(new TypeToken<EnumMap<SpecialBuildingType, Integer>>() {}.getType(), new EnumMapGsonAdapter<>(SpecialBuildingType.class))
+                .registerTypeAdapter(new TypeToken<EnumMap<BuildingName, Integer>>() {}.getType(), new EnumMapGsonAdapter<>(BuildingName.class))
+                .registerTypeAdapter(new TypeToken<EnumMap<KingdomDetailName, Integer>>() {}.getType(), new EnumMapGsonAdapter<>(KingdomDetailName.class))
+                .setPrettyPrinting()
+                .create();
+    }
+
+    @Bean
+    public HttpMessageConverter<Object> gsonHttpMessageConverter(Gson gson) {
+        GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
+        converter.setGson(gson);
+        return converter;
+    }
+}

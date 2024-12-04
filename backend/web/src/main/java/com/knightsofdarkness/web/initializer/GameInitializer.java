@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.initializer;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -7,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
@@ -22,11 +23,13 @@ public class GameInitializer implements CommandLineRunner {
 
     private final KingdomService kingdomService;
     private final MarketService marketService;
+    private final Gson gson;
 
-    public GameInitializer(KingdomService kingdomService, MarketService marketService)
+    public GameInitializer(KingdomService kingdomService, MarketService marketService, Gson gson)
     {
         this.kingdomService = kingdomService;
         this.marketService = marketService;
+        this.gson = gson;
     }
 
     @Override
@@ -58,31 +61,16 @@ public class GameInitializer implements CommandLineRunner {
 
     private KingdomDto generateKingdom(String name)
     {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try
-        {
-            var kingdomDto = objectMapper.readValue(defaultKingdomPayload, KingdomDto.class);
-            kingdomDto.name = name;
-            return kingdomDto;
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to generate kingdom");
-        }
+        var kingdom = gson.fromJson(defaultKingdomPayload, KingdomDto.class);
+        kingdom.name = name;
+        return kingdom;
     }
 
     private List<MarketOfferDto> generateMarketOffers()
     {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try
-        {
-            return objectMapper.readValue(marketOffersPayload, new TypeReference<List<MarketOfferDto>>() {
-            });
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to generate marketOffers");
-        }
+        Type listType = new TypeToken<List<MarketOfferDto>>() {
+        }.getType();
+        return gson.fromJson(marketOffersPayload, listType);
     }
 
     private static final String defaultKingdomPayload = """

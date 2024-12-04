@@ -23,14 +23,12 @@ repositories {
 
 dependencies {
     implementation(project(":common"))
-    implementation("com.fasterxml.jackson.core:jackson-core:2.18.1")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.1")
     implementation("com.github.victools:jsonschema-generator:4.37.0")
     implementation("org.json:json:20240303")
+    implementation("com.google.code.gson:gson:2.11.0")
     testImplementation(platform("org.junit:junit-bom:5.11.3"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
     testImplementation("org.assertj:assertj-core:3.26.3")
-    implementation("com.google.code.gson:gson:2.11.0")
 }
 
 tasks.test {

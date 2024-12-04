@@ -18,9 +18,12 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("com.fasterxml.jackson.core:jackson-core:2.18.1")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.1")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
+        exclude(group = "com.fasterxml.jackson.core", module = "jackson-databind")
+        exclude(group = "com.fasterxml.jackson.core", module = "jackson-annotations")
+        exclude(group = "com.fasterxml.jackson.core", module = "jackson-core")
+    }
+    implementation("com.google.code.gson:gson:2.11.0")
     implementation(project(":common"))
     implementation(project(":game"))
 }
