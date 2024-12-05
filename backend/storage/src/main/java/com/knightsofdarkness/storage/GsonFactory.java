@@ -6,7 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.knightsofdarkness.common.EnumMapGsonAdapter;
+import com.knightsofdarkness.common.KingdomBuildingsDtoTypeAdapter;
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDetailName;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
@@ -17,6 +19,7 @@ public class GsonFactory {
     public static Gson createGson()
     {
         return new GsonBuilder()
+                .registerTypeAdapter(KingdomBuildingsDto.class, new KingdomBuildingsDtoTypeAdapter())
                 .registerTypeAdapter(new TypeToken<EnumMap<UnitName, String>>()
                 {
                 }.getType(), new EnumMapGsonAdapter<>(UnitName.class))

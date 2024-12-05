@@ -14,14 +14,9 @@ public class KingdomBuildingsDto {
         }
     }
 
-    public int getCount(BuildingName name)
+    public KingdomBuildingsDto(Map<BuildingName, Integer> buildings)
     {
-        return buildings.get(name);
-    }
-
-    public void setCount(BuildingName name, int count)
-    {
-        buildings.put(name, count);
+        this.buildings = buildings;
     }
 
     @SuppressWarnings("java:S107")
@@ -38,6 +33,16 @@ public class KingdomBuildingsDto {
         buildings.put(BuildingName.spyGuild, spyGuild);
         buildings.put(BuildingName.tower, tower);
         buildings.put(BuildingName.castle, castle);
+    }
+
+    public int getCount(BuildingName name)
+    {
+        return buildings.get(name);
+    }
+
+    public void setCount(BuildingName name, int count)
+    {
+        buildings.put(name, count);
     }
 
     public Map<BuildingName, Integer> getBuildings()

@@ -18,7 +18,12 @@ public class KingdomBuildings {
 
     public KingdomBuildings(KingdomBuildings other)
     {
-        buildings = new EnumMap<>(other.buildings);
+        this.buildings = other.buildings;
+    }
+
+    public KingdomBuildings(Map<BuildingName, Integer> buildings)
+    {
+        this.buildings = buildings;
     }
 
     public int countAll()
@@ -50,5 +55,10 @@ public class KingdomBuildings {
     public void setCount(BuildingName name, int count)
     {
         buildings.put(name, count);
+    }
+
+    public Map<BuildingName, Integer> getBuildings()
+    {
+        return buildings;
     }
 }

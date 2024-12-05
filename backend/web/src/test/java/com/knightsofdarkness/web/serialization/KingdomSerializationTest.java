@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 
-public class KingdomSerializationTest {
+class KingdomSerializationTest {
     @Test
     void testKingdomSerialization()
     {

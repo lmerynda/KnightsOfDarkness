@@ -102,6 +102,6 @@ public class KingdomBuilder {
     public Kingdom build()
     {
         return new Kingdom(name, game.getConfig(), new KingdomResources(resources), new KingdomBuildings(buildings), new ArrayList<KingdomSpecialBuilding>(), new ArrayList<KingdomCarriersOnTheMove>(), new KingdomUnits(units),
-                        new KingdomTurnReport());
+                new KingdomTurnReport());
     }
 }
