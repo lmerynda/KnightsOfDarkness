@@ -14,6 +14,17 @@ public class KingdomDetailsDto {
         }
     }
 
+    public KingdomDetailsDto(Map<KingdomDetailName, Integer> details)
+    {
+        this.details = details;
+    }
+
+    @SuppressWarnings("java:S107")
+    public KingdomDetailsDto(int usedLand)
+    {
+        details.put(KingdomDetailName.usedLand, usedLand);
+    }
+
     public int getCount(KingdomDetailName name)
     {
         return details.get(name);
@@ -22,12 +33,6 @@ public class KingdomDetailsDto {
     public void setCount(KingdomDetailName name, int count)
     {
         details.put(name, count);
-    }
-
-    @SuppressWarnings("java:S107")
-    public KingdomDetailsDto(int usedLand)
-    {
-        details.put(KingdomDetailName.usedLand, usedLand);
     }
 
     public Map<KingdomDetailName, Integer> getDetails()

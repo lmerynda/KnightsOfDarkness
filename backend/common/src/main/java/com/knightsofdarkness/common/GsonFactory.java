@@ -1,25 +1,31 @@
-package com.knightsofdarkness.storage;
+package com.knightsofdarkness.common;
 
 import java.util.EnumMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.knightsofdarkness.common.EnumMapGsonAdapter;
-import com.knightsofdarkness.common.KingdomBuildingsDtoTypeAdapter;
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
-import com.knightsofdarkness.common.kingdom.KingdomDetailName;
+import com.knightsofdarkness.common.kingdom.KingdomDetailsDto;
+import com.knightsofdarkness.common.kingdom.KingdomDto;
+import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
 
 public class GsonFactory {
-    public static Gson createGson()
+
+    private static final GsonBuilder gsonBuilder = new GsonBuilder();
+
+    static
     {
-        return new GsonBuilder()
+        gsonBuilder
                 .registerTypeAdapter(KingdomBuildingsDto.class, new KingdomBuildingsDtoTypeAdapter())
+                .registerTypeAdapter(KingdomResourcesDto.class, new KingdomResourcesDtoTypeAdapter())
+                .registerTypeAdapter(KingdomDetailsDto.class, new KingdomDetailsDtoTypeAdapter())
+                .registerTypeAdapter(KingdomDto.class, new KingdomDtoAdapter())
                 .registerTypeAdapter(new TypeToken<EnumMap<UnitName, String>>()
                 {
                 }.getType(), new EnumMapGsonAdapter<>(UnitName.class))
@@ -34,11 +40,16 @@ public class GsonFactory {
                 }.getType(), new EnumMapGsonAdapter<>(SpecialBuildingType.class))
                 .registerTypeAdapter(new TypeToken<EnumMap<BuildingName, Integer>>()
                 {
-                }.getType(), new EnumMapGsonAdapter<>(BuildingName.class))
-                .registerTypeAdapter(new TypeToken<EnumMap<KingdomDetailName, Integer>>()
-                {
-                }.getType(), new EnumMapGsonAdapter<>(KingdomDetailName.class))
-                .setPrettyPrinting()
-                .create();
+                }.getType(), new EnumMapGsonAdapter<>(BuildingName.class));
+    }
+
+    public static Gson createGson()
+    {
+        return gsonBuilder.create();
+    }
+
+    public static Gson createPrettyPrintingGson()
+    {
+        return gsonBuilder.setPrettyPrinting().create();
     }
 }

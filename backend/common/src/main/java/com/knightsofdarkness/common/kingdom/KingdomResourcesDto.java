@@ -14,14 +14,9 @@ public class KingdomResourcesDto {
         }
     }
 
-    public int getCount(ResourceName name)
+    public KingdomResourcesDto(Map<ResourceName, Integer> resources)
     {
-        return resources.get(name);
-    }
-
-    public void setCount(ResourceName name, int count)
-    {
-        resources.put(name, count);
+        this.resources = resources;
     }
 
     @SuppressWarnings("java:S107")
@@ -36,6 +31,16 @@ public class KingdomResourcesDto {
         resources.put(ResourceName.tools, tools);
         resources.put(ResourceName.weapons, weapons);
         resources.put(ResourceName.turns, turns);
+    }
+
+    public int getCount(ResourceName name)
+    {
+        return resources.get(name);
+    }
+
+    public void setCount(ResourceName name, int count)
+    {
+        resources.put(name, count);
     }
 
     public Map<ResourceName, Integer> getResources()

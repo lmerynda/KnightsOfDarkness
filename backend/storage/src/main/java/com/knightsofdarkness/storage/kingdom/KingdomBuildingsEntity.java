@@ -1,8 +1,8 @@
 package com.knightsofdarkness.storage.kingdom;
 
+import com.knightsofdarkness.common.GsonFactory;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.game.kingdom.KingdomBuildings;
-import com.knightsofdarkness.storage.GsonFactory;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
