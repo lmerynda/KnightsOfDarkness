@@ -1,5 +1,7 @@
 package com.knightsofdarkness.common;
 
+import java.util.Optional;
+
 import java.util.EnumMap;
 
 import com.google.gson.Gson;
@@ -26,6 +28,7 @@ public class GsonFactory {
                 .registerTypeAdapter(KingdomResourcesDto.class, new KingdomResourcesDtoTypeAdapter())
                 .registerTypeAdapter(KingdomDetailsDto.class, new KingdomDetailsDtoTypeAdapter())
                 .registerTypeAdapter(KingdomDto.class, new KingdomDtoAdapter())
+                .registerTypeAdapter(Optional.class, new OptionalTypeAdapter())
                 .registerTypeAdapter(new TypeToken<EnumMap<UnitName, String>>()
                 {
                 }.getType(), new EnumMapGsonAdapter<>(UnitName.class))
