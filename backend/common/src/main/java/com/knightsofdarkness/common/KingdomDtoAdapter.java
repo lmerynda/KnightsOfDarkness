@@ -13,7 +13,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.knightsofdarkness.common.kingdom.CarriersOnTheMoveDto;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
-import com.knightsofdarkness.common.kingdom.KingdomDetailsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
@@ -47,7 +46,6 @@ public class KingdomDtoAdapter implements JsonSerializer<KingdomDto>, JsonDeseri
         KingdomResourcesDto resources = context.deserialize(jsonObject.get("resources"), KingdomResourcesDto.class);
         KingdomBuildingsDto buildings = context.deserialize(jsonObject.get("buildings"), KingdomBuildingsDto.class);
         KingdomUnitsDto units = context.deserialize(jsonObject.get("units"), KingdomUnitsDto.class);
-        KingdomDetailsDto details = context.deserialize(jsonObject.get("details"), KingdomDetailsDto.class);
         List<MarketOfferDto> marketOffers = context.deserialize(jsonObject.get("marketOffers"), ArrayList.class);
         List<KingdomSpecialBuildingDto> specialBuildings = context.deserialize(jsonObject.get("specialBuildings"), ArrayList.class);
         KingdomTurnReport lastTurnReport = context.deserialize(jsonObject.get("lastTurnReport"), KingdomTurnReport.class);

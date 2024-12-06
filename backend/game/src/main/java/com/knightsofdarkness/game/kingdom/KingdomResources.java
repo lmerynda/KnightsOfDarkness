@@ -21,6 +21,11 @@ public class KingdomResources {
         resources = new EnumMap<>(other.resources);
     }
 
+    public KingdomResources(Map<ResourceName, Integer> resources)
+    {
+        this.resources = resources;
+    }
+
     public int getCount(ResourceName name)
     {
         return resources.get(name);
@@ -46,5 +51,10 @@ public class KingdomResources {
     public String toString()
     {
         return resources.toString();
+    }
+
+    public Map<ResourceName, Integer> getResources()
+    {
+        return resources;
     }
 }
