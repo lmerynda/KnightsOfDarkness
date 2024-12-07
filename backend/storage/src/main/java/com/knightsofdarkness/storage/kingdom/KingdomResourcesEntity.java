@@ -1,47 +1,47 @@
 package com.knightsofdarkness.storage.kingdom;
 
-import com.knightsofdarkness.common.GsonFactory;
+import java.util.Map;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
+import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
 class KingdomResourcesEntity {
-    @Column(name = "resources", columnDefinition = "TEXT")
-    String resourcesJson;
+    @JdbcTypeCode(SqlTypes.JSON)
+    public Map<ResourceName, Integer> resources;
 
     public KingdomResourcesEntity()
     {
     }
 
-    public KingdomResourcesEntity(String resourcesJson)
+    public KingdomResourcesEntity(Map<ResourceName, Integer> resources)
     {
-        this.resourcesJson = resourcesJson;
+        this.resources = resources;
     }
 
     public KingdomResourcesDto toDto()
     {
-        return GsonFactory.createGson().fromJson(resourcesJson, KingdomResourcesDto.class);
+        return new KingdomResourcesDto(resources);
     }
 
     public static KingdomResourcesEntity fromDto(KingdomResourcesDto dto)
     {
-        String resourcesJson = GsonFactory.createGson().toJson(dto, KingdomResourcesDto.class);
-        return new KingdomResourcesEntity(resourcesJson);
+        return new KingdomResourcesEntity(dto.getResources());
     }
 
     public KingdomResources toDomainModel()
     {
-        var dto = toDto();
-        return new KingdomResources(dto.getResources());
+        return new KingdomResources(resources);
     }
 
     public static KingdomResourcesEntity fromDomainModel(KingdomResources resources)
     {
-        var dto = new KingdomResourcesDto(resources.getResources());
-        String resourcesJson = GsonFactory.createGson().toJson(dto, KingdomResourcesDto.class);
-        return new KingdomResourcesEntity(resourcesJson);
+        return new KingdomResourcesEntity(resources.getResources());
     }
 }

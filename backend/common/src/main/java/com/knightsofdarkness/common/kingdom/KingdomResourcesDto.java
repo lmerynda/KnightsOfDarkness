@@ -16,7 +16,11 @@ public class KingdomResourcesDto {
 
     public KingdomResourcesDto(Map<ResourceName, Integer> resources)
     {
-        this.resources = resources;
+        for (var name : ResourceName.values())
+        {
+            this.resources.put(name, 0);
+        }
+        this.resources.putAll(resources);
     }
 
     @SuppressWarnings("java:S107")
