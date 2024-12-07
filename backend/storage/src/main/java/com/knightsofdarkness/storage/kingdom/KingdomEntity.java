@@ -9,10 +9,12 @@ import org.hibernate.type.SqlTypes;
 
 import com.knightsofdarkness.common.kingdom.CarriersOnTheMoveDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
+import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.game.kingdom.KingdomResources;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,8 +30,8 @@ public class KingdomEntity {
     @Column(name = "name", nullable = false, unique = true)
     String name;
 
-    @Embedded
-    KingdomResourcesEntity resources;
+    @JdbcTypeCode(SqlTypes.JSON)
+    KingdomResourcesDto resources;
 
     @Embedded
     KingdomBuildingsEntity buildings;
@@ -50,7 +52,7 @@ public class KingdomEntity {
     {
     }
 
-    public KingdomEntity(String name, KingdomResourcesEntity resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, List<KingdomCarriersOnTheMoveEntity> carriersOnTheMove, KingdomUnitsEntity units,
+    public KingdomEntity(String name, KingdomResourcesDto resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, List<KingdomCarriersOnTheMoveEntity> carriersOnTheMove, KingdomUnitsEntity units,
             KingdomTurnReport lastTurnReport)
     {
         this.name = name;
@@ -66,21 +68,21 @@ public class KingdomEntity {
     {
         var specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDomainModel).collect(Collectors.toList());
         var carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDomainModel).collect(Collectors.toList());
-        return new Kingdom(name, gameConfig, resources.toDomainModel(), buildings.toDomainModel(), specialBuildings, carriersOnTheMove, units.toDomainModel(), lastTurnReport);
+        return new Kingdom(name, gameConfig, new KingdomResources(resources.getResources()), buildings.toDomainModel(), specialBuildings, carriersOnTheMove, units.toDomainModel(), lastTurnReport);
     }
 
     public KingdomDto toDto()
     {
         List<KingdomSpecialBuildingDto> specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDto).collect(Collectors.toList());
         List<CarriersOnTheMoveDto> carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDto).collect(Collectors.toList());
-        return new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), new ArrayList<>(), specialBuildings, lastTurnReport, carriersOnTheMove);
+        return new KingdomDto(name, resources, buildings.toDto(), units.toDto(), new ArrayList<>(), specialBuildings, lastTurnReport, carriersOnTheMove);
     }
 
     public static KingdomEntity fromDomainModel(Kingdom kingdom)
     {
         var kingdomEntity = new KingdomEntity(
                 kingdom.getName(),
-                KingdomResourcesEntity.fromDomainModel(kingdom.getResources()),
+                new KingdomResourcesDto(kingdom.getResources().getResources()),
                 KingdomBuildingsEntity.fromDomainModel(kingdom.getBuildings()),
                 new ArrayList<>(),
                 new ArrayList<>(),
@@ -100,7 +102,7 @@ public class KingdomEntity {
     {
         var kingdomEntity = new KingdomEntity(
                 dto.name,
-                KingdomResourcesEntity.fromDto(dto.resources),
+                dto.resources,
                 KingdomBuildingsEntity.fromDto(dto.buildings),
                 new ArrayList<>(),
                 new ArrayList<>(),
