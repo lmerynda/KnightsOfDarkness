@@ -99,7 +99,7 @@ public class KingdomService {
     @Transactional
     public ResponseEntity<KingdomBuildingsActionResult> build(String kingdomName, KingdomBuildingsDto buildings)
     {
-        log.info("[{}] building {}", kingdomName, buildings);
+        log.info("[{}] buildings to build {}", kingdomName, buildings);
         Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {

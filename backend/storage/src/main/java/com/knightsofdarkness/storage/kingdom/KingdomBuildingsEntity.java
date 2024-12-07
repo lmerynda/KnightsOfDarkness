@@ -1,47 +1,47 @@
 package com.knightsofdarkness.storage.kingdom;
 
-import com.knightsofdarkness.common.GsonFactory;
+import java.util.Map;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.game.kingdom.KingdomBuildings;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
 class KingdomBuildingsEntity {
-    @Column(name = "buildings", columnDefinition = "TEXT")
-    String buildingsJson;
+    @JdbcTypeCode(SqlTypes.JSON)
+    public Map<BuildingName, Integer> buildings;
 
     public KingdomBuildingsEntity()
     {
     }
 
-    public KingdomBuildingsEntity(String buildingsJson)
+    public KingdomBuildingsEntity(Map<BuildingName, Integer> buildings)
     {
-        this.buildingsJson = buildingsJson;
+        this.buildings = buildings;
     }
 
     public KingdomBuildingsDto toDto()
     {
-        return GsonFactory.createGson().fromJson(buildingsJson, KingdomBuildingsDto.class);
+        return new KingdomBuildingsDto(buildings);
     }
 
     public static KingdomBuildingsEntity fromDto(KingdomBuildingsDto dto)
     {
-        String buildingsJson = GsonFactory.createGson().toJson(dto, KingdomBuildingsDto.class);
-        return new KingdomBuildingsEntity(buildingsJson);
+        return new KingdomBuildingsEntity(dto.getBuildings());
     }
 
     public KingdomBuildings toDomainModel()
     {
-        var dto = toDto();
-        return new KingdomBuildings(dto.getBuildings());
+        return new KingdomBuildings(buildings);
     }
 
     public static KingdomBuildingsEntity fromDomainModel(KingdomBuildings buildings)
     {
-        var dto = new KingdomBuildingsDto(buildings.getBuildings());
-        String buildingsJson = GsonFactory.createGson().toJson(dto, KingdomBuildingsDto.class);
-        return new KingdomBuildingsEntity(buildingsJson);
+        return new KingdomBuildingsEntity(buildings.getBuildings());
     }
 }

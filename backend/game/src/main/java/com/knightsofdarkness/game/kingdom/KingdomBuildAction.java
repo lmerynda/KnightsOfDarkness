@@ -24,7 +24,7 @@ public class KingdomBuildAction {
         var buildingsBuilt = new KingdomBuildingsDto();
         for (var buildingName : BuildingName.values())
         {
-            if(buildingsToBuild.getCount(buildingName) > 0)
+            if (buildingsToBuild.getCount(buildingName) > 0)
             {
                 var howManyWereBuilt = build(buildingName, buildingsToBuild.getCount(buildingName));
                 buildingsBuilt.setCount(buildingName, howManyWereBuilt);

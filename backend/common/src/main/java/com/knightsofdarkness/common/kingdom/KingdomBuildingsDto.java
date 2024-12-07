@@ -16,7 +16,11 @@ public class KingdomBuildingsDto {
 
     public KingdomBuildingsDto(Map<BuildingName, Integer> buildings)
     {
-        this.buildings = buildings;
+        for (var name : BuildingName.values())
+        {
+            this.buildings.put(name, 0);
+        }
+        this.buildings.putAll(buildings);
     }
 
     @SuppressWarnings("java:S107")
