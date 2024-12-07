@@ -35,7 +35,7 @@ public class TokenService {
 
     public Optional<Jws<Claims>> validateAndExtract(String token)
     {
-        log.info("validateAndExtract JWT token: {}", token);
+        // log.info("validateAndExtract JWT token: {}", token);
         try
         {
             Jws<Claims> jws = Jwts.parser()

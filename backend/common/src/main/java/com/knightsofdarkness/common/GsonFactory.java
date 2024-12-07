@@ -15,6 +15,7 @@ import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.common.market.MarketResource;
 
 public class GsonFactory {
@@ -24,6 +25,7 @@ public class GsonFactory {
     static
     {
         gsonBuilder
+                .registerTypeAdapter(UnitsMapDto.class, new UnitsMapDtoDtoTypeAdapter())
                 .registerTypeAdapter(KingdomBuildingsDto.class, new KingdomBuildingsDtoTypeAdapter())
                 .registerTypeAdapter(KingdomResourcesDto.class, new KingdomResourcesDtoTypeAdapter())
                 .registerTypeAdapter(KingdomDetailsDto.class, new KingdomDetailsDtoTypeAdapter())

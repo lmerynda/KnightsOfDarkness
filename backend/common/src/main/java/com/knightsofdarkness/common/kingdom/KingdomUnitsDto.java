@@ -4,8 +4,8 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class KingdomUnitsDto {
-    private Map<UnitName, Integer> availableUnits = new EnumMap<>(UnitName.class);
-    private Map<UnitName, Integer> mobileUnits = new EnumMap<>(UnitName.class);
+    Map<UnitName, Integer> availableUnits = new EnumMap<>(UnitName.class);
+    Map<UnitName, Integer> mobileUnits = new EnumMap<>(UnitName.class);
 
     public KingdomUnitsDto()
     {
@@ -18,6 +18,11 @@ public class KingdomUnitsDto {
 
     public KingdomUnitsDto(Map<UnitName, Integer> availableUnits, Map<UnitName, Integer> mobileUnits)
     {
+        for (var name : UnitName.values())
+        {
+            this.availableUnits.put(name, 0);
+            this.mobileUnits.put(name, 0);
+        }
         this.availableUnits.putAll(availableUnits);
         this.mobileUnits.putAll(mobileUnits);
     }

@@ -57,7 +57,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        log.info("User {} requested kingdom", currentUser);
+        // log.info("User {} requested kingdom", currentUser);
 
         return kingdomService.getKingdomByName(currentUser.getKingdomName())
                 .map(ResponseEntity::ok)

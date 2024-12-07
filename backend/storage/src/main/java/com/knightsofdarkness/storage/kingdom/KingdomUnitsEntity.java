@@ -1,48 +1,51 @@
 package com.knightsofdarkness.storage.kingdom;
 
-import com.knightsofdarkness.common.GsonFactory;
+import java.util.Map;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
+import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class KingdomUnitsEntity {
-    // TODO make sure the definition is json for production db if it supports json
-    @Column(name = "units", columnDefinition = "TEXT")
-    private String unitsJson;
+    @JdbcTypeCode(SqlTypes.JSON)
+    public Map<UnitName, Integer> availableUnits;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    public Map<UnitName, Integer> mobileUnits;
 
     public KingdomUnitsEntity()
     {
     }
 
-    public KingdomUnitsEntity(String unitsJson)
+    public KingdomUnitsEntity(Map<UnitName, Integer> availableUnits, Map<UnitName, Integer> mobileUnits)
     {
-        this.unitsJson = unitsJson;
+        this.availableUnits = availableUnits;
+        this.mobileUnits = mobileUnits;
     }
 
     public KingdomUnitsDto toDto()
     {
-        return GsonFactory.createGson().fromJson(unitsJson, KingdomUnitsDto.class);
+        return new KingdomUnitsDto(availableUnits, mobileUnits);
     }
 
     public static KingdomUnitsEntity fromDto(KingdomUnitsDto dto)
     {
-        String unitsJson = GsonFactory.createGson().toJson(dto, KingdomUnitsDto.class);
-        return new KingdomUnitsEntity(unitsJson);
+        return new KingdomUnitsEntity(dto.getAvailableUnits(), dto.getMobileUnits());
     }
 
     public KingdomUnits toDomainModel()
     {
-        var dto = toDto();
-        return new KingdomUnits(dto.getAvailableUnits(), dto.getMobileUnits());
+        return new KingdomUnits(availableUnits, mobileUnits);
     }
 
-    public static KingdomUnitsEntity fromDomainModel(KingdomUnits units)
+    public static KingdomUnitsEntity fromDomainModel(KingdomUnits buildings)
     {
-        var dto = new KingdomUnitsDto(units.getAvailableUnits(), units.getMobileUnits());
-        String unitsJson = GsonFactory.createGson().toJson(dto, KingdomUnitsDto.class);
-        return new KingdomUnitsEntity(unitsJson);
+        return new KingdomUnitsEntity(buildings.getAvailableUnits(), buildings.getMobileUnits());
     }
 }

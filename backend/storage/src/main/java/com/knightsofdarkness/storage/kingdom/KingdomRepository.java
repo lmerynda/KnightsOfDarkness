@@ -24,12 +24,14 @@ public class KingdomRepository implements IKingdomRepository {
 
     public void add(Kingdom kingdom)
     {
-        jpaRepository.save(KingdomEntity.fromDomainModel(kingdom));
+        var tmp = KingdomEntity.fromDomainModel(kingdom);
+        jpaRepository.save(tmp);
     }
 
     public void add(KingdomDto kingdomDto)
     {
-        jpaRepository.save(KingdomEntity.fromDto(kingdomDto));
+        var tmp = KingdomEntity.fromDto(kingdomDto);
+        jpaRepository.save(tmp);
     }
 
     public Optional<Kingdom> getKingdomByName(String name)

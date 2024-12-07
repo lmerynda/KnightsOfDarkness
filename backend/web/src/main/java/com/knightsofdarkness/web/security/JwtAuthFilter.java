@@ -43,12 +43,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .ifPresent(jws ->
                     {
                         String username = jws.getPayload().getSubject();
-                        log.info("Authenticating user: {}", jws.getPayload().getSubject());
+                        // log.info("Authenticating user: {}", jws.getPayload().getSubject());
                         var user = userDetailsService.loadUserByUsername(username);
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authentication);
-                        log.info("Authenticated user: {}", user);
+                        // log.info("Authenticated user: {}", user);
                     });
         } catch (Exception e)
         {

@@ -4,7 +4,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class UnitsMapDto {
-    private Map<UnitName, Integer> units = new EnumMap<>(UnitName.class);
+    Map<UnitName, Integer> units = new EnumMap<>(UnitName.class);
 
     public UnitsMapDto()
     {
@@ -16,6 +16,11 @@ public class UnitsMapDto {
 
     public UnitsMapDto(Map<UnitName, Integer> units)
     {
+        for (var name : UnitName.values())
+        {
+            this.units.put(name, 0);
+        }
+
         this.units.putAll(units);
     }
 
@@ -29,33 +34,24 @@ public class UnitsMapDto {
         units.put(name, count);
     }
 
-    public int countAll()
-    {
-        return units.values().stream().mapToInt(Integer::intValue).sum();
-    }
-
-    public void setUnit(String name, int count)
-    {
-        try
-        {
-            UnitName unitName = UnitName.valueOf(name);
-            units.put(unitName, count);
-        } catch (IllegalArgumentException e)
-        {
-            // do nothing for now
-        }
-    }
-
     public Map<UnitName, Integer> getUnits()
     {
         return units;
     }
 
+    public int countAll()
+    {
+        return units.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
+    public void setUnit(String key, int value)
+    {
+        units.put(UnitName.from(key), value);
+    }
+
     @Override
     public String toString()
     {
-        return "UnitsMapDto{" +
-                "units=" + units +
-                '}';
+        return units.toString();
     }
 }

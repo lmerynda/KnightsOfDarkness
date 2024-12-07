@@ -84,7 +84,7 @@ public class KingdomService {
 
     public Optional<KingdomDto> getKingdomByName(String name)
     {
-        log.info("Looking for a kingdom with name {}", name);
+        // log.info("Looking for a kingdom with name {}", name);
         var maybeKingdom = kingdomReadRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
