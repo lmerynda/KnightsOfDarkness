@@ -51,14 +51,15 @@ public class KingdomTurnAction {
     {
         var allCarriersOnTheMove = kingdom.getCarriersOnTheMove();
         allCarriersOnTheMove.forEach(carriersOnTheMove -> carriersOnTheMove.turnsLeft--);
-        allCarriersOnTheMove.stream().filter(carriersOnTheMove -> carriersOnTheMove.turnsLeft <= 0).forEach(carriersOnTheMove ->
+        var arrivedCarriers = allCarriersOnTheMove.stream().filter(carriersOnTheMove -> carriersOnTheMove.turnsLeft <= 0);
+        arrivedCarriers.forEach(carriersOnTheMove ->
         {
             log.info("Carriers on the move arrived at destination: {}", carriersOnTheMove);
             kingdom.getUnits().moveMobileToAvailable(UnitName.carrier, carriersOnTheMove.carriersCount);
             kingdomInteractor.transferResources(kingdom, carriersOnTheMove.targetKingdomName, carriersOnTheMove.resource, carriersOnTheMove.resourceCount);
 
         });
-        allCarriersOnTheMove.removeIf(carriersOnTheMove -> carriersOnTheMove.turnsLeft <= 0);
+        allCarriersOnTheMove.removeAll(arrivedCarriers.toList());
     }
 
     private void peopleLeavingDueToInsuficientHousing()
