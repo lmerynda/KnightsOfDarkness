@@ -46,7 +46,7 @@ public class KingdomCarriersAction {
                 amountToSend);
         kingdom.getCarriersOnTheMove().add(carriersOnTheMove);
         kingdom.getResources().subtractCount(ResourceName.from(resource), amountToSend);
-        kingdom.getUnits().subtractCount(UnitName.carrier, carriersToSend);
+        kingdom.getUnits().moveAvailableToMobile(UnitName.carrier, carriersToSend);
 
         var message = amountToSend == sendCarriersDto.amount() ? "Carriers sent and should arrive in a few turns"
                 : "Partial transfer sent, not enough carriers to carry everything requested";
@@ -59,6 +59,6 @@ public class KingdomCarriersAction {
         kingdom.getCarriersOnTheMove().remove(carriersOnTheMove);
         kingdom.getResources().addCount(ResourceName.from(carriersOnTheMove.getResource()),
                 carriersOnTheMove.getResourceCount());
-        kingdom.getUnits().addCount(UnitName.carrier, carriersOnTheMove.getCarriersCount());
+        kingdom.getUnits().moveMobileToAvailable(UnitName.carrier, carriersOnTheMove.getCarriersCount());
     }
 }

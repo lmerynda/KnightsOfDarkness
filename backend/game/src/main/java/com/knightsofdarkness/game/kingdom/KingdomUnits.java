@@ -103,6 +103,18 @@ public class KingdomUnits {
         mobileUnits.put(name, count);
     }
 
+    public void moveAvailableToMobile(UnitName name, int count)
+    {
+        subtractAvailableCount(name, count);
+        addMobileCount(name, count);
+    }
+
+    public void moveMobileToAvailable(UnitName name, int count)
+    {
+        subtractMobileCount(name, count);
+        addAvailableCount(name, count);
+    }
+
     public int countAll()
     {
         return availableUnits.values().stream().mapToInt(Integer::intValue).sum() +

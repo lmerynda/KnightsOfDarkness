@@ -50,11 +50,11 @@ public class KingdomTurnAction {
     private void processUnitsOnTheMove()
     {
         var allCarriersOnTheMove = kingdom.getCarriersOnTheMove();
-        allCarriersOnTheMove.forEach((var carriersOnTheMove) -> carriersOnTheMove.turnsLeft--);
+        allCarriersOnTheMove.forEach(carriersOnTheMove -> carriersOnTheMove.turnsLeft--);
         allCarriersOnTheMove.stream().filter(carriersOnTheMove -> carriersOnTheMove.turnsLeft <= 0).forEach(carriersOnTheMove ->
         {
             log.info("Carriers on the move arrived at destination: {}", carriersOnTheMove);
-            kingdom.getUnits().addCount(UnitName.carrier, carriersOnTheMove.carriersCount);
+            kingdom.getUnits().moveMobileToAvailable(UnitName.carrier, carriersOnTheMove.carriersCount);
             kingdomInteractor.transferResources(kingdom, carriersOnTheMove.targetKingdomName, carriersOnTheMove.resource, carriersOnTheMove.resourceCount);
 
         });
