@@ -13,6 +13,8 @@ import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
 import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.common.kingdom.SendAttackDto;
+import com.knightsofdarkness.common.kingdom.SendAttackResult;
 import com.knightsofdarkness.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
@@ -38,6 +40,7 @@ public class Kingdom {
     private final KingdomOtherAction kingdomOtherAction = new KingdomOtherAction(this);
     private final KingdomSpecialBuildingAction kingdomSpecialBuildingAction = new KingdomSpecialBuildingAction(this);
     private final KingdomCarriersAction kingdomCarriersAction = new KingdomCarriersAction(this);
+    private final KingdomMilitaryAction kingdomMilitaryAction = new KingdomMilitaryAction(this);
 
     public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, List<KingdomSpecialBuilding> specialBuildings, List<KingdomCarriersOnTheMove> carriersOnTheMove, KingdomUnits units,
             KingdomTurnReport lastTurnReport)
@@ -220,5 +223,10 @@ public class Kingdom {
     public void withdrawCarriers(KingdomCarriersOnTheMove carriersOnTheMove)
     {
         kingdomCarriersAction.withdrawCarriers(carriersOnTheMove);
+    }
+
+    public SendAttackResult sendAttack(SendAttackDto sendAttackDto)
+    {
+        return kingdomMilitaryAction.sendAttack(sendAttackDto);
     }
 }

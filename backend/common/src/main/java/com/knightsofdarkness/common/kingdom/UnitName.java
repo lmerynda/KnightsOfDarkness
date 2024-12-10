@@ -11,6 +11,11 @@ public enum UnitName
         return List.of(goldMiner, ironMiner, farmer, blacksmith, builder);
     }
 
+    public static List<UnitName> getMilitaryUnits()
+    {
+        return List.of(infantry, bowman, cavalry);
+    }
+
     public static UnitName getByBuilding(BuildingName building)
     {
         return switch (building)
