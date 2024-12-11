@@ -21,6 +21,8 @@ import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
+import com.knightsofdarkness.common.kingdom.SendAttackDto;
+import com.knightsofdarkness.common.kingdom.SendAttackResult;
 import com.knightsofdarkness.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
@@ -295,5 +297,32 @@ public class KingdomService {
         kingdomRepository.update(kingdom);
 
         return ResponseEntity.ok(true);
+    }
+
+    @Transactional
+    public ResponseEntity<SendAttackResult> sendAttack(String kingdomName, SendAttackDto sendAttackDto)
+    {
+        log.info("[{}] sending attack {}", kingdomName, sendAttackDto);
+        Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+        var kingdom = maybeKingdom.get();
+
+        // TODO no need to fetch entire kingdom, we only want to check if it exists
+        Optional<Kingdom> maybeDestinationKingdom = kingdomRepository.getKingdomByName(sendAttackDto.destinationKingdomName());
+        if (maybeDestinationKingdom.isEmpty())
+        {
+            return ResponseEntity.ok(SendAttackResult.failure("Destination kingdom does not exist"));
+        }
+
+        SendAttackResult result = kingdom.sendAttack(sendAttackDto);
+        if (result.success())
+        {
+            kingdomRepository.update(kingdom);
+        }
+
+        return ResponseEntity.ok(result);
     }
 }
