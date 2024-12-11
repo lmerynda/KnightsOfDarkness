@@ -117,5 +117,28 @@ class KingdomMilitaryActionTest {
 
         assertTrue(sendAttackResult.success());
     }
+
+    @Test
+    void whenKingdomHasEnoughUnits_sendingAttack_shouldMoveUnitsFromAvailableToMobile()
+    {
+        kingdom.getUnits().setCount(UnitName.infantry, 100);
+        kingdom.getUnits().setCount(UnitName.bowman, 100);
+        kingdom.getUnits().setCount(UnitName.cavalry, 100);
+
+        var units = new UnitsMapDto();
+        units.setCount(UnitName.infantry, 10);
+        units.setCount(UnitName.bowman, 10);
+        units.setCount(UnitName.cavalry, 10);
+
+        var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
+        kingdom.sendAttack(sendAttackDto);
+
+        assertEquals(90, kingdom.getUnits().getAvailableCount(UnitName.infantry));
+        assertEquals(90, kingdom.getUnits().getAvailableCount(UnitName.bowman));
+        assertEquals(90, kingdom.getUnits().getAvailableCount(UnitName.cavalry));
+
+        assertEquals(10, kingdom.getUnits().getMobileCount(UnitName.infantry));
+        assertEquals(10, kingdom.getUnits().getMobileCount(UnitName.bowman));
+        assertEquals(10, kingdom.getUnits().getMobileCount(UnitName.cavalry));
     }
 }
