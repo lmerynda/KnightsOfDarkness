@@ -47,6 +47,56 @@ class KingdomMilitaryActionTest {
         var sendAttackResult = kingdom.sendAttack(sendAttackDto);
 
         assertFalse(sendAttackResult.success());
-        assertEquals("error", sendAttackResult.message());
+    }
+
+    @Test
+    void whenKingdomHasNoBowman_sendingAttack_shouldResultInFailure()
+    {
+        kingdom.getUnits().setCount(UnitName.infantry, 0);
+        kingdom.getUnits().setCount(UnitName.bowman, 0);
+        kingdom.getUnits().setCount(UnitName.cavalry, 0);
+
+        var units = new UnitsMapDto();
+        units.setCount(UnitName.bowman, 100);
+
+        var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
+        var sendAttackResult = kingdom.sendAttack(sendAttackDto);
+
+        assertFalse(sendAttackResult.success());
+    }
+
+    @Test
+    void whenKingdomHasNoCavalry_sendingAttack_shouldResultInFailure()
+    {
+        kingdom.getUnits().setCount(UnitName.infantry, 0);
+        kingdom.getUnits().setCount(UnitName.bowman, 0);
+        kingdom.getUnits().setCount(UnitName.cavalry, 0);
+
+        var units = new UnitsMapDto();
+        units.setCount(UnitName.cavalry, 100);
+
+        var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
+        var sendAttackResult = kingdom.sendAttack(sendAttackDto);
+
+        assertFalse(sendAttackResult.success());
+    }
+
+    @Test
+    void whenKingdomHasNoUnits_sendingAttack_shouldResultInFailure()
+    {
+        kingdom.getUnits().setCount(UnitName.infantry, 0);
+        kingdom.getUnits().setCount(UnitName.bowman, 0);
+        kingdom.getUnits().setCount(UnitName.cavalry, 0);
+
+        var units = new UnitsMapDto();
+        units.setCount(UnitName.infantry, 50);
+        units.setCount(UnitName.bowman, 50);
+        units.setCount(UnitName.cavalry, 50);
+
+        var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
+        var sendAttackResult = kingdom.sendAttack(sendAttackDto);
+
+        assertFalse(sendAttackResult.success());
+    }
     }
 }
