@@ -23,7 +23,7 @@ public class KingdomMilitaryAction {
             var neededCount = sendAttackDto.units().getCount(unit);
             if (availableCount < neededCount)
             {
-                return SendAttackResult.failure(Utils.format("Not enough %s to send attack, available: %d, needed %d", unit, availableCount, neededCount));
+                return SendAttackResult.failure(Utils.format("Not enough {} to send attack, available: {}, needed {}", unit, availableCount, neededCount));
             }
         }
 
