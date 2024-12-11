@@ -2,6 +2,7 @@ package com.knightsofdarkness.game.kingdom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,6 +98,24 @@ class KingdomMilitaryActionTest {
         var sendAttackResult = kingdom.sendAttack(sendAttackDto);
 
         assertFalse(sendAttackResult.success());
+    }
+
+    @Test
+    void whenKingdomHasEnoughUnits_sendingAttack_shouldResultInSuccess()
+    {
+        kingdom.getUnits().setCount(UnitName.infantry, 100);
+        kingdom.getUnits().setCount(UnitName.bowman, 100);
+        kingdom.getUnits().setCount(UnitName.cavalry, 100);
+
+        var units = new UnitsMapDto();
+        units.setCount(UnitName.infantry, 50);
+        units.setCount(UnitName.bowman, 50);
+        units.setCount(UnitName.cavalry, 50);
+
+        var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
+        var sendAttackResult = kingdom.sendAttack(sendAttackDto);
+
+        assertTrue(sendAttackResult.success());
     }
     }
 }
