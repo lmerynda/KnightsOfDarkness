@@ -113,6 +113,7 @@ public class KingdomService {
         return ResponseEntity.ok(buildingsBuilt);
     }
 
+    @Transactional
     public ResponseEntity<KingdomBuildingsActionResult> demolish(String kingdomName, KingdomBuildingsDto buildings)
     {
         log.info("[{}] demolishing {}", kingdomName, buildings);
