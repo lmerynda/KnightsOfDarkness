@@ -13,14 +13,14 @@ public class CarriersOnTheMoveDto {
     public MarketResource resource;
     public int amount;
 
-    public CarriersOnTheMoveDto(UUID id, String from, String to, int turnsLeft, int carriersCount, MarketResource resource2, int amount)
+    public CarriersOnTheMoveDto(UUID id, String from, String to, int turnsLeft, int carriersCount, MarketResource resource, int amount)
     {
         this.id = id;
         this.from = from;
         this.to = to;
         this.turnsLeft = turnsLeft;
         this.carriersCount = carriersCount;
-        this.resource = resource2;
+        this.resource = resource;
         this.amount = amount;
     }
 
