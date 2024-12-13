@@ -325,4 +325,26 @@ public class KingdomService {
 
         return ResponseEntity.ok(result);
     }
+
+    @Transactional
+    public ResponseEntity<Boolean> withdrawAttack(String kingdomName, UUID attackId)
+    {
+        log.info("[{}] withdrawing attack {}", kingdomName, attackId);
+        Optional<Kingdom> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+        var kingdom = maybeKingdom.get();
+        var ongoingAttacks = kingdom.getOngoingAttacks().stream().filter(c -> c.getId().equals(attackId)).findFirst();
+        if (ongoingAttacks.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        kingdom.withdrawAttack(ongoingAttacks.get());
+        kingdomRepository.update(kingdom);
+
+        return ResponseEntity.ok(true);
+    }
 }

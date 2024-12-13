@@ -217,6 +217,11 @@ public class Kingdom {
         return carriersOnTheMove;
     }
 
+    public List<KingdomOngoingAttack> getOngoingAttacks()
+    {
+        return ongoingAttacks;
+    }
+
     public void receiveResourceTransfer(MarketResource resource, int amount)
     {
         resources.addCount(ResourceName.from(resource), amount);
@@ -230,5 +235,10 @@ public class Kingdom {
     public SendAttackResult sendAttack(SendAttackDto sendAttackDto)
     {
         return kingdomMilitaryAction.sendAttack(sendAttackDto);
+    }
+
+    public void withdrawAttack(KingdomOngoingAttack ongoingAttack)
+    {
+        kingdomMilitaryAction.withdrawAttack(ongoingAttack);
     }
 }

@@ -184,6 +184,30 @@ public class KingdomController {
         return kingdomService.withdrawCarriers(currentUser.getKingdomName(), carriersOnTheMoveId);
     }
 
+    // @PostMapping(value = "/send-attack")
+    // ResponseEntity<SendCarriersResult> kingdomSendCarriers(@AuthenticationPrincipal UserData currentUser, @RequestBody SendCarriersDto sendCarriersDto)
+    // {
+    // if (currentUser == null)
+    // {
+    // logUserUnauthenticated();
+    // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    // }
+
+    // return kingdomService.sendCarriers(currentUser.getKingdomName(), sendCarriersDto);
+    // }
+
+    @PostMapping(value = "/withdraw-attack")
+    ResponseEntity<Boolean> kingdomWithdrawAttack(@AuthenticationPrincipal UserData currentUser, @RequestBody UUID attackId)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.withdrawAttack(currentUser.getKingdomName(), attackId);
+    }
+
     private void logUserUnauthenticated()
     {
         log.error("User not read from authentication context");

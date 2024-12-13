@@ -71,6 +71,7 @@ export type KingdomData = {
   specialBuildings: SpecialBuilding[];
   lastTurnReport: TurnReport;
   carriersOnTheMove: CarriersOnTheMove[];
+  ongoingAttacks: OngoingAttack[];
 };
 
 export type MarketOfferData = {
@@ -174,4 +175,16 @@ export type CarriersOnTheMove = {
   carriersCount: number;
   resource: MarketResource;
   amount: number;
+};
+
+export const attackTypes = ["economy", "land"] as const;
+export type AttackType = (typeof attackTypes)[number];
+
+export type OngoingAttack = {
+  id: string;
+  from: string;
+  to: string;
+  turnsLeft: number;
+  attackType: AttackType;
+  units: UnitsMap;
 };

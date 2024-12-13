@@ -1,6 +1,5 @@
 package com.knightsofdarkness.game.kingdom;
 
-import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.common.kingdom.SendAttackResult;
 import com.knightsofdarkness.common.kingdom.UnitName;
@@ -36,11 +35,12 @@ public class KingdomMilitaryAction {
         return SendAttackResult.success("Attack sent", sendAttackDto);
     }
 
-    public void withdrawCarriers(KingdomCarriersOnTheMove carriersOnTheMove)
+    public void withdrawAttack(KingdomOngoingAttack ongoingAttack)
     {
-        kingdom.getCarriersOnTheMove().remove(carriersOnTheMove);
-        kingdom.getResources().addCount(ResourceName.from(carriersOnTheMove.getResource()),
-                carriersOnTheMove.getResourceCount());
-        kingdom.getUnits().moveMobileToAvailable(UnitName.carrier, carriersOnTheMove.getCarriersCount());
+        kingdom.getOngoingAttacks().remove(ongoingAttack);
+        for (var unit : UnitName.getMilitaryUnits())
+        {
+            kingdom.getUnits().moveMobileToAvailable(unit, ongoingAttack.units.getCount(unit));
+        }
     }
 }
