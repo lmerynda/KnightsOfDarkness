@@ -4,7 +4,6 @@
       "useDefineForClassFields": true,
       "lib": ["ES2020", "DOM", "DOM.Iterable"],
       "module": "ESNext",
-      "skipLibCheck": true,
   
       /* Bundler mode */
       "moduleResolution": "bundler",
@@ -13,10 +12,12 @@
       "moduleDetection": "force",
       "noEmit": true,
       "jsx": "react-jsx",
-  
-      /* Linting */
       "strict": true,
-      "noFallthroughCasesInSwitch": true
+      "skipLibCheck": true,
+      "noUnusedLocals": false,
+      "noUnusedParameters": false,
+      "noImplicitAny": true,
+      "noImplicitReturns": true
     },
     "include": ["src"]
   }

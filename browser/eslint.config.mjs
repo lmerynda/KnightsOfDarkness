@@ -29,6 +29,33 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "@typescript-eslint/no-unused-vars": ["warn", { args: "after-used", argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-expressions": "warn",
+      "@typescript-eslint/consistent-type-imports": ["warn", { prefer: "type-imports" }],
+      "@typescript-eslint/no-empty-function": ["warn", { allow: ["arrowFunctions", "functions"] }],
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/explicit-function-return-type": [
+        "warn",
+        {
+          allowExpressions: true,
+          allowTypedFunctionExpressions: true,
+        },
+      ],
+      "@typescript-eslint/explicit-member-accessibility": ["warn", { accessibility: "explicit" }],
+      "@typescript-eslint/no-inferrable-types": "warn",
+      "@typescript-eslint/no-misused-promises": [
+        "warn",
+        {
+          checksVoidReturn: false,
+        },
+      ],
+      "@typescript-eslint/no-non-null-assertion": "warn",
+      "@typescript-eslint/no-require-imports": "warn",
+      "@typescript-eslint/no-this-alias": "warn",
+      "@typescript-eslint/no-useless-constructor": "warn",
+      "@typescript-eslint/prefer-optional-chain": "warn",
+      "@typescript-eslint/prefer-nullish-coalescing": "warn",
+      "@typescript-eslint/prefer-readonly": "warn",
     },
   },
 );
