@@ -27,9 +27,11 @@ export default tseslint.config(
       "react-refresh": reactRefresh,
     },
     rules: {
+      "import/no-unresolved": "warn",
       "no-undef": "warn",
       "no-return-await": "warn",
       "await-thenable": "warn",
+      "@typescript-eslint/explicit-module-boundary-type": "warn",
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": ["warn", { args: "after-used", argsIgnorePattern: "^_" }],
