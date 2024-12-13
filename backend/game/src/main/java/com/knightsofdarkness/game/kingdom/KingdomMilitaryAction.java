@@ -3,6 +3,7 @@ package com.knightsofdarkness.game.kingdom;
 import com.knightsofdarkness.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.common.kingdom.SendAttackResult;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.Utils;
 
 public class KingdomMilitaryAction {
@@ -31,7 +32,10 @@ public class KingdomMilitaryAction {
             kingdomUnits.moveAvailableToMobile(unit, sendAttackDto.units().getCount(unit));
         }
 
-        // TODO save progressing attack with number of turns
+        // TODO make number turns for attack to arrive a game config
+        var newAttack = new KingdomOngoingAttack(Id.generate(), sendAttackDto.destinationKingdomName(), 4, sendAttackDto.attackType(), sendAttackDto.units());
+        kingdom.getOngoingAttacks().add(newAttack);
+
         return SendAttackResult.success("Attack sent", sendAttackDto);
     }
 

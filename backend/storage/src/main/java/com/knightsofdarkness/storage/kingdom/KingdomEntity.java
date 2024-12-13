@@ -103,6 +103,9 @@ public class KingdomEntity {
         var carriersOnTheMoveEntities = kingdom.getCarriersOnTheMove().stream().map(carriersOnTheMove -> KingdomCarriersOnTheMoveEntity.fromDomainModel(carriersOnTheMove, kingdomEntity)).toList();
         kingdomEntity.carriersOnTheMove = carriersOnTheMoveEntities;
 
+        var ongoingAttackEntities = kingdom.getOngoingAttacks().stream().map(ongoingAttack -> KingdomOngoingAttackEntity.fromDomainModel(ongoingAttack, kingdomEntity)).toList();
+        kingdomEntity.ongoingAttacks = ongoingAttackEntities;
+
         return kingdomEntity;
     }
 

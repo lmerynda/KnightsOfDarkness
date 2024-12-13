@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import type { OngoingAttack } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 import { withdrawAttack } from "../game-api-client/AttacksApi";
+import SendAttack from "../components/SendAttack";
 
 const Attacks: React.FC = () => {
   const [ongoingAttacks, setOngoingAttacks] = React.useState<OngoingAttack[]>([]);
@@ -24,7 +25,7 @@ const Attacks: React.FC = () => {
   return (
     <div>
       <Typography variant="h4">Attacks</Typography>
-      {/* <SendCarriers /> */}
+      <SendAttack />
       <Table>
         <TableHead>
           <TableRow>
@@ -40,11 +41,11 @@ const Attacks: React.FC = () => {
         <TableBody>
           {ongoingAttacks.map(ongoingAttack => (
             <TableRow key={ongoingAttack.id}>
-              <TableCell>{ongoingAttack.target}</TableCell>
+              <TableCell>{ongoingAttack.to}</TableCell>
               <TableCell>{ongoingAttack.turnsLeft}</TableCell>
               <TableCell>{ongoingAttack.attackType}</TableCell>
               <TableCell>{ongoingAttack.units.infantry}</TableCell>
-              <TableCell>{ongoingAttack.units.bowmen}</TableCell>
+              <TableCell>{ongoingAttack.units.bowman}</TableCell>
               <TableCell>{ongoingAttack.units.cavalry}</TableCell>
               <TableCell>
                 <Button variant="contained" onClick={() => handleWithdraw(ongoingAttack.id)}>

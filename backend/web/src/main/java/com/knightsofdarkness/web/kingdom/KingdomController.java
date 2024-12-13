@@ -24,6 +24,8 @@ import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.common.kingdom.LandTransaction;
+import com.knightsofdarkness.common.kingdom.SendAttackDto;
+import com.knightsofdarkness.common.kingdom.SendAttackResult;
 import com.knightsofdarkness.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
@@ -184,17 +186,17 @@ public class KingdomController {
         return kingdomService.withdrawCarriers(currentUser.getKingdomName(), carriersOnTheMoveId);
     }
 
-    // @PostMapping(value = "/send-attack")
-    // ResponseEntity<SendCarriersResult> kingdomSendCarriers(@AuthenticationPrincipal UserData currentUser, @RequestBody SendCarriersDto sendCarriersDto)
-    // {
-    // if (currentUser == null)
-    // {
-    // logUserUnauthenticated();
-    // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    // }
+    @PostMapping(value = "/send-attack")
+    ResponseEntity<SendAttackResult> kingdomSendAttack(@AuthenticationPrincipal UserData currentUser, @RequestBody SendAttackDto sendAttackDto)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
-    // return kingdomService.sendCarriers(currentUser.getKingdomName(), sendCarriersDto);
-    // }
+        return kingdomService.sendAttack(currentUser.getKingdomName(), sendAttackDto);
+    }
 
     @PostMapping(value = "/withdraw-attack")
     ResponseEntity<Boolean> kingdomWithdrawAttack(@AuthenticationPrincipal UserData currentUser, @RequestBody UUID attackId)

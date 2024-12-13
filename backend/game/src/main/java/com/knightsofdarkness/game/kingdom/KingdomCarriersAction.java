@@ -39,7 +39,7 @@ public class KingdomCarriersAction {
         }
 
         int carriersToSend = (int) Math.ceil((double) amountToSend / singleCarrierCapacity);
-        // TODO make number turns for carriers to arrive a game config
+
         int turnsLeft = kingdom.getConfig().common().turnsToDeliverResources();
         KingdomCarriersOnTheMove carriersOnTheMove = new KingdomCarriersOnTheMove(Id.generate(),
                 sendCarriersDto.destinationKingdomName(), turnsLeft, carriersToSend, sendCarriersDto.resource(),
