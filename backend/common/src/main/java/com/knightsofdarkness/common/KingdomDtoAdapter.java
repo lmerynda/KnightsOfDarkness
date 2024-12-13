@@ -18,6 +18,7 @@ import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
+import com.knightsofdarkness.common.kingdom.OngoingAttackDto;
 import com.knightsofdarkness.common.market.MarketOfferDto;
 
 public class KingdomDtoAdapter implements JsonSerializer<KingdomDto>, JsonDeserializer<KingdomDto> {
@@ -35,6 +36,7 @@ public class KingdomDtoAdapter implements JsonSerializer<KingdomDto>, JsonDeseri
         jsonObject.add("specialBuildings", context.serialize(src.specialBuildings));
         jsonObject.add("lastTurnReport", context.serialize(src.lastTurnReport));
         jsonObject.add("carriersOnTheMove", context.serialize(src.carriersOnTheMove));
+        jsonObject.add("ongoingAttacks", context.serialize(src.ongoingAttacks));
         return jsonObject;
     }
 
@@ -50,7 +52,8 @@ public class KingdomDtoAdapter implements JsonSerializer<KingdomDto>, JsonDeseri
         List<KingdomSpecialBuildingDto> specialBuildings = context.deserialize(jsonObject.get("specialBuildings"), ArrayList.class);
         KingdomTurnReport lastTurnReport = context.deserialize(jsonObject.get("lastTurnReport"), KingdomTurnReport.class);
         List<CarriersOnTheMoveDto> carriersOnTheMove = context.deserialize(jsonObject.get("carriersOnTheMove"), ArrayList.class);
+        List<OngoingAttackDto> ongoingAttacks = context.deserialize(jsonObject.get("ongoingAttacks"), ArrayList.class);
 
-        return new KingdomDto(name, resources, buildings, units, marketOffers, specialBuildings, lastTurnReport, carriersOnTheMove);
+        return new KingdomDto(name, resources, buildings, units, marketOffers, specialBuildings, lastTurnReport, carriersOnTheMove, ongoingAttacks);
     }
 }

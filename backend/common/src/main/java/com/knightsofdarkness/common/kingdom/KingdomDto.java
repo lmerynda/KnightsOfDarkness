@@ -15,6 +15,7 @@ public class KingdomDto {
     public List<KingdomSpecialBuildingDto> specialBuildings;
     public KingdomTurnReport lastTurnReport;
     public List<CarriersOnTheMoveDto> carriersOnTheMove;
+    public List<OngoingAttackDto> ongoingAttacks;
 
     public KingdomDto()
     {
@@ -26,11 +27,12 @@ public class KingdomDto {
         this.specialBuildings = new ArrayList<>();
         this.lastTurnReport = new KingdomTurnReport();
         this.carriersOnTheMove = new ArrayList<>();
+        this.ongoingAttacks = new ArrayList<>();
         initializeDetails();
     }
 
     public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers, List<KingdomSpecialBuildingDto> specialBuildings,
-            KingdomTurnReport lastTurnReport, List<CarriersOnTheMoveDto> carriersOnTheMove)
+            KingdomTurnReport lastTurnReport, List<CarriersOnTheMoveDto> carriersOnTheMove, List<OngoingAttackDto> ongoingAttacks)
     {
         this.name = name;
         this.resources = resources;
@@ -40,6 +42,7 @@ public class KingdomDto {
         this.specialBuildings = specialBuildings;
         this.lastTurnReport = lastTurnReport;
         this.carriersOnTheMove = carriersOnTheMove;
+        this.ongoingAttacks = ongoingAttacks;
         initializeDetails();
     }
 
@@ -61,6 +64,7 @@ public class KingdomDto {
                 ", specialBuildings=" + specialBuildings +
                 ", lastTurnReport=" + lastTurnReport +
                 ", carriersOnTheMove=" + carriersOnTheMove +
+                ", ongoingAttacks=" + ongoingAttacks +
                 '}';
     }
 }

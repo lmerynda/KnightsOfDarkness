@@ -12,6 +12,7 @@ import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.common.kingdom.OngoingAttackDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
@@ -42,6 +43,9 @@ public class KingdomEntity {
     @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
     List<KingdomCarriersOnTheMoveEntity> carriersOnTheMove;
 
+    @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<KingdomOngoingAttackEntity> ongoingAttacks;
+
     @Embedded
     KingdomUnitsEntity units;
 
@@ -52,14 +56,15 @@ public class KingdomEntity {
     {
     }
 
-    public KingdomEntity(String name, KingdomResourcesDto resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, List<KingdomCarriersOnTheMoveEntity> carriersOnTheMove, KingdomUnitsEntity units,
-            KingdomTurnReport lastTurnReport)
+    public KingdomEntity(String name, KingdomResourcesDto resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, List<KingdomCarriersOnTheMoveEntity> carriersOnTheMove,
+            List<KingdomOngoingAttackEntity> ongoingAttacks, KingdomUnitsEntity units, KingdomTurnReport lastTurnReport)
     {
         this.name = name;
         this.resources = resources;
         this.buildings = buildings;
         this.specialBuildings = specialBuildings;
         this.carriersOnTheMove = carriersOnTheMove;
+        this.ongoingAttacks = ongoingAttacks;
         this.units = units;
         this.lastTurnReport = lastTurnReport;
     }
@@ -68,14 +73,16 @@ public class KingdomEntity {
     {
         var specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDomainModel).collect(Collectors.toList());
         var carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDomainModel).collect(Collectors.toList());
-        return new Kingdom(name, gameConfig, new KingdomResources(resources.getResources()), buildings.toDomainModel(), specialBuildings, carriersOnTheMove, units.toDomainModel(), lastTurnReport);
+        var ongoingAttacks = this.ongoingAttacks.stream().map(KingdomOngoingAttackEntity::toDomainModel).collect(Collectors.toList());
+        return new Kingdom(name, gameConfig, new KingdomResources(resources.getResources()), buildings.toDomainModel(), specialBuildings, carriersOnTheMove, ongoingAttacks, units.toDomainModel(), lastTurnReport);
     }
 
     public KingdomDto toDto()
     {
         List<KingdomSpecialBuildingDto> specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDto).collect(Collectors.toList());
         List<CarriersOnTheMoveDto> carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDto).collect(Collectors.toList());
-        return new KingdomDto(name, resources, buildings.toDto(), units.toDto(), new ArrayList<>(), specialBuildings, lastTurnReport, carriersOnTheMove);
+        List<OngoingAttackDto> ongoingAttacks = this.ongoingAttacks.stream().map(KingdomOngoingAttackEntity::toDto).collect(Collectors.toList());
+        return new KingdomDto(name, resources, buildings.toDto(), units.toDto(), new ArrayList<>(), specialBuildings, lastTurnReport, carriersOnTheMove, ongoingAttacks);
     }
 
     public static KingdomEntity fromDomainModel(Kingdom kingdom)
@@ -84,6 +91,7 @@ public class KingdomEntity {
                 kingdom.getName(),
                 new KingdomResourcesDto(kingdom.getResources().getResources()),
                 KingdomBuildingsEntity.fromDomainModel(kingdom.getBuildings()),
+                new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 KingdomUnitsEntity.fromDomainModel(kingdom.getUnits()),
@@ -104,6 +112,7 @@ public class KingdomEntity {
                 dto.name,
                 dto.resources,
                 KingdomBuildingsEntity.fromDto(dto.buildings),
+                new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 KingdomUnitsEntity.fromDto(dto.units),
