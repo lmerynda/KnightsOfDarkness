@@ -4,6 +4,7 @@ import js from "@eslint/js";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
+import importPlugin from "eslint-plugin-import";
 import tseslint from "typescript-eslint";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,15 +24,16 @@ export default tseslint.config(
       },
     },
     plugins: {
-      "react-hooks": reactHooks,
-      "react-refresh": reactRefresh,
-    },
+        "react-hooks": reactHooks,
+        "react-refresh": reactRefresh,
+        import: importPlugin,
+      },
     rules: {
       "import/no-unresolved": "warn",
       "no-undef": "warn",
       "no-return-await": "warn",
-      "await-thenable": "warn",
-      "@typescript-eslint/explicit-module-boundary-type": "warn",
+      "@typescript-eslint/await-thenable": "warn",
+      "@typescript-eslint/explicit-function-return-type": "warn",
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": ["warn", { args: "after-used", argsIgnorePattern: "^_" }],
