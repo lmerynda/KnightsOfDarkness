@@ -23,7 +23,7 @@ public class KingdomCarriersAction {
 
         var resource = sendCarriersDto.resource();
         int singleCarrierCapacity = kingdom.getConfig().carrierCapacity().get(resource);
-        int carriersCapacity = kingdom.getUnits().getCount(UnitName.carrier) * singleCarrierCapacity;
+        int carriersCapacity = kingdom.getUnits().getAvailableCount(UnitName.carrier) * singleCarrierCapacity;
         if (carriersCapacity <= 0)
         {
             return SendCarriersResult.failure("You have not enough carriers to send");

@@ -316,14 +316,14 @@ class KingdomTurnTest {
         trainGoldMinersToReachMaxCapacity(kingdom);
 
         var unemployedBeforeTurn = kingdom.getResources().getCount(ResourceName.unemployed);
-        var goldMinersBeforeTurnCount = kingdom.getUnits().getCount(UnitName.goldMiner);
+        var goldMinersBeforeTurnCount = kingdom.getUnits().getTotalCount(UnitName.goldMiner);
         var toDemolish = new KingdomBuildingsDto();
         toDemolish.setCount(BuildingName.goldMine, 1);
         kingdom.demolish(toDemolish);
         kingdom.passTurn(game.getKingdomInteractor());
 
         var unemployedAfterTurn = kingdom.getResources().getCount(ResourceName.unemployed);
-        var goldMinersAfterTurnCount = kingdom.getUnits().getCount(UnitName.goldMiner);
+        var goldMinersAfterTurnCount = kingdom.getUnits().getTotalCount(UnitName.goldMiner);
         assertThat(unemployedAfterTurn).isGreaterThan(unemployedBeforeTurn);
         assertThat(goldMinersAfterTurnCount).isLessThan(goldMinersBeforeTurnCount);
         assertThat(unemployedAfterTurn - unemployedBeforeTurn).isEqualTo(goldMinersBeforeTurnCount - goldMinersAfterTurnCount);
@@ -348,7 +348,7 @@ class KingdomTurnTest {
 
     private void trainGoldMinersToReachMaxCapacity(Kingdom kingdom)
     {
-        var currentGoldMinersCount = kingdom.getUnits().getCount(UnitName.goldMiner);
+        var currentGoldMinersCount = kingdom.getUnits().getTotalCount(UnitName.goldMiner);
         var goldMinersCapacity = kingdom.getBuildingCapacity(BuildingName.goldMine);
         var unitsToTrain = new UnitsMapDto();
         unitsToTrain.setCount(UnitName.goldMiner, goldMinersCapacity - currentGoldMinersCount);
@@ -406,7 +406,7 @@ class KingdomTurnTest {
         var result = kingdom.passTurn(game.getKingdomInteractor());
 
         assertThat(result.turnReport().get().exiledPeople).isPositive();
-        assertThat(kingdom.getUnits().getCount(UnitName.goldMiner)).isLessThan(5);
-        assertThat(kingdom.getUnits().getCount(UnitName.blacksmith)).isLessThan(5);
+        assertThat(kingdom.getUnits().getTotalCount(UnitName.goldMiner)).isLessThan(5);
+        assertThat(kingdom.getUnits().getTotalCount(UnitName.blacksmith)).isLessThan(5);
     }
 }

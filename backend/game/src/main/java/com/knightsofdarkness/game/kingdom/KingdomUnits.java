@@ -50,7 +50,7 @@ public class KingdomUnits {
         return mobileUnits.get(name);
     }
 
-    public int getCount(UnitName name)
+    public int getTotalCount(UnitName name)
     {
         return availableUnits.get(name) + mobileUnits.get(name);
     }
@@ -127,7 +127,7 @@ public class KingdomUnits {
         var unitRatios = new EnumMap<UnitName, Double>(UnitName.class);
         for (var unit : UnitName.values())
         {
-            unitRatios.put(unit, (double) getCount(unit) / totalPopulation);
+            unitRatios.put(unit, (double) getTotalCount(unit) / totalPopulation);
         }
         return unitRatios;
     }

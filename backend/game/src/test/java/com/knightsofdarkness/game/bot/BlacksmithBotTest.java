@@ -34,7 +34,7 @@ class BlacksmithBotTest {
     void simulateTenTurnsTest()
     {
         var kingdom = kingdomBuilder.withResource(ResourceName.turns, 10).build();
-        var blacksmithsBefore = kingdom.getUnits().getCount(UnitName.blacksmith);
+        var blacksmithsBefore = kingdom.getUnits().getTotalCount(UnitName.blacksmith);
         var unusedLandBefore = kingdom.getUnusedLand();
         var workshopsBefore = kingdom.getBuildings().getCount(BuildingName.workshop);
 
@@ -49,7 +49,7 @@ class BlacksmithBotTest {
             KingdomPrinter.kingdomInfoPrinter(kingdom);
         }
 
-        var blacksmithsAfter = kingdom.getUnits().getCount(UnitName.blacksmith);
+        var blacksmithsAfter = kingdom.getUnits().getTotalCount(UnitName.blacksmith);
         var workshopsAfter = kingdom.getBuildings().getCount(BuildingName.workshop);
         assertTrue(blacksmithsAfter > blacksmithsBefore, "There were supposed to be new trained units, before " + blacksmithsBefore + " after " + blacksmithsAfter);
         assertTrue(kingdom.getUnusedLand() < unusedLandBefore, "The land was supposed to be used, available before " + unusedLandBefore + " after " + kingdom.getUnusedLand());

@@ -54,7 +54,7 @@ public final class BotFunctions {
 
     public static int buyEnoughIronToMaintainFullProduction(Kingdom kingdom, IMarket market)
     {
-        var blacksmithProduction = kingdom.getUnits().getCount(UnitName.blacksmith) * kingdom.getConfig().production().getProductionRate(UnitName.blacksmith);
+        var blacksmithProduction = kingdom.getUnits().getAvailableCount(UnitName.blacksmith) * kingdom.getConfig().production().getProductionRate(UnitName.blacksmith);
         var ironNeeded = blacksmithProduction;
 
         var ironAmount = kingdom.getResources().getCount(ResourceName.iron);
@@ -99,7 +99,7 @@ public final class BotFunctions {
     public static int buildSpecialistBuilding(Kingdom kingdom, BuildingName building, int count)
     {
         var unit = UnitName.getByBuilding(building);
-        var unitCount = kingdom.getUnits().getCount(unit);
+        var unitCount = kingdom.getUnits().getAvailableCount(unit);
         var fullCapacity = kingdom.getBuildingCapacity(building);
         var freeCapacity = fullCapacity - unitCount;
         var perBuildingCapacity = kingdom.getConfig().buildingCapacity().getCapacity(building);
@@ -140,7 +140,7 @@ public final class BotFunctions {
 
     public static int trainBuilders(Kingdom kingdom, int count, double desiredBuilderToSpecialistRatio)
     {
-        int builderCount = kingdom.getUnits().getCount(UnitName.builder);
+        int builderCount = kingdom.getUnits().getAvailableCount(UnitName.builder);
         int unitCount = kingdom.getTotalPeopleCount();
         double currentBuilderRatio = (double) builderCount / unitCount;
 

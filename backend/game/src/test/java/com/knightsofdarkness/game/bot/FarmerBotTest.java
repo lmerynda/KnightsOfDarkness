@@ -35,7 +35,7 @@ class FarmerBotTest {
     void simulateTenTurnsTest()
     {
         var kingdom = kingdomBuilder.withResource(ResourceName.turns, 10).build();
-        var farmersBefore = kingdom.getUnits().getCount(UnitName.farmer);
+        var farmersBefore = kingdom.getUnits().getTotalCount(UnitName.farmer);
         var unusedLandBefore = kingdom.getUnusedLand();
         var farmsBefore = kingdom.getBuildings().getCount(BuildingName.farm);
         var housesBefore = kingdom.getBuildings().getCount(BuildingName.house);
@@ -47,7 +47,7 @@ class FarmerBotTest {
             bot.passTurn();
         }
 
-        var farmersAfter = kingdom.getUnits().getCount(UnitName.farmer);
+        var farmersAfter = kingdom.getUnits().getTotalCount(UnitName.farmer);
         var farmsAfter = kingdom.getBuildings().getCount(BuildingName.farm);
         var housesAfter = kingdom.getBuildings().getCount(BuildingName.house);
         assertTrue(farmersAfter > farmersBefore, "There were supposed to be new trained units, before " + farmersBefore + " after " + farmersAfter);

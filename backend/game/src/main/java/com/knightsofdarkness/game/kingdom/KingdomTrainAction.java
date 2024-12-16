@@ -30,7 +30,7 @@ public class KingdomTrainAction {
             {
                 var buildingType = maybeBuildingType.get();
                 var buildingCapacity = kingdom.getConfig().buildingCapacity().getCapacity(buildingType);
-                var buildingOccupancy = kingdom.getUnits().getCount(unitName);
+                var buildingOccupancy = kingdom.getUnits().getTotalCount(unitName);
                 var freeCapacity = kingdom.getBuildings().getCount(buildingType) * buildingCapacity - buildingOccupancy;
                 howManyToTrain = Math.max(0, Math.min(howManyToTrain, freeCapacity));
             }

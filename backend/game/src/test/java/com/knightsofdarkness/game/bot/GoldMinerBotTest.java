@@ -36,7 +36,7 @@ class GoldMinerBotTest {
     void simulateTenTurnsTest()
     {
         var kingdom = kingdomBuilder.withResource(ResourceName.turns, 36).build();
-        var goldMinersBefore = kingdom.getUnits().getCount(UnitName.goldMiner);
+        var goldMinersBefore = kingdom.getUnits().getTotalCount(UnitName.goldMiner);
         var unusedLandBefore = kingdom.getUnusedLand();
         var goldMinesBefore = kingdom.getBuildings().getCount(BuildingName.goldMine);
 
@@ -51,7 +51,7 @@ class GoldMinerBotTest {
             KingdomPrinter.kingdomInfoPrinter(kingdom);
         }
 
-        var goldMinersAfter = kingdom.getUnits().getCount(UnitName.goldMiner);
+        var goldMinersAfter = kingdom.getUnits().getTotalCount(UnitName.goldMiner);
         var goldMinesAfter = kingdom.getBuildings().getCount(BuildingName.goldMine);
         assertTrue(goldMinersAfter > goldMinersBefore, "There were supposed to be new trained units, before " + goldMinersBefore + " after " + goldMinersAfter);
         assertTrue(kingdom.getUnusedLand() < unusedLandBefore, "The land was supposed to be used, available before " + unusedLandBefore + " after " + kingdom.getUnusedLand());

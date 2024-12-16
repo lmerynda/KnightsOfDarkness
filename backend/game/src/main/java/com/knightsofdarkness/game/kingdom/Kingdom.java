@@ -173,7 +173,7 @@ public class Kingdom {
     public int getIronUpkeep(double nourishmentProductionFactor)
     {
         // unfed blacksmith who don't work, will not consume any iron either
-        var production = units.getCount(UnitName.blacksmith) * nourishmentProductionFactor * config.production().getProductionRate(UnitName.blacksmith) * config.common().ironConsumptionPerProductionUnit();
+        var production = units.getAvailableCount(UnitName.blacksmith) * nourishmentProductionFactor * config.production().getProductionRate(UnitName.blacksmith) * config.common().ironConsumptionPerProductionUnit();
         return ((int) Math.ceil(production));
     }
 

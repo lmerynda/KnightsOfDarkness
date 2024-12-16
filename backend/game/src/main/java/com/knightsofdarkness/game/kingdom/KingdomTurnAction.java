@@ -135,14 +135,14 @@ public class KingdomTurnAction {
                     return;
                 }
 
-                var count = kingdom.getUnits().getCount(unit);
+                // TODO how about firing while unit is mobile?
+                var count = kingdom.getUnits().getTotalCount(unit);
                 if (count > 0)
                 {
                     kingdom.getUnits().subtractCount(unit, 1);
                     kingdom.getResources().addCount(ResourceName.unemployed, 1);
                     results.addLeavingProfessionals(unit, 1);
                     professionalsToFire--;
-
                 }
             }
         }
@@ -159,7 +159,8 @@ public class KingdomTurnAction {
             }
             var building = maybeBuildingType.get();
             var capacity = kingdom.getBuildingCapacity(building);
-            var count = kingdom.getUnits().getCount(unit);
+            // TODO how about firing while unit is mobile?
+            var count = kingdom.getUnits().getTotalCount(unit);
             if (count > capacity)
             {
                 var leaving = count - capacity;
@@ -212,7 +213,7 @@ public class KingdomTurnAction {
         for (var unitName : UnitName.getProductionUnits())
         {
             var resourceType = productionConfig.getResource(unitName);
-            var resourceProduction = kingdom.getUnits().getCount(unitName) * nourishmentProductionFactor * productionConfig.getProductionRate(unitName);
+            var resourceProduction = kingdom.getUnits().getAvailableCount(unitName) * nourishmentProductionFactor * productionConfig.getProductionRate(unitName);
             var specialBuildingBonus = getSpecialBuildingBonus(resourceType);
             if (unitName == UnitName.blacksmith)
             {
