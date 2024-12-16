@@ -40,14 +40,32 @@ public class KingdomTurnAction {
         doProduction(nourishmentProductionFactor);
         // TODO food production should happen before consumption
         getNewPeople();
-        processUnitsOnTheMove();
+        processCarriersOnTheMove();
+        processAttacks();
 
         kingdom.lastTurnReport = results;
 
         return KingdomPassTurnActionResult.success("Turn passed", results);
     }
 
-    private void processUnitsOnTheMove()
+    private void processAttacks()
+    {
+        var allAttacks = kingdom.getOngoingAttacks();
+        allAttacks.forEach(attack -> attack.turnsLeft--);
+        var finishedAttacks = allAttacks.stream().filter(attack -> attack.turnsLeft <= 0).toList();
+        finishedAttacks.forEach(attack ->
+        {
+            log.info("Attack arrived at the destination: {}", attack);
+            for (var unit : UnitName.getMilitaryUnits())
+            {
+                kingdom.getUnits().moveMobileToAvailable(unit, attack.units.getCount(unit));
+            }
+            kingdomInteractor.resolveAttack(kingdom, attack);
+        });
+        allAttacks.removeAll(finishedAttacks);
+    }
+
+    private void processCarriersOnTheMove()
     {
         var allCarriersOnTheMove = kingdom.getCarriersOnTheMove();
         allCarriersOnTheMove.forEach(carriersOnTheMove -> carriersOnTheMove.turnsLeft--);
@@ -57,7 +75,6 @@ public class KingdomTurnAction {
             log.info("Carriers on the move arrived at destination: {}", carriersOnTheMove);
             kingdom.getUnits().moveMobileToAvailable(UnitName.carrier, carriersOnTheMove.carriersCount);
             kingdomInteractor.transferResources(kingdom, carriersOnTheMove.targetKingdomName, carriersOnTheMove.resource, carriersOnTheMove.resourceCount);
-
         });
         allCarriersOnTheMove.removeAll(arrivedCarriers);
     }
