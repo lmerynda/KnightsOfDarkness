@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Notification } from "../GameTypes";
+import type { Notification } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 import { fetchNotificationsCount, fetchNotificationsRequest, markNotificationAsRead } from "../game-api-client/NotificationsApi";
 import { notificationsRefreshInterval } from "../Consts";

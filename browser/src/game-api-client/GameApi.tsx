@@ -1,5 +1,5 @@
 import { GAME_API } from "../Consts";
-import { GameConfig } from "../GameTypes";
+import type { GameConfig } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
 
 export type BuildResponse = {

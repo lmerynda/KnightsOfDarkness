@@ -12,7 +12,7 @@ const BuyLand: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const data = await buyLandRequest(buyAmount);
     setBuyAmount(0);

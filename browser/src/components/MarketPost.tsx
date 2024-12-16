@@ -1,8 +1,10 @@
 import { Button, ButtonGroup, Grid, IconButton, Input, InputAdornment, InputLabel, Typography } from "@mui/material";
 import React, { useContext } from "react";
-import { MarketOfferCreateResult, MarketResource, marketResources } from "../GameTypes";
+import type { MarketOfferCreateResult, MarketResource } from "../GameTypes";
+import { marketResources } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
-import { CreateMarketOfferData, createMarketOfferRequest } from "../game-api-client/MarketApi";
+import type { CreateMarketOfferData } from "../game-api-client/MarketApi";
+import { createMarketOfferRequest } from "../game-api-client/MarketApi";
 
 const MarketPost: React.FC = () => {
   const [sellAmount, setSellAmount] = React.useState<number>(0);
@@ -17,7 +19,7 @@ const MarketPost: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleCreateOffer = async () => {
+  const handleCreateOffer = async (): Promise<void> => {
     const offer: CreateMarketOfferData = {
       resource: selectedResource,
       price: price,

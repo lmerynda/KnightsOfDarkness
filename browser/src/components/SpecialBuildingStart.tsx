@@ -26,7 +26,7 @@ const SpecialBuildingStart: React.FC = () => {
     );
   }
 
-  const handleStartSpecialBuilding = async () => {
+  const handleStartSpecialBuilding = async (): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const data = await startSpecialBuildingRequest(newBuilding);
     setNewBuilding("goldShaft");

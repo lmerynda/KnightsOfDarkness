@@ -1,5 +1,5 @@
 import React from "react";
-import { TrainingActionReport } from "../GameTypes";
+import type { TrainingActionReport } from "../GameTypes";
 
 const TrainingReport: React.FC<TrainingActionReport> = trainingResponse => {
   return (

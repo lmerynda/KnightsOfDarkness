@@ -1,7 +1,8 @@
 import { Button, Grid, Input, InputLabel, Typography } from "@mui/material";
 import React, { useContext } from "react";
-import { sendAttack, SendAttackData, SendAttackResult } from "../game-api-client/AttacksApi";
-import { AttackType } from "../GameTypes";
+import type { SendAttackData, SendAttackResult } from "../game-api-client/AttacksApi";
+import { sendAttack } from "../game-api-client/AttacksApi";
+import type { AttackType } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 
 const SendAttack: React.FC = () => {
@@ -17,7 +18,7 @@ const SendAttack: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleSendAttack = async () => {
+  const handleSendAttack = async (): Promise<void> => {
     const data: SendAttackData = {
       attackType: selectedAttackType,
       destinationKingdomName: destinationKingdomName,

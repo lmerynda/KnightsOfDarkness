@@ -1,6 +1,6 @@
 import React from "react";
 import KingdomResourcesView from "./components/KingdomResources";
-import { KingdomDetails, KingdomResources } from "./GameTypes";
+import type { KingdomDetails, KingdomResources } from "./GameTypes";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -12,7 +12,7 @@ export type KingdomToolbarProps = {
 const KingdomToolbar: React.FC<KingdomToolbarProps> = ({ kingdomName, kingdomResources, kingdomDetails }) => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     localStorage.removeItem("authToken");
     navigate("/homepage");
   };

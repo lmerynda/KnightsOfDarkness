@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import { Table, TableHead, TableBody, TableRow, TableCell, Button, Input, ButtonGroup } from "@mui/material";
 import { KingdomContext } from "../Kingdom";
-import { MarketOfferData, MarketResource, OfferBuyer } from "../GameTypes";
-import { buyMarketOfferRequest, fetchMarketDataRequest, MarketOfferBuyResponse } from "../game-api-client/MarketApi";
+import type { MarketOfferData, MarketResource, OfferBuyer } from "../GameTypes";
+import type { MarketOfferBuyResponse } from "../game-api-client/MarketApi";
+import { buyMarketOfferRequest, fetchMarketDataRequest } from "../game-api-client/MarketApi";
 import MarketOfferBuyReport from "./MarketOfferBuyReport";
 import { marketRefreshInterval } from "../Consts";
 
@@ -44,14 +45,14 @@ const MarketBuyResource: React.FC<MarketBuyResourceProps> = (props: MarketBuyRes
     };
   }, [props.resource, reloadMarket]);
 
-  const clearForm = (id: string) => {
+  const clearForm = (id: string): void => {
     setBuyInputs(prevInputs => ({
       ...prevInputs,
       [id]: 0,
     }));
   };
 
-  const handleBuyAmount = async (id: string, count: number) => {
+  const handleBuyAmount = async (id: string, count: number): Promise<void> => {
     const offerBuyer: OfferBuyer = {
       count: count,
     };
@@ -64,7 +65,7 @@ const MarketBuyResource: React.FC<MarketBuyResourceProps> = (props: MarketBuyRes
     kingdomContext.reloadKingdom();
   };
 
-  const handleBuyPrice = (id: string, toSpend: number, price: number) => {
+  const handleBuyPrice = (id: string, toSpend: number, price: number): void => {
     const count = Math.floor(toSpend / price);
     handleBuyAmount(id, count);
   };

@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import TurnReport from "../components/TurnReport";
 import BuyLand from "../components/BuyLand";
 import { passTurnRequest } from "../game-api-client/KingdomApi";
-import { PassTurnReport } from "../GameTypes";
+import type { PassTurnReport } from "../GameTypes";
 import { Box } from "@mui/material";
 
 const Overview: React.FC = () => {
@@ -16,7 +16,7 @@ const Overview: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     const response = await passTurnRequest();
     setLastTurnReport(response);
     kingdomContext.reloadKingdom();

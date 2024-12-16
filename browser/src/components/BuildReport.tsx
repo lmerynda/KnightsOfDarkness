@@ -1,5 +1,5 @@
 import React from "react";
-import { BuildingActionReport } from "../GameTypes";
+import type { BuildingActionReport } from "../GameTypes";
 
 const BuildReport: React.FC<BuildingActionReport> = buildActionReport => {
   return (

@@ -14,11 +14,11 @@ const Register: React.FC = () => {
   const [repeatPassword, setRepeatPassword] = useState("");
   const [result, setResult] = useState<Result | undefined>(undefined);
 
-  const setError = (message: string) => {
+  const setError = (message: string): void => {
     setResult({ message: message, error: true });
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
     if (email === "" || kingdomName === "" || password === "" || repeatPassword === "") {

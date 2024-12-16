@@ -1,5 +1,5 @@
 import { GAME_API } from "../Consts";
-import { MarketResource } from "../GameTypes";
+import type { MarketResource } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
 
 export type SendCarriersData = {

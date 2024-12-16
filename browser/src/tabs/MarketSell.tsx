@@ -11,7 +11,7 @@ const MarketSell: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleWithdraw = async (id: string) => {
+  const handleWithdraw = async (id: string): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const data = await withdrawMarketOfferRequest(id);
     kingdomContext.reloadKingdom();

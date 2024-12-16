@@ -12,7 +12,7 @@ const Login: React.FC<LoginProps> = ({ setAuthenticated }) => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     if (email === "" || password === "") {
       console.log("Email or password is empty");

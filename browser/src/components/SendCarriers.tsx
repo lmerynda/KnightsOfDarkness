@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
-import { MarketResource, marketResources } from "../GameTypes";
-import { sendCarriers, SendCarriersData, SendCarriersResult } from "../game-api-client/TransfersApi";
+import type { MarketResource } from "../GameTypes";
+import { marketResources } from "../GameTypes";
+import type { SendCarriersData, SendCarriersResult } from "../game-api-client/TransfersApi";
+import { sendCarriers } from "../game-api-client/TransfersApi";
 import { KingdomContext } from "../Kingdom";
 import { Button, ButtonGroup, Grid, IconButton, Input, InputAdornment, InputLabel, Typography } from "@mui/material";
 
@@ -17,7 +19,7 @@ const SendCarriers: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleSendCarriers = async () => {
+  const handleSendCarriers = async (): Promise<void> => {
     const data: SendCarriersData = {
       resource: selectedResource,
       destinationKingdomName: destinationKingdomName,

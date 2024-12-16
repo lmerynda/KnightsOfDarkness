@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Button, Input } from "@mui/material";
 import React, { useContext, useState } from "react";
-import { TrainingActionReport, Unit, units } from "../GameTypes";
+import type { TrainingActionReport, Unit } from "../GameTypes";
+import { units } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 import { trainRequest } from "../game-api-client/KingdomApi";
 import TrainingReport from "../components/TrainingReport";
@@ -15,7 +16,7 @@ const Train: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleCountChange = (unit: string, value: string) => {
+  const handleCountChange = (unit: string, value: string): void => {
     const newValue = parseInt(value) || 0;
     setUnitCounts(prevCounts => ({
       ...prevCounts,
@@ -23,14 +24,14 @@ const Train: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     const response = await trainRequest(unitCounts);
     setLastTrainingReport(response);
     kingdomContext.reloadKingdom();
     setUnitCounts({});
   };
 
-  const howManyUnitsCanAfford = (unit: Unit) => {
+  const howManyUnitsCanAfford = (unit: Unit): number => {
     const singleUnitCost = kingdomContext.gameConfig.trainingCost[unit];
     const resources = kingdomContext.kingdom.resources;
     const canAffordInGold = resources.gold / singleUnitCost.gold;
@@ -39,7 +40,7 @@ const Train: React.FC = () => {
     return Math.floor(Math.min(canAffordInGold, canAffordInMaterials));
   };
 
-  const handleMaxInput = (unit: Unit) => {
+  const handleMaxInput = (unit: Unit): void => {
     const openPositions = getOpenPositions(unit, kingdomContext.kingdom, kingdomContext.gameConfig);
     // some units don't have their buildings so it's not a limiting factor
     const maxUnitsToAfford = openPositions ? Math.min(openPositions, howManyUnitsCanAfford(unit)) : howManyUnitsCanAfford(unit);

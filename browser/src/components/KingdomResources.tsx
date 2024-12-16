@@ -1,5 +1,5 @@
 import React from "react";
-import { KingdomResources, KingdomDetails } from "../GameTypes";
+import type { KingdomResources, KingdomDetails } from "../GameTypes";
 
 interface KingdomResourcesViewProps {
   kingdomResources: KingdomResources;

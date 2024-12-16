@@ -1,6 +1,6 @@
 import { Button, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import React, { useContext } from "react";
-import { CarriersOnTheMove } from "../GameTypes";
+import type { CarriersOnTheMove } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 import { withdrawCarriers } from "../game-api-client/TransfersApi";
 import SendCarriers from "../components/SendCarriers";
@@ -13,7 +13,7 @@ const Transfers: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleWithdraw = async (id: string) => {
+  const handleWithdraw = async (id: string): Promise<void> => {
     await withdrawCarriers(id);
     kingdomContext.reloadKingdom();
   };

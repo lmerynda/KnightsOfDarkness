@@ -1,4 +1,5 @@
-import { Building, buildingOccupantsMap, GameConfig, KingdomData, Unit } from "./GameTypes";
+import type { Building, GameConfig, KingdomData, Unit } from "./GameTypes";
+import { buildingOccupantsMap } from "./GameTypes";
 
 export function getBuildingOccupants(building: Building, kingdom: KingdomData): number {
   const units = buildingOccupantsMap[building];

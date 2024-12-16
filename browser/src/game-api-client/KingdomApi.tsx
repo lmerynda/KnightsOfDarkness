@@ -1,5 +1,5 @@
 import { GAME_API } from "../Consts";
-import { BuildingActionReport, KingdomData, PassTurnReport, TrainingActionReport, UnitsMap } from "../GameTypes";
+import type { BuildingActionReport, KingdomData, PassTurnReport, TrainingActionReport, UnitsMap } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
 
 export async function fetchKingdomDataRequest(): Promise<KingdomData> {

@@ -1,5 +1,5 @@
 import { GAME_API } from "../Consts";
-import { MarketOfferCreateResult, MarketOfferData, MarketResource, OfferBuyer } from "../GameTypes";
+import type { MarketOfferCreateResult, MarketOfferData, MarketResource, OfferBuyer } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
 
 export type CreateMarketOfferData = {

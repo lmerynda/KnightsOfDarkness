@@ -23,6 +23,13 @@ export default tseslint.config(
         tsconfigRootDir: __dirname,
       },
     },
+    settings: {
+        "import/resolver": {
+          typescript: {
+            alwaysTryTypes: true,
+          },
+        },
+      },
     plugins: {
         "react-hooks": reactHooks,
         "react-refresh": reactRefresh,

@@ -1,5 +1,5 @@
 import { GAME_API } from "../Consts";
-import { AttackType, UnitsMap } from "../GameTypes";
+import type { AttackType, UnitsMap } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
 
 export type SendAttackData = {

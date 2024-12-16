@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import KingdomTabs from "./KingdomTabs";
 import KingdomToolbar from "./KingdomToolbar";
-import { GameConfig, KingdomData } from "./GameTypes";
+import type { GameConfig, KingdomData } from "./GameTypes";
 import { fetchKingdomDataRequest } from "./game-api-client/KingdomApi";
 import { kingdomRefreshInterval } from "./Consts";
 import { fetchGameConfigRequest } from "./game-api-client/GameApi";
@@ -23,12 +23,12 @@ const Kingdom: React.FC = () => {
   const [kingdom, setKingdom] = React.useState<KingdomData>();
   const [gameConfig, setGameConfig] = React.useState<GameConfig>();
 
-  const reloadKingdom = async () => {
+  const reloadKingdom = async (): Promise<void> => {
     const data = await fetchKingdomDataRequest();
     setKingdom(data);
   };
 
-  const reloadGameConfig = async () => {
+  const reloadGameConfig = async (): Promise<void> => {
     const data = await fetchGameConfigRequest();
     setGameConfig(data);
   };

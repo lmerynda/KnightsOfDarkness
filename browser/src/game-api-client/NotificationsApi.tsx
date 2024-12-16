@@ -1,5 +1,5 @@
 import { GAME_API } from "../Consts";
-import { Notification } from "../GameTypes";
+import type { Notification } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
 
 export async function fetchNotificationsRequest(): Promise<Notification[]> {

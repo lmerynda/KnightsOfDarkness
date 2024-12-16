@@ -1,5 +1,5 @@
 import React from "react";
-import { MarketOfferBuyResponse } from "../game-api-client/MarketApi";
+import type { MarketOfferBuyResponse } from "../game-api-client/MarketApi";
 
 const MarketOfferBuyReport: React.FC<MarketOfferBuyResponse> = buyResponse => {
   return (

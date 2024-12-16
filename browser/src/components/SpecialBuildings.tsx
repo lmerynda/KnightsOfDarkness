@@ -35,14 +35,14 @@ const SpecialBuilding: React.FC = () => {
     }));
   };
 
-  const clearForm = (id: string) => {
+  const clearForm = (id: string): void => {
     setBuildInputs(prevInputs => ({
       ...prevInputs,
       [id]: 0,
     }));
   };
 
-  const handleBuild = async (id: string, buildingPoints: number) => {
+  const handleBuild = async (id: string, buildingPoints: number): Promise<void> => {
     if (kingdomContext === undefined || buildingPoints <= 0) {
       return;
     }
@@ -53,7 +53,7 @@ const SpecialBuilding: React.FC = () => {
     clearForm(id);
     kingdomContext.reloadKingdom();
   };
-  const handleDemolish = async (id: string) => {
+  const handleDemolish = async (id: string): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const data = await demolishSpecialBuildingRequest(id);
     kingdomContext.reloadKingdom();

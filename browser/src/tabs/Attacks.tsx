@@ -13,7 +13,7 @@ const Attacks: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleWithdraw = async (id: string) => {
+  const handleWithdraw = async (id: string): Promise<void> => {
     await withdrawAttack(id);
     kingdomContext.reloadKingdom();
   };

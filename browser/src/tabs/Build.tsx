@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Input, Button } from "@mui/material";
 import React, { useContext, useState } from "react";
-import { Building, BuildingActionReport, buildings } from "../GameTypes";
+import type { Building, BuildingActionReport } from "../GameTypes";
+import { buildings } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 import { buildRequest, demolishRequest } from "../game-api-client/KingdomApi";
 import BuildReport from "../components/BuildReport";
@@ -16,7 +17,7 @@ const Build: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  const handleCountChange = (building: string, value: string) => {
+  const handleCountChange = (building: string, value: string): void => {
     const newValue = parseInt(value) || 0;
     setBuildingCounts(prevCounts => ({
       ...prevCounts,
@@ -24,28 +25,28 @@ const Build: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     const response = await buildRequest(buildingCounts);
     setLastBuildReport(response);
     kingdomContext.reloadKingdom();
     setBuildingCounts({});
   };
 
-  const handleDemolish = async () => {
+  const handleDemolish = async (): Promise<void> => {
     const response = await demolishRequest(buildingCounts);
     setLastBuildReport(response); // TODO it should be demolish report, think how to generalize
     kingdomContext.reloadKingdom();
     setBuildingCounts({});
   };
 
-  const howManyBuildingsCanAfford = (building: Building) => {
+  const howManyBuildingsCanAfford = (building: Building): void => {
     const singleBuildingCost = kingdomContext.gameConfig.buildingPointCosts[building];
     const buildingPoints = kingdomContext.kingdom.resources.buildingPoints;
     const maxToAfford = buildingPoints / singleBuildingCost;
     return maxToAfford;
   };
 
-  const handleMaxInput = (building: Building) => {
+  const handleMaxInput = (building: Building): void => {
     const availableLand = kingdomContext.kingdom.resources.land - kingdomContext.kingdom.details.usedLand;
     const maxBuildingsToAfford = howManyBuildingsCanAfford(building);
     const maxBuildings = Math.min(maxBuildingsToAfford, availableLand);
