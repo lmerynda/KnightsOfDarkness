@@ -45,4 +45,16 @@ public class KingdomOngoingAttack {
     {
         return units;
     }
+
+    @Override
+    public String toString()
+    {
+        return "KingdomOngoingAttack{" +
+                "id=" + id +
+                ", targetKingdomName='" + targetKingdomName + '\'' +
+                ", turnsLeft=" + turnsLeft +
+                ", attackType=" + attackType +
+                ", units=" + units +
+                '}';
+    }
 }
