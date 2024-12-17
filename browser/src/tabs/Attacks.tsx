@@ -34,7 +34,7 @@ const Attacks: React.FC = () => {
             <TableCell>Attack Type</TableCell>
             <TableCell>Infantry</TableCell>
             <TableCell>Bowmen</TableCell>
-            <TableCell>Cavarly</TableCell>
+            <TableCell>Cavalry</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
