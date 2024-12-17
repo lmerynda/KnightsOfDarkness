@@ -1,8 +1,8 @@
-import { Button, Grid, Input, InputLabel, Typography } from "@mui/material";
+import { Button, ButtonGroup, Grid, Input, InputLabel, Typography } from "@mui/material";
 import React, { useContext } from "react";
 import type { SendAttackData, SendAttackResult } from "../game-api-client/AttacksApi";
 import { sendAttack } from "../game-api-client/AttacksApi";
-import type { AttackType } from "../GameTypes";
+import { attackTypes, type AttackType } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
 
 const SendAttack: React.FC = () => {
@@ -50,6 +50,21 @@ const SendAttack: React.FC = () => {
         <Grid item>
           <InputLabel>Destination Kingdom</InputLabel>
           <Input type="text" value={destinationKingdomName} onChange={event => setDestinationKingdomName(event.target.value)} />
+        </Grid>
+        <Grid item>
+          <ButtonGroup variant="contained">
+            {attackTypes.map(attackType => (
+              <Button
+                key={attackType}
+                variant={attackType === selectedAttackType ? "contained" : "outlined"}
+                onClick={() => {
+                  setSelectedAttackType(attackType);
+                }}
+              >
+                {attackType}
+              </Button>
+            ))}
+          </ButtonGroup>
         </Grid>
         <Grid item>
           <Button variant="contained" onClick={() => handleSendAttack()}>
