@@ -9,11 +9,12 @@ const SendAttack: React.FC = () => {
   const defaultAttackType: AttackType = "economy";
   const [selectedAttackType, setSelectedAttackType] = React.useState<AttackType>(defaultAttackType);
   const [destinationKingdomName, setDestinationKingdomName] = React.useState<string>("");
-  //   const [amount, setAmount] = React.useState<number>(0);
+  const [infantry, setInfantry] = React.useState<number>(0);
+  const [bowmen, setBowmen] = React.useState<number>(0);
+  const [cavalry, setCavalry] = React.useState<number>(0);
   const [lastSendAttackResult, setLastSendAttackResult] = React.useState<SendAttackResult | undefined>(undefined);
   const kingdomContext = useContext(KingdomContext);
 
-  // ask someone how to better solve it, null object pattern?
   if (kingdomContext === undefined) {
     throw new Error("Kingdom context is undefined");
   }
@@ -22,7 +23,7 @@ const SendAttack: React.FC = () => {
     const data: SendAttackData = {
       attackType: selectedAttackType,
       destinationKingdomName: destinationKingdomName,
-      units: { infantry: 0, bowman: 0, cavalry: 0 },
+      units: { infantry, bowman: bowmen, cavalry },
     };
 
     const result = await sendAttack(data);
@@ -30,13 +31,12 @@ const SendAttack: React.FC = () => {
 
     setSelectedAttackType(defaultAttackType);
     setDestinationKingdomName("");
+    setInfantry(0);
+    setBowmen(0);
+    setCavalry(0);
 
     kingdomContext.reloadKingdom();
   };
-
-  //   function handleMaxClick(): void {
-  //     setAmount(kingdomContext?.kingdom.resources[selectedResource] ?? 0);
-  //   }
 
   return (
     <div>
@@ -65,6 +65,18 @@ const SendAttack: React.FC = () => {
               </Button>
             ))}
           </ButtonGroup>
+        </Grid>
+        <Grid item>
+          <InputLabel>Infantry</InputLabel>
+          <Input type="number" value={infantry} onChange={event => setInfantry(parseInt(event.target.value))} />
+        </Grid>
+        <Grid item>
+          <InputLabel>Bowmen</InputLabel>
+          <Input type="number" value={bowmen} onChange={event => setBowmen(parseInt(event.target.value))} />
+        </Grid>
+        <Grid item>
+          <InputLabel>Cavalry</InputLabel>
+          <Input type="number" value={cavalry} onChange={event => setCavalry(parseInt(event.target.value))} />
         </Grid>
         <Grid item>
           <Button variant="contained" onClick={() => handleSendAttack()}>

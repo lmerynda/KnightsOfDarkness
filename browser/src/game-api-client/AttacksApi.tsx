@@ -53,13 +53,13 @@ export async function sendAttack(sendAttackData: SendAttackData): Promise<SendAt
     );
 
     if (response.ok) {
-      console.log(`sendCarriers request successful`);
+      console.log(`sendAttack request successful`);
       return response.json();
     }
 
     throw new Error(`request failed, status: ${response.status}`);
   } catch (error) {
-    console.error("Sending carriers failed", error);
+    console.error("Sending attack failed", error);
     throw error;
   }
 }
