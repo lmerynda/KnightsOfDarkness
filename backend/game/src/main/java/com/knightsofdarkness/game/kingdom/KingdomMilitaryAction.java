@@ -16,6 +16,11 @@ public class KingdomMilitaryAction {
 
     public SendAttackResult sendAttack(SendAttackDto sendAttackDto)
     {
+        if (sendAttackDto.units().countAll() <= 0)
+        {
+            return SendAttackResult.failure("Need to send at least one unit");
+        }
+
         var kingdomUnits = kingdom.getUnits();
         for (var unit : UnitName.getMilitaryUnits())
         {
