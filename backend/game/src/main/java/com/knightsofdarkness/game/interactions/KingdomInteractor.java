@@ -28,6 +28,7 @@ public class KingdomInteractor implements IKingdomInteractor {
         }
 
         toKingdom.get().receiveResourceTransfer(resource, amount);
+        kingdomRepository.update(from);
         kingdomRepository.update(toKingdom.get());
     }
 
