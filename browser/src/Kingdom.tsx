@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import KingdomTabs from "./KingdomTabs";
 import KingdomToolbar from "./KingdomToolbar";
-import type { GameConfig, KingdomData } from "./GameTypes";
+import type { GameConfig, KingdomData, UnitsMap } from "./GameTypes";
 import { fetchKingdomDataRequest } from "./game-api-client/KingdomApi";
 import { kingdomRefreshInterval } from "./Consts";
 import { fetchGameConfigRequest } from "./game-api-client/GameApi";
@@ -13,6 +13,7 @@ export type KingdomContextType = {
   kingdom: KingdomData;
   gameConfig: GameConfig;
   reloadKingdom: () => Promise<void>;
+  totalUnits: UnitsMap;
 };
 
 // TODO fix this lint warning
@@ -33,6 +34,14 @@ const Kingdom: React.FC = () => {
     setGameConfig(data);
   };
 
+  const calculateTotalUnits = (availableUnits: UnitsMap, mobileUnits: UnitsMap): UnitsMap => {
+    const totalUnits: UnitsMap = { ...availableUnits };
+    for (const unit in mobileUnits) {
+      totalUnits[unit] += mobileUnits[unit];
+    }
+    return totalUnits;
+  };
+
   React.useEffect(() => {
     reloadKingdom();
     reloadGameConfig();
@@ -49,7 +58,7 @@ const Kingdom: React.FC = () => {
   return (
     <Box sx={{ display: "flex" }}>
       {kingdom && gameConfig ? (
-        <KingdomContext.Provider value={{ kingdom, gameConfig, reloadKingdom }}>
+        <KingdomContext.Provider value={{ kingdom, gameConfig, reloadKingdom, totalUnits: calculateTotalUnits(kingdom.units.availableUnits, kingdom.units.mobileUnits) }}>
           <Sidebar {...kingdom} />
           <Box component="main" sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}>
             <KingdomToolbar kingdomName={kingdom.name} kingdomResources={kingdom.resources} kingdomDetails={kingdom.details} />
