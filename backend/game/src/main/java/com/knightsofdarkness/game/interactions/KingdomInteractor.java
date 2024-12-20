@@ -50,6 +50,9 @@ public class KingdomInteractor implements IKingdomInteractor {
         processDefenseSalvo(attackerKingdom, defendantKingdom, attack);
         processAttackSalvo(attackerKingdom, defendantKingdom, attack);
         processMelee(attackerKingdom, defendantKingdom, attack);
+
+        kingdomRepository.update(attackerKingdom);
+        kingdomRepository.update(defendantKingdom);
     }
 
     private void processDefenseSalvo(Kingdom attackerKingdom, Kingdom defenderKingdom, KingdomOngoingAttack attack)
