@@ -58,7 +58,14 @@ const Kingdom: React.FC = () => {
   return (
     <Box sx={{ display: "flex" }}>
       {kingdom && gameConfig ? (
-        <KingdomContext.Provider value={{ kingdom, gameConfig, reloadKingdom, totalUnits: calculateTotalUnits(kingdom.units.availableUnits, kingdom.units.mobileUnits) }}>
+        <KingdomContext.Provider
+          value={{
+            kingdom,
+            gameConfig,
+            reloadKingdom,
+            totalUnits: calculateTotalUnits(kingdom.units.availableUnits, kingdom.units.mobileUnits),
+          }}
+        >
           <Sidebar {...kingdom} />
           <Box component="main" sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}>
             <KingdomToolbar kingdomName={kingdom.name} kingdomResources={kingdom.resources} kingdomDetails={kingdom.details} />
