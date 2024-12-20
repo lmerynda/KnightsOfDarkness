@@ -51,6 +51,10 @@ public class KingdomInteractor implements IKingdomInteractor {
         processAttackSalvo(attackerKingdom, defendantKingdom, attack);
         processMelee(attackerKingdom, defendantKingdom, attack);
 
+        attackerKingdom.getUnits().moveMobileToAvailable(UnitName.bowman, attack.getUnits().getCount(UnitName.bowman));
+        attackerKingdom.getUnits().moveMobileToAvailable(UnitName.infantry, attack.getUnits().getCount(UnitName.infantry));
+        attackerKingdom.getUnits().moveMobileToAvailable(UnitName.cavalry, attack.getUnits().getCount(UnitName.cavalry));
+
         kingdomRepository.update(attackerKingdom);
         kingdomRepository.update(defendantKingdom);
     }
@@ -72,6 +76,12 @@ public class KingdomInteractor implements IKingdomInteractor {
         attackerUnits.subtractCount(UnitName.bowman, killedAttackingBowmen);
         attackerUnits.subtractCount(UnitName.infantry, killedAttackingInfantry);
         attackerUnits.subtractCount(UnitName.cavalry, killedAttackingCavalry);
+
+        attackerKingdom.getUnits().subtractMobileCount(UnitName.bowman, killedAttackingBowmen);
+        attackerKingdom.getUnits().subtractMobileCount(UnitName.infantry, killedAttackingInfantry);
+        attackerKingdom.getUnits().subtractMobileCount(UnitName.cavalry, killedAttackingCavalry);
+
+        log.info("[KingdomInteractor] Defender bowmen salvo killed {} bowmen, {} infantry, {} cavalry from attacking kingdom {}", killedAttackingBowmen, killedAttackingInfantry, killedAttackingCavalry, attackerKingdom.getName());
     }
 
     private void processAttackSalvo(Kingdom attackerKingdom, Kingdom defendantKingdom, KingdomOngoingAttack attack)

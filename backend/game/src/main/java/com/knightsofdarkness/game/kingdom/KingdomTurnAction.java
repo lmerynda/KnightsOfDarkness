@@ -56,10 +56,6 @@ public class KingdomTurnAction {
         finishedAttacks.forEach(attack ->
         {
             log.info("Attack arrived at the destination: {}", attack);
-            for (var unit : UnitName.getMilitaryUnits())
-            {
-                kingdom.getUnits().moveMobileToAvailable(unit, attack.units.getCount(unit));
-            }
             kingdomInteractor.resolveAttack(kingdom, attack);
         });
         allAttacks.removeAll(finishedAttacks);
