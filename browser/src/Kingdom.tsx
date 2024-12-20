@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import KingdomTabs from "./KingdomTabs";
 import KingdomToolbar from "./KingdomToolbar";
-import type { GameConfig, KingdomData, UnitsMap } from "./GameTypes";
+import { units, type GameConfig, type KingdomData, type UnitsMap } from "./GameTypes";
 import { fetchKingdomDataRequest } from "./game-api-client/KingdomApi";
 import { kingdomRefreshInterval } from "./Consts";
 import { fetchGameConfigRequest } from "./game-api-client/GameApi";
@@ -35,9 +35,9 @@ const Kingdom: React.FC = () => {
   };
 
   const calculateTotalUnits = (availableUnits: UnitsMap, mobileUnits: UnitsMap): UnitsMap => {
-    const totalUnits: UnitsMap = { ...availableUnits };
-    for (const unit in mobileUnits) {
-      totalUnits[unit] += mobileUnits[unit];
+    const totalUnits: UnitsMap = {} as UnitsMap;
+    for (const unit of units) {
+      totalUnits[unit] = (availableUnits[unit] || 0) + (mobileUnits[unit] || 0);
     }
     return totalUnits;
   };
