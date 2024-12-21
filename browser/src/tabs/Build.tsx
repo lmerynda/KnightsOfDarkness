@@ -42,7 +42,7 @@ const Build: React.FC = () => {
   const howManyBuildingsCanAfford = (building: Building): number => {
     const singleBuildingCost = kingdomContext.gameConfig.buildingPointCosts[building];
     const buildingPoints = kingdomContext.kingdom.resources.buildingPoints;
-    const maxToAfford = buildingPoints / singleBuildingCost;
+    const maxToAfford = Math.floor(buildingPoints / singleBuildingCost);
     return maxToAfford;
   };
 
