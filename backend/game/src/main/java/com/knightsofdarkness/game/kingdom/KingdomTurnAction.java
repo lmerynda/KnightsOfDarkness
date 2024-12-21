@@ -77,7 +77,7 @@ public class KingdomTurnAction {
 
     private void peopleLeavingDueToInsuficientHousing()
     {
-        var housingCapacity = kingdom.getBuildings().getCount(BuildingName.house) * kingdom.getConfig().buildingCapacity().getCapacity(BuildingName.house);
+        var housingCapacity = getHousingCapacity();
         var peopleCount = kingdom.getTotalPeopleCount();
         if (housingCapacity >= peopleCount)
         {
@@ -252,7 +252,7 @@ public class KingdomTurnAction {
 
     private void getNewPeople()
     {
-        var housingCapacity = kingdom.getBuildings().getCount(BuildingName.house) * kingdom.getConfig().buildingCapacity().getCapacity(BuildingName.house);
+        var housingCapacity = getHousingCapacity();
         var peopleCount = kingdom.getTotalPeopleCount();
         if (housingCapacity > peopleCount)
         {
@@ -260,6 +260,13 @@ public class KingdomTurnAction {
             kingdom.getResources().addCount(ResourceName.unemployed, housingCapacity - peopleCount);
             results.arrivingPeople = arrivingPeople;
         }
+    }
+
+    private int getHousingCapacity()
+    {
+        int kingdomBaseCapacity = 30; // TODO move to config
+        int housesCapacity = kingdom.getBuildings().getCount(BuildingName.house) * kingdom.getConfig().buildingCapacity().getCapacity(BuildingName.house);
+        return kingdomBaseCapacity + housesCapacity;
     }
 
     double getKingdomSizeProductionBonus(int land)
