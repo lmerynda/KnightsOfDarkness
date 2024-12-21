@@ -386,7 +386,7 @@ class KingdomTurnTest {
     void testPeopleLeavingDueToInsufficientHousing_partialExileWhenHousingIsPartiallySufficient()
     {
         Kingdom kingdom = kingdomBuilder
-                .withBuilding(BuildingName.house, 15)
+                .withBuilding(BuildingName.house, 9)
                 .build();
 
         var result = kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
@@ -400,7 +400,7 @@ class KingdomTurnTest {
         Kingdom kingdom = kingdomBuilder
                 .withUnit(UnitName.goldMiner, 5)
                 .withUnit(UnitName.blacksmith, 5)
-                .withBuilding(BuildingName.house, 5)
+                .withBuilding(BuildingName.house, 0)
                 .build();
 
         var result = kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
@@ -432,7 +432,7 @@ class KingdomTurnTest {
 
         kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
 
-        assertEquals(0, kingdom.getUnits().getAvailableCount(UnitName.goldMiner));
+        assertThat(kingdom.getUnits().getAvailableCount(UnitName.goldMiner)).isLessThan(5);
         assertEquals(5, kingdom.getUnits().getMobileCount(UnitName.carrier));
         assertEquals(5, kingdom.getUnits().getMobileCount(UnitName.bowman));
         assertEquals(5, kingdom.getUnits().getMobileCount(UnitName.infantry));

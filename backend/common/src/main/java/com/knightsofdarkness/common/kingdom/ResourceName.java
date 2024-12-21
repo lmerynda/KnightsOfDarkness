@@ -1,6 +1,6 @@
 package com.knightsofdarkness.common.kingdom;
 
-import java.util.Set;
+import java.util.List;
 
 import com.knightsofdarkness.common.market.MarketResource;
 
@@ -8,9 +8,9 @@ public enum ResourceName
 {
     land, buildingPoints, unemployed, gold, iron, food, tools, weapons, turns;
 
-    public static Set<ResourceName> productionResourceNames()
+    public static List<ResourceName> productionResourceNames()
     {
-        return Set.of(gold, iron, food, tools, weapons, buildingPoints);
+        return List.of(gold, iron, food, tools, weapons, buildingPoints);
     }
 
     public static ResourceName from(String resource)

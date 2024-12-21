@@ -214,7 +214,7 @@ public class KingdomTurnAction {
     private void doProduction(double nourishmentProductionFactor, int weaponsProductionPercentage)
     {
         var productionConfig = kingdom.getConfig().production();
-        var productionBonus = getKingdomSizeProductionBonus(kingdom.getOccupiedLand());
+        var sizeProductionBonus = getKingdomSizeProductionBonus(kingdom.getOccupiedLand());
 
         for (var resourceType : ResourceName.productionResourceNames())
         {
@@ -226,18 +226,20 @@ public class KingdomTurnAction {
                 int neededIron = kingdom.getIronUpkeep(nourishmentProductionFactor);
                 var maxIronToSpend = Math.min(neededIron, kingdom.getResources().getCount(ResourceName.iron));
                 resourceProduction = Math.min(resourceProduction, maxIronToSpend);
-                resourceProduction = switch (resourceType)
+                var selectedProductionRate = switch (resourceType)
                 {
-                    case ResourceName.tools -> resourceProduction * (100 - weaponsProductionPercentage) / 100.0;
-                    case ResourceName.weapons -> resourceProduction * weaponsProductionPercentage / 100.0;
+                    case ResourceName.tools -> (100 - weaponsProductionPercentage) / 100.0;
+                    case ResourceName.weapons -> weaponsProductionPercentage / 100.0;
                     default -> {
                         log.error("Unexpected resource type for blacksmith: {}", resourceType);
                         yield 0;
                     }
                 };
+                resourceProduction = resourceProduction * selectedProductionRate;
+                maxIronToSpend = (int) Math.round(maxIronToSpend * selectedProductionRate);
                 kingdom.getResources().subtractCount(ResourceName.iron, maxIronToSpend);
             }
-            int actualProduction = (int) Math.round(resourceProduction * productionBonus * specialBuildingBonus);
+            int actualProduction = (int) Math.round(resourceProduction * sizeProductionBonus * specialBuildingBonus);
             kingdom.getResources().addCount(resourceType, actualProduction);
             results.resourcesProduced.put(resourceType, actualProduction);
             results.specialBuildingBonus.put(resourceType, specialBuildingBonus);
