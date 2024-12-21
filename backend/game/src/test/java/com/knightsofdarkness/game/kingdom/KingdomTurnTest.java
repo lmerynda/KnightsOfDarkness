@@ -409,4 +409,33 @@ class KingdomTurnTest {
         assertThat(kingdom.getUnits().getTotalCount(UnitName.goldMiner)).isLessThan(5);
         assertThat(kingdom.getUnits().getTotalCount(UnitName.blacksmith)).isLessThan(5);
     }
+
+    @Test
+    void whenKingdomHasInssuficientHousing_mobileUnitsShouldNotBeExiled()
+    {
+        Kingdom kingdom = kingdomBuilder
+                .withUnit(UnitName.goldMiner, 5)
+                .withUnit(UnitName.blacksmith, 5)
+                .withUnit(UnitName.carrier, 5)
+                .withUnit(UnitName.bowman, 5)
+                .withUnit(UnitName.infantry, 5)
+                .withUnit(UnitName.cavalry, 5)
+                .withBuilding(BuildingName.house, 0)
+                .withBuilding(BuildingName.market, 1)
+                .withBuilding(BuildingName.barracks, 5)
+                .build();
+
+        kingdom.getUnits().moveAvailableToMobile(UnitName.carrier, 5);
+        kingdom.getUnits().moveAvailableToMobile(UnitName.bowman, 5);
+        kingdom.getUnits().moveAvailableToMobile(UnitName.infantry, 5);
+        kingdom.getUnits().moveAvailableToMobile(UnitName.cavalry, 5);
+
+        kingdom.passTurn(game.getKingdomInteractor());
+
+        assertEquals(0, kingdom.getUnits().getAvailableCount(UnitName.goldMiner));
+        assertEquals(5, kingdom.getUnits().getMobileCount(UnitName.carrier));
+        assertEquals(5, kingdom.getUnits().getMobileCount(UnitName.bowman));
+        assertEquals(5, kingdom.getUnits().getMobileCount(UnitName.infantry));
+        assertEquals(5, kingdom.getUnits().getMobileCount(UnitName.cavalry));
+    }
 }
