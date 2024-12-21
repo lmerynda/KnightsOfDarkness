@@ -215,17 +215,15 @@ public class KingdomTurnAction {
         var productionConfig = kingdom.getConfig().production();
         var productionBonus = getKingdomSizeProductionBonus(kingdom.getOccupiedLand());
 
-        for (var unitName : UnitName.getProductionUnits())
+        for (var resourceType : ResourceName.productionResourceNames())
         {
-            var resourceType = productionConfig.getResource(unitName);
+            var unitName = UnitName.getByProductionResourceType(resourceType);
             var resourceProduction = kingdom.getUnits().getAvailableCount(unitName) * nourishmentProductionFactor * productionConfig.getProductionRate(unitName);
             var specialBuildingBonus = getSpecialBuildingBonus(resourceType);
             if (unitName == UnitName.blacksmith)
             {
                 int neededIron = kingdom.getIronUpkeep(nourishmentProductionFactor);
-                log.info("needed iron {}", neededIron);
                 var maxIronToSpend = Math.min(neededIron, kingdom.getResources().getCount(ResourceName.iron));
-                log.info("max iron to spend {}", maxIronToSpend);
                 resourceProduction = Math.min(resourceProduction, maxIronToSpend);
                 resourceProduction = switch (resourceType)
                 {
@@ -236,9 +234,7 @@ public class KingdomTurnAction {
                         yield 0;
                     }
                 };
-                log.info("{} production after iron calculation {}", resourceType, resourceProduction);
                 kingdom.getResources().subtractCount(ResourceName.iron, maxIronToSpend);
-                log.info("Actual tools production: {}", (int) Math.round(resourceProduction * productionBonus * specialBuildingBonus));
             }
             int actualProduction = (int) Math.round(resourceProduction * productionBonus * specialBuildingBonus);
             kingdom.getResources().addCount(resourceType, actualProduction);

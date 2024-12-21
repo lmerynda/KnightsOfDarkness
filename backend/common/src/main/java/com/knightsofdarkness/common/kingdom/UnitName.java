@@ -11,6 +11,20 @@ public enum UnitName
         return List.of(goldMiner, ironMiner, farmer, blacksmith, builder);
     }
 
+    public static UnitName getByProductionResourceType(ResourceName resourceType)
+    {
+        return switch (resourceType)
+        {
+            case gold -> goldMiner;
+            case iron -> ironMiner;
+            case food -> farmer;
+            case tools -> blacksmith;
+            case weapons -> blacksmith;
+            case buildingPoints -> builder;
+            default -> throw new IllegalArgumentException("Unknown unit for resource type: " + resourceType);
+        };
+    }
+
     public static List<UnitName> getMilitaryUnits()
     {
         return List.of(infantry, bowman, cavalry);
