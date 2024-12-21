@@ -1,5 +1,6 @@
 package com.knightsofdarkness.game.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -97,9 +98,9 @@ class KingdomAttackTest {
         for (int i = 0; i < numberOfTurns; i++)
         {
             primaryKingdom.passTurn(kingdomInteractor);
-            assertEquals(initialPopulation, primaryKingdom.getUnits().countAll());
         }
         primaryKingdom.passTurn(kingdomInteractor); // trigger attack resolution
+        assertThat(initialPopulation).isGreaterThan(primaryKingdom.getUnits().countAll());
         assertEquals(0, primaryKingdom.getOngoingAttacks().size());
 
         assertEquals(900, primaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
