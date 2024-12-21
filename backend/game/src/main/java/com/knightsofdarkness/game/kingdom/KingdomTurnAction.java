@@ -37,6 +37,7 @@ public class KingdomTurnAction {
         peopleLeavingDueToInsuficientHousing();
         double nourishmentProductionFactor = eatFood();
         results.nourishmentProductionFactor = nourishmentProductionFactor;
+        results.weaponsProductionPercentage = weaponsProductionPercentage;
         doProduction(nourishmentProductionFactor, weaponsProductionPercentage);
         // TODO food production should happen before consumption
         getNewPeople();

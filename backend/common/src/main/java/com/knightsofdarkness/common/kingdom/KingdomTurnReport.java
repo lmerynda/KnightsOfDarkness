@@ -8,6 +8,7 @@ public class KingdomTurnReport {
     public Map<ResourceName, Integer> resourcesProduced = new EnumMap<>(ResourceName.class);
     public int arrivingPeople = 0;
     public int exiledPeople = 0;
+    public int weaponsProductionPercentage = 0;
     public double kingdomSizeProductionBonus = 0.0;
     public double nourishmentProductionFactor = 1.0;
     public Map<ResourceName, Double> specialBuildingBonus = new EnumMap<>(ResourceName.class);
@@ -25,6 +26,7 @@ public class KingdomTurnReport {
                 ", resourcesProduced=" + resourcesProduced +
                 ", arrivingPeople=" + arrivingPeople +
                 ", exiledPeople=" + exiledPeople +
+                ", weaponsProductionPercentage=" + weaponsProductionPercentage +
                 ", kingdomSizeProductionBonus=" + kingdomSizeProductionBonus +
                 ", nourishmentProductionFactor=" + nourishmentProductionFactor +
                 ", specialBuildingBonus=" + specialBuildingBonus +

@@ -9,13 +9,15 @@ import { Box, Grid, Input, InputLabel } from "@mui/material";
 
 const Overview: React.FC = () => {
   const kingdomContext = useContext(KingdomContext);
-  const [lastTurnReport, setLastTurnReport] = useState<PassTurnReport | undefined>(undefined);
-  const [weaponsProductionPercentage, setWeaponsProductionPercentage] = useState<number>(0);
-
   // ask someone how to better solve it, null object pattern?
   if (kingdomContext === undefined) {
     throw new Error("Kingdom context is undefined");
   }
+
+  const [lastTurnReport, setLastTurnReport] = useState<PassTurnReport | undefined>(undefined);
+  const [weaponsProductionPercentage, setWeaponsProductionPercentage] = useState<number>(
+    kingdomContext.kingdom.lastTurnReport.weaponsProductionPercentage,
+  );
 
   const handleSubmit = async (): Promise<void> => {
     const response = await passTurnRequest(weaponsProductionPercentage);

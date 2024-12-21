@@ -17,6 +17,7 @@ const TurnReport: React.FC = () => {
         <Typography variant="body1">Food consumed: {lastTurnReport.foodConsumed}</Typography>
         <Typography variant="body1">Arriving people: {lastTurnReport.arrivingPeople}</Typography>
         <Typography variant="body1">Exiled People: {lastTurnReport.exiledPeople}</Typography>
+        <Typography variant="body1">Weapons production percentage: {lastTurnReport.weaponsProductionPercentage}</Typography>
         <Typography variant="h6">Professionals Left</Typography>
         <div style={{ marginLeft: "1rem" }}>
           {Object.entries(lastTurnReport.professionalsLeaving)
