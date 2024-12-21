@@ -165,7 +165,7 @@ public class KingdomService {
     }
 
     @Transactional
-    public ResponseEntity<KingdomPassTurnActionResult> passTurn(String name)
+    public ResponseEntity<KingdomPassTurnActionResult> passTurn(String name, int weaponsProductionPercentage)
     {
         log.info("[{}] passing turn", name);
         Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
@@ -174,7 +174,7 @@ public class KingdomService {
             return ResponseEntity.notFound().build();
         }
 
-        var passedTurnResult = kingdom.get().passTurn(kingdomInteractor);
+        var passedTurnResult = kingdom.get().passTurn(kingdomInteractor, weaponsProductionPercentage);
         if (passedTurnResult.success())
         {
             kingdomRepository.update(kingdom.get());

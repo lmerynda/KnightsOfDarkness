@@ -82,9 +82,9 @@ public class Kingdom {
         return kingdomTrainAction.fireUnits(unitsToFire);
     }
 
-    public KingdomPassTurnActionResult passTurn(IKingdomInteractor kingdomInteractor)
+    public KingdomPassTurnActionResult passTurn(IKingdomInteractor kingdomInteractor, int weaponsProductionPercentage)
     {
-        return new KingdomTurnAction(this, kingdomInteractor).passTurn();
+        return new KingdomTurnAction(this, kingdomInteractor).passTurn(weaponsProductionPercentage);
     }
 
     public void addTurn()

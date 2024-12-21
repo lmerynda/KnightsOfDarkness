@@ -24,7 +24,7 @@ public class KingdomTurnAction {
         this.kingdomInteractor = kingdomInteractor;
     }
 
-    public KingdomPassTurnActionResult passTurn()
+    public KingdomPassTurnActionResult passTurn(int weaponsProductionPercentage)
     {
         if (kingdom.getResources().getCount(ResourceName.turns) <= 0)
         {
@@ -37,7 +37,7 @@ public class KingdomTurnAction {
         peopleLeavingDueToInsuficientHousing();
         double nourishmentProductionFactor = eatFood();
         results.nourishmentProductionFactor = nourishmentProductionFactor;
-        doProduction(nourishmentProductionFactor);
+        doProduction(nourishmentProductionFactor, weaponsProductionPercentage);
         // TODO food production should happen before consumption
         getNewPeople();
         processCarriersOnTheMove();
@@ -210,7 +210,7 @@ public class KingdomTurnAction {
         return fedPeopleRatio;
     }
 
-    private void doProduction(double nourishmentProductionFactor)
+    private void doProduction(double nourishmentProductionFactor, int weaponsProductionPercentage)
     {
         var productionConfig = kingdom.getConfig().production();
         var productionBonus = getKingdomSizeProductionBonus(kingdom.getOccupiedLand());
@@ -227,7 +227,16 @@ public class KingdomTurnAction {
                 var maxIronToSpend = Math.min(neededIron, kingdom.getResources().getCount(ResourceName.iron));
                 log.info("max iron to spend {}", maxIronToSpend);
                 resourceProduction = Math.min(resourceProduction, maxIronToSpend);
-                log.info("resourceProduction after iron calculation {}", resourceProduction);
+                resourceProduction = switch (resourceType)
+                {
+                    case ResourceName.tools -> resourceProduction * (100 - weaponsProductionPercentage) / 100.0;
+                    case ResourceName.weapons -> resourceProduction * weaponsProductionPercentage / 100.0;
+                    default -> {
+                        log.error("Unexpected resource type for blacksmith: {}", resourceType);
+                        yield 0;
+                    }
+                };
+                log.info("{} production after iron calculation {}", resourceType, resourceProduction);
                 kingdom.getResources().subtractCount(ResourceName.iron, maxIronToSpend);
                 log.info("Actual tools production: {}", (int) Math.round(resourceProduction * productionBonus * specialBuildingBonus));
             }

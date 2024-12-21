@@ -12,6 +12,7 @@ public class GoldMinerBot implements IBot {
     private final IMarket market;
     private static final double builderToSpecialistRatio = 0.1;
     private static final double housesToSpecialistBuildingRatio = 0.6;
+    private static final int weaponsProductionPercentage = 0;
     private IKingdomInteractor kingdomInteractor;
 
     public GoldMinerBot(Kingdom kingdom, IMarket market, IKingdomInteractor kingdomInteractor)
@@ -61,7 +62,7 @@ public class GoldMinerBot implements IBot {
     public void passTurn()
     {
         runPrePassTurnActions();
-        kingdom.passTurn(kingdomInteractor);
+        kingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
     }
 
     private void runPrePassTurnActions()

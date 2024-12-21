@@ -11,6 +11,7 @@ import com.knightsofdarkness.game.market.IMarket;
 public class IronMinerBot implements IBot {
     private static final double builderToSpecialistRatio = 0.1;
     private static final double housesToSpecialistBuildingRatio = 0.6;
+    private static final int weaponsProductionPercentage = 0;
     private final Kingdom kingdom;
     private final IMarket market;
     private IKingdomInteractor kingdomInteractor;
@@ -77,7 +78,7 @@ public class IronMinerBot implements IBot {
     public void passTurn()
     {
         runPrePassTurnActions();
-        kingdom.passTurn(kingdomInteractor);
+        kingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
     }
 
     // TODO time to have a base bot class?

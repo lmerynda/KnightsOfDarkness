@@ -21,6 +21,7 @@ class KingdomInteractorTest {
     private IKingdomInteractor kingdomInteractor;
     private Kingdom primaryKingdom;
     private Kingdom secondaryKingdom;
+    private static final int weaponsProductionPercentage = 0;
 
     @BeforeEach
     void setUp()
@@ -55,7 +56,7 @@ class KingdomInteractorTest {
         var numberOfTurns = game.getConfig().common().turnsToDeliverResources();
         for (int i = 0; i < numberOfTurns; i++)
         {
-            primaryKingdom.passTurn(kingdomInteractor);
+            primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
         }
         assertEquals(0, primaryKingdom.getCarriersOnTheMove().size());
         assertEquals(100, secondaryKingdom.getResources().getCount(ResourceName.food));

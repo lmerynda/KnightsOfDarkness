@@ -11,6 +11,7 @@ import com.knightsofdarkness.game.market.IMarket;
 public class FarmerBot implements IBot {
     private static final double builderToSpecialistRatio = 0.05;
     private static final double housesToSpecialistBuildingRatio = 0.55;
+    private static final int weaponsProductionPercentage = 0;
     private final Kingdom kingdom;
     private final IMarket market;
     private final IKingdomInteractor kingdomInteractor;
@@ -80,7 +81,7 @@ public class FarmerBot implements IBot {
     public void passTurn()
     {
         runPrePassTurnActions();
-        kingdom.passTurn(kingdomInteractor);
+        kingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
     }
 
     private void runPrePassTurnActions()

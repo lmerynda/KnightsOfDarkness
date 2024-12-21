@@ -151,7 +151,7 @@ public class KingdomController {
     }
 
     @PostMapping(value = "/pass-turn")
-    ResponseEntity<KingdomPassTurnActionResult> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser)
+    ResponseEntity<KingdomPassTurnActionResult> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser, @RequestBody int weaponsProductionPercentage)
     {
         if (currentUser == null)
         {
@@ -159,7 +159,7 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.passTurn(currentUser.getKingdomName());
+        return kingdomService.passTurn(currentUser.getKingdomName(), weaponsProductionPercentage);
     }
 
     @PostMapping(value = "/buy-land")

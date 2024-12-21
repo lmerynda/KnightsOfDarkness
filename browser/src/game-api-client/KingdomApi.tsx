@@ -27,7 +27,7 @@ export async function fetchKingdomDataRequest(): Promise<KingdomData> {
   }
 }
 
-export async function passTurnRequest(): Promise<PassTurnReport> {
+export async function passTurnRequest(weaponsProductionPercentage: number): Promise<PassTurnReport> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/kingdom/pass-turn`, {
@@ -36,6 +36,7 @@ export async function passTurnRequest(): Promise<PassTurnReport> {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
         },
+        body: JSON.stringify(weaponsProductionPercentage),
       }),
     );
 

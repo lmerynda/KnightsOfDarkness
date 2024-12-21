@@ -24,6 +24,7 @@ class KingdomAttackTest {
     private IKingdomInteractor kingdomInteractor;
     private Kingdom primaryKingdom;
     private Kingdom secondaryKingdom;
+    private static final int weaponsProductionPercentage = 0;
 
     @BeforeEach
     void setUp()
@@ -55,7 +56,7 @@ class KingdomAttackTest {
         var numberOfTurns = 4;
         for (int i = 0; i < numberOfTurns; i++)
         {
-            primaryKingdom.passTurn(kingdomInteractor);
+            primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
         }
         assertEquals(0, primaryKingdom.getOngoingAttacks().size());
     }
@@ -63,7 +64,7 @@ class KingdomAttackTest {
     @Test
     void whenPrimaryKingdomSendsSoldiers_unitsShouldMoveToMobile()
     {
-        primaryKingdom.passTurn(kingdomInteractor); // normalize kingdom population
+        primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage); // normalize kingdom population
         var initialPopulation = primaryKingdom.getUnits().countAll();
         var attackingUnits = new UnitsMapDto();
         attackingUnits.setCount(UnitName.bowman, 100);
@@ -85,7 +86,7 @@ class KingdomAttackTest {
     @Test
     void whenPrimaryKingdomSendsSoldiersAndCompletesAttack_thenAttackerWillLoseUnits()
     {
-        primaryKingdom.passTurn(kingdomInteractor); // normalize kingdom population
+        primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage); // normalize kingdom population
         var attackingUnits = new UnitsMapDto();
         attackingUnits.setCount(UnitName.bowman, 100);
         attackingUnits.setCount(UnitName.infantry, 100);
@@ -97,9 +98,9 @@ class KingdomAttackTest {
         var numberOfTurns = 3;
         for (int i = 0; i < numberOfTurns; i++)
         {
-            primaryKingdom.passTurn(kingdomInteractor);
+            primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
         }
-        primaryKingdom.passTurn(kingdomInteractor); // trigger attack resolution
+        primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage); // trigger attack resolution
         assertThat(initialPopulation).isGreaterThan(primaryKingdom.getUnits().countAll());
         assertEquals(0, primaryKingdom.getOngoingAttacks().size());
 

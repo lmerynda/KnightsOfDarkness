@@ -19,6 +19,7 @@ public class BlacksmithBot implements IBot {
     private static final double housesToSpecialistBuildingRatio = 0.6;
     private static final double toolsPriceIfUnknown = 140.0;
     private static final int minimumMarketPrice = 5;
+    private static final int weaponsProductionPercentage = 0;
     private final Kingdom kingdom;
     private final IMarket market;
     private final Random random = new Random();
@@ -106,7 +107,7 @@ public class BlacksmithBot implements IBot {
     {
         runPrePassTurnActions();
         log.info("[BlacksmithBot] transaction average for last 24 entires for tools is {}", market.getLast24TransactionAverages(MarketResource.tools));
-        kingdom.passTurn(kingdomInteractor);
+        kingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
     }
 
     private void runPrePassTurnActions()
