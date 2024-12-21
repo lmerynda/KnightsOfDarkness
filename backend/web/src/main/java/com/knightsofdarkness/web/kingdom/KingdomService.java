@@ -149,6 +149,22 @@ public class KingdomService {
     }
 
     @Transactional
+    public ResponseEntity<KingdomUnitsActionResult> fireUnits(String name, UnitsMapDto unitsToFire)
+    {
+        log.info("[{}] firing {}", name, unitsToFire);
+        Optional<Kingdom> kingdom = kingdomRepository.getKingdomByName(name);
+        if (kingdom.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        var unitsFired = kingdom.get().fireUnits(unitsToFire);
+        kingdomRepository.update(kingdom.get());
+
+        return ResponseEntity.ok(unitsFired);
+    }
+
+    @Transactional
     public ResponseEntity<KingdomPassTurnActionResult> passTurn(String name)
     {
         log.info("[{}] passing turn", name);

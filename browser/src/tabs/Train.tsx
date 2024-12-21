@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import type { TrainingActionReport, Unit } from "../GameTypes";
 import { units } from "../GameTypes";
 import { KingdomContext } from "../Kingdom";
-import { trainRequest } from "../game-api-client/KingdomApi";
+import { fireUnitsRequest, trainRequest } from "../game-api-client/KingdomApi";
 import TrainingReport from "../components/TrainingReport";
 import { getOpenPositions } from "../GameUtils";
 
@@ -24,8 +24,15 @@ const Train: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (): Promise<void> => {
+  const handleTrain = async (): Promise<void> => {
     const response = await trainRequest(unitCounts);
+    setLastTrainingReport(response);
+    kingdomContext.reloadKingdom();
+    setUnitCounts({});
+  };
+
+  const handleFireUnits = async (): Promise<void> => {
+    const response = await fireUnitsRequest(unitCounts);
     setLastTrainingReport(response);
     kingdomContext.reloadKingdom();
     setUnitCounts({});
@@ -93,8 +100,11 @@ const Train: React.FC = () => {
           ))}
         </TableBody>
       </Table>
-      <Button variant="contained" onClick={handleSubmit}>
+      <Button variant="contained" onClick={handleTrain}>
         Train
+      </Button>
+      <Button color="error" variant="contained" onClick={handleFireUnits}>
+        Fire
       </Button>
     </div>
   );

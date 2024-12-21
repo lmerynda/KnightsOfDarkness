@@ -126,6 +126,31 @@ export async function trainRequest(data: Partial<UnitsMap>): Promise<TrainingAct
   }
 }
 
+export async function fireUnitsRequest(data: Partial<UnitsMap>): Promise<TrainingActionReport> {
+  try {
+    const response = await handleResponse(
+      fetchData(`${GAME_API}/kingdom/fire`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
+        },
+        body: JSON.stringify(data),
+      }),
+    );
+
+    if (response.ok) {
+      console.log(`fireUnits request successful`);
+      return response.json();
+    }
+
+    throw new Error(`request failed, status: ${response.status}`);
+  } catch (error) {
+    console.error("fireUnits error:", error);
+    throw error;
+  }
+}
+
 export async function buyLandRequest(buyAmount: number): Promise<Response> {
   try {
     const response = await handleResponse(

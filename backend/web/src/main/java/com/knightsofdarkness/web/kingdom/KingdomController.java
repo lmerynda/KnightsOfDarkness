@@ -138,6 +138,18 @@ public class KingdomController {
         return kingdomService.train(currentUser.getKingdomName(), unitsToTrain);
     }
 
+    @PostMapping("/fire")
+    ResponseEntity<KingdomUnitsActionResult> kingdomFireUnits(@AuthenticationPrincipal UserData currentUser, @RequestBody UnitsMapDto unitsToFire)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.fireUnits(currentUser.getKingdomName(), unitsToFire);
+    }
+
     @PostMapping(value = "/pass-turn")
     ResponseEntity<KingdomPassTurnActionResult> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser)
     {

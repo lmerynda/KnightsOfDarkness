@@ -46,6 +46,23 @@ public class KingdomTrainAction {
         return new KingdomUnitsActionResult(Utils.format("Succesfully trained {} units", trainedUnits.countAll()), trainedUnits);
     }
 
+    public KingdomUnitsActionResult fireUnits(UnitsMapDto unitsToFire)
+    {
+        var firedUnits = new UnitsMapDto();
+        var kingdomUnits = kingdom.getUnits();
+
+        for (var unitName : UnitName.values())
+        {
+            var howManyToFire = Math.min(unitsToFire.getCount(unitName), kingdomUnits.getAvailableCount(unitName));
+
+            kingdom.getResources().subtractCount(ResourceName.unemployed, howManyToFire);
+            kingdomUnits.subtractAvailableCount(unitName, howManyToFire);
+            firedUnits.setCount(unitName, howManyToFire);
+        }
+
+        return new KingdomUnitsActionResult(Utils.format("Succesfully fired {} units", firedUnits.countAll()), firedUnits);
+    }
+
     private int calculateMaximumToAfford(KingdomResources resources, UnitTrainingCost trainingCost)
     {
         int gold = resources.getCount(ResourceName.gold);

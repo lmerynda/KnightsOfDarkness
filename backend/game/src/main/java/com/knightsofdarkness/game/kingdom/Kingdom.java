@@ -77,6 +77,11 @@ public class Kingdom {
         return kingdomTrainAction.train(unitsToTrain);
     }
 
+    public KingdomUnitsActionResult fireUnits(UnitsMapDto unitsToFire)
+    {
+        return kingdomTrainAction.fireUnits(unitsToFire);
+    }
+
     public KingdomPassTurnActionResult passTurn(IKingdomInteractor kingdomInteractor)
     {
         return new KingdomTurnAction(this, kingdomInteractor).passTurn();
