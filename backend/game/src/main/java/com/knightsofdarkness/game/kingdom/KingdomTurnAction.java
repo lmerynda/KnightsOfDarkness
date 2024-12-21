@@ -122,6 +122,7 @@ public class KingdomTurnAction {
 
     private void fireProfessionalsBasedOnCount(int professionalsToFire)
     {
+        int loopCount = 0;
         while (professionalsToFire > 0)
         {
             for (var unit : UnitName.values())
@@ -141,6 +142,14 @@ public class KingdomTurnAction {
                     professionalsToFire--;
                 }
             }
+
+            if (loopCount++ > 5)
+            {
+                log.error("Firing professionals based on count exceeded 5 iterations, something is wrong");
+                return;
+            }
+
+            loopCount++;
         }
     }
 
