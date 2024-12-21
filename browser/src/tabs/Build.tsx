@@ -25,7 +25,7 @@ const Build: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (): Promise<void> => {
+  const handleBuild = async (): Promise<void> => {
     const response = await buildRequest(buildingCounts);
     setLastBuildReport(response);
     kingdomContext.reloadKingdom();
@@ -99,7 +99,7 @@ const Build: React.FC = () => {
           ))}
         </TableBody>
       </Table>
-      <Button variant="contained" onClick={handleSubmit}>
+      <Button variant="contained" onClick={handleBuild}>
         Build
       </Button>
       <Button color="error" variant="contained" onClick={handleDemolish}>
