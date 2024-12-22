@@ -86,8 +86,27 @@ public class KingdomInteractor implements IKingdomInteractor {
 
     private void processAttackSalvo(Kingdom attackerKingdom, Kingdom defendantKingdom, KingdomOngoingAttack attack)
     {
-        // XXX Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'processAttackSalvo'");
+        var attackerBowmenCount = attack.getUnits().getCount(UnitName.bowman);
+        var defenderUnits = defendantKingdom.getUnits().getAvailableUnits();
+        var defenderUnitsRatios = defenderUnits.getMilitaryUnitsRatios();
+
+        var bowmenHittingBowmen = (int) Math.ceil(defenderUnitsRatios.get(UnitName.bowman) * attackerBowmenCount);
+        var bowmenHittingInfantry = (int) Math.ceil(defenderUnitsRatios.get(UnitName.infantry) * attackerBowmenCount);
+        var bowmenHittingCavarly = (int) Math.ceil(defenderUnitsRatios.get(UnitName.cavalry) * attackerBowmenCount);
+
+        var killedDefendingBowmen = Math.min(bowmenHittingBowmen / 2, defenderUnits.getCount(UnitName.bowman));
+        var killedDefendingInfantry = Math.min(bowmenHittingInfantry / 3, defenderUnits.getCount(UnitName.infantry));
+        var killedDefendingCavalry = Math.min(bowmenHittingCavarly / 4, defenderUnits.getCount(UnitName.cavalry));
+
+        defenderUnits.subtractCount(UnitName.bowman, killedDefendingBowmen);
+        defenderUnits.subtractCount(UnitName.infantry, killedDefendingInfantry);
+        defenderUnits.subtractCount(UnitName.cavalry, killedDefendingCavalry);
+
+        defendantKingdom.getUnits().subtractMobileCount(UnitName.bowman, killedDefendingBowmen);
+        defendantKingdom.getUnits().subtractMobileCount(UnitName.infantry, killedDefendingInfantry);
+        defendantKingdom.getUnits().subtractMobileCount(UnitName.cavalry, killedDefendingCavalry);
+
+        log.info("[KingdomInteractor] Attacker bowmen salvo killed {} bowmen, {} infantry, {} cavalry from defending kingdom {}", killedDefendingBowmen, killedDefendingInfantry, killedDefendingCavalry, defendantKingdom.getName());
     }
 
     private void processMelee(Kingdom attackerKingdom, Kingdom defendantKingdom, KingdomOngoingAttack attack)

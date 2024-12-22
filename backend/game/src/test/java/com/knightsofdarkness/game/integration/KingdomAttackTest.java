@@ -84,7 +84,7 @@ class KingdomAttackTest {
     }
 
     @Test
-    void whenPrimaryKingdomSendsSoldiersAndCompletesAttack_thenAttackerWillLoseUnits()
+    void whenPrimaryKingdomSendsSoldiersAndCompletesAttack_thenAttackerWillLoseUnitsOnDefendentSalvo()
     {
         primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage); // normalize kingdom population
         var attackingUnits = new UnitsMapDto();
@@ -107,5 +107,31 @@ class KingdomAttackTest {
         assertEquals(900, primaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
         assertEquals(900, primaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
         assertEquals(917, primaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
+    }
+
+    @Test
+    void whenPrimaryKingdomSendsSoldiersAndCompletesAttack_thenDefendentWillLoseUnitsOnAttackerSalvo()
+    {
+        primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage); // normalize kingdom population
+        var attackingUnits = new UnitsMapDto();
+        attackingUnits.setCount(UnitName.bowman, 1000);
+        attackingUnits.setCount(UnitName.infantry, 1000);
+        attackingUnits.setCount(UnitName.cavalry, 1000);
+        var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
+        var result = primaryKingdom.sendAttack(data);
+        assertTrue(result.success());
+        var initialPopulation = secondaryKingdom.getUnits().countAll();
+        var numberOfTurns = 3;
+        for (int i = 0; i < numberOfTurns; i++)
+        {
+            primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
+        }
+        primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage); // trigger attack resolution
+        assertThat(initialPopulation).isGreaterThan(secondaryKingdom.getUnits().countAll());
+        assertEquals(0, primaryKingdom.getOngoingAttacks().size());
+
+        assertEquals(861, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
+        assertEquals(908, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
+        assertEquals(931, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
     }
 }
