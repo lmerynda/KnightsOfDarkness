@@ -2,6 +2,7 @@ package com.knightsofdarkness.game.gameconfig;
 
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 
 public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, int blacksmith, int farmer, int carrier, int guard, int spy, int bowman, int infantry, int cavalry) {
     public int getCount(UnitName name)
@@ -24,7 +25,7 @@ public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, in
 
     public KingdomUnitsDto toDto()
     {
-        var map = new KingdomUnitsDto();
+        var map = new UnitsMapDto();
         map.setCount(UnitName.goldMiner, goldMiner);
         map.setCount(UnitName.ironMiner, ironMiner);
         map.setCount(UnitName.builder, builder);
@@ -36,6 +37,6 @@ public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, in
         map.setCount(UnitName.bowman, bowman);
         map.setCount(UnitName.infantry, infantry);
         map.setCount(UnitName.cavalry, cavalry);
-        return map;
+        return new KingdomUnitsDto(map, new UnitsMapDto());
     }
 }

@@ -24,6 +24,11 @@ public class UnitsMapDto {
         this.units.putAll(units);
     }
 
+    public UnitsMapDto(UnitsMapDto other)
+    {
+        this.units.putAll(other.units);
+    }
+
     public int getCount(UnitName name)
     {
         return units.get(name);

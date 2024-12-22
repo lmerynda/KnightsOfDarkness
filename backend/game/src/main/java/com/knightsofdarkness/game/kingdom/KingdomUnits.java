@@ -4,55 +4,57 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 
 public class KingdomUnits {
-    Map<UnitName, Integer> availableUnits = new EnumMap<>(UnitName.class);
-    Map<UnitName, Integer> mobileUnits = new EnumMap<>(UnitName.class);
+    UnitsMapDto availableUnits = new UnitsMapDto();
+    UnitsMapDto mobileUnits = new UnitsMapDto();
 
     public KingdomUnits()
     {
-        for (var name : UnitName.values())
-        {
-            availableUnits.put(name, 0);
-            mobileUnits.put(name, 0);
-        }
     }
 
     public KingdomUnits(KingdomUnits other)
     {
-        availableUnits = new EnumMap<>(other.availableUnits);
-        mobileUnits = new EnumMap<>(other.mobileUnits);
+        availableUnits = new UnitsMapDto(other.availableUnits);
+        mobileUnits = new UnitsMapDto(other.mobileUnits);
     }
 
     public KingdomUnits(Map<UnitName, Integer> availableUnits, Map<UnitName, Integer> mobileUnits)
+    {
+        this.availableUnits = new UnitsMapDto(availableUnits);
+        this.mobileUnits = new UnitsMapDto(mobileUnits);
+    }
+
+    public KingdomUnits(UnitsMapDto availableUnits, UnitsMapDto mobileUnits)
     {
         this.availableUnits = availableUnits;
         this.mobileUnits = mobileUnits;
     }
 
-    public Map<UnitName, Integer> getAvailableUnits()
+    public UnitsMapDto getAvailableUnits()
     {
         return availableUnits;
     }
 
-    public Map<UnitName, Integer> getMobileUnits()
+    public UnitsMapDto getMobileUnits()
     {
         return mobileUnits;
     }
 
     public int getAvailableCount(UnitName name)
     {
-        return availableUnits.get(name);
+        return availableUnits.getCount(name);
     }
 
     public int getMobileCount(UnitName name)
     {
-        return mobileUnits.get(name);
+        return mobileUnits.getCount(name);
     }
 
     public int getTotalCount(UnitName name)
     {
-        return availableUnits.get(name) + mobileUnits.get(name);
+        return availableUnits.getCount(name) + mobileUnits.getCount(name);
     }
 
     // TODO clean this method, this is only temporary to maintain API
@@ -63,12 +65,12 @@ public class KingdomUnits {
 
     public void addAvailableCount(UnitName name, int count)
     {
-        availableUnits.put(name, availableUnits.get(name) + count);
+        availableUnits.setCount(name, availableUnits.getCount(name) + count);
     }
 
     public void addMobileCount(UnitName name, int count)
     {
-        mobileUnits.put(name, mobileUnits.get(name) + count);
+        mobileUnits.setCount(name, mobileUnits.getCount(name) + count);
     }
 
     // TODO clean this method, this is only temporary to maintain API
@@ -79,12 +81,12 @@ public class KingdomUnits {
 
     public void subtractAvailableCount(UnitName name, int count)
     {
-        availableUnits.put(name, availableUnits.get(name) - count);
+        availableUnits.setCount(name, availableUnits.getCount(name) - count);
     }
 
     public void subtractMobileCount(UnitName name, int count)
     {
-        mobileUnits.put(name, mobileUnits.get(name) - count);
+        mobileUnits.setCount(name, mobileUnits.getCount(name) - count);
     }
 
     // TODO clean this method, this is only temporary to maintain API
@@ -95,12 +97,12 @@ public class KingdomUnits {
 
     public void setAvailableCount(UnitName name, int count)
     {
-        availableUnits.put(name, count);
+        availableUnits.setCount(name, count);
     }
 
     public void setMobileCount(UnitName name, int count)
     {
-        mobileUnits.put(name, count);
+        mobileUnits.setCount(name, count);
     }
 
     public void moveAvailableToMobile(UnitName name, int count)
@@ -117,8 +119,7 @@ public class KingdomUnits {
 
     public int countAll()
     {
-        return availableUnits.values().stream().mapToInt(Integer::intValue).sum() +
-                mobileUnits.values().stream().mapToInt(Integer::intValue).sum();
+        return availableUnits.countAll() + mobileUnits.countAll();
     }
 
     public Map<UnitName, Double> getUnitsRatios()

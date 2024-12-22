@@ -2,6 +2,7 @@ package com.knightsofdarkness.common;
 
 import java.lang.reflect.Type;
 import java.util.EnumMap;
+import java.util.Map;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -24,6 +25,7 @@ public class UnitsMapDtoDtoTypeAdapter implements JsonSerializer<UnitsMapDto>, J
     {
         Type enumMapType = new TypeToken<EnumMap<UnitName, Integer>>() {
         }.getType();
-        return new UnitsMapDto(context.deserialize(json, enumMapType));
+        Map<UnitName, Integer> deserialized = context.deserialize(json, enumMapType);
+        return new UnitsMapDto(deserialized);
     }
 }

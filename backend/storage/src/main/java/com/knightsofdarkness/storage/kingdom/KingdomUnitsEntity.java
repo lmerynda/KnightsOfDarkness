@@ -1,12 +1,10 @@
 package com.knightsofdarkness.storage.kingdom;
 
-import java.util.Map;
-
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
-import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
 
 import jakarta.persistence.Embeddable;
@@ -14,16 +12,16 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class KingdomUnitsEntity {
     @JdbcTypeCode(SqlTypes.JSON)
-    public Map<UnitName, Integer> availableUnits;
+    public UnitsMapDto availableUnits;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    public Map<UnitName, Integer> mobileUnits;
+    public UnitsMapDto mobileUnits;
 
     public KingdomUnitsEntity()
     {
     }
 
-    public KingdomUnitsEntity(Map<UnitName, Integer> availableUnits, Map<UnitName, Integer> mobileUnits)
+    public KingdomUnitsEntity(UnitsMapDto availableUnits, UnitsMapDto mobileUnits)
     {
         this.availableUnits = availableUnits;
         this.mobileUnits = mobileUnits;
