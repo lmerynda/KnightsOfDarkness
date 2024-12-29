@@ -51,9 +51,10 @@ public class KingdomInteractor implements IKingdomInteractor {
         processAttackSalvo(attackerKingdom, defendantKingdom, attack);
         processMelee(attackerKingdom, defendantKingdom, attack);
 
-        attackerKingdom.getUnits().moveMobileToAvailable(UnitName.bowman, attack.getUnits().getCount(UnitName.bowman));
-        attackerKingdom.getUnits().moveMobileToAvailable(UnitName.infantry, attack.getUnits().getCount(UnitName.infantry));
-        attackerKingdom.getUnits().moveMobileToAvailable(UnitName.cavalry, attack.getUnits().getCount(UnitName.cavalry));
+        for (UnitName unitName : UnitName.getMilitaryUnits())
+        {
+            attackerKingdom.getUnits().moveMobileToAvailable(unitName, attack.getUnits().getCount(unitName));
+        }
 
         kingdomRepository.update(attackerKingdom);
         kingdomRepository.update(defendantKingdom);
@@ -69,6 +70,7 @@ public class KingdomInteractor implements IKingdomInteractor {
         var bowmenHittingInfantry = (int) Math.ceil(attackerUnitsRatios.get(UnitName.infantry) * defenderBowmenCount);
         var bowmenHittingCavarly = (int) Math.ceil(attackerUnitsRatios.get(UnitName.cavalry) * defenderBowmenCount);
 
+        // TODO move consts to configuration
         var killedAttackingBowmen = Math.min(bowmenHittingBowmen / 2, attackerUnits.getCount(UnitName.bowman));
         var killedAttackingInfantry = Math.min(bowmenHittingInfantry / 3, attackerUnits.getCount(UnitName.infantry));
         var killedAttackingCavalry = Math.min(bowmenHittingCavarly / 4, attackerUnits.getCount(UnitName.cavalry));
