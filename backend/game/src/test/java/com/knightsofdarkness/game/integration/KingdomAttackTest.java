@@ -53,7 +53,7 @@ class KingdomAttackTest {
         assertTrue(result.success());
         assertEquals(1, primaryKingdom.getOngoingAttacks().size());
 
-        var numberOfTurns = 4;
+        var numberOfTurns = game.getConfig().attack().turnsToArrive();
         for (int i = 0; i < numberOfTurns; i++)
         {
             primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
@@ -95,12 +95,11 @@ class KingdomAttackTest {
         var result = primaryKingdom.sendAttack(data);
         assertTrue(result.success());
         var initialPopulation = primaryKingdom.getUnits().countAll();
-        var numberOfTurns = 3;
+        var numberOfTurns = game.getConfig().attack().turnsToArrive();
         for (int i = 0; i < numberOfTurns; i++)
         {
             primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
         }
-        primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage); // trigger attack resolution
         assertThat(initialPopulation).isGreaterThan(primaryKingdom.getUnits().countAll());
         assertEquals(0, primaryKingdom.getOngoingAttacks().size());
 

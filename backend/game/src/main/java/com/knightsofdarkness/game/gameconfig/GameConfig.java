@@ -9,5 +9,6 @@ public record GameConfig(
         SpecialBuildingCosts specialBuildingCosts,
         MarketConfig market,
         Common common,
-        CarrierCapacity carrierCapacity) {
+        CarrierCapacity carrierCapacity,
+        Attack attack) {
 }

@@ -166,6 +166,9 @@
         "maxNotificationsCount": 15,
         "turnsToDeliverResources": 2
     },
+    "attack": {
+        "turnsToArrive": 4
+    },
     "carrierCapacity": {
         "iron": 10,
         "food": 100,

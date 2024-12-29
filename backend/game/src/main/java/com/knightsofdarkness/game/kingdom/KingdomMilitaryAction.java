@@ -37,8 +37,8 @@ public class KingdomMilitaryAction {
             kingdomUnits.moveAvailableToMobile(unit, sendAttackDto.units().getCount(unit));
         }
 
-        // TODO make number turns for attack to arrive a game config
-        var newAttack = new KingdomOngoingAttack(Id.generate(), sendAttackDto.destinationKingdomName(), 4, sendAttackDto.attackType(), sendAttackDto.units());
+        var turnsLeft = kingdom.getConfig().attack().turnsToArrive();
+        var newAttack = new KingdomOngoingAttack(Id.generate(), sendAttackDto.destinationKingdomName(), turnsLeft, sendAttackDto.attackType(), sendAttackDto.units());
         kingdom.getOngoingAttacks().add(newAttack);
 
         return SendAttackResult.success("Attack sent", sendAttackDto);
