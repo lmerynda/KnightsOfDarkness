@@ -9,6 +9,7 @@ import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 
 public class KingdomTurnAction {
@@ -16,12 +17,14 @@ public class KingdomTurnAction {
     private final Kingdom kingdom;
     private final KingdomTurnReport results;
     private final IKingdomInteractor kingdomInteractor;
+    private final GameConfig config;
 
     public KingdomTurnAction(Kingdom kingdom, IKingdomInteractor kingdomInteractor)
     {
         this.kingdom = kingdom;
         this.results = new KingdomTurnReport();
         this.kingdomInteractor = kingdomInteractor;
+        this.config = kingdom.getConfig();
     }
 
     public KingdomPassTurnActionResult passTurn(int weaponsProductionPercentage)
@@ -213,7 +216,7 @@ public class KingdomTurnAction {
 
     private void doProduction(double nourishmentProductionFactor, int weaponsProductionPercentage)
     {
-        var productionConfig = kingdom.getConfig().production();
+        var productionConfig = config.production();
         var sizeProductionBonus = getKingdomSizeProductionBonus(kingdom.getOccupiedLand());
 
         for (var resourceType : ResourceName.productionResourceNames())
@@ -255,7 +258,7 @@ public class KingdomTurnAction {
                 .mapToInt(KingdomSpecialBuilding::getLevel).sum();
 
         // TODO think about how bonuses have worked in the past
-        return 1 + summedLevels * kingdom.getConfig().common().specialBuildingPerLevelProductionBonus();
+        return 1 + summedLevels * config.common().specialBuildingPerLevelProductionBonus();
     }
 
     private void getNewPeople()
@@ -272,8 +275,9 @@ public class KingdomTurnAction {
 
     private int getHousingCapacity()
     {
-        int kingdomBaseCapacity = 30; // TODO move to config
-        int housesCapacity = kingdom.getBuildings().getCount(BuildingName.house) * kingdom.getConfig().buildingCapacity().getCapacity(BuildingName.house);
+
+        int kingdomBaseCapacity = config.common().kingdomBaseHousingCapacity();
+        int housesCapacity = kingdom.getBuildings().getCount(BuildingName.house) * config.buildingCapacity().getCapacity(BuildingName.house);
         return kingdomBaseCapacity + housesCapacity;
     }
 

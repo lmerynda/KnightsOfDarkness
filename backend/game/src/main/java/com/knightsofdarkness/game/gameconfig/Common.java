@@ -8,5 +8,6 @@ public record Common(
         int specialBuildingMaxCount,
         int newTurnPeriodicity,
         int maxNotificationsCount,
-        int turnsToDeliverResources) {
+        int turnsToDeliverResources,
+        int kingdomBaseHousingCapacity) {
 }

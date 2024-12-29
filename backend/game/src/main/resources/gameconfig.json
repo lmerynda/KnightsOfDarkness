@@ -164,7 +164,8 @@
         "specialBuildingMaxCount": 5,
         "newTurnPeriodicity": 100000,
         "maxNotificationsCount": 15,
-        "turnsToDeliverResources": 2
+        "turnsToDeliverResources": 2,
+        "kingdomBaseHousingCapacity": 30
     },
     "attack": {
         "turnsToArrive": 4
