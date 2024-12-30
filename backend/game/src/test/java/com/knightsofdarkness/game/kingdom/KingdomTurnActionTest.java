@@ -2,13 +2,36 @@ package com.knightsofdarkness.game.kingdom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.knightsofdarkness.game.Game;
+import com.knightsofdarkness.game.TestGame;
+import com.knightsofdarkness.game.utils.KingdomBuilder;
+
 class KingdomTurnActionTest {
+    private static Game game;
+    private KingdomBuilder kingdomBuilder;
+    private Kingdom kingdom;
+
+    @BeforeAll
+    static void beforeAll()
+    {
+        game = new TestGame().get();
+    }
+
+    @BeforeEach
+    void setUp()
+    {
+        this.kingdomBuilder = new KingdomBuilder(game);
+        this.kingdom = kingdomBuilder.build();
+    }
+
     @Test
     void testGetBonusFactorBasedOnLand()
     {
-        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(null, null);
+        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(kingdom, null);
 
         // Test for minimum land value
         double bonus1 = kingdomTurnAction.getBonusFactorBasedOnLand(1000);
@@ -34,7 +57,7 @@ class KingdomTurnActionTest {
     @Test
     void testGetKingdomSizeProductionBonus()
     {
-        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(null, null);
+        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(kingdom, null);
 
         double bonusBelow100 = kingdomTurnAction.getKingdomSizeProductionBonus(99);
         double bonusAt100 = kingdomTurnAction.getKingdomSizeProductionBonus(100);
