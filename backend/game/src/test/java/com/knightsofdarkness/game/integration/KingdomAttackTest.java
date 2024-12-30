@@ -15,6 +15,7 @@ import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.TestGame;
+import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
@@ -24,12 +25,14 @@ class KingdomAttackTest {
     private IKingdomInteractor kingdomInteractor;
     private Kingdom primaryKingdom;
     private Kingdom secondaryKingdom;
+    private GameConfig gameConfig;
     private static final int weaponsProductionPercentage = 0;
 
     @BeforeEach
     void setUp()
     {
         game = new TestGame().get();
+        gameConfig = game.getConfig();
         kingdomInteractor = game.getKingdomInteractor();
         primaryKingdom = new KingdomBuilder(game).withName("primary").withResource(ResourceName.land, 2500).withBuilding(BuildingName.house, 1000).withBuilding(BuildingName.barracks, 1000).withUnit(UnitName.bowman, 1000)
                 .withUnit(UnitName.infantry, 1000)
@@ -53,7 +56,7 @@ class KingdomAttackTest {
         assertTrue(result.success());
         assertEquals(1, primaryKingdom.getOngoingAttacks().size());
 
-        var numberOfTurns = game.getConfig().attack().turnsToArrive();
+        var numberOfTurns = gameConfig.attack().turnsToArrive();
         for (int i = 0; i < numberOfTurns; i++)
         {
             primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
@@ -95,7 +98,7 @@ class KingdomAttackTest {
         var result = primaryKingdom.sendAttack(data);
         assertTrue(result.success());
         var initialPopulation = primaryKingdom.getUnits().countAll();
-        var numberOfTurns = game.getConfig().attack().turnsToArrive();
+        var numberOfTurns = gameConfig.attack().turnsToArrive();
         for (int i = 0; i < numberOfTurns; i++)
         {
             primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
@@ -105,7 +108,7 @@ class KingdomAttackTest {
 
         assertEquals(900, primaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
         assertEquals(900, primaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
-        assertEquals(917, primaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
+        assertEquals(900, primaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
     }
 
     @Test
@@ -120,17 +123,16 @@ class KingdomAttackTest {
         var result = primaryKingdom.sendAttack(data);
         assertTrue(result.success());
         var initialPopulation = secondaryKingdom.getUnits().countAll();
-        var numberOfTurns = 3;
+        var numberOfTurns = gameConfig.attack().turnsToArrive();
         for (int i = 0; i < numberOfTurns; i++)
         {
             primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
         }
-        primaryKingdom.passTurn(kingdomInteractor, weaponsProductionPercentage); // trigger attack resolution
         assertThat(initialPopulation).isGreaterThan(secondaryKingdom.getUnits().countAll());
         assertEquals(0, primaryKingdom.getOngoingAttacks().size());
 
-        assertEquals(722, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
-        assertEquals(816, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
-        assertEquals(862, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
+        assertEquals(665, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
+        assertEquals(777, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
+        assertEquals(832, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
     }
 }
