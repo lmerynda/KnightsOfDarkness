@@ -43,6 +43,11 @@ public class Game {
         return kingdomInteractor;
     }
 
+    public IKingdomRepository getKingdomRepository()
+    {
+        return kingdomRepository;
+    }
+
     public void addKingdom(Kingdom kingdom)
     {
         kingdomRepository.add(kingdom);

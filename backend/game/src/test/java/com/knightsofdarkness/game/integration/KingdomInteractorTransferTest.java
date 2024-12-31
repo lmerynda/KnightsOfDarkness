@@ -16,7 +16,7 @@ import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.utils.KingdomBuilder;
 
-class KingdomInteractorTest {
+class KingdomInteractorTransferTest {
     private Game game;
     private IKingdomInteractor kingdomInteractor;
     private Kingdom primaryKingdom;
