@@ -22,17 +22,11 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    image: ghcr.io/lmerynda/knightsofdarkness-dev:latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up Dev Container
-        uses: devcontainers/ci@v0.3
-        with:
-          devcontainer-path: .devcontainer/devcontainer.json
-          image-name: kod-build
-      - name: Verify Java Version
-        run: java --version
       - name: Build with Gradle
         run: ./gradlew build
         working-directory: backend
