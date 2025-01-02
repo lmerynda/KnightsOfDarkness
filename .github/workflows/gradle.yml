@@ -22,30 +22,25 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/lmerynda/knightsofdarkness-dev:latest
+      credentials:
+        username: lmerynda
+        password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
     steps:
-      - uses: actions/checkout@v3 # do a full clone
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
-        with:
-          java-version: "21"
-          distribution: "zulu"
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          build-root-directory: backend
+      - name: Configure Git to trust the repository
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Build with Gradle
-        run: |
-          ./gradlew build
+        run: ./gradlew build
         working-directory: backend
       - name: Test and produce coverage report with Gradle
-        run: |
-          ./gradlew test jacocoTestReport
+        run: ./gradlew test jacocoTestReport
         working-directory: backend
       - name: Run SonarCloud analysis
-        run: |
-          ./gradlew test jacocoTestReport sonar -Dsonar.java.source=21 -Dsonar.organization=uprzejmy -Dsonar.projectKey=Uprzejmy_KnightsOfDarkness -Dsonar.coverage.jacoco.xmlReportPaths=./build/reports/jacoco/test/jacocoTestReport.xml
+        run: ./gradlew test jacocoTestReport sonar -Dsonar.java.source=21 -Dsonar.organization=uprzejmy -Dsonar.projectKey=Uprzejmy_KnightsOfDarkness -Dsonar.coverage.jacoco.xmlReportPaths=./build/reports/jacoco/test/jacocoTestReport.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
