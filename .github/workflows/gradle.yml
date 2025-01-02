@@ -22,7 +22,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    image: ghcr.io/lmerynda/knightsofdarkness-dev:latest
+    container:
+      image: ghcr.io/lmerynda/knightsofdarkness-dev:latest
     steps:
       - uses: actions/checkout@v3
         with:
