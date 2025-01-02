@@ -24,6 +24,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/lmerynda/knightsofdarkness-dev:latest
+      credentials:
+        username: lmerynda
+        password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
     steps:
       - uses: actions/checkout@v3
         with:
