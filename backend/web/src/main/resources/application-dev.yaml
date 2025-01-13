@@ -13,8 +13,7 @@ spring:
 app:
   jwt:
     # Signing key for HS512 algorithm
-    # In http://www.allkeysgenerator.com/ you can generate all kinds of keys
-    secret: /tQretYydZ8/fm+/lOcWN2GrwVF2UCI2E3BtnJUrjTZw1zH4zIau1itrWghUC5fhcao2FtC9KU+KbTa9VJNmI7DK88jZrq9m91P6n6o0+cWNU57rBfxNE5rYdAl3V/kPt4sUOBImDW2zBz4CQ9flbmkwaUn/MVMHVXnSA6iW9Xw5Wa2p+J2wG0xqOiWJhzSKJ/KVsKhPqWvrFJVTgBJJp+EC5NruhbfZqSpv0Q==%
+    secret: ou0UF8C86kabdLLwm1ULYajqziByn9EEWrqyUE8CKyYAlpNIkaWVQmiZPZgwRKs807wXuEe4xYUc7aUm4tacYZyfEaGDx1sVafq6MVZgPyTuVbuu7zZGTL0l55Nwzqf4ERseA9zIgke10tXF6PUyUwJ3rE1klcmycI/HNh6bO6FnKOpE+fembVwrR12JYJMhTwmjjMlreXMcQWtzZeLvEsQibC+ULNrZ0s9hFPTbJXBXPmyTCkuEeBBUZdOAlD/W955WS2+u2JsxOwBunDHfcoCskvzfGnLoYIL5nsOvMfBJZILlX1iZm7gfzbiwQkoulGy6UCnn+Hgvu1jIO6Uhsg==
     expiration:
       minutes: 10
   cors:
@@ -27,4 +26,4 @@ logging:
     root: INFO
 
 server:
-    port: 8080
+  port: 8080

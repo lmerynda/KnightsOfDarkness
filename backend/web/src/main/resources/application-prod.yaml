@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: knightofdarkness
+  datasource:
+    url: jdbc:h2:mem:testdb
+  output:
+    ansi:
+      enabled: always
+
+app:
+  jwt:
+    # Signing key for HS512 algorithm
+    secret: ${KOD_JWT_SECRET}
+    expiration:
+      minutes: 10
+  cors:
+    allowed-origins:
+      - https://knightsofdarkness.com
+
+logging:
+  level:
+    root: INFO
+
+server:
+  port: 8080
