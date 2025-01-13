@@ -1,15 +1,15 @@
 type RequestFunction = () => Promise<Response>;
 
-const unauthenticateAndRedirectToLogin = (): never => {
+const unauthenticateAndRedirectToHomepage = (): never => {
   localStorage.removeItem("authToken");
-  window.location.href = "/login";
+  window.location.href = "/homepage";
   throw new Error("Authentication error, redirecting to login");
 };
 
 export const handleResponse = async (requestFunction: RequestFunction): Promise<Response> => {
   const response = await requestFunction();
   if (response.status === 401) {
-    unauthenticateAndRedirectToLogin();
+    unauthenticateAndRedirectToHomepage();
   }
   return response;
 };

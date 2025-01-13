@@ -25,6 +25,17 @@ const App: React.FC = () => {
     validateToken();
   }, [validateToken]);
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+React.useEffect(() => {
+    const sleepAndValidate = async () => {
+        await sleep(2000);
+        await validateToken();
+    };
+
+    sleepAndValidate();
+}, [validateToken]);
+
   if (authenticated === undefined) {
     return <div>Authenticating...</div>;
   }
@@ -37,7 +48,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/homepage" element={<Homepage setAuthenticated={setAuthenticated} />} />
             <Route path="/*" element={authenticated ? <Kingdom /> : <Navigate to="/homepage" />} />
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="*" element={<Navigate to="/homepage" />} />
           </Routes>
         </Router>
       </Box>
