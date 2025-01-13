@@ -25,10 +25,10 @@ const App: React.FC = () => {
     validateToken();
   }, [validateToken]);
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
 React.useEffect(() => {
-    const sleepAndValidate = async () => {
+    const sleepAndValidate = async (): Promise<void> => {
         await sleep(2000);
         await validateToken();
     };
