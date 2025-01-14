@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 jobs:
   build:
@@ -17,23 +17,23 @@ jobs:
       matrix:
         node-version: [20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-    
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set working directory
-      run: cd browser
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: ./browser/package-lock.json
 
-    - run: npm ci
-      working-directory: browser
-    - run: npm run build
-      working-directory: browser
-    - run: npm run build:types
-      working-directory: browser
-    - run: npm run ci:lint
-      working-directory: browser
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set working directory
+        run: cd browser
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: ./browser/package-lock.json
+
+      - run: npm ci
+        working-directory: browser
+      - run: npm run build
+        working-directory: browser
+      - run: npm run build:types
+        working-directory: browser
+      - run: npm run ci:lint
+        working-directory: browser

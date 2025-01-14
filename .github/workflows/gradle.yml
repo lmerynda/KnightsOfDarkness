@@ -70,10 +70,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 20
           min-coverage-changed-files: 20
-
-      - name: Build Game Server Docker image
-        run: docker build -t ghcr.io/lmerynda/knightsofdarkness-game-server:latest .
-        working-directory: ./backend
-      - name: Push Game Server Docker image to GitHub Container Registry
-        run: docker push ghcr.io/lmerynda/knightsofdarkness-game-server:latest
-        working-directory: ./backend
