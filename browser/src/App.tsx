@@ -25,16 +25,16 @@ const App: React.FC = () => {
     validateToken();
   }, [validateToken]);
 
-const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+  const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
-React.useEffect(() => {
+  React.useEffect(() => {
     const sleepAndValidate = async (): Promise<void> => {
-        await sleep(2000);
-        await validateToken();
+      await sleep(2000);
+      await validateToken();
     };
 
     sleepAndValidate();
-}, [validateToken]);
+  }, [validateToken]);
 
   if (authenticated === undefined) {
     return <div>Authenticating...</div>;

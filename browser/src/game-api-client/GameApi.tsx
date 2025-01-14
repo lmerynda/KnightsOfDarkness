@@ -41,25 +41,25 @@ export async function fetchGameConfigRequest(): Promise<GameConfig> {
 }
 
 export async function fetchGameHealthStatusRequest(): Promise<boolean> {
-    try {
-        const response = await handleResponse(
-        fetchData(`${GAME_API}/health`, {
-            method: "GET",
-            headers: {
-            "Content-Type": "application/json",
-            },
-        }),
-        );
-    
-        if (response.ok) {
-            const data = response.json();
-            console.log(`fetchGameHealthStatusRequest Request successful, status: ${response.status} data: ${JSON.stringify(data)}`);
-            return true;
-        }
-    
-        throw new Error(`request failed, status: ${response.status}`);
-    } catch (error) {
-        console.error("Fetching game health status error", error);
-        return false;
+  try {
+    const response = await handleResponse(
+      fetchData(`${GAME_API}/health`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    );
+
+    if (response.ok) {
+      const data = response.json();
+      console.log(`fetchGameHealthStatusRequest Request successful, status: ${response.status} data: ${JSON.stringify(data)}`);
+      return true;
     }
+
+    throw new Error(`request failed, status: ${response.status}`);
+  } catch (error) {
+    console.error("Fetching game health status error", error);
+    return false;
+  }
 }
