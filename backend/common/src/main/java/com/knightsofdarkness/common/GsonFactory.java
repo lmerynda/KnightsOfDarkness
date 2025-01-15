@@ -2,6 +2,7 @@ package com.knightsofdarkness.common;
 
 import java.util.Optional;
 
+import java.time.Instant;
 import java.util.EnumMap;
 
 import com.google.gson.Gson;
@@ -31,6 +32,7 @@ public class GsonFactory {
                 .registerTypeAdapter(KingdomDetailsDto.class, new KingdomDetailsDtoTypeAdapter())
                 .registerTypeAdapter(KingdomDto.class, new KingdomDtoAdapter())
                 .registerTypeAdapter(Optional.class, new OptionalTypeAdapter())
+                .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
                 .registerTypeAdapter(new TypeToken<EnumMap<UnitName, String>>()
                 {
                 }.getType(), new EnumMapGsonAdapter<>(UnitName.class))

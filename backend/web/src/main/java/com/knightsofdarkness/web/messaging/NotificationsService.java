@@ -24,7 +24,7 @@ public class NotificationsService {
 
     public List<NotificationDto> getNotifications(String kingdomName)
     {
-        log.info("Getting all offers");
+        log.info("Getting all notifications for kingdom {}", kingdomName);
         return notificationSystem.getNotifications(kingdomName);
     }
 
