@@ -38,7 +38,7 @@ dependencies {
     implementation(project(":storage"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.h2database:h2")
-    runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.postgresql:postgresql:42.7.5")
 }
 
 tasks.withType<Test> {
