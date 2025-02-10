@@ -16,12 +16,15 @@ import com.knightsofdarkness.common.kingdom.OngoingAttackDto;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
+import com.knightsofdarkness.storage.alliance.AllianceEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 @Entity
@@ -51,6 +54,10 @@ public class KingdomEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     KingdomTurnReport lastTurnReport;
+
+    @ManyToOne
+    @JoinColumn(name = "alliance_name", nullable = true)
+    AllianceEntity alliance;
 
     public KingdomEntity()
     {

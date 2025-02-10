@@ -8,6 +8,7 @@ import Market from "./tabs/Market";
 import Notifications from "./tabs/Notifications";
 import Transfers from "./tabs/Transfers";
 import Attacks from "./tabs/Attacks";
+import Alliance from "./tabs/Alliance";
 
 const KingdomTabs: React.FC = () => {
   const [path, setPath] = React.useState("/overview");
@@ -19,6 +20,7 @@ const KingdomTabs: React.FC = () => {
           <Tab label="Overview" value="/overview" to="/overview" component={Link} />
           <Tab label="Build" value="/build" to="/build" component={Link} />
           <Tab label="Train" value="/train" to="/train" component={Link} />
+          <Tab label="Alliance" value="/alliance" to="/alliance" component={Link} />
           <Tab label="Market" value="/market/*" to="/market/*" component={Link} />
           <Tab label="Transfers" value="/transfers" to="/transfers" component={Link} />
           <Tab label="Attacks" value="/attacks" to="/attacks" component={Link} />
@@ -29,6 +31,7 @@ const KingdomTabs: React.FC = () => {
         <Route path="/overview" element={<Overview />} />
         <Route path="/build" element={<Build />} />
         <Route path="/train" element={<Train />} />
+        <Route path="/alliance" element={<Alliance />} />
         <Route path="/market/*" element={<Market />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/transfers" element={<Transfers />} />
