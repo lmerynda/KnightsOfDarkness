@@ -5,6 +5,11 @@ export type CreateAllianceData = {
   name: string;
 };
 
+export type AllianceData = {
+  name: string;
+  emperor: string;
+};
+
 export async function createAllianceRequest(data: CreateAllianceData): Promise<void> {
   try {
     const response = await handleResponse(
@@ -26,6 +31,30 @@ export async function createAllianceRequest(data: CreateAllianceData): Promise<v
     throw new Error(`request failed, status: ${response.status}`);
   } catch (error) {
     console.error("Creating alliance failed", error);
+    throw error;
+  }
+}
+
+export async function fetchAllAlliancesRequest(): Promise<AllianceData[]> {
+  try {
+    const response = await handleResponse(
+      fetchData(`${GAME_API}/alliance`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
+        },
+      }),
+    );
+
+    if (response.ok) {
+      console.log(`get alliances request successful`);
+      return response.json();
+    }
+
+    throw new Error(`request failed, status: ${response.status}`);
+  } catch (error) {
+    console.error("Getting alliances failed", error);
     throw error;
   }
 }

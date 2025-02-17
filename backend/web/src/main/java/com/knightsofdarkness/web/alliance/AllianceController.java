@@ -1,10 +1,13 @@
 package com.knightsofdarkness.web.alliance;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +40,13 @@ public class AllianceController {
         log.info("Creating alliance");
         allianceService.createAlliance(allianceDto, currentUser.getUsername());
         return ResponseEntity.ok(new AllianceDto(allianceDto.name(), currentUser.getUsername()));
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<AllianceDto>> getAlliances()
+    {
+        var alliances = allianceService.getAlliances();
+        return ResponseEntity.ok(alliances);
     }
 
     private void logUserUnauthenticated()

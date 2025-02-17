@@ -2,6 +2,9 @@ package com.knightsofdarkness.storage.alliance;
 
 import java.util.Optional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
@@ -27,14 +30,21 @@ public class AllianceRepository implements IAllianceRepository {
     }
 
     @Override
-    public void add(CreateAllianceDto alliance, String emperor)
+    public void add(CreateAllianceDto allianceDto, String emperor)
     {
-        allianceJpaRepository.save(AllianceEntity.fromDto(alliance, emperor));
+        var alliance = AllianceEntity.fromDto(allianceDto, emperor);
+        allianceJpaRepository.save(alliance);
     }
 
     @Override
     public void update(Alliance alliance)
     {
         allianceJpaRepository.save(AllianceEntity.fromDomainModel(alliance));
+    }
+
+    @Override
+    public List<Alliance> getAlliances()
+    {
+        return allianceJpaRepository.findAll().stream().map(alliance -> alliance.toDomainModel(gameConfig)).collect(Collectors.toList());
     }
 }
