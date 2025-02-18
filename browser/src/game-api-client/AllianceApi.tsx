@@ -5,12 +5,17 @@ export type CreateAllianceData = {
   name: string;
 };
 
+export type CreateAllianceResult = {
+  message: string;
+  success: boolean;
+};
+
 export type AllianceData = {
   name: string;
   emperor: string;
 };
 
-export async function createAllianceRequest(data: CreateAllianceData): Promise<void> {
+export async function createAllianceRequest(data: CreateAllianceData): Promise<CreateAllianceResult> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/alliance/create`, {
@@ -25,7 +30,7 @@ export async function createAllianceRequest(data: CreateAllianceData): Promise<v
 
     if (response.ok) {
       console.log(`create alliance request successful`);
-      return;
+      return response.json();
     }
 
     throw new Error(`request failed, status: ${response.status}`);

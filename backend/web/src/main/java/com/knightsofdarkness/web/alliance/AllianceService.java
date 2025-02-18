@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.knightsofdarkness.common.alliance.AllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
+import com.knightsofdarkness.common.alliance.CreateAllianceResult;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.storage.alliance.AllianceRepository;
 
@@ -26,9 +27,18 @@ public class AllianceService {
     }
 
     @Transactional
-    public void createAlliance(CreateAllianceDto createAllianceDto, String emperor)
+    public CreateAllianceResult createAlliance(CreateAllianceDto createAllianceDto, String emperor)
     {
+        var existingAlliance = allianceRepository.getAllianceByName(createAllianceDto.name());
+        if (existingAlliance.isPresent())
+        {
+            log.warn("Alliance with name {} already exists", createAllianceDto.name());
+            return CreateAllianceResult.failure("Alliance with name " + createAllianceDto.name() + " already exists");
+        }
+
         allianceRepository.add(createAllianceDto, emperor);
+        log.info("Alliance {} created successfully by emperor {}", createAllianceDto.name(), emperor);
+        return CreateAllianceResult.success("Alliance created successfully");
     }
 
     public List<AllianceDto> getAlliances()
