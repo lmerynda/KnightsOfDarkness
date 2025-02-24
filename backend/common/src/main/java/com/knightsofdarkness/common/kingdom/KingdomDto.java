@@ -1,5 +1,7 @@
 package com.knightsofdarkness.common.kingdom;
 
+import java.util.Optional;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,7 @@ public class KingdomDto {
     public KingdomBuildingsDto buildings;
     public KingdomUnitsDto units;
     public KingdomDetailsDto details;
+    public Optional<String> allianceName;
     public List<MarketOfferDto> marketOffers;
     public List<KingdomSpecialBuildingDto> specialBuildings;
     public KingdomTurnReport lastTurnReport;
@@ -23,6 +26,7 @@ public class KingdomDto {
         this.resources = new KingdomResourcesDto();
         this.buildings = new KingdomBuildingsDto();
         this.units = new KingdomUnitsDto();
+        this.allianceName = Optional.empty();
         this.marketOffers = new ArrayList<>();
         this.specialBuildings = new ArrayList<>();
         this.lastTurnReport = new KingdomTurnReport();
@@ -31,13 +35,14 @@ public class KingdomDto {
         initializeDetails();
     }
 
-    public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers, List<KingdomSpecialBuildingDto> specialBuildings,
+    public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, Optional<String> allianceName, List<MarketOfferDto> marketOffers, List<KingdomSpecialBuildingDto> specialBuildings,
             KingdomTurnReport lastTurnReport, List<CarriersOnTheMoveDto> carriersOnTheMove, List<OngoingAttackDto> ongoingAttacks)
     {
         this.name = name;
         this.resources = resources;
         this.buildings = buildings;
         this.units = units;
+        this.allianceName = allianceName;
         this.marketOffers = marketOffers;
         this.specialBuildings = specialBuildings;
         this.lastTurnReport = lastTurnReport;
@@ -60,6 +65,7 @@ public class KingdomDto {
                 ", buildings=" + buildings +
                 ", units=" + units +
                 ", details=" + details +
+                ", allianceName=" + allianceName.orElse("None") +
                 ", marketOffers=" + marketOffers +
                 ", specialBuildings=" + specialBuildings +
                 ", lastTurnReport=" + lastTurnReport +

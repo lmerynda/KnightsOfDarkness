@@ -21,6 +21,7 @@ import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.game.alliance.Alliance;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.market.MarketOffer;
@@ -31,6 +32,7 @@ public class Kingdom {
     private final KingdomResources resources;
     private final KingdomBuildings buildings;
     private final KingdomUnits units;
+    private final Optional<Alliance> alliance;
     private final List<KingdomSpecialBuilding> specialBuildings;
     private final List<KingdomCarriersOnTheMove> carriersOnTheMove;
     private final List<KingdomOngoingAttack> ongoingAttacks;
@@ -44,7 +46,7 @@ public class Kingdom {
     private final KingdomMilitaryAction kingdomMilitaryAction = new KingdomMilitaryAction(this);
 
     public Kingdom(String name, GameConfig config, KingdomResources resources, KingdomBuildings buildings, List<KingdomSpecialBuilding> specialBuildings, List<KingdomCarriersOnTheMove> carriersOnTheMove,
-            List<KingdomOngoingAttack> ongoingAttacks, KingdomUnits units, KingdomTurnReport lastTurnReport)
+            List<KingdomOngoingAttack> ongoingAttacks, KingdomUnits units, KingdomTurnReport lastTurnReport, Optional<Alliance> alliance)
     {
         this.name = name;
         this.config = config;
@@ -55,6 +57,7 @@ public class Kingdom {
         this.specialBuildings = specialBuildings;
         this.carriersOnTheMove = carriersOnTheMove;
         this.ongoingAttacks = ongoingAttacks;
+        this.alliance = alliance;
     }
 
     public KingdomBuildingsActionResult build(KingdomBuildingsDto buildingsToBuild)

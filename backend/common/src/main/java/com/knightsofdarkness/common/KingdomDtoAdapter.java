@@ -1,5 +1,7 @@
 package com.knightsofdarkness.common;
 
+import java.util.Optional;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,7 @@ public class KingdomDtoAdapter implements JsonSerializer<KingdomDto>, JsonDeseri
         jsonObject.add("resources", context.serialize(src.resources));
         jsonObject.add("buildings", context.serialize(src.buildings));
         jsonObject.add("units", context.serialize(src.units));
+        jsonObject.add("allianceName", context.serialize(src.allianceName));
         jsonObject.add("details", context.serialize(src.details));
         jsonObject.add("marketOffers", context.serialize(src.marketOffers));
         jsonObject.add("specialBuildings", context.serialize(src.specialBuildings));
@@ -48,12 +51,13 @@ public class KingdomDtoAdapter implements JsonSerializer<KingdomDto>, JsonDeseri
         KingdomResourcesDto resources = context.deserialize(jsonObject.get("resources"), KingdomResourcesDto.class);
         KingdomBuildingsDto buildings = context.deserialize(jsonObject.get("buildings"), KingdomBuildingsDto.class);
         KingdomUnitsDto units = context.deserialize(jsonObject.get("units"), KingdomUnitsDto.class);
+        Optional<String> allianceName = context.deserialize(jsonObject.get("allianceName"), Optional.class);
         List<MarketOfferDto> marketOffers = context.deserialize(jsonObject.get("marketOffers"), ArrayList.class);
         List<KingdomSpecialBuildingDto> specialBuildings = context.deserialize(jsonObject.get("specialBuildings"), ArrayList.class);
         KingdomTurnReport lastTurnReport = context.deserialize(jsonObject.get("lastTurnReport"), KingdomTurnReport.class);
         List<CarriersOnTheMoveDto> carriersOnTheMove = context.deserialize(jsonObject.get("carriersOnTheMove"), ArrayList.class);
         List<OngoingAttackDto> ongoingAttacks = context.deserialize(jsonObject.get("ongoingAttacks"), ArrayList.class);
 
-        return new KingdomDto(name, resources, buildings, units, marketOffers, specialBuildings, lastTurnReport, carriersOnTheMove, ongoingAttacks);
+        return new KingdomDto(name, resources, buildings, units, allianceName, marketOffers, specialBuildings, lastTurnReport, carriersOnTheMove, ongoingAttacks);
     }
 }

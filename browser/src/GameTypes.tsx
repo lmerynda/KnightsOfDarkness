@@ -66,6 +66,7 @@ export type KingdomData = {
   resources: KingdomResources;
   buildings: KingdomBuildings;
   units: KingdomUnits;
+  allianceName: string | undefined;
   details: KingdomDetails;
   marketOffers: MarketOfferData[];
   specialBuildings: SpecialBuilding[];

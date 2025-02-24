@@ -3,7 +3,7 @@ package com.knightsofdarkness.storage.alliance;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.knightsofdarkness.common.alliance.CreateAllianceDto;
+import com.knightsofdarkness.common.alliance.AllianceDto;
 import com.knightsofdarkness.game.alliance.Alliance;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.storage.kingdom.KingdomEntity;
@@ -50,8 +50,18 @@ public class AllianceEntity {
         return new AllianceEntity(alliance.getName(), kingdoms, alliance.getEmperor());
     }
 
-    public static AllianceEntity fromDto(CreateAllianceDto alliance, String emperor)
+    public static AllianceEntity fromDto(AllianceDto alliance, String emperor)
     {
         return new AllianceEntity(alliance.name(), List.of(), emperor);
+    }
+
+    public static AllianceEntity fromDto(String name, String emperor)
+    {
+        return new AllianceEntity(name, List.of(), emperor);
+    }
+
+    public String getName()
+    {
+        return name;
     }
 }
