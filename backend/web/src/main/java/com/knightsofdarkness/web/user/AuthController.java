@@ -70,7 +70,8 @@ public class AuthController {
 
         UserEntity newUser = new UserEntity(user.email, user.getKingdomName(), user.getPassword());
         userService.saveUser(newUser);
-        kingdomService.createKingdom(user.getKingdomName());
+        // TODO rework bring back
+        // kingdomService.createKingdom(user.getKingdomName());
 
         return ResponseEntity.ok("User registered successfully");
     }

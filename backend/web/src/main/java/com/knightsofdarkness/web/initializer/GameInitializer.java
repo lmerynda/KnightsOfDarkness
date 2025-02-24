@@ -13,9 +13,7 @@ import com.google.gson.reflect.TypeToken;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
-import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
-import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.common.market.MarketOfferDto;
 import com.knightsofdarkness.web.kingdom.KingdomService;
@@ -40,7 +38,7 @@ public class GameInitializer implements CommandLineRunner {
     public void run(String... args)
     {
         kingdomService.createKingdom(generateKingdom("uprzejmy"));
-        kingdomService.startSpecialBuilding("uprzejmy", new KingdomSpecialBuildingStartDto(SpecialBuildingType.goldShaft));
+        // kingdomService.startSpecialBuilding("uprzejmy", new KingdomSpecialBuildingStartDto(SpecialBuildingType.goldShaft));
         kingdomService.createKingdom(generateKingdom("BlacksmithBot"));
         kingdomService.createKingdom(generateKingdom("FarmerBot"));
         kingdomService.createKingdom(generateKingdom("IronMinerBot"));
@@ -56,10 +54,10 @@ public class GameInitializer implements CommandLineRunner {
         var numberOfSpecialBuildings = 5;
         for (int i = 0; i < numberOfSpecialBuildings; i++)
         {
-            kingdomService.startSpecialBuilding("FarmerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.granary));
-            kingdomService.startSpecialBuilding("BlacksmithBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.forge));
-            kingdomService.startSpecialBuilding("IronMinerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.ironShaft));
-            kingdomService.startSpecialBuilding("GoldMinerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.goldShaft));
+            // kingdomService.startSpecialBuilding("FarmerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.granary));
+            // kingdomService.startSpecialBuilding("BlacksmithBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.forge));
+            // kingdomService.startSpecialBuilding("IronMinerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.ironShaft));
+            // kingdomService.startSpecialBuilding("GoldMinerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.goldShaft));
         }
     }
 

@@ -6,48 +6,32 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.knightsofdarkness.common.kingdom.KingdomDto;
-import com.knightsofdarkness.game.gameconfig.GameConfig;
-import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.game.storage.IKingdomRepository;
-
 @Repository
-public class KingdomRepository implements IKingdomRepository {
-    private final GameConfig gameConfig;
+public class KingdomRepository {
     private final KingdomJpaRepository jpaRepository;
 
-    public KingdomRepository(GameConfig gameConfig, KingdomJpaRepository jpaRepository)
+    public KingdomRepository(KingdomJpaRepository jpaRepository)
     {
-        this.gameConfig = gameConfig;
         this.jpaRepository = jpaRepository;
     }
 
-    public void add(Kingdom kingdom)
+    public void add(KingdomEntity kingdom)
     {
-        var tmp = KingdomEntity.fromDomainModel(kingdom);
-        jpaRepository.save(tmp);
+        jpaRepository.save(kingdom);
     }
 
-    public void add(KingdomDto kingdomDto)
+    public Optional<KingdomEntity> getKingdomByName(String name)
     {
-        var tmp = KingdomEntity.fromDto(kingdomDto);
-        jpaRepository.save(tmp);
+        return jpaRepository.findById(name);
     }
 
-    public Optional<Kingdom> getKingdomByName(String name)
+    public List<KingdomEntity> getAllKingdoms()
     {
-        var kingdom = jpaRepository.findById(name);
-        return kingdom.map(kingdomEntity -> kingdomEntity.toDomainModel(gameConfig));
+        return jpaRepository.findAll();
     }
 
-    public List<Kingdom> getAllKingdoms()
+    public void update(KingdomEntity kingdom)
     {
-        return jpaRepository.findAll().stream().map(kingdomEntity -> kingdomEntity.toDomainModel(gameConfig)).toList();
-    }
-
-    public void update(Kingdom kingdom)
-    {
-        var tmp = KingdomEntity.fromDomainModel(kingdom);
-        jpaRepository.save(tmp);
+        jpaRepository.save(kingdom);
     }
 }

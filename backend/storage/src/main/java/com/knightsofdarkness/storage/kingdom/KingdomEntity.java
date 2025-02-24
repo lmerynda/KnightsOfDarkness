@@ -1,17 +1,21 @@
 package com.knightsofdarkness.storage.kingdom;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.CarriersOnTheMoveDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.OngoingAttackDto;
+import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
@@ -25,6 +29,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Transient;
 
 @Entity
 public class KingdomEntity {
@@ -35,9 +43,13 @@ public class KingdomEntity {
 
     @Embedded
     KingdomResourcesEntity resources;
+    @Transient
+    EnumMap<ResourceName, Integer> resourceMap;
 
     @Embedded
     KingdomBuildingsEntity buildings;
+    @Transient
+    EnumMap<BuildingName, Integer> buildingsMap;
 
     @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
     List<KingdomSpecialBuildingEntity> specialBuildings;
@@ -60,6 +72,8 @@ public class KingdomEntity {
 
     public KingdomEntity()
     {
+        this.resources = new KingdomResourcesEntity();
+        loadResources();
     }
 
     public KingdomEntity(String name, KingdomResourcesEntity resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, List<KingdomCarriersOnTheMoveEntity> carriersOnTheMove,
@@ -73,6 +87,14 @@ public class KingdomEntity {
         this.ongoingAttacks = ongoingAttacks;
         this.units = units;
         this.lastTurnReport = lastTurnReport;
+        loadResources();
+    }
+
+    public KingdomEntity(String name, Map<ResourceName, Integer> resources)
+    {
+        this.name = name;
+        this.resources = new KingdomResourcesEntity(resources);
+        loadResources();
     }
 
     public Kingdom toDomainModel(GameConfig gameConfig)
@@ -80,7 +102,7 @@ public class KingdomEntity {
         var specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDomainModel).collect(Collectors.toList());
         var carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDomainModel).collect(Collectors.toList());
         var ongoingAttacks = this.ongoingAttacks.stream().map(KingdomOngoingAttackEntity::toDomainModel).collect(Collectors.toList());
-        return new Kingdom(name, gameConfig, new KingdomResources(resources.resources), buildings.toDomainModel(), specialBuildings, carriersOnTheMove, ongoingAttacks, units.toDomainModel(), lastTurnReport);
+        return new Kingdom(name, gameConfig, new KingdomResources(resources.toEnumMap()), buildings.toDomainModel(), specialBuildings, carriersOnTheMove, ongoingAttacks, units.toDomainModel(), lastTurnReport);
     }
 
     public KingdomDto toDto()
@@ -136,5 +158,18 @@ public class KingdomEntity {
     public String getName()
     {
         return name;
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void syncResources()
+    {
+        resources.loadMap(resourceMap);
+    }
+
+    @PostLoad
+    public void loadResources()
+    {
+        resourceMap = resources.toEnumMap();
     }
 }
