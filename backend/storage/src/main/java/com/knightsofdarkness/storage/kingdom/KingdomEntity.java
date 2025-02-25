@@ -19,8 +19,6 @@ import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.storage.alliance.AllianceEntity;
 
-import jakarta.persistence.Access;
-import jakarta.persistence.AccessType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -29,13 +27,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PostLoad;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Transient;
 
 @Entity
-@Access(AccessType.FIELD)
 public class KingdomEntity {
 
     @Id
@@ -44,8 +38,6 @@ public class KingdomEntity {
 
     @Embedded
     KingdomResourcesEntity resources = new KingdomResourcesEntity();
-    @Transient
-    EnumMap<ResourceName, Integer> resourceMap = new EnumMap<>(ResourceName.class);
 
     @Embedded
     KingdomBuildingsEntity buildings;
@@ -86,14 +78,6 @@ public class KingdomEntity {
         this.ongoingAttacks = ongoingAttacks;
         this.units = units;
         this.lastTurnReport = lastTurnReport;
-        loadResources();
-    }
-
-    public KingdomEntity(String name, Map<ResourceName, Integer> resources)
-    {
-        this.name = name;
-        this.resources = new KingdomResourcesEntity(resources);
-        loadResources();
     }
 
     // public Kingdom toDomainModel(GameConfig gameConfig)
@@ -116,13 +100,15 @@ public class KingdomEntity {
     {
         var kingdomEntity = new KingdomEntity(
                 kingdom.getName(),
-                new KingdomResourcesEntity(kingdom.getResources()),
+                new KingdomResourcesEntity(),
                 KingdomBuildingsEntity.fromDomainModel(kingdom.getBuildings()),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 KingdomUnitsEntity.fromDomainModel(kingdom.getUnits()),
                 kingdom.getLastTurnReport());
+
+        kingdomEntity.resources.loadMap(kingdom.getResources().getResources());
 
         var specialBuildings = kingdom.getSpecialBuildings().stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDomainModel(specialBuilding, kingdomEntity)).toList();
         kingdomEntity.specialBuildings = specialBuildings;
@@ -140,13 +126,15 @@ public class KingdomEntity {
     {
         var kingdomEntity = new KingdomEntity(
                 dto.name,
-                new KingdomResourcesEntity(dto.resources),
+                new KingdomResourcesEntity(),
                 KingdomBuildingsEntity.fromDto(dto.buildings),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 KingdomUnitsEntity.fromDto(dto.units),
                 dto.lastTurnReport);
+
+        kingdomEntity.populateResources(dto.resources.getResources());
 
         var specialBuildings = dto.specialBuildings.stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDto(specialBuilding, kingdomEntity)).toList();
         kingdomEntity.specialBuildings = specialBuildings;
@@ -159,16 +147,14 @@ public class KingdomEntity {
         return name;
     }
 
-    @PrePersist
-    @PreUpdate
-    public void syncResources()
+    public void populateResources(Map<ResourceName, Integer> resources)
     {
-        resources.loadMap(resourceMap);
+        this.resources.resources.putAll(resources);
+        this.resources.syncResources();
     }
 
-    @PostLoad
-    public void loadResources()
+    public KingdomResourcesEntity getResources()
     {
-        resourceMap = resources.toEnumMap();
+        return resources;
     }
 }

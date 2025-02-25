@@ -5,11 +5,14 @@ import java.util.Map;
 
 import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.game.kingdom.KingdomResources;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Transient;
 
 @Embeddable
 @Access(AccessType.FIELD)
@@ -24,26 +27,11 @@ public class KingdomResourcesEntity {
     int weapons;
     int turns;
 
+    @Transient
+    EnumMap<ResourceName, Integer> resources = new EnumMap<>(ResourceName.class);
+
     public KingdomResourcesEntity()
     {
-    }
-
-    public KingdomResourcesEntity(KingdomResources resources)
-    {
-        // TODO rework remove indirection
-        loadMap(resources.getResources());
-    }
-
-    public KingdomResourcesEntity(KingdomResourcesDto dto)
-    {
-        // TODO rework remove indirection, and if possible this constructor
-        loadMap(dto.getResources());
-    }
-
-    public KingdomResourcesEntity(Map<ResourceName, Integer> resourceMap)
-    {
-        // TODO rework remove indirection, and if possible this constructor
-        loadMap(resourceMap);
     }
 
     public KingdomResourcesDto toDto()
@@ -77,5 +65,18 @@ public class KingdomResourcesEntity {
         map.put(ResourceName.weapons, weapons);
         map.put(ResourceName.turns, turns);
         return map;
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void syncResources()
+    {
+        loadMap(resources);
+    }
+
+    @PostLoad
+    public void loadResources()
+    {
+        resources = toEnumMap();
     }
 }
