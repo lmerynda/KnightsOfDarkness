@@ -47,8 +47,9 @@ public class MarketOfferEntity {
 
     public MarketOffer toDomainModel(GameConfig gameConfig)
     {
-        var kingdom = this.kingdom.toDomainModel(gameConfig);
-        return new MarketOffer(id, kingdom, resource, count, price);
+        // TODO rework fix null reference
+        // var kingdom = this.kingdom.toDomainModel(gameConfig);
+        return new MarketOffer(id, null, resource, count, price);
     }
 
     public MarketOfferDto toDto()

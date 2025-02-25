@@ -40,8 +40,8 @@ public class AllianceEntity {
 
     public Alliance toDomainModel(GameConfig gameConfig)
     {
-        var kingdoms = this.kingdoms.stream().map(kingdom -> kingdom.toDomainModel(gameConfig)).collect(Collectors.toList());
-        return new Alliance(name, kingdoms, emperor);
+        // TODO rework join kingdoms here again
+        return new Alliance(name, List.of(), emperor);
     }
 
     public static AllianceEntity fromDomainModel(Alliance alliance)

@@ -1,18 +1,12 @@
 package com.knightsofdarkness.game.utils;
 
-import java.util.ArrayList;
-
 import com.knightsofdarkness.common.kingdom.BuildingName;
-import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.game.Game;
 import com.knightsofdarkness.game.kingdom.Kingdom;
 import com.knightsofdarkness.game.kingdom.KingdomBuildings;
-import com.knightsofdarkness.game.kingdom.KingdomCarriersOnTheMove;
-import com.knightsofdarkness.game.kingdom.KingdomOngoingAttack;
 import com.knightsofdarkness.game.kingdom.KingdomResources;
-import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 import com.knightsofdarkness.game.kingdom.KingdomUnits;
 
 public class KingdomBuilder {
@@ -102,7 +96,10 @@ public class KingdomBuilder {
 
     public Kingdom build()
     {
-        return new Kingdom(name, game.getConfig(), new KingdomResources(resources), new KingdomBuildings(buildings), new ArrayList<KingdomSpecialBuilding>(), new ArrayList<KingdomCarriersOnTheMove>(), new ArrayList<KingdomOngoingAttack>(),
-                new KingdomUnits(units), new KingdomTurnReport());
+        // TODO fix builder to return kingdom again
+        return new Kingdom(name, null, resources, buildings, null, null, null, units, null);
+        // return new Kingdom(name, game.getConfig(), new KingdomResources(resources), new KingdomBuildings(buildings), new ArrayList<KingdomSpecialBuilding>(), new ArrayList<KingdomCarriersOnTheMove>(), new
+        // ArrayList<KingdomOngoingAttack>(),
+        // new KingdomUnits(units), new KingdomTurnReport());
     }
 }

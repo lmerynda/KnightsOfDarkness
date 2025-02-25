@@ -16,11 +16,11 @@ import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.OngoingAttackDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.kingdom.Kingdom;
-import com.knightsofdarkness.game.kingdom.KingdomResources;
 import com.knightsofdarkness.storage.alliance.AllianceEntity;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -35,6 +35,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Transient;
 
 @Entity
+@Access(AccessType.FIELD)
 public class KingdomEntity {
 
     @Id
@@ -42,9 +43,9 @@ public class KingdomEntity {
     String name;
 
     @Embedded
-    KingdomResourcesEntity resources;
+    KingdomResourcesEntity resources = new KingdomResourcesEntity();
     @Transient
-    EnumMap<ResourceName, Integer> resourceMap;
+    EnumMap<ResourceName, Integer> resourceMap = new EnumMap<>(ResourceName.class);
 
     @Embedded
     KingdomBuildingsEntity buildings;
@@ -72,8 +73,6 @@ public class KingdomEntity {
 
     public KingdomEntity()
     {
-        this.resources = new KingdomResourcesEntity();
-        loadResources();
     }
 
     public KingdomEntity(String name, KingdomResourcesEntity resources, KingdomBuildingsEntity buildings, List<KingdomSpecialBuildingEntity> specialBuildings, List<KingdomCarriersOnTheMoveEntity> carriersOnTheMove,
@@ -97,13 +96,13 @@ public class KingdomEntity {
         loadResources();
     }
 
-    public Kingdom toDomainModel(GameConfig gameConfig)
-    {
-        var specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDomainModel).collect(Collectors.toList());
-        var carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDomainModel).collect(Collectors.toList());
-        var ongoingAttacks = this.ongoingAttacks.stream().map(KingdomOngoingAttackEntity::toDomainModel).collect(Collectors.toList());
-        return new Kingdom(name, gameConfig, new KingdomResources(resources.toEnumMap()), buildings.toDomainModel(), specialBuildings, carriersOnTheMove, ongoingAttacks, units.toDomainModel(), lastTurnReport);
-    }
+    // public Kingdom toDomainModel(GameConfig gameConfig)
+    // {
+    // var specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDomainModel).collect(Collectors.toList());
+    // var carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDomainModel).collect(Collectors.toList());
+    // var ongoingAttacks = this.ongoingAttacks.stream().map(KingdomOngoingAttackEntity::toDomainModel).collect(Collectors.toList());
+    // return new Kingdom(name, gameConfig, new KingdomResources(resources.toEnumMap()), buildings.toDomainModel(), specialBuildings, carriersOnTheMove, ongoingAttacks, units.toDomainModel(), lastTurnReport);
+    // }
 
     public KingdomDto toDto()
     {
