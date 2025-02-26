@@ -1,28 +1,43 @@
 package com.knightsofdarkness.storage.kingdom;
 
+import java.util.EnumMap;
 import java.util.Map;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
-import com.knightsofdarkness.game.kingdom.KingdomBuildings;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.Transient;
 
 @Embeddable
+@Access(AccessType.FIELD)
 class KingdomBuildingsEntity {
-    @JdbcTypeCode(SqlTypes.JSON)
-    public Map<BuildingName, Integer> buildings;
+    int house;
+    int goldMine;
+    int ironMine;
+    int workshop;
+    int farm;
+    int market;
+    int barracks;
+    int guardHouse;
+    int spyGuild;
+    int tower;
+    int castle;
+
+    @Transient
+    EnumMap<BuildingName, Integer> buildings = new EnumMap<>(BuildingName.class);
 
     public KingdomBuildingsEntity()
     {
     }
 
-    public KingdomBuildingsEntity(Map<BuildingName, Integer> buildings)
+    public KingdomBuildingsEntity(Map<BuildingName, Integer> buildingsMap)
     {
-        this.buildings = buildings;
+        buildings.putAll(buildingsMap);
+        loadMap(buildings);
     }
 
     public KingdomBuildingsDto toDto()
@@ -30,18 +45,46 @@ class KingdomBuildingsEntity {
         return new KingdomBuildingsDto(buildings);
     }
 
-    public static KingdomBuildingsEntity fromDto(KingdomBuildingsDto dto)
+    public void loadMap(Map<BuildingName, Integer> buildingsMap)
     {
-        return new KingdomBuildingsEntity(dto.getBuildings());
+        house = buildingsMap.get(BuildingName.house);
+        goldMine = buildingsMap.get(BuildingName.goldMine);
+        ironMine = buildingsMap.get(BuildingName.ironMine);
+        workshop = buildingsMap.get(BuildingName.workshop);
+        farm = buildingsMap.get(BuildingName.farm);
+        market = buildingsMap.get(BuildingName.market);
+        barracks = buildingsMap.get(BuildingName.barracks);
+        guardHouse = buildingsMap.get(BuildingName.guardHouse);
+        spyGuild = buildingsMap.get(BuildingName.spyGuild);
+        tower = buildingsMap.get(BuildingName.tower);
+        castle = buildingsMap.get(BuildingName.castle);
     }
 
-    public KingdomBuildings toDomainModel()
+    public EnumMap<BuildingName, Integer> toEnumMap()
     {
-        return new KingdomBuildings(buildings);
+        var map = new EnumMap<BuildingName, Integer>(BuildingName.class);
+        map.put(BuildingName.house, house);
+        map.put(BuildingName.goldMine, goldMine);
+        map.put(BuildingName.ironMine, ironMine);
+        map.put(BuildingName.workshop, workshop);
+        map.put(BuildingName.farm, farm);
+        map.put(BuildingName.market, market);
+        map.put(BuildingName.barracks, barracks);
+        map.put(BuildingName.guardHouse, guardHouse);
+        map.put(BuildingName.spyGuild, spyGuild);
+        map.put(BuildingName.tower, tower);
+        map.put(BuildingName.castle, castle);
+        return map;
     }
 
-    public static KingdomBuildingsEntity fromDomainModel(KingdomBuildings buildings)
+    public void syncBuildings()
     {
-        return new KingdomBuildingsEntity(buildings.getBuildings());
+        loadMap(buildings);
+    }
+
+    @PostLoad
+    public void loadBuildings()
+    {
+        buildings = toEnumMap();
     }
 }

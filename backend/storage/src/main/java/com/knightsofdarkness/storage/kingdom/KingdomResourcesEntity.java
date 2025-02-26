@@ -32,6 +32,12 @@ public class KingdomResourcesEntity {
     {
     }
 
+    public KingdomResourcesEntity(Map<ResourceName, Integer> resourceMap)
+    {
+        resources.putAll(resourceMap);
+        loadMap(resources);
+    }
+
     public KingdomResourcesDto toDto()
     {
         return new KingdomResourcesDto(toEnumMap());
@@ -39,15 +45,15 @@ public class KingdomResourcesEntity {
 
     public void loadMap(Map<ResourceName, Integer> resourceMap)
     {
-        this.land = resourceMap.get(ResourceName.land);
-        this.buildingPoints = resourceMap.get(ResourceName.buildingPoints);
-        this.unemployed = resourceMap.get(ResourceName.unemployed);
-        this.gold = resourceMap.get(ResourceName.gold);
-        this.iron = resourceMap.get(ResourceName.iron);
-        this.food = resourceMap.get(ResourceName.food);
-        this.tools = resourceMap.get(ResourceName.tools);
-        this.weapons = resourceMap.get(ResourceName.weapons);
-        this.turns = resourceMap.get(ResourceName.turns);
+        land = resourceMap.get(ResourceName.land);
+        buildingPoints = resourceMap.get(ResourceName.buildingPoints);
+        unemployed = resourceMap.get(ResourceName.unemployed);
+        gold = resourceMap.get(ResourceName.gold);
+        iron = resourceMap.get(ResourceName.iron);
+        food = resourceMap.get(ResourceName.food);
+        tools = resourceMap.get(ResourceName.tools);
+        weapons = resourceMap.get(ResourceName.weapons);
+        turns = resourceMap.get(ResourceName.turns);
     }
 
     public EnumMap<ResourceName, Integer> toEnumMap()

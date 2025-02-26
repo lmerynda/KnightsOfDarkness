@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/validate-token").authenticated()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/**").authenticated()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin))
                 .sessionManagement(management -> management

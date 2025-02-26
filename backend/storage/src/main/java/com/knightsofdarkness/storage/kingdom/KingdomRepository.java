@@ -18,6 +18,7 @@ public class KingdomRepository {
     public void add(KingdomEntity kingdom)
     {
         kingdom.resources.syncResources();
+        kingdom.buildings.syncBuildings();
         jpaRepository.save(kingdom);
     }
 
@@ -34,6 +35,7 @@ public class KingdomRepository {
     public void update(KingdomEntity kingdom)
     {
         kingdom.resources.syncResources();
+        kingdom.buildings.syncBuildings();
         jpaRepository.save(kingdom);
     }
 }
