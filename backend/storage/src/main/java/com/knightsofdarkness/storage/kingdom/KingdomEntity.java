@@ -32,7 +32,7 @@ public class KingdomEntity {
     String name;
 
     @Embedded
-    KingdomResourcesEntity resources = new KingdomResourcesEntity();
+    KingdomResourcesEntity resources;
 
     @Embedded
     KingdomBuildingsEntity buildings;
@@ -98,7 +98,7 @@ public class KingdomEntity {
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                KingdomUnitsEntity.fromDomainModel(kingdom.getUnits()),
+                new KingdomUnitsEntity(kingdom.getUnits().getAvailableUnits().getUnits(), kingdom.getUnits().getMobileUnits().getUnits()),
                 kingdom.getLastTurnReport());
 
         var specialBuildings = kingdom.getSpecialBuildings().stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDomainModel(specialBuilding, kingdomEntity)).toList();
@@ -122,7 +122,7 @@ public class KingdomEntity {
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                KingdomUnitsEntity.fromDto(dto.units),
+                new KingdomUnitsEntity(dto.units.getAvailableUnits().getUnits(), dto.units.getMobileUnits().getUnits()),
                 dto.lastTurnReport);
 
         var specialBuildings = dto.specialBuildings.stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDto(specialBuilding, kingdomEntity)).toList();
