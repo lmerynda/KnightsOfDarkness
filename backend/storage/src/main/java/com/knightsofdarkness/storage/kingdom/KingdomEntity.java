@@ -150,7 +150,6 @@ public class KingdomEntity {
     public void populateResources(Map<ResourceName, Integer> resources)
     {
         this.resources.resources.putAll(resources);
-        this.resources.syncResources();
     }
 
     public KingdomResourcesEntity getResources()

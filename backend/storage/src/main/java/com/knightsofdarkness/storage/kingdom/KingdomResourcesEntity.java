@@ -10,8 +10,6 @@ import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.PostLoad;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Transient;
 
 @Embeddable
@@ -67,8 +65,6 @@ public class KingdomResourcesEntity {
         return map;
     }
 
-    @PrePersist
-    @PreUpdate
     public void syncResources()
     {
         loadMap(resources);
