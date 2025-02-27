@@ -8,10 +8,10 @@ import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.market.IMarket;
 import com.knightsofdarkness.game.market.Market;
 import com.knightsofdarkness.game.messaging.INotificationSystem;
-import com.knightsofdarkness.game.messaging.NotificationSystem;
 import com.knightsofdarkness.game.storage.IKingdomRepository;
 import com.knightsofdarkness.game.storage.IMarketOfferRepository;
 import com.knightsofdarkness.game.storage.INotificationRepository;
+import com.knightsofdarkness.web.messaging.NotificationSystem;
 
 @Service
 @Configuration

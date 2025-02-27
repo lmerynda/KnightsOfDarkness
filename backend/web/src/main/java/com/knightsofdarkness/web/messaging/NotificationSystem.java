@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.messaging;
+package com.knightsofdarkness.web.messaging;
 
 import java.time.Instant;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.knightsofdarkness.common.messaging.NotificationDto;
 import com.knightsofdarkness.game.Id;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
+import com.knightsofdarkness.game.messaging.INotificationSystem;
 import com.knightsofdarkness.game.storage.INotificationRepository;
 
 public class NotificationSystem implements INotificationSystem {
