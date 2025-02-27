@@ -13,10 +13,10 @@ import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.game.interactions.IKingdomInteractor;
-import com.knightsofdarkness.storage.kingdom.KingdomEntity;
-import com.knightsofdarkness.storage.kingdom.KingdomReadRepository;
-import com.knightsofdarkness.storage.kingdom.KingdomRepository;
-import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomReadRepository;
+import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
+import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;
 
 @Service
 public class KingdomService {

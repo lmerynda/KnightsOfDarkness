@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.knightsofdarkness.game.bot.IBot;
 import com.knightsofdarkness.game.interactions.IKingdomInteractor;
 import com.knightsofdarkness.game.market.IMarket;
-import com.knightsofdarkness.storage.kingdom.KingdomRepository;
+import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 
 @Component
 public class BotsRunner {

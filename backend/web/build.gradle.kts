@@ -35,7 +35,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation(project(":common"))
     implementation(project(":game"))
-    implementation(project(":storage"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.h2database:h2")
     runtimeOnly("com.h2database:h2")

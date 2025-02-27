@@ -5,9 +5,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.knightsofdarkness.storage.user.UserEntity;
 import com.knightsofdarkness.web.user.IUserService;
 import com.knightsofdarkness.web.user.UserData;
+import com.knightsofdarkness.web.user.model.UserEntity;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
