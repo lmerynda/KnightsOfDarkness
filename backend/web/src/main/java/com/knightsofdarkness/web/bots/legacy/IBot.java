@@ -1,6 +1,7 @@
 package com.knightsofdarkness.web.bots.legacy;
 
-import com.knightsofdarkness.web.kingdom.legacy.Kingdom;
+import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 
 public interface IBot {
     boolean doUpkeepActions();
@@ -13,7 +14,9 @@ public interface IBot {
 
     String getKingdomInfo();
 
-    Kingdom getKingdom();
+    KingdomEntity getKingdom();
+
+    KingdomDetailsProvider getKingdomDetailsProvider();
 
     boolean doesHaveEnoughUpkeep();
 }

@@ -4,21 +4,22 @@ import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
-import com.knightsofdarkness.web.kingdom.legacy.Kingdom;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.market.IMarket;
 
-public class FarmerBot implements IBot {
+public class FarmerBot extends Bot {
     private static final double builderToSpecialistRatio = 0.05;
     private static final double housesToSpecialistBuildingRatio = 0.55;
     private static final int weaponsProductionPercentage = 0;
-    private final Kingdom kingdom;
     private final IMarket market;
     private final IKingdomInteractor kingdomInteractor;
 
-    public FarmerBot(Kingdom kingdom, IMarket market, IKingdomInteractor kingdomInteractor)
+    public FarmerBot(KingdomEntity kingdom, IMarket market, IKingdomInteractor kingdomInteractor, GameConfig gameConfig)
     {
-        this.kingdom = kingdom;
+        super(kingdom, gameConfig);
         this.market = market;
         this.kingdomInteractor = kingdomInteractor;
     }
@@ -26,7 +27,7 @@ public class FarmerBot implements IBot {
     @Override
     public boolean doUpkeepActions()
     {
-        int actionResult = BotFunctions.buyFoodForUpkeep(kingdom, market);
+        int actionResult = botFunctions.buyFoodForUpkeep(market);
 
         return actionResult > 0;
     }
@@ -34,7 +35,7 @@ public class FarmerBot implements IBot {
     @Override
     public boolean doAllActions()
     {
-        BotFunctions.withdrawAllOffers(kingdom, market);
+        botFunctions.withdrawAllOffers(kingdom, market);
 
         boolean hasAnythingHappened = true;
         do
@@ -52,13 +53,13 @@ public class FarmerBot implements IBot {
     {
         var hasAnythingHappened = 0;
 
-        hasAnythingHappened += BotFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 5 + 20);
+        hasAnythingHappened += botFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 5 + 20);
         // TODO calculate this from training cost configuration
-        hasAnythingHappened += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
-        hasAnythingHappened += BotFunctions.trainUnits(kingdom, UnitName.farmer, 5);
-        hasAnythingHappened += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
-        hasAnythingHappened += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.farm, 1);
-        hasAnythingHappened += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
+        hasAnythingHappened += botFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
+        hasAnythingHappened += botFunctions.trainUnits(kingdom, UnitName.farmer, 5);
+        hasAnythingHappened += botFunctions.buyLandToMaintainUnused(kingdom, 2);
+        hasAnythingHappened += botFunctions.buildSpecialistBuilding(kingdom, BuildingName.farm, 1);
+        hasAnythingHappened += botFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
 
         return hasAnythingHappened > 0;
     }
@@ -66,7 +67,7 @@ public class FarmerBot implements IBot {
     private int postFoodOffer()
     {
         var foodAmount = kingdom.getResources().getCount(ResourceName.food);
-        var foodUpkeep = kingdom.getFoodUpkeep();
+        var foodUpkeep = kingdomDetailsProvider.getFoodUpkeep(kingdom);
         var amountToOffer = Math.max(0, foodAmount - foodUpkeep);
 
         if (amountToOffer > 0)
@@ -81,7 +82,8 @@ public class FarmerBot implements IBot {
     public void passTurn()
     {
         runPrePassTurnActions();
-        kingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
     }
 
     private void runPrePassTurnActions()
@@ -89,7 +91,7 @@ public class FarmerBot implements IBot {
         int buildingPointsSpent = 0;
         do
         {
-            buildingPointsSpent = BotFunctions.putRemainingPointsToLowestLevelSpecialBuilding(kingdom);
+            buildingPointsSpent = botFunctions.putRemainingPointsToLowestLevelSpecialBuilding(kingdom);
         } while (buildingPointsSpent > 0);
     }
 
@@ -106,7 +108,7 @@ public class FarmerBot implements IBot {
     }
 
     @Override
-    public Kingdom getKingdom()
+    public KingdomEntity getKingdom()
     {
         return kingdom;
     }
@@ -114,6 +116,6 @@ public class FarmerBot implements IBot {
     @Override
     public boolean doesHaveEnoughUpkeep()
     {
-        return BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom);
+        return botFunctions.doesHaveEnoughFoodForNextTurn(kingdom);
     }
 }

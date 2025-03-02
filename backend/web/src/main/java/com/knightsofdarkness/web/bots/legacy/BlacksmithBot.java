@@ -9,25 +9,26 @@ import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
-import com.knightsofdarkness.web.kingdom.legacy.Kingdom;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.market.IMarket;
 
-public class BlacksmithBot implements IBot {
+public class BlacksmithBot extends Bot {
     private static final Logger log = LoggerFactory.getLogger(BlacksmithBot.class);
     private static final double builderToSpecialistRatio = 0.07;
     private static final double housesToSpecialistBuildingRatio = 0.6;
     private static final double toolsPriceIfUnknown = 140.0;
     private static final int minimumMarketPrice = 5;
     private static final int weaponsProductionPercentage = 0;
-    private final Kingdom kingdom;
     private final IMarket market;
     private final Random random = new Random();
     private IKingdomInteractor kingdomInteractor;
 
-    public BlacksmithBot(Kingdom kingdom, IMarket market, IKingdomInteractor kingdomInteractor)
+    public BlacksmithBot(KingdomEntity kingdom, IMarket market, IKingdomInteractor kingdomInteractor, GameConfig gameConfig)
     {
-        this.kingdom = kingdom;
+        super(kingdom, gameConfig);
         this.market = market;
         this.kingdomInteractor = kingdomInteractor;
     }
@@ -36,8 +37,8 @@ public class BlacksmithBot implements IBot {
     public boolean doUpkeepActions()
     {
         int actionResultsAggregate = 0;
-        actionResultsAggregate += BotFunctions.buyFoodForUpkeep(kingdom, market);
-        actionResultsAggregate += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
+        actionResultsAggregate += botFunctions.buyFoodForUpkeep(market);
+        actionResultsAggregate += botFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
 
         return actionResultsAggregate > 0;
     }
@@ -45,7 +46,7 @@ public class BlacksmithBot implements IBot {
     @Override
     public boolean doAllActions()
     {
-        BotFunctions.withdrawAllOffers(kingdom, market);
+        botFunctions.withdrawAllOffers(kingdom, market);
         // always put something on the market to have any income for supplies
         postToolsOffer(0.2);
         doUpkeepActions();
@@ -68,15 +69,15 @@ public class BlacksmithBot implements IBot {
     public boolean doActionCycle()
     {
         var hasAnythingHappened = 0;
-        hasAnythingHappened += BotFunctions.buyFoodForUpkeep(kingdom, market);
-        hasAnythingHappened += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
-        hasAnythingHappened += BotFunctions.trainUnits(kingdom, UnitName.blacksmith, 3);
-        hasAnythingHappened += BotFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
-        hasAnythingHappened += BotFunctions.trainUnits(kingdom, UnitName.blacksmith, 2);
-        hasAnythingHappened += BotFunctions.buyLandToMaintainUnused(kingdom, 2);
-        hasAnythingHappened += BotFunctions.buildSpecialistBuilding(kingdom, BuildingName.workshop, 1);
-        hasAnythingHappened += BotFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
-        hasAnythingHappened += BotFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
+        hasAnythingHappened += botFunctions.buyFoodForUpkeep(market);
+        hasAnythingHappened += botFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
+        hasAnythingHappened += botFunctions.trainUnits(kingdom, UnitName.blacksmith, 3);
+        hasAnythingHappened += botFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
+        hasAnythingHappened += botFunctions.trainUnits(kingdom, UnitName.blacksmith, 2);
+        hasAnythingHappened += botFunctions.buyLandToMaintainUnused(kingdom, 2);
+        hasAnythingHappened += botFunctions.buildSpecialistBuilding(kingdom, BuildingName.workshop, 1);
+        hasAnythingHappened += botFunctions.buildHouses(kingdom, 1, housesToSpecialistBuildingRatio);
+        hasAnythingHappened += botFunctions.buyEnoughIronToMaintainFullProduction(kingdom, market);
 
         return hasAnythingHappened > 0;
     }
@@ -105,9 +106,16 @@ public class BlacksmithBot implements IBot {
     @Override
     public void passTurn()
     {
+        if (!shouldPassTurn())
+        {
+            log.info("[{}] didn't have at least 80% upkeep for turn pass, skipping", kingdom.getName());
+            return;
+        }
+
         runPrePassTurnActions();
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
         log.info("[BlacksmithBot] transaction average for last 24 entires for tools is {}", market.getLast24TransactionAverages(MarketResource.tools));
-        kingdom.passTurn(kingdomInteractor, weaponsProductionPercentage);
+        action.passTurn(weaponsProductionPercentage);
     }
 
     private void runPrePassTurnActions()
@@ -115,7 +123,7 @@ public class BlacksmithBot implements IBot {
         int buildingPointsSpent = 0;
         do
         {
-            buildingPointsSpent = BotFunctions.putRemainingPointsToLowestLevelSpecialBuilding(kingdom);
+            buildingPointsSpent = botFunctions.putRemainingPointsToLowestLevelSpecialBuilding(kingdom);
         } while (buildingPointsSpent > 0);
     }
 
@@ -129,7 +137,7 @@ public class BlacksmithBot implements IBot {
     }
 
     @Override
-    public Kingdom getKingdom()
+    public KingdomEntity getKingdom()
     {
         return kingdom;
     }
@@ -137,7 +145,7 @@ public class BlacksmithBot implements IBot {
     @Override
     public boolean doesHaveEnoughUpkeep()
     {
-        var doesHaveEnoughFood = BotFunctions.doesHaveEnoughFoodForNextTurn(kingdom);
+        var doesHaveEnoughFood = botFunctions.doesHaveEnoughFoodForNextTurn(kingdom);
         var doesHaveEnoughIron = doesHaveEnoughIron();
         return doesHaveEnoughFood && doesHaveEnoughIron;
     }
@@ -145,7 +153,7 @@ public class BlacksmithBot implements IBot {
     private boolean doesHaveEnoughIron()
     {
         var nourishmentFactor = 1.0; // Assume everyone is fed
-        var ironUpkeep = kingdom.getIronUpkeep(nourishmentFactor);
+        var ironUpkeep = kingdomDetailsProvider.getIronUpkeep(kingdom, nourishmentFactor);
         var ironAmount = kingdom.getResources().getCount(ResourceName.iron);
         double ironReserve = (double) ironAmount / ironUpkeep;
         log.info("[{}] iron reserve {}", kingdom.getName(), ironReserve);

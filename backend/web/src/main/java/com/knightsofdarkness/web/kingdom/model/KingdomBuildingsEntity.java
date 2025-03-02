@@ -14,7 +14,7 @@ import jakarta.persistence.Transient;
 
 @Embeddable
 @Access(AccessType.FIELD)
-class KingdomBuildingsEntity {
+public class KingdomBuildingsEntity {
     int house;
     int goldMine;
     int ironMine;

@@ -9,20 +9,34 @@ import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.common.market.MarketResource;
-import com.knightsofdarkness.web.kingdom.legacy.Kingdom;
+import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.model.KingdomBuildAction;
+import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomOtherAction;
+import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingAction;
+import com.knightsofdarkness.web.kingdom.model.KingdomTrainAction;
 import com.knightsofdarkness.web.market.IMarket;
 
 public final class BotFunctions {
     private static final Logger log = LoggerFactory.getLogger(BotFunctions.class);
+    private final GameConfig gameConfig;
+    private final IBot bot;
+    private final KingdomEntity kingdom;
+    private final KingdomDetailsProvider kingdomDetailsProvider;
 
-    private BotFunctions()
+    public BotFunctions(IBot bot, GameConfig gameConfig)
     {
+        this.gameConfig = gameConfig;
+        this.bot = bot;
+        this.kingdom = bot.getKingdom();
+        this.kingdomDetailsProvider = bot.getKingdomDetailsProvider();
     }
 
-    public static int buyFoodForUpkeep(Kingdom kingdom, IMarket market)
+    public int buyFoodForUpkeep(IMarket market)
     {
         var foodAmount = kingdom.getResources().getCount(ResourceName.food);
-        var foodUpkeep = kingdom.getFoodUpkeep();
+        var foodUpkeep = kingdomDetailsProvider.getFoodUpkeep(kingdom);
         var amountToBuy = Math.max(0, foodUpkeep - foodAmount);
         log.info("[{}] Food to buy {} to maintain upkeep {}, while kingdom has {}", kingdom.getName(), amountToBuy, foodUpkeep, foodAmount);
         var totalBought = 0;
@@ -52,9 +66,9 @@ public final class BotFunctions {
         return totalBought;
     }
 
-    public static int buyEnoughIronToMaintainFullProduction(Kingdom kingdom, IMarket market)
+    public int buyEnoughIronToMaintainFullProduction(KingdomEntity kingdom, IMarket market)
     {
-        var blacksmithProduction = kingdom.getUnits().getAvailableCount(UnitName.blacksmith) * kingdom.getConfig().production().getProductionRate(UnitName.blacksmith);
+        var blacksmithProduction = kingdom.getUnits().getAvailableCount(UnitName.blacksmith) * gameConfig.production().getProductionRate(UnitName.blacksmith);
         var ironNeeded = blacksmithProduction;
 
         var ironAmount = kingdom.getResources().getCount(ResourceName.iron);
@@ -84,25 +98,26 @@ public final class BotFunctions {
         return totalBought;
     }
 
-    public static int buyLandToMaintainUnused(Kingdom kingdom, int count)
+    public int buyLandToMaintainUnused(KingdomEntity kingdom, int count)
     {
         var unusedLand = kingdom.getUnusedLand();
         assert unusedLand >= 0;
         if (unusedLand < 2)
         {
-            return kingdom.buyLand(2).amount();
+            var action = new KingdomOtherAction(kingdom);
+            return action.buyLand(2).amount();
         }
 
         return 0;
     }
 
-    public static int buildSpecialistBuilding(Kingdom kingdom, BuildingName building, int count)
+    public int buildSpecialistBuilding(KingdomEntity kingdom, BuildingName building, int count)
     {
         var unit = UnitName.getByBuilding(building);
         var unitCount = kingdom.getUnits().getAvailableCount(unit);
-        var fullCapacity = kingdom.getBuildingCapacity(building);
+        var fullCapacity = kingdomDetailsProvider.getBuildingCapacity(kingdom, building);
         var freeCapacity = fullCapacity - unitCount;
-        var perBuildingCapacity = kingdom.getConfig().buildingCapacity().getCapacity(building);
+        var perBuildingCapacity = gameConfig.buildingCapacity().getCapacity(building);
         var desiredFreeCapacity = perBuildingCapacity * count;
         if (freeCapacity >= desiredFreeCapacity)
         {
@@ -114,18 +129,20 @@ public final class BotFunctions {
         var kingdomBuildings = new KingdomBuildingsDto();
         kingdomBuildings.setCount(building, buildingsToBuild);
 
-        return kingdom.build(kingdomBuildings).buildings().countAll();
+        var action = new KingdomBuildAction(kingdom, gameConfig);
+        return action.build(kingdomBuildings).buildings().countAll();
     }
 
-    public static int trainUnits(Kingdom kingdom, UnitName unit, int count)
+    public int trainUnits(KingdomEntity kingdom, UnitName unit, int count)
     {
         var toTrain = new UnitsMapDto();
         toTrain.setCount(unit, count);
-        var trainedUnits = kingdom.train(toTrain);
+        var action = new KingdomTrainAction(kingdom, gameConfig);
+        var trainedUnits = action.train(toTrain);
         return trainedUnits.units().countAll();
     }
 
-    public static int buyToolsToMaintainCount(IMarket market, Kingdom kingdom, int count)
+    public int buyToolsToMaintainCount(IMarket market, KingdomEntity kingdom, int count)
     {
         var optionalOffer = market.getCheapestOfferByResource(MarketResource.tools);
         if (optionalOffer.isEmpty())
@@ -138,7 +155,7 @@ public final class BotFunctions {
         return result.count();
     }
 
-    public static int trainBuilders(Kingdom kingdom, int count, double desiredBuilderToSpecialistRatio)
+    public int trainBuilders(KingdomEntity kingdom, int count, double desiredBuilderToSpecialistRatio)
     {
         int builderCount = kingdom.getUnits().getAvailableCount(UnitName.builder);
         int unitCount = kingdom.getTotalPeopleCount();
@@ -151,12 +168,12 @@ public final class BotFunctions {
         }
 
         var toTrain = new UnitsMapDto();
-        toTrain.setCount(UnitName.builder, count);
-        var trainedUnits = kingdom.train(toTrain);
+        var action = new KingdomTrainAction(kingdom, gameConfig);
+        var trainedUnits = action.train(toTrain);
         return trainedUnits.units().countAll();
     }
 
-    public static int buildHouses(Kingdom kingdom, int count, double desiredHousesToSpecialistBuildingRatio)
+    public int buildHouses(KingdomEntity kingdom, int count, double desiredHousesToSpecialistBuildingRatio)
     {
         int housesCount = kingdom.getBuildings().getCount(BuildingName.house);
         int buildingsCount = kingdom.getBuildings().countAll();
@@ -171,20 +188,21 @@ public final class BotFunctions {
         var kingdomBuildings = new KingdomBuildingsDto();
         kingdomBuildings.setCount(BuildingName.house, count);
 
-        return kingdom.build(kingdomBuildings).buildings().countAll();
+        var action = new KingdomBuildAction(kingdom, gameConfig);
+        return action.build(kingdomBuildings).buildings().countAll();
     }
 
-    public static boolean doesHaveEnoughFoodForNextTurn(Kingdom kingdom)
+    public boolean doesHaveEnoughFoodForNextTurn(KingdomEntity kingdom)
     {
         var foodAvailable = kingdom.getResources().getCount(ResourceName.food);
-        var foodUpkeep = kingdom.getFoodUpkeep();
+        var foodUpkeep = kingdomDetailsProvider.getFoodUpkeep(kingdom);
         var foodReserve = (double) foodAvailable / foodUpkeep;
         log.info("[{}] food reserve {}", kingdom.getName(), foodReserve);
 
         return foodReserve >= 0.8d;
     }
 
-    public static void withdrawAllOffers(Kingdom kingdom, IMarket market)
+    public void withdrawAllOffers(KingdomEntity kingdom, IMarket market)
     {
         // TODO make it more sophisticated to withdraw only necessary amount
         var offers = market.getOffersByKingdomName(kingdom.getName());
@@ -194,9 +212,10 @@ public final class BotFunctions {
         }
     }
 
-    public static int putRemainingPointsToLowestLevelSpecialBuilding(Kingdom kingdom)
+    public int putRemainingPointsToLowestLevelSpecialBuilding(KingdomEntity kingdom)
     {
-        var maybeSpecialBuilding = kingdom.getLowestLevelSpecialBuilding();
+        var action = new KingdomSpecialBuildingAction(kingdom, gameConfig);
+        var maybeSpecialBuilding = action.getLowestLevelSpecialBuilding();
         if (maybeSpecialBuilding.isEmpty())
         {
             log.info("[{}] has no special building", kingdom.getName());
@@ -210,7 +229,6 @@ public final class BotFunctions {
         }
 
         int buildingPoints = kingdom.getResources().getCount(ResourceName.buildingPoints);
-        return kingdom.buildSpecialBuilding(specialBuilding, buildingPoints);
+        return action.buildSpecialBuilding(specialBuilding, buildingPoints);
     }
-
 }
