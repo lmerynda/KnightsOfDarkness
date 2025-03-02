@@ -87,4 +87,29 @@ class KingdomBuildingsEntity {
     {
         buildings = toEnumMap();
     }
+
+    public int getCapacity(BuildingName name, int buildingCapacity)
+    {
+        return buildings.get(name) * buildingCapacity;
+    }
+
+    public int getCount(BuildingName name)
+    {
+        return buildings.get(name);
+    }
+
+    public void addCount(BuildingName name, int count)
+    {
+        buildings.put(name, buildings.get(name) + count);
+    }
+
+    public void subtractCount(BuildingName buildingName, int howManyToDemolish)
+    {
+        buildings.put(buildingName, buildings.get(buildingName) - howManyToDemolish);
+    }
+
+    public int countAll()
+    {
+        return buildings.values().stream().mapToInt(Integer::intValue).sum();
+    }
 }

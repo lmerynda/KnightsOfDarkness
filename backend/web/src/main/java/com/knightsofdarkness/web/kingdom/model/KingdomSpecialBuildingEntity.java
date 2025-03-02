@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
-import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,22 +15,22 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class KingdomSpecialBuildingEntity {
     @Id
-    private UUID id;
+    UUID id;
 
     @ManyToOne
     @JoinColumn(name = "kingdom_name", nullable = false)
-    private KingdomEntity kingdom;
+    KingdomEntity kingdom;
 
     @Enumerated(EnumType.STRING)
-    private SpecialBuildingType buildingType;
+    SpecialBuildingType buildingType;
 
-    private int level;
+    int level;
 
-    private int buildingPointsPut;
+    int buildingPointsPut;
 
-    private int buildingPointsRequired;
+    int buildingPointsRequired;
 
-    private boolean isMaxLevel;
+    boolean isMaxLevel;
 
     public KingdomSpecialBuildingEntity()
     {
@@ -48,17 +47,6 @@ public class KingdomSpecialBuildingEntity {
         this.isMaxLevel = isMaxLevel;
     }
 
-    public KingdomSpecialBuilding toDomainModel()
-    {
-        return new KingdomSpecialBuilding(id, buildingType, level, buildingPointsPut, buildingPointsRequired, isMaxLevel);
-    }
-
-    public static KingdomSpecialBuildingEntity fromDomainModel(KingdomSpecialBuilding kingdomSpecialBuilding, KingdomEntity kingdomEntity)
-    {
-        return new KingdomSpecialBuildingEntity(kingdomSpecialBuilding.getId(), kingdomEntity, kingdomSpecialBuilding.getBuildingType(), kingdomSpecialBuilding.getLevel(), kingdomSpecialBuilding.getBuildingPointsPut(),
-                kingdomSpecialBuilding.getBuildingPointsRequired(), kingdomSpecialBuilding.isMaxLevel());
-    }
-
     public KingdomSpecialBuildingDto toDto()
     {
         return new KingdomSpecialBuildingDto(id, buildingType, level, buildingPointsPut, buildingPointsRequired, isMaxLevel);
@@ -68,5 +56,15 @@ public class KingdomSpecialBuildingEntity {
     {
         return new KingdomSpecialBuildingEntity(kingdomSpecialBuildingDto.id(), kingdomEntity, kingdomSpecialBuildingDto.buildingType(), kingdomSpecialBuildingDto.level(), kingdomSpecialBuildingDto.buildingPointsPut(),
                 kingdomSpecialBuildingDto.buildingPointsRequired(), kingdomSpecialBuildingDto.isMaxLevel());
+    }
+
+    public boolean isMaxLevel()
+    {
+        return level >= 5;
+    }
+
+    public UUID getId()
+    {
+        return id;
     }
 }

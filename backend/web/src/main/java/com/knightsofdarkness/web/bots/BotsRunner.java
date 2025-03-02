@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.knightsofdarkness.game.bot.IBot;
-import com.knightsofdarkness.game.interactions.IKingdomInteractor;
-import com.knightsofdarkness.game.market.IMarket;
+import com.knightsofdarkness.web.bots.legacy.IBot;
+import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
+import com.knightsofdarkness.web.market.IMarket;
 
 @Component
 public class BotsRunner {

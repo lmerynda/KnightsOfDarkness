@@ -7,13 +7,16 @@ import java.util.stream.Collectors;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.CarriersOnTheMoveDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.OngoingAttackDto;
-import com.knightsofdarkness.game.kingdom.Kingdom;
+import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
+import com.knightsofdarkness.web.game.config.GameConfig;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -73,44 +76,12 @@ public class KingdomEntity {
         this.lastTurnReport = lastTurnReport;
     }
 
-    // public Kingdom toDomainModel(GameConfig gameConfig)
-    // {
-    // var specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDomainModel).collect(Collectors.toList());
-    // var carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDomainModel).collect(Collectors.toList());
-    // var ongoingAttacks = this.ongoingAttacks.stream().map(KingdomOngoingAttackEntity::toDomainModel).collect(Collectors.toList());
-    // return new Kingdom(name, gameConfig, new KingdomResources(resources.toEnumMap()), buildings.toDomainModel(), specialBuildings, carriersOnTheMove, ongoingAttacks, units.toDomainModel(), lastTurnReport);
-    // }
-
     public KingdomDto toDto()
     {
         List<KingdomSpecialBuildingDto> specialBuildings = this.specialBuildings.stream().map(KingdomSpecialBuildingEntity::toDto).collect(Collectors.toList());
         List<CarriersOnTheMoveDto> carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDto).collect(Collectors.toList());
         List<OngoingAttackDto> ongoingAttacks = this.ongoingAttacks.stream().map(KingdomOngoingAttackEntity::toDto).collect(Collectors.toList());
         return new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), new ArrayList<>(), specialBuildings, lastTurnReport, carriersOnTheMove, ongoingAttacks);
-    }
-
-    public static KingdomEntity fromDomainModel(Kingdom kingdom)
-    {
-        var kingdomEntity = new KingdomEntity(
-                kingdom.getName(),
-                new KingdomResourcesEntity(kingdom.getResources().getResources()),
-                new KingdomBuildingsEntity(kingdom.getBuildings().getBuildings()),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new KingdomUnitsEntity(kingdom.getUnits().getAvailableUnits().getUnits(), kingdom.getUnits().getMobileUnits().getUnits()),
-                kingdom.getLastTurnReport());
-
-        var specialBuildings = kingdom.getSpecialBuildings().stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDomainModel(specialBuilding, kingdomEntity)).toList();
-        kingdomEntity.specialBuildings = specialBuildings;
-
-        var carriersOnTheMoveEntities = kingdom.getCarriersOnTheMove().stream().map(carriersOnTheMove -> KingdomCarriersOnTheMoveEntity.fromDomainModel(carriersOnTheMove, kingdomEntity)).toList();
-        kingdomEntity.carriersOnTheMove = carriersOnTheMoveEntities;
-
-        var ongoingAttackEntities = kingdom.getOngoingAttacks().stream().map(ongoingAttack -> KingdomOngoingAttackEntity.fromDomainModel(ongoingAttack, kingdomEntity)).toList();
-        kingdomEntity.ongoingAttacks = ongoingAttackEntities;
-
-        return kingdomEntity;
     }
 
     public static KingdomEntity fromDto(KingdomDto dto)
@@ -139,5 +110,66 @@ public class KingdomEntity {
     public KingdomResourcesEntity getResources()
     {
         return resources;
+    }
+
+    public int getBuildingCapacity(BuildingName name, GameConfig config)
+    {
+        return buildings.getCapacity(name, config.buildingCapacity().getCapacity(name));
+    }
+
+    public void addTurn()
+    {
+        resources.addCount(ResourceName.turns, 1);
+    }
+
+    public int getTotalPeopleCount()
+    {
+        return units.countAll() + resources.getCount(ResourceName.unemployed);
+    }
+
+    public int getUnusedLand()
+    {
+        return resources.getCount(ResourceName.land) - buildings.countAll();
+    }
+
+    public int getOccupiedLand()
+    {
+        return buildings.countAll();
+    }
+
+    public KingdomBuildingsEntity getBuildings()
+    {
+        return buildings;
+    }
+
+    public KingdomUnitsEntity getUnits()
+    {
+        return units;
+    }
+
+    public KingdomTurnReport getLastTurnReport()
+    {
+        return lastTurnReport;
+    }
+
+    public List<KingdomSpecialBuildingEntity> getSpecialBuildings()
+    {
+        return specialBuildings;
+    }
+
+    public List<KingdomCarriersOnTheMoveEntity> getCarriersOnTheMove()
+    {
+        return carriersOnTheMove;
+    }
+
+    public List<KingdomOngoingAttackEntity> getOngoingAttacks()
+    {
+        return ongoingAttacks;
+    }
+
+    // TODO do it directly?
+    public void receiveResourceTransfer(MarketResource resource, int amount)
+    {
+        resources.addCount(ResourceName.from(resource), amount);
     }
 }

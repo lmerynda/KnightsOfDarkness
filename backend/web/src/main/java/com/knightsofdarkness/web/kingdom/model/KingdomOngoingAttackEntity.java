@@ -8,7 +8,6 @@ import org.hibernate.type.SqlTypes;
 import com.knightsofdarkness.common.kingdom.AttackType;
 import com.knightsofdarkness.common.kingdom.OngoingAttackDto;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
-import com.knightsofdarkness.game.kingdom.KingdomOngoingAttack;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,21 +19,21 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class KingdomOngoingAttackEntity {
     @Id
-    private UUID id;
+    UUID id;
 
     @ManyToOne
     @JoinColumn(name = "kingdom_name", nullable = false)
-    private KingdomEntity kingdom;
+    KingdomEntity kingdom;
 
-    private String targetKingdomName;
+    String targetKingdomName;
 
-    private int turnsLeft;
+    int turnsLeft;
 
     @Enumerated(EnumType.STRING)
-    private AttackType attackType;
+    AttackType attackType;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    public UnitsMapDto units;
+    UnitsMapDto units;
 
     public KingdomOngoingAttackEntity()
     {
@@ -50,16 +49,6 @@ public class KingdomOngoingAttackEntity {
         this.units = units;
     }
 
-    public KingdomOngoingAttack toDomainModel()
-    {
-        return new KingdomOngoingAttack(id, targetKingdomName, turnsLeft, attackType, units);
-    }
-
-    public static KingdomOngoingAttackEntity fromDomainModel(KingdomOngoingAttack ongoingAttack, KingdomEntity kingdom)
-    {
-        return new KingdomOngoingAttackEntity(ongoingAttack.getId(), kingdom, ongoingAttack.getTargetKingdomName(), ongoingAttack.getTurnsLeft(), ongoingAttack.getAttackType(), ongoingAttack.getUnits());
-    }
-
     public OngoingAttackDto toDto()
     {
         OngoingAttackDto dto = new OngoingAttackDto();
@@ -70,5 +59,10 @@ public class KingdomOngoingAttackEntity {
         dto.attackType = attackType;
         dto.units = units;
         return dto;
+    }
+
+    public UUID getId()
+    {
+        return id;
     }
 }

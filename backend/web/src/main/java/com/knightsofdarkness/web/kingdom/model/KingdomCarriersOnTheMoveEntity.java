@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import com.knightsofdarkness.common.kingdom.CarriersOnTheMoveDto;
 import com.knightsofdarkness.common.market.MarketResource;
-import com.knightsofdarkness.game.kingdom.KingdomCarriersOnTheMove;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,22 +15,22 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class KingdomCarriersOnTheMoveEntity {
     @Id
-    private UUID id;
+    UUID id;
 
     @ManyToOne
     @JoinColumn(name = "kingdom_name", nullable = false)
-    private KingdomEntity kingdom;
+    KingdomEntity kingdom;
 
-    private String targetKingdomName;
+    String targetKingdomName;
 
-    private int turnsLeft;
+    int turnsLeft;
 
-    private int carriersCount;
+    int carriersCount;
 
     @Enumerated(EnumType.STRING)
-    private MarketResource resource;
+    MarketResource resource;
 
-    private int resourceCount;
+    int resourceCount;
 
     public KingdomCarriersOnTheMoveEntity()
     {
@@ -46,17 +45,6 @@ public class KingdomCarriersOnTheMoveEntity {
         this.carriersCount = carriersCount;
         this.resource = resource;
         this.resourceCount = resourceCount;
-    }
-
-    public KingdomCarriersOnTheMove toDomainModel()
-    {
-        return new KingdomCarriersOnTheMove(id, targetKingdomName, turnsLeft, carriersCount, resource, resourceCount);
-    }
-
-    public static KingdomCarriersOnTheMoveEntity fromDomainModel(KingdomCarriersOnTheMove carriersOnTheMove, KingdomEntity kingdom)
-    {
-        return new KingdomCarriersOnTheMoveEntity(carriersOnTheMove.getId(), kingdom, carriersOnTheMove.getTargetKingdomName(), carriersOnTheMove.getTurnsLeft(), carriersOnTheMove.getCarriersCount(),
-                carriersOnTheMove.getResource(), carriersOnTheMove.getResourceCount());
     }
 
     public CarriersOnTheMoveDto toDto()

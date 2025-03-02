@@ -43,6 +43,28 @@ public class KingdomResourcesEntity {
         return new KingdomResourcesDto(toEnumMap());
     }
 
+    public int getCount(ResourceName name)
+    {
+        return resources.get(name);
+    }
+
+    public void addCount(ResourceName name, int count)
+    {
+        resources.put(name, resources.get(name) + count);
+    }
+
+    public void subtractCount(ResourceName name, int count)
+    {
+        assert resources.get(name) >= count;
+        resources.put(name, resources.get(name) - count);
+    }
+
+    public void setCount(ResourceName name, int count)
+    {
+        assert count >= 0;
+        resources.put(name, count);
+    }
+
     public void loadMap(Map<ResourceName, Integer> resourceMap)
     {
         land = resourceMap.get(ResourceName.land);

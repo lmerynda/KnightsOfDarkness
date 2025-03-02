@@ -8,7 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knightsofdarkness.game.gameconfig.GameConfig;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController

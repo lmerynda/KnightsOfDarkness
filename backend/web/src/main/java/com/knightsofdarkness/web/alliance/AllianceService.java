@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.knightsofdarkness.common.alliance.AllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
-import com.knightsofdarkness.game.gameconfig.GameConfig;
 import com.knightsofdarkness.web.alliance.model.AllianceRepository;
+import com.knightsofdarkness.web.game.config.GameConfig;
 
 import jakarta.transaction.Transactional;
 

@@ -9,7 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.common.messaging.NotificationDto;
-import com.knightsofdarkness.game.storage.INotificationRepository;
+import com.knightsofdarkness.web.messaging.INotificationRepository;
 
 @Repository
 public class NotificationRepository implements INotificationRepository {

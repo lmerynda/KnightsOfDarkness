@@ -3,14 +3,12 @@ package com.knightsofdarkness.web.alliance.model;
 import java.util.Optional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
-import com.knightsofdarkness.game.alliance.Alliance;
-import com.knightsofdarkness.game.gameconfig.GameConfig;
-import com.knightsofdarkness.game.storage.IAllianceRepository;
+import com.knightsofdarkness.web.alliance.IAllianceRepository;
+import com.knightsofdarkness.web.game.config.GameConfig;
 
 @Repository
 public class AllianceRepository implements IAllianceRepository {
@@ -24,9 +22,9 @@ public class AllianceRepository implements IAllianceRepository {
     }
 
     @Override
-    public Optional<Alliance> getAllianceByName(String name)
+    public Optional<AllianceEntity> getAllianceByName(String name)
     {
-        return allianceJpaRepository.findById(name).map(alliance -> alliance.toDomainModel(gameConfig));
+        return allianceJpaRepository.findById(name);
     }
 
     @Override
@@ -37,14 +35,14 @@ public class AllianceRepository implements IAllianceRepository {
     }
 
     @Override
-    public void update(Alliance alliance)
+    public void update(AllianceEntity alliance)
     {
-        allianceJpaRepository.save(AllianceEntity.fromDomainModel(alliance));
+        allianceJpaRepository.save(alliance);
     }
 
     @Override
-    public List<Alliance> getAlliances()
+    public List<AllianceEntity> getAlliances()
     {
-        return allianceJpaRepository.findAll().stream().map(alliance -> alliance.toDomainModel(gameConfig)).collect(Collectors.toList());
+        return allianceJpaRepository.findAll();
     }
 }

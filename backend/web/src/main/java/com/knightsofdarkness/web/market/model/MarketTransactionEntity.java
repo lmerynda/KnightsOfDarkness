@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 import com.knightsofdarkness.common.market.MarketResource;
-import com.knightsofdarkness.game.market.MarketTransaction;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,14 +13,14 @@ import jakarta.persistence.Id;
 @Entity
 public class MarketTransactionEntity {
     @Id
-    private UUID id;
+    UUID id;
     @Enumerated(EnumType.STRING)
-    private MarketResource resource;
-    private String seller;
-    private String buyer;
-    private int price;
-    private int count;
-    private Instant date;
+    MarketResource resource;
+    String seller;
+    String buyer;
+    int price;
+    int count;
+    Instant date;
 
     public MarketTransactionEntity()
     {
@@ -36,20 +35,5 @@ public class MarketTransactionEntity {
         this.price = price;
         this.count = count;
         this.date = date;
-    }
-
-    public MarketTransaction toDomainModel()
-    {
-        return new MarketTransaction(id, resource, seller, buyer, price, count, date);
-    }
-
-    public static MarketTransactionEntity fromDomainModel(MarketTransaction transaction)
-    {
-        return new MarketTransactionEntity(transaction.getId(), transaction.getResource(), transaction.getSeller(), transaction.getBuyer(), transaction.getPrice(), transaction.getCount(), transaction.getDate());
-    }
-
-    public int getCount()
-    {
-        return count;
     }
 }

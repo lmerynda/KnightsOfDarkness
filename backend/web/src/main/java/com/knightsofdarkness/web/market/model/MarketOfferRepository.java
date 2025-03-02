@@ -10,11 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.common.market.MarketResource;
-import com.knightsofdarkness.game.gameconfig.GameConfig;
-import com.knightsofdarkness.game.market.MarketOffer;
-import com.knightsofdarkness.game.market.MarketTransaction;
-import com.knightsofdarkness.game.market.MarketTransactionTimeRangeAverage;
-import com.knightsofdarkness.game.storage.IMarketOfferRepository;
+import com.knightsofdarkness.web.game.config.GameConfig;
 
 @Repository
 public class MarketOfferRepository implements IMarketOfferRepository {
@@ -32,77 +28,69 @@ public class MarketOfferRepository implements IMarketOfferRepository {
     }
 
     @Override
-    public MarketOffer add(MarketOffer marketOffer)
+    public MarketOfferEntity add(MarketOfferEntity marketOffer)
     {
-        var marketOfferEntity = jpaRepository.save(MarketOfferEntity.fromDomainModel(marketOffer));
-
-        return marketOfferEntity.toDomainModel(gameConfig);
+        return jpaRepository.save(marketOffer);
     }
 
     @Override
-    public void remove(MarketOffer marketOffer)
+    public void remove(MarketOfferEntity marketOffer)
     {
-        var marketOfferEntity = MarketOfferEntity.fromDomainModel(marketOffer);
-        jpaRepository.delete(marketOfferEntity);
+        jpaRepository.delete(marketOffer);
     }
 
     @Override
-    public List<MarketOffer> getOffersByResource(MarketResource resource)
+    public List<MarketOfferEntity> getOffersByResource(MarketResource resource)
     {
-        var offers = jpaRepository.findByResource(resource);
-        return offers.stream().map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig)).toList();
+        return jpaRepository.findByResource(resource);
     }
 
     @Override
-    public Optional<MarketOffer> getCheapestOfferByResource(MarketResource resource)
+    public Optional<MarketOfferEntity> getCheapestOfferByResource(MarketResource resource)
     {
-        return jpaRepository.findFirstByResourceOrderByPriceAsc(resource).map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig));
+        return jpaRepository.findFirstByResourceOrderByPriceAsc(resource);
     }
 
     @Override
-    public List<MarketOffer> getOffersByKingdomName(String name)
+    public List<MarketOfferEntity> getOffersByKingdomName(String name)
     {
-        return jpaRepository.findByKingdomName(name).stream().map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig)).toList();
+        return jpaRepository.findByKingdomName(name);
     }
 
     @Override
-    public Optional<MarketOffer> findById(UUID marketOfferId)
+    public Optional<MarketOfferEntity> findById(UUID marketOfferId)
     {
-        var marketOffer = jpaRepository.findById(marketOfferId);
-        return marketOffer.map(marketOfferEntity -> marketOfferEntity.toDomainModel(gameConfig));
+        return jpaRepository.findById(marketOfferId);
     }
 
-    public void update(MarketOffer marketOffer)
+    public void update(MarketOfferEntity marketOffer)
     {
-        var marketOfferEntity = MarketOfferEntity.fromDomainModel(marketOffer);
-        jpaRepository.save(marketOfferEntity);
-    }
-
-    @Override
-    public void registerMarketTransaction(MarketTransaction transaction)
-    {
-        var transactionEntity = MarketTransactionEntity.fromDomainModel(transaction);
-        transactionJpaRepository.save(transactionEntity);
+        jpaRepository.save(marketOffer);
     }
 
     @Override
-    public List<MarketTransaction> getTransactionsByResourceAndTimeRange(MarketResource resource, Instant hourAgo, Instant now)
+    public void registerMarketTransaction(MarketTransactionEntity transaction)
     {
-        return transactionJpaRepository.findTransactionsForResourceAndTimeRange(resource, hourAgo, now).stream().map(MarketTransactionEntity::toDomainModel).toList();
+        transactionJpaRepository.save(transaction);
     }
 
     @Override
-    public void addTransactionTimeRangeAverage(MarketTransactionTimeRangeAverage averageSaleRecord)
+    public List<MarketTransactionEntity> getTransactionsByResourceAndTimeRange(MarketResource resource, Instant hourAgo, Instant now)
     {
-        var averageSaleRecordEntity = MarketTransactionTimeRangeAveragesEntity.fromDomainModel(averageSaleRecord);
-        transactionAveragesJpaRepository.save(averageSaleRecordEntity);
+        return transactionJpaRepository.findTransactionsForResourceAndTimeRange(resource, hourAgo, now);
     }
 
     @Override
-    public List<MarketTransactionTimeRangeAverage> getTransactionTimeRangeAverages(MarketResource resource, int limit)
+    public void addTransactionTimeRangeAverage(MarketTransactionTimeRangeAveragesEntity averageSaleRecord)
+    {
+        transactionAveragesJpaRepository.save(averageSaleRecord);
+    }
+
+    @Override
+    public List<MarketTransactionTimeRangeAveragesEntity> getTransactionTimeRangeAverages(MarketResource resource, int limit)
     {
         PageRequest pageable = PageRequest.of(0, limit);
-        return transactionAveragesJpaRepository.findTopByResourceOrderByToDateDesc(resource, pageable).stream().map(MarketTransactionTimeRangeAveragesEntity::toDomainModel).toList();
+        return transactionAveragesJpaRepository.findTopByResourceOrderByToDateDesc(resource, pageable);
     }
 
     @Override
