@@ -28,6 +28,7 @@ import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomBuildAction;
+import com.knightsofdarkness.web.kingdom.model.KingdomBuildingsEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomCarriersAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
@@ -35,10 +36,12 @@ import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomOtherAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomReadRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
+import com.knightsofdarkness.web.kingdom.model.KingdomResourcesEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomTrainAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
+import com.knightsofdarkness.web.kingdom.model.KingdomUnitsEntity;
 import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;
 
 @Service
@@ -76,24 +79,27 @@ public class KingdomService {
         return kingdomDto;
     }
 
-    // @Transactional
-    // public KingdomEntity createKingdom(String name)
-    // {
-    // log.info("Creating new kingdom with name {}", name);
+    @Transactional
+    public KingdomEntity createKingdom(String name)
+    {
+        log.info("Creating new kingdom with name {}", name);
 
-    // var startConfiguration = gameConfig.kingdomStartConfiguration();
-    // var kingdom = new KingdomEntity(
-    // name,
-    // startConfiguration.resources().toMap());
-    // // kingdomDto.units = startConfiguration.units().toDto();
-    // // kingdomDto.buildings = startConfiguration.buildings().toDto();
-    // // kingdomDto.lastTurnReport = new KingdomTurnReport();
-    // // kingdomDto.specialBuildings = new ArrayList<>();
+        var startConfiguration = gameConfig.kingdomStartConfiguration();
+        var startingUnitsDto = startConfiguration.units().toDto();
+        var kingdom = new KingdomEntity(
+                name,
+                new KingdomResourcesEntity(startConfiguration.resources().toMap()),
+                new KingdomBuildingsEntity(startConfiguration.buildings().toMap()),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new KingdomUnitsEntity(startingUnitsDto.getAvailableUnits().getUnits(), startingUnitsDto.getMobileUnits().getUnits()),
+                new KingdomTurnReport());
 
-    // kingdomRepository.add(kingdom);
-    // // TODO I bet the return value should be different
-    // return kingdom;
-    // }
+        kingdomRepository.add(kingdom);
+        // TODO I bet the return value should be different
+        return kingdom;
+    }
 
     public Optional<KingdomDto> getKingdomByName(String name)
     {

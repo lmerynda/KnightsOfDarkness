@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.game.config;
 
+import java.util.Map;
+
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 
@@ -25,5 +27,10 @@ public record KingdomStartingBuildings(int house, int goldMine, int ironMine, in
     public KingdomBuildingsDto toDto()
     {
         return new KingdomBuildingsDto(house, goldMine, ironMine, workshop, farm, market, barracks, guardHouse, spyGuild, tower, castle);
+    }
+
+    public Map<BuildingName, Integer> toMap()
+    {
+        return toDto().getBuildings();
     }
 }
