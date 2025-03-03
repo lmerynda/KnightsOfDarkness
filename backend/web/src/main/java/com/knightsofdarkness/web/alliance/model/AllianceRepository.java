@@ -8,16 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.web.alliance.IAllianceRepository;
-import com.knightsofdarkness.web.game.config.GameConfig;
 
 @Repository
 public class AllianceRepository implements IAllianceRepository {
-    private final GameConfig gameConfig;
     private final AllianceJpaRepository allianceJpaRepository;
 
-    public AllianceRepository(GameConfig gameConfig, AllianceJpaRepository allianceJpaRepository)
+    public AllianceRepository(AllianceJpaRepository allianceJpaRepository)
     {
-        this.gameConfig = gameConfig;
         this.allianceJpaRepository = allianceJpaRepository;
     }
 

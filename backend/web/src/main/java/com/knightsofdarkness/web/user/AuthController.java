@@ -27,7 +27,6 @@ public class AuthController {
     private final TokenService tokenService;
     private final IUserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final KingdomService kingdomService;
 
     public AuthController(AuthenticationManager authenticationManager, TokenService tokenService, IUserService userService, PasswordEncoder passwordEncoder, KingdomService kingdomService)
     {
@@ -35,7 +34,6 @@ public class AuthController {
         this.tokenService = tokenService;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.kingdomService = kingdomService;
     }
 
     @PostMapping("/auth/authenticate")

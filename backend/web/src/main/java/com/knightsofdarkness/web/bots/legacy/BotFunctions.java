@@ -21,14 +21,12 @@ import com.knightsofdarkness.web.market.IMarket;
 public final class BotFunctions {
     private static final Logger log = LoggerFactory.getLogger(BotFunctions.class);
     private final GameConfig gameConfig;
-    private final IBot bot;
     private final KingdomEntity kingdom;
     private final KingdomDetailsProvider kingdomDetailsProvider;
 
     public BotFunctions(IBot bot, GameConfig gameConfig)
     {
         this.gameConfig = gameConfig;
-        this.bot = bot;
         this.kingdom = bot.getKingdom();
         this.kingdomDetailsProvider = bot.getKingdomDetailsProvider();
     }

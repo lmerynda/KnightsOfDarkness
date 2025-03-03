@@ -93,9 +93,7 @@ public class MarketService {
 
         log.info("Transaction on {} with {} and amount {}", offer, buyerName, amount);
 
-        // TODO rework
-        // var result = market.buyExistingOffer(offer, seller, buyer, amount);
-        var result = new BuyMarketOfferResult(offer.getResource(), amount, offer.getPrice(), offer.getPrice());
+        var result = market.buyExistingOffer(offer, seller, buyer, amount);
 
         // TODO report? what if the action failed?
         return ResponseEntity.ok(result);

@@ -10,18 +10,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.common.market.MarketResource;
-import com.knightsofdarkness.web.game.config.GameConfig;
 
 @Repository
 public class MarketOfferRepository implements IMarketOfferRepository {
-    private final GameConfig gameConfig;
     private final MarketOfferJpaRepository jpaRepository;
     private final MarketTransactionJpaRepository transactionJpaRepository;
     private final MarketTransactionTimeRangeAveragesJpaRepository transactionAveragesJpaRepository;
 
-    public MarketOfferRepository(GameConfig gameConfig, MarketOfferJpaRepository jpaRepository, MarketTransactionJpaRepository transactionJpaRepository, MarketTransactionTimeRangeAveragesJpaRepository transactionAveragesJpaRepository)
+    public MarketOfferRepository(MarketOfferJpaRepository jpaRepository, MarketTransactionJpaRepository transactionJpaRepository, MarketTransactionTimeRangeAveragesJpaRepository transactionAveragesJpaRepository)
     {
-        this.gameConfig = gameConfig;
         this.jpaRepository = jpaRepository;
         this.transactionJpaRepository = transactionJpaRepository;
         this.transactionAveragesJpaRepository = transactionAveragesJpaRepository;
