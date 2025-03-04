@@ -24,7 +24,7 @@ public record KingdomStartingResources(int land, int buildingPoints, int unemplo
 
     public KingdomResourcesDto toDto()
     {
-        return new KingdomResourcesEntityDto(land, buildingPoints, unemployed, gold, iron, food, tools, weapons, turns);
+        return new KingdomResourcesDto(land, buildingPoints, unemployed, gold, iron, food, tools, weapons, turns);
     }
 
     public Map<ResourceName, Integer> toMap()

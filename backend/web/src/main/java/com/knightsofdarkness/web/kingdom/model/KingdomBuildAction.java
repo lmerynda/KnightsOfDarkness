@@ -34,7 +34,7 @@ public class KingdomBuildAction {
             }
         }
 
-        return new KingdomBuildingsEntityActionResult((Utils.format("Succesfully built {} buildings", buildingsBuilt.countAll())), buildingsBuilt);
+        return new KingdomBuildingsActionResult((Utils.format("Succesfully built {} buildings", buildingsBuilt.countAll())), buildingsBuilt);
     }
 
     int build(BuildingName building, int count)
@@ -66,6 +66,6 @@ public class KingdomBuildAction {
             }
         }
 
-        return new KingdomBuildingsEntityActionResult(Utils.format("Succesfully demolished {} buildings", buildingsDemolished.countAll()), buildingsDemolished);
+        return new KingdomBuildingsActionResult(Utils.format("Succesfully demolished {} buildings", buildingsDemolished.countAll()), buildingsDemolished);
     }
 }

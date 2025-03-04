@@ -28,6 +28,7 @@ import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomBuildAction;
+import com.knightsofdarkness.web.kingdom.model.KingdomBuildingsEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomCarriersAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
@@ -35,10 +36,12 @@ import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomOtherAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomReadRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
+import com.knightsofdarkness.web.kingdom.model.KingdomResourcesEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomTrainAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
+import com.knightsofdarkness.web.kingdom.model.KingdomUnitsEntity;
 import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;
 
 @Service
@@ -85,12 +88,12 @@ public class KingdomService {
         var startingUnitsDto = startConfiguration.units().toDto();
         var kingdom = new KingdomEntity(
                 name,
-                new KingdomResourcesEntityEntity(startConfiguration.resources().toMap()),
-                new KingdomBuildingsEntityEntity(startConfiguration.buildings().toMap()),
+                new KingdomResourcesEntity(startConfiguration.resources().toMap()),
+                new KingdomBuildingsEntity(startConfiguration.buildings().toMap()),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                new KingdomUnitsEntityEntity(startingUnitsDto.getAvailableUnits().getUnits(), startingUnitsDto.getMobileUnits().getUnits()),
+                new KingdomUnitsEntity(startingUnitsDto.getAvailableUnits().getUnits(), startingUnitsDto.getMobileUnits().getUnits()),
                 new KingdomTurnReport());
 
         kingdomRepository.add(kingdom);

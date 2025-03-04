@@ -34,7 +34,8 @@ class KingdomMarketTest {
     void whenKingdomHasEnoughGold_reserveGold_shouldReserveAllRequested()
     {
         kingdom.getResources().addCount(ResourceName.gold, 1000);
-        int goldReserved = kingdom.reserveGoldForOffer(10, 1);
+        var action = new KingdomMarketAction(kingdom);
+        int goldReserved = action.reserveGoldForOffer(10, 1);
         assertEquals(10, goldReserved);
     }
 
@@ -42,7 +43,8 @@ class KingdomMarketTest {
     void whenKingdomHasNotEnoughGold_reserveGold_shouldReserveNothing()
     {
         kingdom.getResources().setCount(ResourceName.gold, 0);
-        int goldReserved = kingdom.reserveGoldForOffer(10, 1);
+        var action = new KingdomMarketAction(kingdom);
+        int goldReserved = action.reserveGoldForOffer(10, 1);
         assertEquals(0, goldReserved);
     }
 
@@ -51,7 +53,8 @@ class KingdomMarketTest {
     {
         int initialGold = 50;
         kingdom.getResources().setCount(ResourceName.gold, initialGold);
-        kingdom.reserveGoldForOffer(100, 1);
+        var action = new KingdomMarketAction(kingdom);
+        action.reserveGoldForOffer(100, 1);
         int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
         assertEquals(initialGold, kingdomGold);
     }
@@ -62,7 +65,8 @@ class KingdomMarketTest {
         int initialGold = 5000;
         int price = 100;
         kingdom.getResources().setCount(ResourceName.gold, initialGold);
-        kingdom.reserveGoldForOffer(price, 1);
+        var action = new KingdomMarketAction(kingdom);
+        action.reserveGoldForOffer(price, 1);
         int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
         assertEquals(initialGold - price, kingdomGold);
     }
@@ -74,7 +78,8 @@ class KingdomMarketTest {
         int price = 100;
         int amount = 50;
         kingdom.getResources().setCount(ResourceName.gold, initialGold);
-        kingdom.reserveGoldForOffer(price, amount);
+        var action = new KingdomMarketAction(kingdom);
+        action.reserveGoldForOffer(price, amount);
         int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
         assertEquals(initialGold - price * amount, kingdomGold);
     }
@@ -86,7 +91,8 @@ class KingdomMarketTest {
         int price = 100;
         int amount = 70;
         kingdom.getResources().setCount(ResourceName.gold, initialGold);
-        int reservedGold = kingdom.reserveGoldForOffer(price, amount);
+        var action = new KingdomMarketAction(kingdom);
+        int reservedGold = action.reserveGoldForOffer(price, amount);
         int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
         assertThat(reservedGold).isLessThan(amount * price);
         assertThat(kingdomGold).isEqualTo(initialGold - reservedGold);
@@ -97,7 +103,8 @@ class KingdomMarketTest {
     {
         kingdom.getResources().setCount(ResourceName.food, 0);
         int initialFood = kingdom.getResources().getCount(ResourceName.food);
-        int postedFood = kingdom.postMarketOffer(MarketResource.food, 100);
+        var action = new KingdomMarketAction(kingdom);
+        int postedFood = action.postOffer(MarketResource.food, 100);
         int kingdomFood = kingdom.getResources().getCount(ResourceName.food);
         assertEquals(0, postedFood);
         assertEquals(initialFood, kingdomFood);
@@ -113,7 +120,8 @@ class KingdomMarketTest {
         var offer = market.findOfferById(result.data().get().id());
         assertTrue(offer.isPresent());
         kingdom.getResources().setCount(ResourceName.food, 1000);
-        kingdom.withdrawMarketOffer(offer.get());
+        var action = new KingdomMarketAction(kingdom);
+        action.withdrawMarketOffer(offer.get());
         int kingdomFood = kingdom.getResources().getCount(ResourceName.food);
         assertEquals(1000, kingdomFood);
     }

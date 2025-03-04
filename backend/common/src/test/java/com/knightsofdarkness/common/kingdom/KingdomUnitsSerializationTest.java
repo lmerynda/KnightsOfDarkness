@@ -7,7 +7,7 @@ class KingdomUnitsSerializationTest {
     // var availableUnits = createEmptyUnitsMap();
     // var mobileUnits = createEmptyUnitsMap();
 
-    // var kingdomUnits = new KingdomUnitsEntityDto(availableUnits, mobileUnits);
+    // var kingdomUnits = new KingdomUnitsDto(availableUnits, mobileUnits);
 
     // assertEquals(TestUtils.emptyKingdomUnitsJson(), TestUtils.kingdomUnitsDtoToJson(kingdomUnits));
     // }
@@ -16,7 +16,7 @@ class KingdomUnitsSerializationTest {
     // void deserializationTest()
     // {
     // var kingdomUnitsDto = TestUtils.jsonToKingdomUnitsDto(TestUtils.emptyKingdomUnitsJson());
-    // assertEquals(new KingdomUnitsEntityDto().toString(), kingdomUnitsDto.toString());
+    // assertEquals(new KingdomUnitsDto().toString(), kingdomUnitsDto.toString());
     // }
 
     // private Map<UnitName, Integer> createEmptyUnitsMap()

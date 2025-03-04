@@ -14,11 +14,13 @@ import com.knightsofdarkness.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomCarriersActionTest {
     private static Game game;
+    private static GameConfig gameConfig;
     private KingdomBuilder kingdomBuilder;
     private KingdomEntity kingdom;
 
@@ -26,6 +28,7 @@ class KingdomCarriersActionTest {
     static void beforeAll()
     {
         game = new TestGame().get();
+        gameConfig = game.getConfig();
     }
 
     @BeforeEach
@@ -42,7 +45,8 @@ class KingdomCarriersActionTest {
         kingdom.getResources().setCount(ResourceName.food, 100);
 
         var sendCarriersDto = new SendCarriersDto("destination", MarketResource.food, 100);
-        var sendCarriersResult = kingdom.sendCarriers(sendCarriersDto);
+        var action = new KingdomCarriersAction(kingdom, gameConfig);
+        var sendCarriersResult = action.sendCarriers(sendCarriersDto);
 
         assertFalse(sendCarriersResult.success());
         assertEquals(100, kingdom.getResources().getCount(ResourceName.food));
@@ -55,7 +59,8 @@ class KingdomCarriersActionTest {
         kingdom.getResources().setCount(ResourceName.food, 0);
 
         var sendCarriersDto = new SendCarriersDto("destination", MarketResource.food, 100);
-        var sendCarriersResult = kingdom.sendCarriers(sendCarriersDto);
+        var action = new KingdomCarriersAction(kingdom, gameConfig);
+        var sendCarriersResult = action.sendCarriers(sendCarriersDto);
 
         assertFalse(sendCarriersResult.success());
         assertEquals(10, kingdom.getUnits().getAvailableCount(UnitName.carrier));
@@ -68,7 +73,8 @@ class KingdomCarriersActionTest {
         kingdom.getResources().setCount(ResourceName.food, 100);
 
         var sendCarriersDto = new SendCarriersDto("destination", MarketResource.food, 50);
-        var sendCarriersResult = kingdom.sendCarriers(sendCarriersDto);
+        var action = new KingdomCarriersAction(kingdom, gameConfig);
+        var sendCarriersResult = action.sendCarriers(sendCarriersDto);
 
         assertTrue(sendCarriersResult.success());
         assertEquals(50, kingdom.getResources().getCount(ResourceName.food));
@@ -83,7 +89,8 @@ class KingdomCarriersActionTest {
         kingdom.getResources().setCount(ResourceName.food, 50);
 
         var sendCarriersDto = new SendCarriersDto("destination", MarketResource.food, 100);
-        var sendCarriersResult = kingdom.sendCarriers(sendCarriersDto);
+        var action = new KingdomCarriersAction(kingdom, gameConfig);
+        var sendCarriersResult = action.sendCarriers(sendCarriersDto);
 
         assertTrue(sendCarriersResult.success());
         assertThat(sendCarriersResult.data().get().amount()).isEqualTo(50);
@@ -96,10 +103,11 @@ class KingdomCarriersActionTest {
     {
         kingdom.getUnits().setCount(UnitName.carrier, 1);
         kingdom.getResources().setCount(ResourceName.food, 1000);
-        int carrierCapacity = kingdom.getConfig().carrierCapacity().get(MarketResource.food);
+        int carrierCapacity = gameConfig.carrierCapacity().get(MarketResource.food);
 
         var sendCarriersDto = new SendCarriersDto("destination", MarketResource.food, 1000);
-        var sendCarriersResult = kingdom.sendCarriers(sendCarriersDto);
+        var action = new KingdomCarriersAction(kingdom, gameConfig);
+        var sendCarriersResult = action.sendCarriers(sendCarriersDto);
 
         assertTrue(sendCarriersResult.success());
         assertThat(sendCarriersResult.data().get().amount()).isEqualTo(carrierCapacity);
@@ -114,7 +122,8 @@ class KingdomCarriersActionTest {
         kingdom.getResources().setCount(ResourceName.food, 100);
 
         var sendCarriersDto = new SendCarriersDto("destination", MarketResource.food, 50);
-        var sendCarriersResult = kingdom.sendCarriers(sendCarriersDto);
+        var action = new KingdomCarriersAction(kingdom, gameConfig);
+        var sendCarriersResult = action.sendCarriers(sendCarriersDto);
 
         assertTrue(sendCarriersResult.success());
         assertEquals(1, kingdom.getCarriersOnTheMove().size());

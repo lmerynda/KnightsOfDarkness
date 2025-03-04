@@ -2,7 +2,7 @@ package com.knightsofdarkness.web.gameconfig;
 
 import org.junit.jupiter.api.Test;
 
-import net.bytebuddy.build.AccessControllerPlugin.Initializer;
+import com.knightsofdarkness.web.game.config.Initializer;
 
 class InitializerTest {
     @Test

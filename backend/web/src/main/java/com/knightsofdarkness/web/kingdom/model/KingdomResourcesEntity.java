@@ -40,7 +40,7 @@ public class KingdomResourcesEntity {
 
     public KingdomResourcesDto toDto()
     {
-        return new KingdomResourcesEntityDto(toEnumMap());
+        return new KingdomResourcesDto(toEnumMap());
     }
 
     public int getCount(ResourceName name)

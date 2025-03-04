@@ -57,7 +57,7 @@ public class KingdomUnitsEntity {
 
     public KingdomUnitsDto toDto()
     {
-        return new KingdomUnitsEntityDto(availableUnits, mobileUnits);
+        return new KingdomUnitsDto(availableUnits, mobileUnits);
     }
 
     public EnumMap<UnitName, Integer> getAvailableUnits()

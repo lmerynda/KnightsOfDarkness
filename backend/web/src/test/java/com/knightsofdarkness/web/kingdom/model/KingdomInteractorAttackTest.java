@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.interactions;
+package com.knightsofdarkness.web.kingdom.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,13 +12,13 @@ import com.knightsofdarkness.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.Game;
-import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
-import com.knightsofdarkness.web.kingdom.model.KingdomInteractor;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomInteractorAttackTest {
     private Game game;
+    private GameConfig gameConfig;
     private KingdomEntity primaryKingdom;
     private KingdomEntity secondaryKingdom;
 
@@ -26,6 +26,7 @@ class KingdomInteractorAttackTest {
     void setUp()
     {
         game = new TestGame().get();
+        gameConfig = game.getConfig();
         primaryKingdom = new KingdomBuilder(game).withName("primary")
                 .withUnit(UnitName.bowman, 1000)
                 .withUnit(UnitName.infantry, 1000)
@@ -46,7 +47,8 @@ class KingdomInteractorAttackTest {
         attackingUnits.setCount(UnitName.infantry, 100);
         attackingUnits.setCount(UnitName.cavalry, 100);
         var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
-        var result = primaryKingdom.sendAttack(data);
+        var action = new KingdomMilitaryAction(primaryKingdom, gameConfig);
+        var result = action.sendAttack(data);
         assertTrue(result.success());
         assertEquals(1, primaryKingdom.getOngoingAttacks().size());
 
@@ -72,7 +74,8 @@ class KingdomInteractorAttackTest {
         attackingUnits.setCount(UnitName.infantry, 100);
         attackingUnits.setCount(UnitName.cavalry, 100);
         var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
-        var result = primaryKingdom.sendAttack(data);
+        var action = new KingdomMilitaryAction(primaryKingdom, gameConfig);
+        var result = action.sendAttack(data);
         assertTrue(result.success());
         assertEquals(1, primaryKingdom.getOngoingAttacks().size());
 
@@ -98,7 +101,8 @@ class KingdomInteractorAttackTest {
         attackingUnits.setCount(UnitName.infantry, 100);
         attackingUnits.setCount(UnitName.cavalry, 100);
         var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
-        var result = primaryKingdom.sendAttack(data);
+        var action = new KingdomMilitaryAction(primaryKingdom, gameConfig);
+        var result = action.sendAttack(data);
         assertTrue(result.success());
         assertEquals(1, primaryKingdom.getOngoingAttacks().size());
 
@@ -124,7 +128,8 @@ class KingdomInteractorAttackTest {
         attackingUnits.setCount(UnitName.infantry, 100);
         attackingUnits.setCount(UnitName.cavalry, 100);
         var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
-        var result = primaryKingdom.sendAttack(data);
+        var action = new KingdomMilitaryAction(primaryKingdom, gameConfig);
+        var result = action.sendAttack(data);
         assertTrue(result.success());
         assertEquals(1, primaryKingdom.getOngoingAttacks().size());
 
@@ -148,7 +153,8 @@ class KingdomInteractorAttackTest {
         var attackingUnits = new UnitsMapDto();
         attackingUnits.setCount(UnitName.bowman, 100);
         var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
-        var result = primaryKingdom.sendAttack(data);
+        var action = new KingdomMilitaryAction(primaryKingdom, gameConfig);
+        var result = action.sendAttack(data);
         assertTrue(result.success());
         assertEquals(1, primaryKingdom.getOngoingAttacks().size());
 
@@ -160,7 +166,7 @@ class KingdomInteractorAttackTest {
         var defenderCavalryCountBeforeAttackerSalvo = secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry);
 
         kingdomInteractor.processDefenseSalvo(primaryKingdom, secondaryKingdom, ongoingAttack);
-        assertEquals(0, ongoingAttack.getUnits().getCount(UnitName.bowman));
+        assertEquals(0, ongoingAttack.units.getCount(UnitName.bowman));
         kingdomInteractor.processAttackSalvo(primaryKingdom, secondaryKingdom, ongoingAttack);
 
         assertEquals(defenderBowmanCountBeforeAttackerSalvo, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));

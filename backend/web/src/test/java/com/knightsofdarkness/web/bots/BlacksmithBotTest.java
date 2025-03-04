@@ -10,18 +10,21 @@ import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 import com.knightsofdarkness.web.utils.KingdomPrinter;
 
 class BlacksmithBotTest {
     private static Game game;
+    private static GameConfig gameConfig;
     private KingdomBuilder kingdomBuilder;
 
     @BeforeAll
     static void beforeAll()
     {
         game = new TestGame().get();
+        gameConfig = game.getConfig();
     }
 
     @BeforeEach
@@ -38,7 +41,7 @@ class BlacksmithBotTest {
         var unusedLandBefore = kingdom.getUnusedLand();
         var workshopsBefore = kingdom.getBuildings().getCount(BuildingName.workshop);
 
-        var bot = new BlacksmithBot(kingdom, game.getMarket(), game.getKingdomInteractor());
+        var bot = new BlacksmithBot(kingdom, game.getMarket(), game.getKingdomInteractor(), gameConfig);
 
         KingdomPrinter.printResourcesHeader();
         KingdomPrinter.printLineSeparator();
@@ -46,7 +49,7 @@ class BlacksmithBotTest {
         {
             bot.doActionCycle();
             bot.passTurn();
-            KingdomPrinter.kingdomInfoPrinter(kingdom);
+            KingdomPrinter.kingdomInfoPrinter(kingdom, gameConfig);
         }
 
         var blacksmithsAfter = kingdom.getUnits().getTotalCount(UnitName.blacksmith);

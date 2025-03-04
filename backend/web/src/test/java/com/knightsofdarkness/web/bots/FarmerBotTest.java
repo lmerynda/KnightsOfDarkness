@@ -12,17 +12,21 @@ import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.model.KingdomTrainAction;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class FarmerBotTest {
     private static Game game;
+    private static GameConfig gameConfig;
     private KingdomBuilder kingdomBuilder;
 
     @BeforeAll
     static void beforeAll()
     {
         game = new TestGame().get();
+        gameConfig = game.getConfig();
     }
 
     @BeforeEach
@@ -40,7 +44,7 @@ class FarmerBotTest {
         var farmsBefore = kingdom.getBuildings().getCount(BuildingName.farm);
         var housesBefore = kingdom.getBuildings().getCount(BuildingName.house);
 
-        IBot bot = new FarmerBot(kingdom, game.getMarket(), game.getKingdomInteractor());
+        IBot bot = new FarmerBot(kingdom, game.getMarket(), game.getKingdomInteractor(), gameConfig);
         for (var i = 0; i < 10; i++)
         {
             bot.doActionCycle();
@@ -64,10 +68,11 @@ class FarmerBotTest {
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.farmer, 1);
 
-        var bot = new FarmerBot(kingdom, game.getMarket(), game.getKingdomInteractor());
+        var bot = new FarmerBot(kingdom, game.getMarket(), game.getKingdomInteractor(), gameConfig);
         bot.doAllActions();
 
-        var trainedUnits = kingdom.train(toTrain);
+        var action = new KingdomTrainAction(kingdom, gameConfig);
+        var trainedUnits = action.train(toTrain);
 
         assertEquals(0, trainedUnits.units().countAll());
     }

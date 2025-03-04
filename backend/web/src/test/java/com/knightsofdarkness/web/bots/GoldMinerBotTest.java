@@ -12,18 +12,22 @@ import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.model.KingdomTrainAction;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 import com.knightsofdarkness.web.utils.KingdomPrinter;
 
 class GoldMinerBotTest {
     private static Game game;
+    private static GameConfig gameConfig;
     private KingdomBuilder kingdomBuilder;
 
     @BeforeAll
     static void beforeAll()
     {
         game = new TestGame().get();
+        gameConfig = game.getConfig();
     }
 
     @BeforeEach
@@ -40,7 +44,7 @@ class GoldMinerBotTest {
         var unusedLandBefore = kingdom.getUnusedLand();
         var goldMinesBefore = kingdom.getBuildings().getCount(BuildingName.goldMine);
 
-        var bot = new GoldMinerBot(kingdom, game.getMarket(), game.getKingdomInteractor());
+        var bot = new GoldMinerBot(kingdom, game.getMarket(), game.getKingdomInteractor(), gameConfig);
 
         KingdomPrinter.printResourcesHeader();
         KingdomPrinter.printLineSeparator();
@@ -48,7 +52,7 @@ class GoldMinerBotTest {
         {
             bot.doActionCycle();
             bot.passTurn();
-            KingdomPrinter.kingdomInfoPrinter(kingdom);
+            KingdomPrinter.kingdomInfoPrinter(kingdom, gameConfig);
         }
 
         var goldMinersAfter = kingdom.getUnits().getTotalCount(UnitName.goldMiner);
@@ -66,10 +70,11 @@ class GoldMinerBotTest {
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.goldMiner, 1);
 
-        var bot = new GoldMinerBot(kingdom, game.getMarket(), game.getKingdomInteractor());
+        var bot = new GoldMinerBot(kingdom, game.getMarket(), game.getKingdomInteractor(), gameConfig);
         bot.doAllActions();
 
-        var trainedUnits = kingdom.train(toTrain);
+        var action = new KingdomTrainAction(kingdom, gameConfig);
+        var trainedUnits = action.train(toTrain);
 
         assertEquals(0, trainedUnits.units().countAll());
     }

@@ -24,6 +24,6 @@ public class KingdomResourcesDtoTypeAdapter implements JsonSerializer<KingdomRes
     {
         Type enumMapType = new TypeToken<EnumMap<ResourceName, Integer>>() {
         }.getType();
-        return new KingdomResourcesEntityDto(context.deserialize(json, enumMapType));
+        return new KingdomResourcesDto(context.deserialize(json, enumMapType));
     }
 }

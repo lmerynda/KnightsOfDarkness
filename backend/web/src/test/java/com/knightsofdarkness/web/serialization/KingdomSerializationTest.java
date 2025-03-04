@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.knightsofdarkness.common.GsonFactory;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
+import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
+import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 
 class KingdomSerializationTest {
@@ -28,9 +30,9 @@ class KingdomSerializationTest {
     {
         var kingdom = new KingdomDto();
         kingdom.name = "default_kingdom_name";
-        kingdom.resources = new KingdomResourcesEntityDto(100, 10000, 20, 1000, 1000, 20000, 100, 100, 20);
+        kingdom.resources = new KingdomResourcesDto(100, 10000, 20, 1000, 1000, 20000, 100, 100, 20);
         kingdom.buildings = new KingdomBuildingsDto(10, 5, 5, 5, 5, 1, 1, 1, 0, 1, 0);
-        kingdom.units = new KingdomUnitsEntityDto(generateDefaultAvailableUnits().getUnits(), new UnitsMapDto().getUnits());
+        kingdom.units = new KingdomUnitsDto(generateDefaultAvailableUnits().getUnits(), new UnitsMapDto().getUnits());
         return kingdom;
     }
 
