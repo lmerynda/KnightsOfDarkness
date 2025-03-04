@@ -2,7 +2,6 @@ package com.knightsofdarkness.web.kingdom.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,23 +14,19 @@ import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomBuildTest {
-    private static Game game;
-    private static GameConfig config;
+    private Game game;
+    private GameConfig config;
     private KingdomBuilder kingdomBuilder;
     private KingdomEntity kingdom;
-
-    @BeforeAll
-    static void beforeAll()
-    {
-        game = new TestGame().get();
-        config = game.getConfig();
-    }
 
     @BeforeEach
     void setUp()
     {
+        game = new TestGame().get();
+        config = game.getConfig();
         kingdomBuilder = new KingdomBuilder(game);
-        kingdom = kingdomBuilder.build();
+        kingdom = kingdomBuilder.withRichConfiguration().build();
+        game.addKingdom(kingdom);
     }
 
     @Test
@@ -59,8 +54,9 @@ class KingdomBuildTest {
         toBuild.setCount(BuildingName.goldMine, goldMinesToBuild);
 
         var action = new KingdomBuildAction(kingdom, config);
-        action.build(toBuild);
+        var result = action.build(toBuild);
 
+        assertEquals(5, result.buildings().getCount(BuildingName.house));
         assertEquals(housesBeforeBuild + 5, kingdom.getBuildings().getCount(BuildingName.house));
         assertEquals(goldMinesBeforeBuild + 2, kingdom.getBuildings().getCount(BuildingName.goldMine));
 
@@ -126,7 +122,7 @@ class KingdomBuildTest {
         toDemolish.setCount(BuildingName.house, 1);
 
         var action = new KingdomBuildAction(kingdom, config);
-        action.build(toDemolish);
+        action.demolish(toDemolish);
 
         assertEquals(housesBeforeDemolish - 1, kingdom.getBuildings().getCount(BuildingName.house));
     }

@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.game.config;
 
+import java.util.Map;
+
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
@@ -38,5 +40,10 @@ public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, in
         map.setCount(UnitName.infantry, infantry);
         map.setCount(UnitName.cavalry, cavalry);
         return new KingdomUnitsDto(map, new UnitsMapDto());
+    }
+
+    public Map<UnitName, Integer> toMap()
+    {
+        return toDto().getAvailableUnits().getUnits();
     }
 }

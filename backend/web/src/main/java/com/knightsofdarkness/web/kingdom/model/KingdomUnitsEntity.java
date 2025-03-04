@@ -49,6 +49,15 @@ public class KingdomUnitsEntity {
     {
     }
 
+    public KingdomUnitsEntity(Map<UnitName, Integer> availableUnitsMap)
+    {
+        availableUnits.putAll(availableUnitsMap);
+        for (UnitName name : UnitName.values())
+        {
+            mobileUnits.put(name, 0);
+        }
+    }
+
     public KingdomUnitsEntity(Map<UnitName, Integer> availableUnitsMap, Map<UnitName, Integer> mobileUnitsMap)
     {
         availableUnits.putAll(availableUnitsMap);

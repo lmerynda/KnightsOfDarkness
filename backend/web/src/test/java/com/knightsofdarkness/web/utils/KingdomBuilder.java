@@ -22,23 +22,10 @@ public class KingdomBuilder {
     {
         this.name = "test-kingdom";
         var startingConfiguration = game.getConfig().kingdomStartConfiguration();
-        this.resources = new KingdomResourcesEntity();
-        for (var resource : ResourceName.values())
-        {
-            this.resources.setCount(resource, startingConfiguration.resources().getCount(resource));
-        }
+        this.resources = new KingdomResourcesEntity(startingConfiguration.resources().toMap());
+        this.buildings = new KingdomBuildingsEntity(startingConfiguration.buildings().toMap());
 
-        this.buildings = new KingdomBuildingsEntity();
-        for (var building : BuildingName.values())
-        {
-            this.buildings.setCount(building, startingConfiguration.buildings().getCount(building));
-        }
-
-        this.units = new KingdomUnitsEntity();
-        for (var unit : UnitName.values())
-        {
-            this.units.setCount(unit, startingConfiguration.units().getCount(unit));
-        }
+        this.units = new KingdomUnitsEntity(startingConfiguration.units().toMap());
     }
 
     public KingdomBuilder withRichConfiguration()

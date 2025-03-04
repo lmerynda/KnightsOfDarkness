@@ -21,6 +21,9 @@ public class KingdomRepository implements IKingdomRepository {
     @Override
     public void update(KingdomEntity kingdom)
     {
+        kingdom.getResources().syncResources();
+        kingdom.getBuildings().syncBuildings();
+        kingdom.getUnits().syncUnits();
         for (var savedKingdom : kingdoms)
         {
             if (savedKingdom.getName().equals(kingdom.getName()))
@@ -38,6 +41,9 @@ public class KingdomRepository implements IKingdomRepository {
     @Override
     public void add(KingdomEntity kingdom)
     {
+        kingdom.getResources().syncResources();
+        kingdom.getBuildings().syncBuildings();
+        kingdom.getUnits().syncUnits();
         kingdoms.add(kingdom);
     }
 }
