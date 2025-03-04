@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import java.util.List;
 
-import com.knightsofdarkness.storage.user.UserEntity;
+import com.knightsofdarkness.web.user.model.UserEntity;
 
 public interface IUserService {
     List<UserEntity> getUsers();

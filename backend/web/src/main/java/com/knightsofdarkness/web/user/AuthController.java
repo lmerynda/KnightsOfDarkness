@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knightsofdarkness.storage.user.UserEntity;
 import com.knightsofdarkness.web.kingdom.KingdomService;
 import com.knightsofdarkness.web.security.AuthRequestDto;
 import com.knightsofdarkness.web.security.AuthResponseDto;
 import com.knightsofdarkness.web.security.RegisterRequestDto;
 import com.knightsofdarkness.web.security.TokenService;
+import com.knightsofdarkness.web.user.model.UserEntity;
 
 @RestController
 public class AuthController {

@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.knightsofdarkness.game.gameconfig.GameConfig;
-import com.knightsofdarkness.game.market.IMarket;
+import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.market.IMarket;
 
 import jakarta.transaction.Transactional;
 

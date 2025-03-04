@@ -4,9 +4,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
-import com.knightsofdarkness.game.interactions.IKingdomInteractor;
-import com.knightsofdarkness.game.interactions.KingdomInteractor;
-import com.knightsofdarkness.game.storage.IKingdomRepository;
+import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
+import com.knightsofdarkness.web.kingdom.IKingdomRepository;
+import com.knightsofdarkness.web.kingdom.model.KingdomInteractor;
 
 @Service
 @Configuration

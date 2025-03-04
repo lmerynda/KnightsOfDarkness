@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.knightsofdarkness.storage.user.UserEntity;
-import com.knightsofdarkness.storage.user.UserJpaRepository;
+import com.knightsofdarkness.web.user.model.UserEntity;
+import com.knightsofdarkness.web.user.model.UserJpaRepository;
 
 @Service
 public class UserService implements IUserService {

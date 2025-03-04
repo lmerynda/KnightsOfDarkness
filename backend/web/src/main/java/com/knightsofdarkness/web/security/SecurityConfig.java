@@ -31,7 +31,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/auth/validate-token").authenticated()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/**").authenticated()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin))
                 .sessionManagement(management -> management

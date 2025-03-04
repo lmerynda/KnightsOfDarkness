@@ -29,7 +29,7 @@ import com.knightsofdarkness.common.kingdom.SendAttackResult;
 import com.knightsofdarkness.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
-import com.knightsofdarkness.game.kingdom.KingdomSpecialBuilding;
+import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingEntity;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
@@ -53,15 +53,20 @@ public class KingdomController {
     @GetMapping()
     ResponseEntity<KingdomDto> getKingdom(@AuthenticationPrincipal UserData currentUser)
     {
+        String kingdomName;
         if (currentUser == null)
         {
-            logUserUnauthenticated();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            kingdomName = "uprzejmy";
+            // logUserUnauthenticated();
+            // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } else
+        {
+            kingdomName = currentUser.getKingdomName();
         }
 
         // log.info("User {} requested kingdom", currentUser);
 
-        return kingdomService.getKingdomByName(currentUser.getKingdomName())
+        return kingdomService.getKingdomByName(kingdomName)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -91,7 +96,7 @@ public class KingdomController {
     }
 
     @PostMapping("/start-special-building")
-    ResponseEntity<KingdomSpecialBuilding> kingdomStartSpecialBuilding(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingStartDto specialBuildingStartDto)
+    ResponseEntity<KingdomSpecialBuildingEntity> kingdomStartSpecialBuilding(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingStartDto specialBuildingStartDto)
     {
         if (currentUser == null)
         {

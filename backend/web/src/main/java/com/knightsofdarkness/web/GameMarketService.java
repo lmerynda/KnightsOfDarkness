@@ -4,14 +4,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
-import com.knightsofdarkness.game.gameconfig.GameConfig;
-import com.knightsofdarkness.game.market.IMarket;
-import com.knightsofdarkness.game.market.Market;
-import com.knightsofdarkness.game.messaging.INotificationSystem;
-import com.knightsofdarkness.game.messaging.NotificationSystem;
-import com.knightsofdarkness.game.storage.IKingdomRepository;
-import com.knightsofdarkness.game.storage.IMarketOfferRepository;
-import com.knightsofdarkness.game.storage.INotificationRepository;
+import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.IKingdomRepository;
+import com.knightsofdarkness.web.market.IMarket;
+import com.knightsofdarkness.web.market.model.IMarketOfferRepository;
+import com.knightsofdarkness.web.market.model.Market;
+import com.knightsofdarkness.web.messaging.INotificationRepository;
+import com.knightsofdarkness.web.messaging.INotificationSystem;
+import com.knightsofdarkness.web.messaging.NotificationSystem;
 
 @Service
 @Configuration

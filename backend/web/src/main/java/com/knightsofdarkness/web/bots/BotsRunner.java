@@ -7,16 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.knightsofdarkness.game.bot.BlacksmithBot;
-import com.knightsofdarkness.game.bot.FarmerBot;
-import com.knightsofdarkness.game.bot.GoldMinerBot;
-import com.knightsofdarkness.game.bot.IBot;
-import com.knightsofdarkness.game.bot.IronMinerBot;
-import com.knightsofdarkness.game.interactions.IKingdomInteractor;
-import com.knightsofdarkness.game.market.IMarket;
-import com.knightsofdarkness.storage.kingdom.KingdomRepository;
+import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
+import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
+import com.knightsofdarkness.web.market.IMarket;
+
+import jakarta.transaction.Transactional;
 
 @Component
 public class BotsRunner {
@@ -26,12 +23,14 @@ public class BotsRunner {
     private final IMarket market;
     private final IKingdomInteractor kingdomInteractor;
     private final List<String> botNames = Arrays.asList("BlacksmithBot", "FarmerBot", "IronMinerBot", "GoldMinerBot");
+    private final GameConfig gameConfig;
 
-    public BotsRunner(KingdomRepository kingdomRepository, IMarket market, IKingdomInteractor kingdomInteractor)
+    public BotsRunner(KingdomRepository kingdomRepository, IMarket market, IKingdomInteractor kingdomInteractor, GameConfig gameConfig)
     {
         this.kingdomRepository = kingdomRepository;
         this.market = market;
         this.kingdomInteractor = kingdomInteractor;
+        this.gameConfig = gameConfig;
     }
 
     // Runs every 10 seconds (units are in milliseconds)
@@ -53,11 +52,11 @@ public class BotsRunner {
             // TODO redo this funny code...
             IBot bot = switch (botName)
             {
-                case "BlacksmithBot" -> new BlacksmithBot(kingdom, market, kingdomInteractor);
-                case "IronMinerBot" -> new IronMinerBot(kingdom, market, kingdomInteractor);
-                case "FarmerBot" -> new FarmerBot(kingdom, market, kingdomInteractor);
-                case "GoldMinerBot" -> new GoldMinerBot(kingdom, market, kingdomInteractor);
-                default -> new GoldMinerBot(kingdom, market, kingdomInteractor);
+                case "BlacksmithBot" -> new BlacksmithBot(kingdom, market, kingdomInteractor, gameConfig);
+                case "IronMinerBot" -> new IronMinerBot(kingdom, market, kingdomInteractor, gameConfig);
+                case "FarmerBot" -> new FarmerBot(kingdom, market, kingdomInteractor, gameConfig);
+                case "GoldMinerBot" -> new GoldMinerBot(kingdom, market, kingdomInteractor, gameConfig);
+                default -> new GoldMinerBot(kingdom, market, kingdomInteractor, gameConfig);
             };
 
             runSingleBotActions(bot);
@@ -74,22 +73,13 @@ public class BotsRunner {
 
     boolean runActions(IBot bot)
     {
-        var kingdom = bot.getKingdom();
         var result = bot.doAllActions();
-        kingdomRepository.update(kingdom);
+        // kingdomRepository.update(kingdom);
         return result;
     }
 
     void passTurn(IBot bot)
     {
-        var kingdom = bot.getKingdom();
-        if (kingdom.hasMaxTurns() || bot.doesHaveEnoughUpkeep())
-        {
-            bot.passTurn();
-        } else
-        {
-            log.info("[{}] didn't have at least 80% upkeep for turn pass, skipping", kingdom.getName());
-        }
-        kingdomRepository.update(kingdom);
+        bot.passTurn();
     }
 }

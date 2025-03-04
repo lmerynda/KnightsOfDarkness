@@ -15,10 +15,9 @@ import com.knightsofdarkness.common.market.BuyMarketOfferResult;
 import com.knightsofdarkness.common.market.CreateMarketOfferResult;
 import com.knightsofdarkness.common.market.MarketOfferDto;
 import com.knightsofdarkness.common.market.MarketResource;
-import com.knightsofdarkness.game.gameconfig.GameConfig;
-import com.knightsofdarkness.game.market.IMarket;
-import com.knightsofdarkness.storage.kingdom.KingdomRepository;
-import com.knightsofdarkness.storage.market.MarketOfferReadRepository;
+import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
+import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;
 
 @Service
 public class MarketService {

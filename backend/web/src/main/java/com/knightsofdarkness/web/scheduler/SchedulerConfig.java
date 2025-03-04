@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
-import com.knightsofdarkness.game.gameconfig.GameConfig;
+import com.knightsofdarkness.web.game.config.GameConfig;
 
 @Configuration
 @EnableScheduling
