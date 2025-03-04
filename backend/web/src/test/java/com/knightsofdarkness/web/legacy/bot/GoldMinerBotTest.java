@@ -11,7 +11,7 @@ import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
-import com.knightsofdarkness.web.bots.legacy.GoldMinerBot;
+import com.knightsofdarkness.web.bots.GoldMinerBot;
 import com.knightsofdarkness.web.legacy.Game;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.legacy.utils.KingdomBuilder;

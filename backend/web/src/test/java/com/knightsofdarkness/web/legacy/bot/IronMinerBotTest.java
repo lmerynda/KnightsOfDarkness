@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
-import com.knightsofdarkness.web.bots.legacy.IronMinerBot;
+import com.knightsofdarkness.web.bots.IronMinerBot;
 import com.knightsofdarkness.web.legacy.Game;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.legacy.utils.KingdomBuilder;

@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.bots.legacy;
+package com.knightsofdarkness.web.bots;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.ResourceName;

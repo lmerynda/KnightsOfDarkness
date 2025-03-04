@@ -8,11 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.knightsofdarkness.web.bots.legacy.BlacksmithBot;
-import com.knightsofdarkness.web.bots.legacy.FarmerBot;
-import com.knightsofdarkness.web.bots.legacy.GoldMinerBot;
-import com.knightsofdarkness.web.bots.legacy.IBot;
-import com.knightsofdarkness.web.bots.legacy.IronMinerBot;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;

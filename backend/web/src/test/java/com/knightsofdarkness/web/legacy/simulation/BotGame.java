@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.web.bots.legacy.BlacksmithBot;
-import com.knightsofdarkness.web.bots.legacy.FarmerBot;
-import com.knightsofdarkness.web.bots.legacy.GoldMinerBot;
-import com.knightsofdarkness.web.bots.legacy.IBot;
-import com.knightsofdarkness.web.bots.legacy.IronMinerBot;
+import com.knightsofdarkness.web.bots.BlacksmithBot;
+import com.knightsofdarkness.web.bots.FarmerBot;
+import com.knightsofdarkness.web.bots.GoldMinerBot;
+import com.knightsofdarkness.web.bots.IBot;
+import com.knightsofdarkness.web.bots.IronMinerBot;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.legacy.utils.KingdomBuilder;
 import com.knightsofdarkness.web.legacy.utils.KingdomPrinter;

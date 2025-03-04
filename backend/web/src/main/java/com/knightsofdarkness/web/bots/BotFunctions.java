@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.bots.legacy;
+package com.knightsofdarkness.web.bots;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

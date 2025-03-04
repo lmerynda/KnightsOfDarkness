@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.bots.legacy;
+package com.knightsofdarkness.web.bots;
 
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
