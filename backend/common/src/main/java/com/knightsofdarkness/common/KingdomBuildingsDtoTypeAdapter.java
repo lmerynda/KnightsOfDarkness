@@ -24,6 +24,6 @@ public class KingdomBuildingsDtoTypeAdapter implements JsonSerializer<KingdomBui
     {
         Type enumMapType = new TypeToken<EnumMap<BuildingName, Integer>>() {
         }.getType();
-        return new KingdomBuildingsEntityDto(context.deserialize(json, enumMapType));
+        return new KingdomBuildingsDto(context.deserialize(json, enumMapType));
     }
 }

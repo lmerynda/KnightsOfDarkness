@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game;
+package com.knightsofdarkness.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

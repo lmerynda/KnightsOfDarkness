@@ -24,7 +24,7 @@ public class KingdomBuildAction {
      */
     public KingdomBuildingsActionResult build(KingdomBuildingsDto buildingsToBuild)
     {
-        var buildingsBuilt = new KingdomBuildingsEntityDto();
+        var buildingsBuilt = new KingdomBuildingsDto();
         for (var buildingName : BuildingName.values())
         {
             if (buildingsToBuild.getCount(buildingName) > 0)
@@ -53,7 +53,7 @@ public class KingdomBuildAction {
 
     public KingdomBuildingsActionResult demolish(KingdomBuildingsDto buildingsToDemolish)
     {
-        var buildingsDemolished = new KingdomBuildingsEntityDto();
+        var buildingsDemolished = new KingdomBuildingsDto();
         for (var buildingName : BuildingName.values())
         {
             var demolishCount = buildingsToDemolish.getCount(buildingName);

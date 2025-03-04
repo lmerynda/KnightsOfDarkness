@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.kingdom.legacy;
+package com.knightsofdarkness.web.kingdom.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.game.config.GameConfig;
@@ -17,7 +18,7 @@ class KingdomBuildTest {
     private static Game game;
     private static GameConfig config;
     private KingdomBuilder kingdomBuilder;
-    private Kingdom kingdom;
+    private KingdomEntity kingdom;
 
     @BeforeAll
     static void beforeAll()
@@ -37,9 +38,8 @@ class KingdomBuildTest {
     void buildSanityTest()
     {
         var buildingPointsBeforeBuild = kingdom.getResources().getCount(ResourceName.buildingPoints);
-        var toBuild = new KingdomBuildingsEntityDto();
-
-        kingdom.build(toBuild);
+        var action = new KingdomBuildAction(kingdom, config);
+        action.build(new KingdomBuildingsDto());
 
         assertEquals(buildingPointsBeforeBuild, kingdom.getResources().getCount(ResourceName.buildingPoints));
     }
@@ -53,11 +53,13 @@ class KingdomBuildTest {
 
         var housesToBuild = 5;
         var goldMinesToBuild = 2;
-        var toBuild = new KingdomBuildingsEntityDto();
+
+        var toBuild = new KingdomBuildingsDto();
         toBuild.setCount(BuildingName.house, housesToBuild);
         toBuild.setCount(BuildingName.goldMine, goldMinesToBuild);
 
-        kingdom.build(toBuild);
+        var action = new KingdomBuildAction(kingdom, config);
+        action.build(toBuild);
 
         assertEquals(housesBeforeBuild + 5, kingdom.getBuildings().getCount(BuildingName.house));
         assertEquals(goldMinesBeforeBuild + 2, kingdom.getBuildings().getCount(BuildingName.goldMine));
@@ -75,10 +77,11 @@ class KingdomBuildTest {
         var unusedLandBeforeBuild = kingdom.getUnusedLand();
 
         var housesToBuild = 5;
-        var toBuild = new KingdomBuildingsEntityDto();
+        var toBuild = new KingdomBuildingsDto();
         toBuild.setCount(BuildingName.house, housesToBuild);
 
-        kingdom.build(toBuild);
+        var action = new KingdomBuildAction(kingdom, config);
+        action.build(toBuild);
 
         assertEquals(unusedLandBeforeBuild - housesToBuild, kingdom.getUnusedLand());
     }
@@ -88,13 +91,14 @@ class KingdomBuildTest {
     {
         var existingBuildingsCount = kingdom.getBuildings().countAll();
 
-        var toBuild = new KingdomBuildingsEntityDto();
+        var toBuild = new KingdomBuildingsDto();
         toBuild.setCount(BuildingName.house, 1);
         toBuild.setCount(BuildingName.farm, 3);
         toBuild.setCount(BuildingName.goldMine, 2);
         toBuild.setCount(BuildingName.workshop, 1);
 
-        kingdom.build(toBuild);
+        var action = new KingdomBuildAction(kingdom, config);
+        action.build(toBuild);
 
         assertEquals(existingBuildingsCount + 7, kingdom.getBuildings().countAll());
     }
@@ -104,10 +108,11 @@ class KingdomBuildTest {
     {
         var buildingsCountBeforeBuild = kingdom.getBuildings().countAll();
         kingdom.getResources().setCount(ResourceName.land, buildingsCountBeforeBuild);
-        var toBuild = new KingdomBuildingsEntityDto();
+        var toBuild = new KingdomBuildingsDto();
         toBuild.setCount(BuildingName.house, 1);
 
-        kingdom.build(toBuild);
+        var action = new KingdomBuildAction(kingdom, config);
+        action.build(toBuild);
 
         assertEquals(buildingsCountBeforeBuild, kingdom.getBuildings().countAll());
     }
@@ -117,10 +122,11 @@ class KingdomBuildTest {
     {
         var housesBeforeDemolish = kingdom.getBuildings().getCount(BuildingName.house);
 
-        var toDemolish = new KingdomBuildingsEntityDto();
+        var toDemolish = new KingdomBuildingsDto();
         toDemolish.setCount(BuildingName.house, 1);
 
-        kingdom.demolish(toDemolish);
+        var action = new KingdomBuildAction(kingdom, config);
+        action.build(toDemolish);
 
         assertEquals(housesBeforeDemolish - 1, kingdom.getBuildings().getCount(BuildingName.house));
     }

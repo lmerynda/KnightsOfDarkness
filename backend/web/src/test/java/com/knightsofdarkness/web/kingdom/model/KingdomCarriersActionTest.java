@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.kingdom.legacy;
+package com.knightsofdarkness.web.kingdom.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,7 +20,7 @@ import com.knightsofdarkness.web.utils.KingdomBuilder;
 class KingdomCarriersActionTest {
     private static Game game;
     private KingdomBuilder kingdomBuilder;
-    private Kingdom kingdom;
+    private KingdomEntity kingdom;
 
     @BeforeAll
     static void beforeAll()

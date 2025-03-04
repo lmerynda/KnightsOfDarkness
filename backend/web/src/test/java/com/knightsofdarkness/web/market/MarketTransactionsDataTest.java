@@ -11,13 +11,14 @@ import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class MarketTransactionsDataTest {
     private Game game;
     private IMarket market;
-    private Kingdom kingdom;
+    private KingdomEntity kingdom;
 
     @BeforeEach
     void beforeEach()

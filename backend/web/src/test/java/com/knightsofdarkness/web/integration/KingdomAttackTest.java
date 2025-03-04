@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.integration;
+package com.knightsofdarkness.web.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,14 +16,15 @@ import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomAttackTest {
     private Game game;
     private IKingdomInteractor kingdomInteractor;
-    private Kingdom primaryKingdom;
-    private Kingdom secondaryKingdom;
+    private KingdomEntity primaryKingdom;
+    private KingdomEntity secondaryKingdom;
     private GameConfig gameConfig;
     private static final int weaponsProductionPercentage = 0;
 

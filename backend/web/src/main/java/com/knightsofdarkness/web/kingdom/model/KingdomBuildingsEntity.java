@@ -42,7 +42,7 @@ public class KingdomBuildingsEntity {
 
     public KingdomBuildingsDto toDto()
     {
-        return new KingdomBuildingsEntityDto(buildings);
+        return new KingdomBuildingsDto(buildings);
     }
 
     public void loadMap(Map<BuildingName, Integer> buildingsMap)

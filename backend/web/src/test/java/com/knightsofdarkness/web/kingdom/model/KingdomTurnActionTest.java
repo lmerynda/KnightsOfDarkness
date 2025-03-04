@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.kingdom.legacy;
+package com.knightsofdarkness.web.kingdom.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -7,14 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.web.Game;
-import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomTurnActionTest {
     private static Game game;
     private KingdomBuilder kingdomBuilder;
-    private Kingdom kingdom;
+    private KingdomEntity kingdom;
 
     @BeforeAll
     static void beforeAll()

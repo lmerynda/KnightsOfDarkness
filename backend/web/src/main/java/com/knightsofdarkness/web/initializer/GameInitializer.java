@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.common.market.MarketOfferDto;
@@ -77,7 +78,7 @@ public class GameInitializer implements CommandLineRunner {
         var kingdom = new KingdomDto();
         kingdom.name = "default_kingdom_name";
         kingdom.resources = new KingdomResourcesEntityDto(100, 10000, 20, 1000, 1000, 20000, 100, 100, 20);
-        kingdom.buildings = new KingdomBuildingsEntityDto(10, 5, 5, 5, 5, 1, 1, 1, 0, 1, 0);
+        kingdom.buildings = new KingdomBuildingsDto(10, 5, 5, 5, 5, 1, 1, 1, 0, 1, 0);
         kingdom.units = new KingdomUnitsEntityDto(generateDefaultAvailableUnits().getUnits(), new UnitsMapDto().getUnits());
         return kingdom;
     }

@@ -7,7 +7,7 @@ class KingdomSerializationTest {
     // var kingdomDto = new KingdomDto(
     // "unknown",
     // new KingdomResourcesEntityDto(),
-    // new KingdomBuildingsEntityDto(),
+    // new KingdomBuildingsDto(),
     // new KingdomUnitsEntityDto(createUnitsMap(), createUnitsMap()),
     // new ArrayList<>(),
     // new ArrayList<>(),

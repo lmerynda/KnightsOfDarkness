@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game;
+package com.knightsofdarkness.web;
 
 public enum DataName
 {

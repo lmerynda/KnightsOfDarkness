@@ -1,10 +1,8 @@
-package com.knightsofdarkness.web.kingdom.legacy;
+package com.knightsofdarkness.web.kingdom.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-
-import com.knightsofdarkness.web.kingdom.model.KingdomOtherAction;
 
 class KingdomOtherActionTest {
     @Test

@@ -21,7 +21,7 @@ public class KingdomDto {
     {
         this.name = "unknown";
         this.resources = new KingdomResourcesEntityDto();
-        this.buildings = new KingdomBuildingsEntityDto();
+        this.buildings = new KingdomBuildingsDto();
         this.units = new KingdomUnitsEntityDto();
         this.marketOffers = new ArrayList<>();
         this.specialBuildings = new ArrayList<>();

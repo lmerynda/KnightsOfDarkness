@@ -26,7 +26,7 @@ public record KingdomStartingBuildings(int house, int goldMine, int ironMine, in
 
     public KingdomBuildingsDto toDto()
     {
-        return new KingdomBuildingsEntityDto(house, goldMine, ironMine, workshop, farm, market, barracks, guardHouse, spyGuild, tower, castle);
+        return new KingdomBuildingsDto(house, goldMine, ironMine, workshop, farm, market, barracks, guardHouse, spyGuild, tower, castle);
     }
 
     public Map<BuildingName, Integer> toMap()

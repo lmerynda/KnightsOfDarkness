@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.interactions;
+package com.knightsofdarkness.web.interactions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,14 +12,15 @@ import com.knightsofdarkness.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomInteractor;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomInteractorAttackTest {
     private Game game;
-    private Kingdom primaryKingdom;
-    private Kingdom secondaryKingdom;
+    private KingdomEntity primaryKingdom;
+    private KingdomEntity secondaryKingdom;
 
     @BeforeEach
     void setUp()

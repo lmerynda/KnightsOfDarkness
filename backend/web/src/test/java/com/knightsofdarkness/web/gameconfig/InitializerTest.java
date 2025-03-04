@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.gameconfig;
+package com.knightsofdarkness.web.gameconfig;
 
 import org.junit.jupiter.api.Test;
 

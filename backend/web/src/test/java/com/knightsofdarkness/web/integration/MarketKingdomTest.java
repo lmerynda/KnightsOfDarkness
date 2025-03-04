@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.integration;
+package com.knightsofdarkness.web.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.market.IMarket;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
@@ -14,7 +15,7 @@ import com.knightsofdarkness.web.utils.KingdomBuilder;
 class MarketKingdomTest {
     private Game game;
     private IMarket market;
-    private Kingdom kingdom;
+    private KingdomEntity kingdom;
 
     @BeforeEach
     void setUp()

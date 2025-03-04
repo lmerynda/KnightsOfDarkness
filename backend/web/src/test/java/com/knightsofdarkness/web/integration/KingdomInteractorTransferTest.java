@@ -1,4 +1,4 @@
-package com.knightsofdarkness.game.integration;
+package com.knightsofdarkness.web.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,14 +12,15 @@ import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomInteractorTransferTest {
     private Game game;
     private IKingdomInteractor kingdomInteractor;
-    private Kingdom primaryKingdom;
-    private Kingdom secondaryKingdom;
+    private KingdomEntity primaryKingdom;
+    private KingdomEntity secondaryKingdom;
     private static final int weaponsProductionPercentage = 0;
 
     @BeforeEach

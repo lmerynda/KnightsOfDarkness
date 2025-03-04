@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.kingdom.legacy;
+package com.knightsofdarkness.web.kingdom.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
@@ -316,7 +317,7 @@ class KingdomTurnTest {
 
         var unemployedBeforeTurn = kingdom.getResources().getCount(ResourceName.unemployed);
         var goldMinersBeforeTurnCount = kingdom.getUnits().getTotalCount(UnitName.goldMiner);
-        var toDemolish = new KingdomBuildingsEntityDto();
+        var toDemolish = new KingdomBuildingsDto();
         toDemolish.setCount(BuildingName.goldMine, 1);
         kingdom.demolish(toDemolish);
         kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
@@ -335,7 +336,7 @@ class KingdomTurnTest {
         kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
 
         var unemployedBeforeTurn = kingdom.getResources().getCount(ResourceName.unemployed);
-        var toDemolish = new KingdomBuildingsEntityDto();
+        var toDemolish = new KingdomBuildingsDto();
         toDemolish.setCount(BuildingName.house, 1);
         kingdom.demolish(toDemolish);
 
