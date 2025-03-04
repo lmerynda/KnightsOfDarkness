@@ -4,30 +4,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomMarketTest {
-    private static Game game;
+    private Game game;
+    private GameConfig gameConfig;
+    private KingdomBuilder kingdomBuilder;
     private KingdomEntity kingdom;
-
-    @BeforeAll
-    static void beforeAll()
-    {
-        game = new TestGame().get();
-    }
 
     @BeforeEach
     void setUp()
     {
-        this.kingdom = new KingdomBuilder(game).build();
+        game = new TestGame().get();
+        gameConfig = game.getConfig();
+        kingdomBuilder = new KingdomBuilder(game);
+        kingdom = kingdomBuilder.withRichConfiguration().build();
+        game.addKingdom(kingdom);
     }
 
     @Test

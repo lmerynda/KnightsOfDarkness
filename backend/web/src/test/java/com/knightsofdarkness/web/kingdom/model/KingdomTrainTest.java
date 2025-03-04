@@ -3,7 +3,6 @@ package com.knightsofdarkness.web.kingdom.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,27 +16,24 @@ import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomTrainTest {
-    private static Game game;
-    private static GameConfig gameConfig;
+    private Game game;
+    private GameConfig gameConfig;
     private KingdomBuilder kingdomBuilder;
-
-    @BeforeAll
-    static void beforeAll()
-    {
-        game = new TestGame().get();
-        gameConfig = game.getConfig();
-    }
+    private KingdomEntity kingdom;
 
     @BeforeEach
     void setUp()
     {
-        this.kingdomBuilder = new KingdomBuilder(game);
+        game = new TestGame().get();
+        gameConfig = game.getConfig();
+        kingdomBuilder = new KingdomBuilder(game);
+        kingdom = kingdomBuilder.withRichConfiguration().build();
+        game.addKingdom(kingdom);
     }
 
     @Test
     void trainSanityTest()
     {
-        var kingdom = kingdomBuilder.build();
         var toTrain = new UnitsMapDto();
 
         var action = new KingdomTrainAction(kingdom, gameConfig);
@@ -49,7 +45,7 @@ class KingdomTrainTest {
     @Test
     void trainBasicTest()
     {
-        var kingdom = kingdomBuilder.build();
+        kingdom.getBuildings().addCount(BuildingName.goldMine, 2);
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.goldMiner, 10);
 
@@ -62,7 +58,7 @@ class KingdomTrainTest {
     @Test
     void trainInsufficientGold()
     {
-        var kingdom = kingdomBuilder.withResource(ResourceName.gold, 0).build();
+        kingdom.getResources().setCount(ResourceName.gold, 0);
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.goldMiner, 10);
 
@@ -75,7 +71,7 @@ class KingdomTrainTest {
     @Test
     void trainInsufficientTools()
     {
-        var kingdom = kingdomBuilder.withResource(ResourceName.tools, 0).build();
+        kingdom.getResources().setCount(ResourceName.tools, 0);
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.goldMiner, 10);
 
@@ -88,7 +84,7 @@ class KingdomTrainTest {
     @Test
     void trainInsufficientUnemployed()
     {
-        var kingdom = kingdomBuilder.withResource(ResourceName.unemployed, 0).build();
+        kingdom.getResources().setCount(ResourceName.unemployed, 0);
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.goldMiner, 10);
 
@@ -101,7 +97,9 @@ class KingdomTrainTest {
     @Test
     void trainPartiallySufficientGoldTest()
     {
-        var kingdom = kingdomBuilder.withResource(ResourceName.gold, 10000).build();
+        kingdom.getBuildings().addCount(BuildingName.goldMine, 2);
+
+        kingdom.getResources().setCount(ResourceName.gold, 10000);
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.goldMiner, 10);
 
@@ -115,7 +113,6 @@ class KingdomTrainTest {
     @Test
     void trainAllUnitsTest()
     {
-        var kingdom = kingdomBuilder.withRichConfiguration().build();
         for (var buildingName : BuildingName.values())
         {
             var oldCount = kingdom.getBuildings().getCount(buildingName);
@@ -140,7 +137,7 @@ class KingdomTrainTest {
     @Test
     void trainingShouldNotResultInLessUnits()
     {
-        var kingdom = kingdomBuilder.withBuilding(BuildingName.goldMine, 0).build();
+        kingdom.getBuildings().setCount(BuildingName.goldMine, 0);
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.goldMiner, 1);
 
@@ -153,7 +150,8 @@ class KingdomTrainTest {
     @Test
     void trainInsufficientBuildingCapacityTest()
     {
-        var kingdom = kingdomBuilder.withBuilding(BuildingName.goldMine, 0).withUnit(UnitName.goldMiner, 0).build();
+        kingdom.getBuildings().setCount(BuildingName.goldMine, 0);
+        kingdom.getUnits().setCount(UnitName.goldMiner, 0);
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.goldMiner, 1);
 

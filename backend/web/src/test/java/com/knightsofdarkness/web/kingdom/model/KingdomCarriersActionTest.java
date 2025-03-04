@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,23 +18,19 @@ import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomCarriersActionTest {
-    private static Game game;
-    private static GameConfig gameConfig;
+    private Game game;
+    private GameConfig gameConfig;
     private KingdomBuilder kingdomBuilder;
     private KingdomEntity kingdom;
-
-    @BeforeAll
-    static void beforeAll()
-    {
-        game = new TestGame().get();
-        gameConfig = game.getConfig();
-    }
 
     @BeforeEach
     void setUp()
     {
+        game = new TestGame().get();
+        gameConfig = game.getConfig();
         kingdomBuilder = new KingdomBuilder(game);
-        kingdom = kingdomBuilder.build();
+        kingdom = kingdomBuilder.withRichConfiguration().build();
+        game.addKingdom(kingdom);
     }
 
     @Test

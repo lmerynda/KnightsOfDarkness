@@ -2,29 +2,29 @@ package com.knightsofdarkness.web.kingdom.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomUnitsTest {
-    private static Game game;
+    private Game game;
+    private GameConfig gameConfig;
     private KingdomBuilder kingdomBuilder;
-
-    @BeforeAll
-    static void beforeAll()
-    {
-        game = new TestGame().get();
-    }
+    private KingdomEntity kingdom;
 
     @BeforeEach
     void setUp()
     {
-        this.kingdomBuilder = new KingdomBuilder(game);
+        game = new TestGame().get();
+        gameConfig = game.getConfig();
+        kingdomBuilder = new KingdomBuilder(game);
+        kingdom = kingdomBuilder.withRichConfiguration().build();
+        game.addKingdom(kingdom);
     }
 
     @Test

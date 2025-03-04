@@ -3,9 +3,13 @@ package com.knightsofdarkness.web.utils;
 import java.util.ArrayList;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.kingdom.model.KingdomBuildingsEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
@@ -13,19 +17,18 @@ import com.knightsofdarkness.web.kingdom.model.KingdomResourcesEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomUnitsEntity;
 
 public class KingdomBuilder {
-    private final KingdomResourcesEntity resources;
-    private final KingdomBuildingsEntity buildings;
-    private final KingdomUnitsEntity units;
+    private final KingdomResourcesDto resources;
+    private final KingdomBuildingsDto buildings;
+    private final KingdomUnitsDto units;
     private String name;
 
     public KingdomBuilder(Game game)
     {
         this.name = "test-kingdom";
         var startingConfiguration = game.getConfig().kingdomStartConfiguration();
-        this.resources = new KingdomResourcesEntity(startingConfiguration.resources().toMap());
-        this.buildings = new KingdomBuildingsEntity(startingConfiguration.buildings().toMap());
-
-        this.units = new KingdomUnitsEntity(startingConfiguration.units().toMap());
+        this.resources = new KingdomResourcesDto(startingConfiguration.resources().toMap());
+        this.buildings = new KingdomBuildingsDto(startingConfiguration.buildings().toMap());
+        this.units = new KingdomUnitsDto(startingConfiguration.units().toMap(), new UnitsMapDto().getUnits());
     }
 
     public KingdomBuilder withRichConfiguration()
@@ -45,7 +48,7 @@ public class KingdomBuilder {
 
         for (var unit : UnitName.values())
         {
-            this.units.setCount(unit, 1000);
+            this.units.getAvailableUnits().setCount(unit, 1000);
         }
 
         return this;
@@ -65,7 +68,7 @@ public class KingdomBuilder {
 
     public KingdomBuilder withUnit(UnitName unit, int count)
     {
-        this.units.setCount(unit, count);
+        this.units.getAvailableUnits().setCount(unit, count);
         return this;
     }
 
@@ -85,12 +88,12 @@ public class KingdomBuilder {
     {
         return new KingdomEntity(
                 name,
-                new KingdomResourcesEntity(resources.toEnumMap()),
-                new KingdomBuildingsEntity(buildings.toEnumMap()),
+                new KingdomResourcesEntity(resources.getResources()),
+                new KingdomBuildingsEntity(buildings.getBuildings()),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                new KingdomUnitsEntity(units.getAvailableUnits(), units.getMobileUnits()),
+                new KingdomUnitsEntity(units.getAvailableUnits().getUnits(), units.getMobileUnits().getUnits()),
                 new KingdomTurnReport());
     }
 }
