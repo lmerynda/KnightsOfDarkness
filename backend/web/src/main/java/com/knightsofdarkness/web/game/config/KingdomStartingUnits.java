@@ -37,6 +37,6 @@ public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, in
         map.setCount(UnitName.bowman, bowman);
         map.setCount(UnitName.infantry, infantry);
         map.setCount(UnitName.cavalry, cavalry);
-        return new KingdomUnitsDto(map, new UnitsMapDto());
+        return new KingdomUnitsEntityDto(map, new UnitsMapDto());
     }
 }

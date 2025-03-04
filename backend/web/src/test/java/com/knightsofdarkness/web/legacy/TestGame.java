@@ -1,10 +1,11 @@
 package com.knightsofdarkness.game;
 
-import com.knightsofdarkness.game.interactions.KingdomInteractor;
-import com.knightsofdarkness.game.messaging.DummyNotificationSystem;
-import com.knightsofdarkness.game.utils.KingdomRepository;
-import com.knightsofdarkness.game.utils.MarketBuilder;
-import com.knightsofdarkness.game.utils.NotificationRepository;
+import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.kingdom.model.KingdomInteractor;
+import com.knightsofdarkness.web.messaging.legacy.DummyNotificationSystem;
+import com.knightsofdarkness.web.utils.KingdomRepository;
+import com.knightsofdarkness.web.utils.MarketBuilder;
+import com.knightsofdarkness.web.utils.NotificationRepository;
 
 import net.bytebuddy.build.AccessControllerPlugin.Initializer;
 

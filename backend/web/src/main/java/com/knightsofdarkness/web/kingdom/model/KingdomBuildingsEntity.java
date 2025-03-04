@@ -42,7 +42,7 @@ public class KingdomBuildingsEntity {
 
     public KingdomBuildingsDto toDto()
     {
-        return new KingdomBuildingsDto(buildings);
+        return new KingdomBuildingsEntityDto(buildings);
     }
 
     public void loadMap(Map<BuildingName, Integer> buildingsMap)
@@ -106,6 +106,12 @@ public class KingdomBuildingsEntity {
     public void subtractCount(BuildingName buildingName, int howManyToDemolish)
     {
         buildings.put(buildingName, buildings.get(buildingName) - howManyToDemolish);
+    }
+
+    // TODO is it really needed?
+    public void setCount(BuildingName name, int count)
+    {
+        buildings.put(name, count);
     }
 
     public int countAll()

@@ -48,6 +48,12 @@ public class MarketOfferEntity {
         return new MarketOfferDto(id, kingdom.getName(), resource, count, price);
     }
 
+    // TODO check if really needed
+    public UUID getId()
+    {
+        return id;
+    }
+
     public KingdomEntity getSeller()
     {
         return kingdom;

@@ -20,9 +20,9 @@ public class KingdomDto {
     public KingdomDto()
     {
         this.name = "unknown";
-        this.resources = new KingdomResourcesDto();
-        this.buildings = new KingdomBuildingsDto();
-        this.units = new KingdomUnitsDto();
+        this.resources = new KingdomResourcesEntityDto();
+        this.buildings = new KingdomBuildingsEntityDto();
+        this.units = new KingdomUnitsEntityDto();
         this.marketOffers = new ArrayList<>();
         this.specialBuildings = new ArrayList<>();
         this.lastTurnReport = new KingdomTurnReport();

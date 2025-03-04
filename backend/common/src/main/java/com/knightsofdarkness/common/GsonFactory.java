@@ -27,8 +27,8 @@ public class GsonFactory {
     {
         gsonBuilder
                 .registerTypeAdapter(UnitsMapDto.class, new UnitsMapDtoDtoTypeAdapter())
-                .registerTypeAdapter(KingdomBuildingsDto.class, new KingdomBuildingsDtoTypeAdapter())
-                .registerTypeAdapter(KingdomResourcesDto.class, new KingdomResourcesDtoTypeAdapter())
+                .registerTypeAdapter(KingdomBuildingsDto.class, new KingdomBuildingsEntityDtoTypeAdapter())
+                .registerTypeAdapter(KingdomResourcesDto.class, new KingdomResourcesEntityDtoTypeAdapter())
                 .registerTypeAdapter(KingdomDetailsDto.class, new KingdomDetailsDtoTypeAdapter())
                 .registerTypeAdapter(KingdomDto.class, new KingdomDtoAdapter())
                 .registerTypeAdapter(Optional.class, new OptionalTypeAdapter())

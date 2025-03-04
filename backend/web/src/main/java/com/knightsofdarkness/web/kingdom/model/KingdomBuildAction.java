@@ -24,7 +24,7 @@ public class KingdomBuildAction {
      */
     public KingdomBuildingsActionResult build(KingdomBuildingsDto buildingsToBuild)
     {
-        var buildingsBuilt = new KingdomBuildingsDto();
+        var buildingsBuilt = new KingdomBuildingsEntityDto();
         for (var buildingName : BuildingName.values())
         {
             if (buildingsToBuild.getCount(buildingName) > 0)
@@ -34,7 +34,7 @@ public class KingdomBuildAction {
             }
         }
 
-        return new KingdomBuildingsActionResult((Utils.format("Succesfully built {} buildings", buildingsBuilt.countAll())), buildingsBuilt);
+        return new KingdomBuildingsEntityActionResult((Utils.format("Succesfully built {} buildings", buildingsBuilt.countAll())), buildingsBuilt);
     }
 
     int build(BuildingName building, int count)
@@ -53,7 +53,7 @@ public class KingdomBuildAction {
 
     public KingdomBuildingsActionResult demolish(KingdomBuildingsDto buildingsToDemolish)
     {
-        var buildingsDemolished = new KingdomBuildingsDto();
+        var buildingsDemolished = new KingdomBuildingsEntityDto();
         for (var buildingName : BuildingName.values())
         {
             var demolishCount = buildingsToDemolish.getCount(buildingName);
@@ -66,6 +66,6 @@ public class KingdomBuildAction {
             }
         }
 
-        return new KingdomBuildingsActionResult(Utils.format("Succesfully demolished {} buildings", buildingsDemolished.countAll()), buildingsDemolished);
+        return new KingdomBuildingsEntityActionResult(Utils.format("Succesfully demolished {} buildings", buildingsDemolished.countAll()), buildingsDemolished);
     }
 }

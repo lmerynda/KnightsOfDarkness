@@ -36,4 +36,14 @@ public class MarketTransactionEntity {
         this.count = count;
         this.date = date;
     }
+
+    public MarketResource getResource()
+    {
+        return resource;
+    }
+
+    public Instant getDate()
+    {
+        return date;
+    }
 }

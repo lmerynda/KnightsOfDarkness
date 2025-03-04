@@ -46,7 +46,7 @@ public class KingdomTrainAction {
             trainedUnits.setCount(unitName, howManyToTrain);
         }
 
-        return new KingdomUnitsActionResult(Utils.format("Succesfully trained {} units", trainedUnits.countAll()), trainedUnits);
+        return new KingdomUnitsEntityActionResult(Utils.format("Succesfully trained {} units", trainedUnits.countAll()), trainedUnits);
     }
 
     public KingdomUnitsActionResult fireUnits(UnitsMapDto unitsToFire)
@@ -63,7 +63,7 @@ public class KingdomTrainAction {
             firedUnits.setCount(unitName, howManyToFire);
         }
 
-        return new KingdomUnitsActionResult(Utils.format("Succesfully fired {} units", firedUnits.countAll()), firedUnits);
+        return new KingdomUnitsEntityActionResult(Utils.format("Succesfully fired {} units", firedUnits.countAll()), firedUnits);
     }
 
     private int calculateMaximumToAfford(KingdomResourcesEntity resources, UnitTrainingCost trainingCost)

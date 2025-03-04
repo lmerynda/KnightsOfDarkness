@@ -34,4 +34,9 @@ public class MarketTransactionTimeRangeAveragesEntity {
         this.fromDate = fromDate;
         this.toDate = toDate;
     }
+
+    public MarketResource getResource()
+    {
+        return resource;
+    }
 }
