@@ -49,7 +49,7 @@ class BotGame {
         bots.add(goldMinerBot1);
 
         var goldMinerKingdom2 = kingdomBuilder.withName("GoldMinerBot2").build();
-        IBot goldMinerBot2 = new GoldMinerBot(goldMinerKingdom2, market, kingdomInteractor);
+        IBot goldMinerBot2 = new GoldMinerBot(goldMinerKingdom2, market, kingdomInteractor, gameConfig);
         game.addKingdom(goldMinerKingdom2);
         bots.add(goldMinerBot2);
 
@@ -57,7 +57,7 @@ class BotGame {
         KingdomPrinter.printLineSeparator();
         for (var bot : bots)
         {
-            KingdomPrinter.kingdomInfoPrinter(bot.getKingdom());
+            KingdomPrinter.kingdomInfoPrinter(bot.getKingdom(), gameConfig);
         }
         KingdomPrinter.printLineSeparator();
 
@@ -65,7 +65,7 @@ class BotGame {
         {
             for (var bot : bots)
             {
-                KingdomPrinter.kingdomInfoPrinter(bot.getKingdom());
+                KingdomPrinter.kingdomInfoPrinter(bot.getKingdom(), gameConfig);
             }
             KingdomPrinter.printLineSeparator();
 
@@ -91,7 +91,7 @@ class BotGame {
 
         for (var bot : bots)
         {
-            KingdomPrinter.kingdomInfoPrinter(bot.getKingdom());
+            KingdomPrinter.kingdomInfoPrinter(bot.getKingdom(), gameConfig);
         }
         KingdomPrinter.printLineSeparator();
 

@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.market.legacy;
+package com.knightsofdarkness.web.market.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,8 +11,8 @@ import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
-import com.knightsofdarkness.web.market.legacy.MarketOffer;
-import com.knightsofdarkness.web.market.model.Market;
+import com.knightsofdarkness.web.market.IMarket;
+import com.knightsofdarkness.web.utils.Id;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class MarketTest {
@@ -173,8 +173,8 @@ class MarketTest {
     @Test
     void offerComparator_withFirstOfferHigher_shouldReturnMoreThanZero()
     {
-        var offer1 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 2);
-        var offer2 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
+        var offer1 = new MarketOfferEntity(Id.generate(), kingdom, MarketResource.food, 100, 2);
+        var offer2 = new MarketOfferEntity(Id.generate(), kingdom, MarketResource.food, 100, 1);
 
         assertTrue(Market.offerComparator(offer1, offer2) > 0);
     }
@@ -182,8 +182,8 @@ class MarketTest {
     @Test
     void offerComparator_withFirstOfferLower_shouldReturnLessThanZero()
     {
-        var offer1 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
-        var offer2 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 2);
+        var offer1 = new MarketOfferEntity(Id.generate(), kingdom, MarketResource.food, 100, 1);
+        var offer2 = new MarketOfferEntity(Id.generate(), kingdom, MarketResource.food, 100, 2);
 
         assertTrue(Market.offerComparator(offer1, offer2) < 0);
     }
@@ -191,8 +191,8 @@ class MarketTest {
     @Test
     void offerComparator_withTheSamePricedOffers_shouldReturnZero()
     {
-        var offer1 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
-        var offer2 = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
+        var offer1 = new MarketOfferEntity(Id.generate(), kingdom, MarketResource.food, 100, 1);
+        var offer2 = new MarketOfferEntity(Id.generate(), kingdom, MarketResource.food, 100, 1);
 
         assertEquals(0, Market.offerComparator(offer1, offer2));
     }
@@ -200,7 +200,7 @@ class MarketTest {
     @Test
     void offerComparator_withTheSameOffer_shouldReturnZero()
     {
-        var offer = new MarketOffer(Id.generate(), kingdom, MarketResource.food, 100, 1);
+        var offer = new MarketOfferEntity(Id.generate(), kingdom, MarketResource.food, 100, 1);
 
         assertEquals(0, Market.offerComparator(offer, offer));
     }
@@ -224,6 +224,6 @@ class MarketTest {
 
         var cheapestOffer = market.getCheapestOfferByResource(MarketResource.food);
 
-        assertEquals(offer.id(), cheapestOffer.get().id);
+        assertEquals(offer.id(), cheapestOffer.get().getId());
     }
 }

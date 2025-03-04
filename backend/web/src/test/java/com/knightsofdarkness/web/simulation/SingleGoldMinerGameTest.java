@@ -18,11 +18,12 @@ class SingleGoldMinerGameTest {
     void simulateTenTurnsTest()
     {
         var game = new TestGame().get();
+        var gameConfig = game.getConfig();
 
         var kingdomBuilder = new KingdomBuilder(game);
         kingdomBuilder = Utils.setupKingdomStartConfiguration(kingdomBuilder, game);
         var goldMinerKingdom = kingdomBuilder.withName("GoldMinerBot").withResource(ResourceName.turns, 10).build();
-        var goldMinerBot = new GoldMinerBot(goldMinerKingdom, game.getMarket(), game.getKingdomInteractor());
+        var goldMinerBot = new GoldMinerBot(goldMinerKingdom, game.getMarket(), game.getKingdomInteractor(), null);
         game.addKingdom(goldMinerBot.getKingdom());
 
         var infiniteFarmerKingdom = kingdomBuilder.withName("InfiniteFarmer").withResource(ResourceName.food, 1000000).build();
@@ -31,14 +32,14 @@ class SingleGoldMinerGameTest {
         KingdomPrinter.printResourcesHeader();
         KingdomPrinter.printLineSeparator();
 
-        KingdomPrinter.kingdomInfoPrinter(goldMinerBot.getKingdom());
+        KingdomPrinter.kingdomInfoPrinter(goldMinerBot.getKingdom(), gameConfig);
         KingdomPrinter.printLineSeparator();
 
         for (var i = 0; i < 10; i++)
         {
             goldMinerBot.doActionCycle();
             goldMinerBot.passTurn();
-            KingdomPrinter.kingdomInfoPrinter(goldMinerBot.getKingdom());
+            KingdomPrinter.kingdomInfoPrinter(goldMinerBot.getKingdom(), gameConfig);
             KingdomPrinter.printLineSeparator();
         }
 

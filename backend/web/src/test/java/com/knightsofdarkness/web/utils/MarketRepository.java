@@ -54,7 +54,7 @@ public class MarketRepository implements IMarketOfferRepository {
     @Override
     public Optional<MarketOfferEntity> findById(UUID marketOfferId)
     {
-        return offers.stream().filter(offer -> offer. == marketOfferId).findFirst();
+        return offers.stream().filter(offer -> offer.getId() == marketOfferId).findFirst();
     }
 
     @Override

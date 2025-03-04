@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web;
+package com.knightsofdarkness.web.legacy;
 
 import java.util.EnumMap;
 

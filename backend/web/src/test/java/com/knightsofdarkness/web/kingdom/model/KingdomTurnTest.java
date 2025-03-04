@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.EnumMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,26 +18,26 @@ import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomTurnTest {
-    private static Game game;
-    private static GameConfig config;
+    private Game game;
     private KingdomBuilder kingdomBuilder;
     private static final int weaponsProductionPercentage = 0;
-
-    @BeforeAll
-    static void beforeAll()
-    {
-        game = new TestGame().get();
-        config = game.getConfig();
-    }
+    private IKingdomInteractor kingdomInteractor;
+    private GameConfig gameConfig;
+    private KingdomDetailsProvider kingdomDetailsProvider;
 
     @BeforeEach
     void setUp()
     {
-        this.kingdomBuilder = new KingdomBuilder(game);
+        game = new TestGame().get();
+        kingdomBuilder = new KingdomBuilder(game);
+        kingdomInteractor = game.getKingdomInteractor();
+        gameConfig = game.getConfig();
+        kingdomDetailsProvider = new KingdomDetailsProvider(gameConfig);
     }
 
     @Test
@@ -47,7 +46,8 @@ class KingdomTurnTest {
         var kingdom = kingdomBuilder.withUnit(UnitName.goldMiner, 0).build();
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         assertEquals(resourcesBeforeTurn.get(ResourceName.gold), kingdom.getResources().getCount(ResourceName.gold));
     }
@@ -63,9 +63,10 @@ class KingdomTurnTest {
                 .build();
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
-        var goldMinerProductionRate = config.production().getProductionRate(UnitName.goldMiner);
+        var goldMinerProductionRate = gameConfig.production().getProductionRate(UnitName.goldMiner);
         var newProduction = goldMinersCount * goldMinerProductionRate;
         assertEquals(resourcesBeforeTurn.get(ResourceName.gold) + newProduction, kingdom.getResources().getCount(ResourceName.gold));
     }
@@ -74,16 +75,17 @@ class KingdomTurnTest {
     void passTurn_withEnoughIron_thenBlacksmithsShouldProduceToolsAtFullRate()
     {
         var blacksmithCount = 10;
-        var blacksmithProductionRate = config.production().getProductionRate(UnitName.blacksmith);
+        var blacksmithProductionRate = gameConfig.production().getProductionRate(UnitName.blacksmith);
         var kingdom = kingdomBuilder
                 .withUnit(UnitName.blacksmith, blacksmithCount)
                 .withLand(1000) // to avoid small kingdom bonus
                 .withBuilding(BuildingName.workshop, 1000)
                 .build();
-        kingdom.getResources().setCount(ResourceName.iron, kingdom.getIronUpkeep(1.0));
+        kingdom.getResources().setCount(ResourceName.iron, kingdomDetailsProvider.getIronUpkeep(kingdom, 1.0));
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         var newProduction = blacksmithCount * blacksmithProductionRate;
 
@@ -95,11 +97,12 @@ class KingdomTurnTest {
     {
         var blacksmithCount = 10;
         var kingdom = kingdomBuilder.withUnit(UnitName.blacksmith, blacksmithCount).withUnit(UnitName.ironMiner, 0).build();
-        var ironUpkeep = kingdom.getIronUpkeep(1.0);
+        var ironUpkeep = kingdomDetailsProvider.getIronUpkeep(kingdom, 1.0);
         kingdom.getResources().setCount(ResourceName.iron, ironUpkeep);
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         assertEquals(resourcesBeforeTurn.get(ResourceName.iron) - ironUpkeep, kingdom.getResources().getCount(ResourceName.iron));
     }
@@ -114,9 +117,12 @@ class KingdomTurnTest {
                 .withLand(1000) // to avoid small kingdom bonus
                 .withBuilding(BuildingName.workshop, 1000)
                 .build();
-        kingdom.getResources().setCount(ResourceName.iron, kingdom.getIronUpkeep(1.0) - 1);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var ironUpkeep = kingdomDetailsProvider.getIronUpkeep(kingdom, 1.0);
+        kingdom.getResources().setCount(ResourceName.iron, ironUpkeep - 1);
+
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         assertEquals(0, kingdom.getResources().getCount(ResourceName.iron));
     }
@@ -125,17 +131,20 @@ class KingdomTurnTest {
     void passTurn_withNotEnoughIronAndNoIronProduction_shouldProduceToolsAtProportionallySmallerRate()
     {
         var blacksmithCount = 10;
-        var blacksmithProductionRate = config.production().getProductionRate(UnitName.blacksmith);
+        var blacksmithProductionRate = gameConfig.production().getProductionRate(UnitName.blacksmith);
         var kingdom = kingdomBuilder
                 .withUnit(UnitName.blacksmith, blacksmithCount)
                 .withUnit(UnitName.ironMiner, 0)
                 .withLand(1000) // to avoid small kingdom bonus
                 .withBuilding(BuildingName.workshop, 1000)
                 .build();
-        kingdom.getResources().setCount(ResourceName.iron, kingdom.getIronUpkeep(1.0) / 2);
+
+        var ironUpkeep = kingdomDetailsProvider.getIronUpkeep(kingdom, 1.0);
+        kingdom.getResources().setCount(ResourceName.iron, ironUpkeep / 2);
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         var newProduction = blacksmithCount * blacksmithProductionRate / 2;
 
@@ -146,8 +155,8 @@ class KingdomTurnTest {
     void passTurn_withZeroIronAndSufficientIronProductionForBlacksmiths_shouldProduceToolsAtFullRate()
     {
         var blacksmithCount = 10;
-        var blacksmithProductionRate = config.production().getProductionRate(UnitName.blacksmith);
-        var ironMinerProductionRate = config.production().getProductionRate(UnitName.ironMiner);
+        var blacksmithProductionRate = gameConfig.production().getProductionRate(UnitName.blacksmith);
+        var ironMinerProductionRate = gameConfig.production().getProductionRate(UnitName.ironMiner);
         var ironToSpendPerToolProduction = 1;
         var ironMinerCount = blacksmithCount * blacksmithProductionRate / ironMinerProductionRate * ironToSpendPerToolProduction;
         var kingdom = kingdomBuilder
@@ -158,7 +167,8 @@ class KingdomTurnTest {
                 .build();
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         var newProduction = blacksmithCount * blacksmithProductionRate;
 
@@ -169,8 +179,8 @@ class KingdomTurnTest {
     void passTurn_withZeroIronAndSufficientIronProductionForBlacksmiths_shouldRemainWithZeroIron()
     {
         var blacksmithCount = 10;
-        var blacksmithProductionRate = config.production().getProductionRate(UnitName.blacksmith);
-        var ironMinerProductionRate = config.production().getProductionRate(UnitName.ironMiner);
+        var blacksmithProductionRate = gameConfig.production().getProductionRate(UnitName.blacksmith);
+        var ironMinerProductionRate = gameConfig.production().getProductionRate(UnitName.ironMiner);
         var ironToSpendPerToolProduction = 1;
         var ironMinerCount = blacksmithCount * blacksmithProductionRate / ironMinerProductionRate * ironToSpendPerToolProduction;
         var kingdom = kingdomBuilder
@@ -181,7 +191,8 @@ class KingdomTurnTest {
                 .withBuilding(BuildingName.workshop, 1000)
                 .build();
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         assertEquals(0, kingdom.getResources().getCount(ResourceName.iron));
     }
@@ -196,19 +207,22 @@ class KingdomTurnTest {
 
         var kingdom = kingdomBuilder.build();
         // first turn pass to clear the initial resources count, building points is a bit of a special case
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
         // count food for upkeep
-        resourcesBeforeTurn.put(ResourceName.food, resourcesBeforeTurn.get(ResourceName.food) - kingdom.getFoodUpkeep());
+        var foodUpkeep = kingdomDetailsProvider.getFoodUpkeep(kingdom);
+        resourcesBeforeTurn.put(ResourceName.food, resourcesBeforeTurn.get(ResourceName.food) - foodUpkeep);
         // count iron for upkeep
-        resourcesBeforeTurn.put(ResourceName.iron, resourcesBeforeTurn.get(ResourceName.iron) - kingdom.getIronUpkeep(1.0));
+        var ironUpkeep = kingdomDetailsProvider.getIronUpkeep(kingdom, 1.0);
+        resourcesBeforeTurn.put(ResourceName.iron, resourcesBeforeTurn.get(ResourceName.iron) - ironUpkeep);
         // building points will just refresh on new turn, remove them by one to make sureafter new turn we have more
         resourcesBeforeTurn.put(ResourceName.buildingPoints, resourcesBeforeTurn.get(ResourceName.buildingPoints) - 1);
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        action.passTurn(weaponsProductionPercentage);
 
         for (var unitName : UnitName.getProductionUnits())
         {
-            var resourceName = config.production().getResource(unitName);
+            var resourceName = gameConfig.production().getResource(unitName);
             var countBeforeTurn = resourcesBeforeTurn.get(resourceName);
             var countAfterTurn = kingdom.getResources().getCount(resourceName);
             assertThat(countBeforeTurn)
@@ -223,7 +237,8 @@ class KingdomTurnTest {
         var kingdom = kingdomBuilder.withResource(ResourceName.unemployed, 0).withBuilding(BuildingName.house, 99999).build();
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         var beforeTurn = resourcesBeforeTurn.get(ResourceName.unemployed);
         var afterTurn = kingdom.getResources().getCount(ResourceName.unemployed);
@@ -236,7 +251,8 @@ class KingdomTurnTest {
         var kingdom = kingdomBuilder.withResource(ResourceName.unemployed, 9999).build();
         Map<ResourceName, Integer> resourcesBeforeTurn = new EnumMap<>(kingdom.getResources().resources);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         var beforeTurn = resourcesBeforeTurn.get(ResourceName.unemployed);
         var afterTurn = kingdom.getResources().getCount(ResourceName.unemployed);
@@ -247,11 +263,12 @@ class KingdomTurnTest {
     void passTurn_withInsufficientHousing_shouldSendPeopleToExile()
     {
         var kingdom = kingdomBuilder.build();
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         var beforeTurn = kingdom.getResources().getCount(ResourceName.unemployed);
         kingdom.getBuildings().subtractCount(BuildingName.house, 1);
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        action.passTurn(weaponsProductionPercentage);
 
         var afterTurn = kingdom.getResources().getCount(ResourceName.unemployed);
         assertTrue(beforeTurn > afterTurn, "Expected number of unemployed to reduce due to insufficient housing");
@@ -262,15 +279,16 @@ class KingdomTurnTest {
     {
         var kingdom = kingdomBuilder.build();
         var numberOfTurns = kingdom.getResources().getCount(ResourceName.turns);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
 
         // first we pass every turn that kingdom has
         for (int i = 0; i < numberOfTurns; i++)
         {
-            assertTrue(kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage).success());
+            assertTrue(action.passTurn(weaponsProductionPercentage).success());
         }
 
         // then we try to pass turn which is not available
-        assertFalse(kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage).success());
+        assertFalse(action.passTurn(weaponsProductionPercentage).success());
     }
 
     @Test
@@ -287,7 +305,7 @@ class KingdomTurnTest {
     @Test
     void whenTurnCountReachesMaximum_addingTurn_shouldNotChangeTurnCount()
     {
-        var kingdom = kingdomBuilder.withResource(ResourceName.turns, config.common().maxTurns()).build();
+        var kingdom = kingdomBuilder.withResource(ResourceName.turns, gameConfig.common().maxTurns()).build();
         var numberOfTurns = kingdom.getResources().getCount(ResourceName.turns);
 
         kingdom.addTurn();
@@ -299,7 +317,8 @@ class KingdomTurnTest {
     void passingTurn_shouldSaveReport()
     {
         var kingdom = kingdomBuilder.build();
-        var result = kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        var result = action.passTurn(weaponsProductionPercentage);
         assertTrue(result.success());
 
         var savedReport = kingdom.getLastTurnReport();
@@ -311,7 +330,8 @@ class KingdomTurnTest {
     void passTurn_withInsufficientProfessionalBuildingCapacity_shouldFireExceedingNumber()
     {
         var kingdom = kingdomBuilder.build();
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         trainGoldMinersToReachMaxCapacity(kingdom);
 
@@ -319,8 +339,9 @@ class KingdomTurnTest {
         var goldMinersBeforeTurnCount = kingdom.getUnits().getTotalCount(UnitName.goldMiner);
         var toDemolish = new KingdomBuildingsDto();
         toDemolish.setCount(BuildingName.goldMine, 1);
-        kingdom.demolish(toDemolish);
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var demolishAction = new KingdomBuildAction(kingdom, gameConfig);
+        demolishAction.demolish(toDemolish);
+        action.passTurn(weaponsProductionPercentage);
 
         var unemployedAfterTurn = kingdom.getResources().getCount(ResourceName.unemployed);
         var goldMinersAfterTurnCount = kingdom.getUnits().getTotalCount(UnitName.goldMiner);
@@ -333,38 +354,44 @@ class KingdomTurnTest {
     void passTurn_withInsufficientHousesAndEnoughBuildingCapacity_shouldExileOnlyUnemployed()
     {
         var kingdom = kingdomBuilder.build();
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         var unemployedBeforeTurn = kingdom.getResources().getCount(ResourceName.unemployed);
         var toDemolish = new KingdomBuildingsDto();
         toDemolish.setCount(BuildingName.house, 1);
-        kingdom.demolish(toDemolish);
+        var demolishAction = new KingdomBuildAction(kingdom, gameConfig);
+        demolishAction.demolish(toDemolish);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        action.passTurn(weaponsProductionPercentage);
 
         var unemployedAfterTurn = kingdom.getResources().getCount(ResourceName.unemployed);
         assertThat(unemployedAfterTurn).isLessThan(unemployedBeforeTurn);
     }
 
-    private void trainGoldMinersToReachMaxCapacity(Kingdom kingdom)
+    private void trainGoldMinersToReachMaxCapacity(KingdomEntity kingdom)
     {
         var currentGoldMinersCount = kingdom.getUnits().getTotalCount(UnitName.goldMiner);
-        var goldMinersCapacity = kingdom.getBuildingCapacity(BuildingName.goldMine);
+        var goldMinersCapacity = kingdomDetailsProvider.getBuildingCapacity(kingdom, BuildingName.goldMine);
         var unitsToTrain = new UnitsMapDto();
         unitsToTrain.setCount(UnitName.goldMiner, goldMinersCapacity - currentGoldMinersCount);
-        kingdom.train(unitsToTrain);
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var trainAction = new KingdomTrainAction(kingdom, gameConfig);
+        trainAction.train(unitsToTrain);
+        // TODO why are we passing turn here?
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
     }
 
     @Test
     void testPeopleLeavingDueToInsufficientHousing_noExileWhenHousingIsSufficient()
     {
-        Kingdom kingdom = kingdomBuilder
+        var kingdom = kingdomBuilder
                 .withUnit(UnitName.goldMiner, 10)
                 .withBuilding(BuildingName.house, 25)
                 .build();
 
-        var result = kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        var result = action.passTurn(weaponsProductionPercentage);
 
         assertEquals(0, result.turnReport().get().exiledPeople);
     }
@@ -372,11 +399,12 @@ class KingdomTurnTest {
     @Test
     void testPeopleLeavingDueToInsufficientHousing_exileWhenHousingIsInsufficient()
     {
-        Kingdom kingdom = kingdomBuilder
+        var kingdom = kingdomBuilder
                 .withBuilding(BuildingName.house, 1)
                 .build();
 
-        var result = kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        var result = action.passTurn(weaponsProductionPercentage);
 
         assertEquals(0, kingdom.getResources().getCount(ResourceName.unemployed));
         assertThat(result.turnReport().get().exiledPeople).isPositive();
@@ -385,11 +413,12 @@ class KingdomTurnTest {
     @Test
     void testPeopleLeavingDueToInsufficientHousing_partialExileWhenHousingIsPartiallySufficient()
     {
-        Kingdom kingdom = kingdomBuilder
+        var kingdom = kingdomBuilder
                 .withBuilding(BuildingName.house, 9)
                 .build();
 
-        var result = kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        var result = action.passTurn(weaponsProductionPercentage);
 
         assertEquals(20, result.turnReport().get().exiledPeople);
     }
@@ -397,13 +426,14 @@ class KingdomTurnTest {
     @Test
     void testPeopleLeavingDueToInsufficientHousing_exileProfessionalsWhenHousingIsInsufficient()
     {
-        Kingdom kingdom = kingdomBuilder
+        var kingdom = kingdomBuilder
                 .withUnit(UnitName.goldMiner, 5)
                 .withUnit(UnitName.blacksmith, 5)
                 .withBuilding(BuildingName.house, 0)
                 .build();
 
-        var result = kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        var result = action.passTurn(weaponsProductionPercentage);
 
         assertThat(result.turnReport().get().exiledPeople).isPositive();
         assertThat(kingdom.getUnits().getTotalCount(UnitName.goldMiner)).isLessThan(5);
@@ -413,7 +443,7 @@ class KingdomTurnTest {
     @Test
     void whenKingdomHasInssuficientHousing_mobileUnitsShouldNotBeExiled()
     {
-        Kingdom kingdom = kingdomBuilder
+        var kingdom = kingdomBuilder
                 .withUnit(UnitName.goldMiner, 5)
                 .withUnit(UnitName.blacksmith, 5)
                 .withUnit(UnitName.carrier, 5)
@@ -430,7 +460,8 @@ class KingdomTurnTest {
         kingdom.getUnits().moveAvailableToMobile(UnitName.infantry, 5);
         kingdom.getUnits().moveAvailableToMobile(UnitName.cavalry, 5);
 
-        kingdom.passTurn(game.getKingdomInteractor(), weaponsProductionPercentage);
+        var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
+        action.passTurn(weaponsProductionPercentage);
 
         assertThat(kingdom.getUnits().getAvailableCount(UnitName.goldMiner)).isLessThan(5);
         assertEquals(5, kingdom.getUnits().getMobileCount(UnitName.carrier));

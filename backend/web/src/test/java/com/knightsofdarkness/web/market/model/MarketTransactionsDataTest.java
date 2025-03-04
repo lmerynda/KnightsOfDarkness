@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.market.legacy;
+package com.knightsofdarkness.web.market.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,6 +13,7 @@ import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
+import com.knightsofdarkness.web.market.IMarket;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class MarketTransactionsDataTest {

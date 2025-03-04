@@ -2,36 +2,38 @@ package com.knightsofdarkness.web.kingdom.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomTurnActionTest {
-    private static Game game;
+    private Game game;
     private KingdomBuilder kingdomBuilder;
     private KingdomEntity kingdom;
-
-    @BeforeAll
-    static void beforeAll()
-    {
-        game = new TestGame().get();
-    }
+    private IKingdomInteractor kingdomInteractor;
+    private GameConfig gameConfig;
+    private KingdomDetailsProvider kingdomDetailsProvider;
 
     @BeforeEach
     void setUp()
     {
-        this.kingdomBuilder = new KingdomBuilder(game);
-        this.kingdom = kingdomBuilder.build();
+        game = new TestGame().get();
+        kingdomBuilder = new KingdomBuilder(game);
+        kingdom = kingdomBuilder.build();
+        kingdomInteractor = game.getKingdomInteractor();
+        gameConfig = game.getConfig();
+        kingdomDetailsProvider = new KingdomDetailsProvider(gameConfig);
     }
 
     @Test
     void testGetBonusFactorBasedOnLand()
     {
-        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(kingdom, null);
+        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
 
         // Test for minimum land value
         double bonus1 = kingdomTurnAction.getBonusFactorBasedOnLand(1000);
@@ -57,7 +59,7 @@ class KingdomTurnActionTest {
     @Test
     void testGetKingdomSizeProductionBonus()
     {
-        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(kingdom, null);
+        KingdomTurnAction kingdomTurnAction = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
 
         double bonusBelow100 = kingdomTurnAction.getKingdomSizeProductionBonus(99);
         double bonusAt100 = kingdomTurnAction.getKingdomSizeProductionBonus(100);
