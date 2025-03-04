@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import com.knightsofdarkness.common.messaging.NotificationDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
-import com.knightsofdarkness.web.messaging.legacy.INotificationSystem;
 import com.knightsofdarkness.web.utils.Id;
 
 public class NotificationSystem implements INotificationSystem {

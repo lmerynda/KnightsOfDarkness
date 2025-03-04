@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.knightsofdarkness.common.messaging.NotificationDto;
-import com.knightsofdarkness.web.messaging.legacy.INotificationSystem;
 
 import jakarta.transaction.Transactional;
 

@@ -5,7 +5,7 @@ import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.market.IMarket;
-import com.knightsofdarkness.web.messaging.legacy.INotificationSystem;
+import com.knightsofdarkness.web.messaging.INotificationSystem;
 
 public class Game {
     GameConfig config;

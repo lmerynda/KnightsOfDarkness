@@ -18,7 +18,7 @@ import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomMarketAction;
 import com.knightsofdarkness.web.market.IMarket;
-import com.knightsofdarkness.web.messaging.legacy.INotificationSystem;
+import com.knightsofdarkness.web.messaging.INotificationSystem;
 import com.knightsofdarkness.web.utils.Id;
 import com.knightsofdarkness.web.utils.Utils;
 

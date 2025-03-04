@@ -4,7 +4,7 @@ import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.market.IMarket;
 import com.knightsofdarkness.web.market.model.Market;
-import com.knightsofdarkness.web.messaging.legacy.INotificationSystem;
+import com.knightsofdarkness.web.messaging.INotificationSystem;
 
 public class MarketBuilder {
     MarketRepository repository = new MarketRepository();

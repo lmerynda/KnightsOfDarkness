@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.messaging.legacy;
+package com.knightsofdarkness.web.messaging;
 
 import java.util.List;
 import java.util.UUID;

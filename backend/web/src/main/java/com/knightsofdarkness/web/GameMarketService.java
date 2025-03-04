@@ -10,8 +10,8 @@ import com.knightsofdarkness.web.market.IMarket;
 import com.knightsofdarkness.web.market.model.IMarketOfferRepository;
 import com.knightsofdarkness.web.market.model.Market;
 import com.knightsofdarkness.web.messaging.INotificationRepository;
+import com.knightsofdarkness.web.messaging.INotificationSystem;
 import com.knightsofdarkness.web.messaging.NotificationSystem;
-import com.knightsofdarkness.web.messaging.legacy.INotificationSystem;
 
 @Service
 @Configuration

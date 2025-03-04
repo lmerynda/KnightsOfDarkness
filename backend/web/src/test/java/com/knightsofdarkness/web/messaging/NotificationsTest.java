@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
-import com.knightsofdarkness.web.messaging.legacy.INotificationSystem;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class NotificationsTest {
