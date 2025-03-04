@@ -10,7 +10,6 @@
             "request": "launch",
             "mainClass": "com.knightsofdarkness.web.GameApplication",
             "projectName": "web",
-            "vmArgs": "-Dspring.profiles.active=dev"
         }
     ]
 }

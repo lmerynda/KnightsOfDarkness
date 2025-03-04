@@ -37,6 +37,8 @@ class BlacksmithBotTest {
     void simulateTenTurnsTest()
     {
         var kingdom = kingdomBuilder.withResource(ResourceName.turns, 10).build();
+        // pump it with iron, to maintain upkeep
+        kingdom.getResources().addCount(ResourceName.iron, 10000);
         var blacksmithsBefore = kingdom.getUnits().getTotalCount(UnitName.blacksmith);
         var unusedLandBefore = kingdom.getUnusedLand();
         var workshopsBefore = kingdom.getBuildings().getCount(BuildingName.workshop);
@@ -54,8 +56,9 @@ class BlacksmithBotTest {
 
         var blacksmithsAfter = kingdom.getUnits().getTotalCount(UnitName.blacksmith);
         var workshopsAfter = kingdom.getBuildings().getCount(BuildingName.workshop);
+        // TODO use assertThat for simpler assert interface
         assertTrue(blacksmithsAfter > blacksmithsBefore, "There were supposed to be new trained units, before " + blacksmithsBefore + " after " + blacksmithsAfter);
         assertTrue(kingdom.getUnusedLand() < unusedLandBefore, "The land was supposed to be used, available before " + unusedLandBefore + " after " + kingdom.getUnusedLand());
-        assertTrue(workshopsAfter > workshopsBefore, "There were supposed to be new woirkshops built, before " + workshopsBefore + " after " + workshopsAfter);
+        assertTrue(workshopsAfter > workshopsBefore, "There were supposed to be new workshops built, before " + workshopsBefore + " after " + workshopsAfter);
     }
 }

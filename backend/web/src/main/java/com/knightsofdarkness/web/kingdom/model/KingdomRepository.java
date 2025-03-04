@@ -6,8 +6,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.knightsofdarkness.web.kingdom.IKingdomRepository;
+
 @Repository
-public class KingdomRepository {
+public class KingdomRepository implements IKingdomRepository {
     private final KingdomJpaRepository jpaRepository;
 
     public KingdomRepository(KingdomJpaRepository jpaRepository)
