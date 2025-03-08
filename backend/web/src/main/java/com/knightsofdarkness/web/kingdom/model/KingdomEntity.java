@@ -172,4 +172,14 @@ public class KingdomEntity {
     {
         resources.addCount(ResourceName.from(resource), amount);
     }
+
+    public void setAlliance(AllianceEntity allianceEntity)
+    {
+        this.alliance = allianceEntity;
+    }
+
+    public AllianceEntity getAlliance()
+    {
+        return alliance;
+    }
 }

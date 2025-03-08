@@ -14,5 +14,7 @@ public interface IAllianceRepository {
 
     void update(AllianceEntity alliance);
 
+    void create(AllianceEntity alliance);
+
     List<AllianceEntity> getAlliances();
 }

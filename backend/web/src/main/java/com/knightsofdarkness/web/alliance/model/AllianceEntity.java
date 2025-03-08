@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.alliance.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
@@ -35,6 +36,13 @@ public class AllianceEntity {
         this.emperor = emperor;
     }
 
+    public AllianceEntity(String name, String emperor)
+    {
+        this.name = name;
+        this.kingdoms = new ArrayList<>();
+        this.emperor = emperor;
+    }
+
     public static AllianceEntity fromDto(CreateAllianceDto alliance, String emperor)
     {
         return new AllianceEntity(alliance.name(), List.of(), emperor);
@@ -48,5 +56,16 @@ public class AllianceEntity {
     public String getEmperor()
     {
         return emperor;
+    }
+
+    public void addKingdom(KingdomEntity kingdom)
+    {
+        kingdoms.add(kingdom);
+        kingdom.setAlliance(this);
+    }
+
+    public List<KingdomEntity> getKingdoms()
+    {
+        return kingdoms;
     }
 }

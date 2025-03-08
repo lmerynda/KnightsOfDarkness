@@ -32,6 +32,12 @@ public class AllianceRepository implements IAllianceRepository {
     }
 
     @Override
+    public void create(AllianceEntity alliance)
+    {
+        allianceJpaRepository.save(alliance);
+    }
+
+    @Override
     public void update(AllianceEntity alliance)
     {
         allianceJpaRepository.save(alliance);
