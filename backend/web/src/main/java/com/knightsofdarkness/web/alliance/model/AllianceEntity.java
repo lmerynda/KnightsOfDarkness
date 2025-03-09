@@ -3,7 +3,7 @@ package com.knightsofdarkness.web.alliance.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.knightsofdarkness.common.alliance.CreateAllianceDto;
+import com.knightsofdarkness.common.alliance.AllianceDto;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 
 import jakarta.persistence.CascadeType;
@@ -43,9 +43,9 @@ public class AllianceEntity {
         this.emperor = emperor;
     }
 
-    public static AllianceEntity fromDto(CreateAllianceDto alliance, String emperor)
+    public AllianceDto toDto()
     {
-        return new AllianceEntity(alliance.name(), List.of(), emperor);
+        return new AllianceDto(name, emperor);
     }
 
     public String getName()

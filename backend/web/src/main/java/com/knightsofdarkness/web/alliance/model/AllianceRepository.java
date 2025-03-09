@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.knightsofdarkness.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.web.alliance.IAllianceRepository;
 
 @Repository
@@ -22,13 +21,6 @@ public class AllianceRepository implements IAllianceRepository {
     public Optional<AllianceEntity> getAllianceByName(String name)
     {
         return allianceJpaRepository.findById(name);
-    }
-
-    @Override
-    public void add(CreateAllianceDto allianceDto, String emperor)
-    {
-        var alliance = AllianceEntity.fromDto(allianceDto, emperor);
-        allianceJpaRepository.save(alliance);
     }
 
     @Override

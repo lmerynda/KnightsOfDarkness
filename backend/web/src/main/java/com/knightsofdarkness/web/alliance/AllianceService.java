@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.knightsofdarkness.common.alliance.AllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
+import com.knightsofdarkness.common.alliance.CreateAllianceResult;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.alliance.model.AllianceRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
@@ -24,17 +25,17 @@ public class AllianceService {
     }
 
     @Transactional
-    public void createAlliance(CreateAllianceDto createAllianceDto, String emperor)
+    public CreateAllianceResult createAlliance(CreateAllianceDto createAllianceDto, String emperor)
     {
         var kingdom = kingdomRepository.getKingdomByName(emperor);
         if (kingdom.isEmpty())
         {
-            // TODO change to failed result
-            throw new IllegalArgumentException("Kingdom not found");
+            return CreateAllianceResult.failure("Kingdom not found");
         }
         var alliance = new AllianceEntity(createAllianceDto.name(), emperor);
         alliance.addKingdom(kingdom.get());
         allianceRepository.create(alliance);
+        return CreateAllianceResult.success("Alliance Created", alliance.toDto());
     }
 
     public List<AllianceDto> getAlliances()

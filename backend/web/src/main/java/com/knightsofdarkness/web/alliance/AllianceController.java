@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.common.alliance.AllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
+import com.knightsofdarkness.common.alliance.CreateAllianceResult;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
@@ -29,7 +30,7 @@ public class AllianceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<AllianceDto> createAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody CreateAllianceDto allianceDto)
+    public ResponseEntity<CreateAllianceResult> createAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody CreateAllianceDto allianceDto)
     {
         if (currentUser == null)
         {
@@ -38,8 +39,8 @@ public class AllianceController {
         }
 
         log.info("Creating alliance");
-        allianceService.createAlliance(allianceDto, currentUser.getUsername());
-        return ResponseEntity.ok(new AllianceDto(allianceDto.name(), currentUser.getUsername()));
+        var result = allianceService.createAlliance(allianceDto, currentUser.getUsername());
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping()
