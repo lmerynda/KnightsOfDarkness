@@ -1,6 +1,7 @@
 package com.knightsofdarkness.web.alliance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -35,5 +36,16 @@ public class AllianceTest {
         assertTrue(result.alliance().isPresent());
         assertEquals("Test Alliance", result.alliance().get().name());
         assertEquals(kingdom.getName(), result.alliance().get().emperor());
+    }
+
+    @Test
+    void whenKingdomIsAllianceEmperor_itCannotLeaveTheAlliance()
+    {
+        var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
+        assertTrue(createResult.success());
+
+        var leaveResult = allianceService.leaveAlliance(kingdom.getName());
+        assertFalse(leaveResult.success());
+        assertTrue(kingdom.getAlliance().isPresent());
     }
 }

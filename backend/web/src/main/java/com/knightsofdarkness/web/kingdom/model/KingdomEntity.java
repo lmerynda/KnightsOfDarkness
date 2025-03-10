@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.kingdom.model;
 
+import java.util.Optional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -178,8 +180,15 @@ public class KingdomEntity {
         this.alliance = allianceEntity;
     }
 
-    public AllianceEntity getAlliance()
+    public void removeAlliance()
     {
-        return alliance;
+        assert this.alliance != null;
+        this.alliance.getKingdoms().remove(this);
+        this.alliance = null;
+    }
+
+    public Optional<AllianceEntity> getAlliance()
+    {
+        return Optional.ofNullable(alliance);
     }
 }
