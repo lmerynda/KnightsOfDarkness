@@ -7,13 +7,11 @@ import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.web.Game;
-import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomUnitsTest {
     private Game game;
-    private GameConfig gameConfig;
     private KingdomBuilder kingdomBuilder;
     private KingdomEntity kingdom;
 
@@ -21,7 +19,6 @@ class KingdomUnitsTest {
     void setUp()
     {
         game = new TestGame().get();
-        gameConfig = game.getConfig();
         kingdomBuilder = new KingdomBuilder(game);
         kingdom = kingdomBuilder.withRichConfiguration().build();
         game.addKingdom(kingdom);

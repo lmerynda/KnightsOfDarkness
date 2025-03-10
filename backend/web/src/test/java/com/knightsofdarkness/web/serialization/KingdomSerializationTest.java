@@ -19,9 +19,11 @@ class KingdomSerializationTest {
         var kingdomDto = generateDefaultKingdomDto();
 
         var serialized = gson.toJson(kingdomDto);
+        System.out.println(serialized);
         // assertEquals("example data", serialized);
 
         KingdomDto deserialized = gson.fromJson(generateDefaultKingdomDtoJson(), KingdomDto.class);
+        System.out.println(deserialized);
         // assertEquals("example data", deserialized.toString());
 
     }

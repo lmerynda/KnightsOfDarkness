@@ -10,13 +10,11 @@ import org.junit.jupiter.api.Test;
 import com.knightsofdarkness.common.kingdom.ResourceName;
 import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.Game;
-import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class KingdomMarketTest {
     private Game game;
-    private GameConfig gameConfig;
     private KingdomBuilder kingdomBuilder;
     private KingdomEntity kingdom;
 
@@ -24,7 +22,6 @@ class KingdomMarketTest {
     void setUp()
     {
         game = new TestGame().get();
-        gameConfig = game.getConfig();
         kingdomBuilder = new KingdomBuilder(game);
         kingdom = kingdomBuilder.withRichConfiguration().build();
         game.addKingdom(kingdom);
