@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
@@ -47,5 +48,22 @@ public class AllianceTest {
         var leaveResult = allianceService.leaveAlliance(kingdom.getName());
         assertFalse(leaveResult.success());
         assertTrue(kingdom.getAlliance().isPresent());
+    }
+
+    @Disabled("fix emperor cannot leave the alliance error, when leaving kingdom is not the emperor")
+    @Test
+    void whenKingdomIsNotAllianceEmperor_itCanLeaveTheAlliance()
+    {
+        var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
+        assertTrue(createResult.success());
+        var alliance = kingdom.getAlliance().get();
+
+        var otherKingdom = new KingdomBuilder(game).build();
+        game.addKingdom(otherKingdom);
+        alliance.addKingdom(otherKingdom);
+
+        var leaveResult = allianceService.leaveAlliance(otherKingdom.getName());
+        assertTrue(leaveResult.success());
+        assertTrue(otherKingdom.getAlliance().isEmpty());
     }
 }
