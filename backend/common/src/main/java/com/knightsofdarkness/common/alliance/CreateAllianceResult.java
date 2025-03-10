@@ -2,10 +2,10 @@ package com.knightsofdarkness.common.alliance;
 
 import java.util.Optional;
 
-public record CreateAllianceResult(String message, boolean success, Optional<AllianceDto> turnReport) {
-    public static CreateAllianceResult success(String message, AllianceDto report)
+public record CreateAllianceResult(String message, boolean success, Optional<AllianceDto> alliance) {
+    public static CreateAllianceResult success(String message, AllianceDto alliance)
     {
-        return new CreateAllianceResult(message, true, Optional.of(report));
+        return new CreateAllianceResult(message, true, Optional.of(alliance));
     }
 
     public static CreateAllianceResult failure(String message)

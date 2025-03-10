@@ -8,17 +8,16 @@ import com.knightsofdarkness.common.alliance.AllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceResult;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
-import com.knightsofdarkness.web.alliance.model.AllianceRepository;
-import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
+import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class AllianceService {
-    private final AllianceRepository allianceRepository;
-    private final KingdomRepository kingdomRepository;
+    private final IAllianceRepository allianceRepository;
+    private final IKingdomRepository kingdomRepository;
 
-    public AllianceService(AllianceRepository allianceRepository, KingdomRepository kingdomRepository)
+    public AllianceService(IAllianceRepository allianceRepository, IKingdomRepository kingdomRepository)
     {
         this.allianceRepository = allianceRepository;
         this.kingdomRepository = kingdomRepository;
