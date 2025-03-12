@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.hibernate.annotations.JdbcTypeCode;
@@ -190,5 +191,23 @@ public class KingdomEntity {
     public Optional<AllianceEntity> getAlliance()
     {
         return Optional.ofNullable(alliance);
+    }
+
+    // it's really hard to make this commit...
+    @Override
+    public boolean equals(Object other)
+    {
+        if (this == other)
+            return true;
+        if (other == null || getClass() != other.getClass())
+            return false;
+        KingdomEntity that = (KingdomEntity) other;
+        return Objects.equals(this.name, that.name);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(name);
     }
 }

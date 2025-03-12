@@ -1,6 +1,7 @@
 package com.knightsofdarkness.web.utils;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import com.knightsofdarkness.common.kingdom.BuildingName;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
@@ -24,11 +25,16 @@ public class KingdomBuilder {
 
     public KingdomBuilder(Game game)
     {
-        this.name = "test-kingdom";
+        this.name = generateName();
         var startingConfiguration = game.getConfig().kingdomStartConfiguration();
         this.resources = new KingdomResourcesDto(startingConfiguration.resources().toMap());
         this.buildings = new KingdomBuildingsDto(startingConfiguration.buildings().toMap());
         this.units = new KingdomUnitsDto(startingConfiguration.units().toMap(), new UnitsMapDto().getUnits());
+    }
+
+    public String generateName()
+    {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     public KingdomBuilder withRichConfiguration()

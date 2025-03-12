@@ -41,6 +41,7 @@ public class KingdomRepository implements IKingdomRepository {
     @Override
     public void add(KingdomEntity kingdom)
     {
+        assert (!kingdoms.contains(kingdom));
         kingdom.getResources().syncResources();
         kingdom.getBuildings().syncBuildings();
         kingdom.getUnits().syncUnits();
