@@ -64,4 +64,18 @@ public class AllianceTest {
         assertTrue(leaveResult.success());
         assertTrue(otherKingdom.getAlliance().isEmpty());
     }
+
+    @Test
+    void whenKingdomIsNotInAlliance_itCannnotLeaveTheAlliance()
+    {
+        var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
+        assertTrue(createResult.success());
+
+        var otherKingdom = new KingdomBuilder(game).build();
+        game.addKingdom(otherKingdom);
+        assertTrue(otherKingdom.getAlliance().isEmpty());
+
+        var leaveResult = allianceService.leaveAlliance(otherKingdom.getName());
+        assertFalse(leaveResult.success());
+    }
 }
