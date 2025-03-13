@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.List;
 
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
+import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
 
 public interface IAllianceRepository {
     Optional<AllianceEntity> getAllianceByName(String name);
@@ -14,4 +15,6 @@ public interface IAllianceRepository {
     void create(AllianceEntity alliance);
 
     List<AllianceEntity> getAlliances();
+
+    AllianceInvitationEntity createInvitation(AllianceInvitationEntity invitation);
 }

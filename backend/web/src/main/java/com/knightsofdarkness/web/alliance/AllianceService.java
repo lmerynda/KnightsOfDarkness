@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.alliance;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import com.knightsofdarkness.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceResult;
 import com.knightsofdarkness.common.alliance.LeaveAllianceResult;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
+import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 
 import jakarta.transaction.Transactional;
@@ -63,6 +65,38 @@ public class AllianceService {
         kingdom.removeAlliance();
         kingdomRepository.update(kingdom);
         return LeaveAllianceResult.success("You've left the alliance");
+    }
+
+    @Transactional
+    public boolean inviteToAlliance(String invitee, String emperor, String allianceName)
+    {
+        var maybeKingdom = kingdomRepository.getKingdomByName(invitee);
+        if (maybeKingdom.isEmpty())
+        {
+            // TODO introduce return object
+            return false;
+        }
+        var kingdom = maybeKingdom.get();
+
+        // TODO it should be in repository, we do not need to fetch the alliance to check its property
+        var maybeAlliance = allianceRepository.getAllianceByName(allianceName);
+        if (maybeAlliance.isEmpty())
+        {
+            // TODO introduce return object
+            return false;
+        }
+        var alliance = maybeAlliance.get();
+
+        if (!alliance.getEmperor().equals(emperor))
+        {
+            // TODO introduce return object
+            return false;
+        }
+
+        var invitation = new AllianceInvitationEntity(Instant.now(), kingdom, alliance);
+        allianceRepository.createInvitation(invitation);
+
+        return true;
     }
 
     public List<AllianceDto> getAlliances()

@@ -11,10 +11,12 @@ import com.knightsofdarkness.web.alliance.IAllianceRepository;
 @Repository
 public class AllianceRepository implements IAllianceRepository {
     private final AllianceJpaRepository allianceJpaRepository;
+    private final AllianceInvitationJpaRepository allianceInvitationRepository;
 
-    public AllianceRepository(AllianceJpaRepository allianceJpaRepository)
+    public AllianceRepository(AllianceJpaRepository allianceJpaRepository, AllianceInvitationJpaRepository allianceInvitationRepository)
     {
         this.allianceJpaRepository = allianceJpaRepository;
+        this.allianceInvitationRepository = allianceInvitationRepository;
     }
 
     @Override
@@ -39,5 +41,10 @@ public class AllianceRepository implements IAllianceRepository {
     public List<AllianceEntity> getAlliances()
     {
         return allianceJpaRepository.findAll();
+    }
+
+    public AllianceInvitationEntity createInvitation(AllianceInvitationEntity invitation)
+    {
+        return allianceInvitationRepository.save(invitation);
     }
 }

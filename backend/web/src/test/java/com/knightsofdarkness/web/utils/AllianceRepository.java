@@ -7,9 +7,11 @@ import java.util.List;
 
 import com.knightsofdarkness.web.alliance.IAllianceRepository;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
+import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
 
 public class AllianceRepository implements IAllianceRepository {
     List<AllianceEntity> alliances = new ArrayList<>();
+    List<AllianceInvitationEntity> invitations = new ArrayList<>();
 
     @Override
     public Optional<AllianceEntity> getAllianceByName(String name)
@@ -44,5 +46,13 @@ public class AllianceRepository implements IAllianceRepository {
     public List<AllianceEntity> getAlliances()
     {
         return alliances;
+    }
+
+    @Override
+    public AllianceInvitationEntity createInvitation(AllianceInvitationEntity invitation)
+    {
+        // TODO check if exists? maybe it should be a map?
+        invitations.add(invitation);
+        return invitation;
     }
 }

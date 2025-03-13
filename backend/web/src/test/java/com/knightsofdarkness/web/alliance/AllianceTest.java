@@ -78,4 +78,18 @@ public class AllianceTest {
         var leaveResult = allianceService.leaveAlliance(otherKingdom.getName());
         assertFalse(leaveResult.success());
     }
+
+    @Test
+    void whenKingdomIsAllianceEmperor_itCanInviteAnotherKingdomToAlliance()
+    {
+        var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
+        assertTrue(createResult.success());
+        var alliance = kingdom.getAlliance().get();
+
+        var inviteeKingdom = new KingdomBuilder(game).build();
+        game.addKingdom(inviteeKingdom);
+
+        var inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), kingdom.getName(), alliance.getName());
+        assertTrue(inviteResult);
+    }
 }
