@@ -119,4 +119,51 @@ public class AllianceTest {
         var inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), kingdom.getName(), "NonExistentAlliance");
         assertFalse(inviteResult.success());
     }
+
+    @Test
+
+    void whenKingdomAcceptsInvitation_itJoinsTheAlliance()
+    {
+        var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
+        assertTrue(createResult.success());
+        var alliance = kingdom.getAlliance().get();
+
+        var inviteeKingdom = new KingdomBuilder(game).build();
+        game.addKingdom(inviteeKingdom);
+
+        var inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), kingdom.getName(), alliance.getName());
+        assertTrue(inviteResult.success());
+
+        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), alliance.getName());
+        assertTrue(acceptResult.success());
+        assertTrue(inviteeKingdom.getAlliance().isPresent());
+        assertEquals(alliance.getName(), inviteeKingdom.getAlliance().get().getName());
+    }
+
+    @Test
+    void whenKingdomIsAlreadyInAlliance_itCannotAcceptInvitation()
+    {
+        var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
+        assertTrue(createResult.success());
+        var alliance = kingdom.getAlliance().get();
+
+        var inviteeKingdom = new KingdomBuilder(game).build();
+        game.addKingdom(inviteeKingdom);
+        alliance.addKingdom(inviteeKingdom);
+
+        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), alliance.getName());
+        assertFalse(acceptResult.success());
+        assertTrue(inviteeKingdom.getAlliance().isPresent());
+    }
+
+    @Test
+    void whenAllianceDoesNotExist_invitationCannotBeAccepted()
+    {
+        var inviteeKingdom = new KingdomBuilder(game).build();
+        game.addKingdom(inviteeKingdom);
+
+        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), "NonExistentAlliance");
+        assertFalse(acceptResult.success());
+        assertTrue(inviteeKingdom.getAlliance().isEmpty());
+    }
 }

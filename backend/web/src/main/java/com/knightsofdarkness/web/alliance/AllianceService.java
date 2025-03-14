@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.knightsofdarkness.common.alliance.AcceptAllianceInvitationResult;
 import com.knightsofdarkness.common.alliance.AllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceResult;
@@ -94,6 +95,35 @@ public class AllianceService {
         allianceRepository.createInvitation(invitation);
 
         return InviteAllianceResult.success("Invitation sent to " + invitee);
+    }
+
+    @Transactional
+    public AcceptAllianceInvitationResult acceptAllianceInvitation(String kingdomName, String allianceName)
+    {
+        var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            return AcceptAllianceInvitationResult.failure("Kingdom not found");
+        }
+        var kingdom = maybeKingdom.get();
+
+        if (kingdom.getAlliance().isPresent())
+        {
+            return AcceptAllianceInvitationResult.failure("Kingdom is already in an alliance");
+        }
+
+        var maybeAlliance = allianceRepository.getAllianceByName(allianceName);
+        if (maybeAlliance.isEmpty())
+        {
+            return AcceptAllianceInvitationResult.failure("Alliance not found");
+        }
+        var alliance = maybeAlliance.get();
+
+        alliance.addKingdom(kingdom);
+        kingdomRepository.update(kingdom);
+        allianceRepository.update(alliance);
+
+        return AcceptAllianceInvitationResult.success("You've joined the alliance");
     }
 
     public List<AllianceDto> getAlliances()
