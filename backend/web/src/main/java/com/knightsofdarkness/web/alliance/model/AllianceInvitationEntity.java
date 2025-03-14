@@ -3,6 +3,7 @@ package com.knightsofdarkness.web.alliance.model;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.knightsofdarkness.common.alliance.AllianceInvitationDto;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 
 import jakarta.persistence.Entity;
@@ -30,10 +31,31 @@ public class AllianceInvitationEntity {
 
     }
 
-    public AllianceInvitationEntity(Instant invitedAt, KingdomEntity kingdom, AllianceEntity alliance)
+    public AllianceInvitationEntity(UUID id, Instant invitedAt, KingdomEntity kingdom, AllianceEntity alliance)
     {
+        this.id = id;
         this.invitedAt = invitedAt;
         this.kingdom = kingdom;
         this.alliance = alliance;
+    }
+
+    public UUID getId()
+    {
+        return id;
+    }
+
+    public AllianceEntity getAlliance()
+    {
+        return alliance;
+    }
+
+    public KingdomEntity getKingdom()
+    {
+        return kingdom;
+    }
+
+    public AllianceInvitationDto toDto()
+    {
+        return new AllianceInvitationDto(id, kingdom.getName(), alliance.getName());
     }
 }

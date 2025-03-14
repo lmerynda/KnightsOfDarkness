@@ -2,12 +2,14 @@ package com.knightsofdarkness.web.alliance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
+import com.knightsofdarkness.common.alliance.InviteAllianceResult;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
@@ -131,10 +133,10 @@ public class AllianceTest {
         var inviteeKingdom = new KingdomBuilder(game).build();
         game.addKingdom(inviteeKingdom);
 
-        var inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), kingdom.getName(), alliance.getName());
+        InviteAllianceResult inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), kingdom.getName(), alliance.getName());
         assertTrue(inviteResult.success());
 
-        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), alliance.getName());
+        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), inviteResult.invitation().get().id());
         assertTrue(acceptResult.success());
         assertTrue(inviteeKingdom.getAlliance().isPresent());
         assertEquals(alliance.getName(), inviteeKingdom.getAlliance().get().getName());
@@ -151,19 +153,15 @@ public class AllianceTest {
         game.addKingdom(inviteeKingdom);
         alliance.addKingdom(inviteeKingdom);
 
-        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), alliance.getName());
-        assertFalse(acceptResult.success());
-        assertTrue(inviteeKingdom.getAlliance().isPresent());
-    }
+        var secondEmperor = new KingdomBuilder(game).build();
+        game.addKingdom(secondEmperor);
+        createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance 2"), secondEmperor.getName());
 
-    @Test
-    void whenAllianceDoesNotExist_invitationCannotBeAccepted()
-    {
-        var inviteeKingdom = new KingdomBuilder(game).build();
-        game.addKingdom(inviteeKingdom);
+        InviteAllianceResult inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), secondEmperor.getName(), secondEmperor.getAlliance().get().getName());
+        assertTrue(inviteResult.success());
 
-        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), "NonExistentAlliance");
+        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), inviteResult.invitation().get().id());
         assertFalse(acceptResult.success());
-        assertTrue(inviteeKingdom.getAlliance().isEmpty());
+        assertNotEquals(secondEmperor.getAlliance().get().getName(), inviteeKingdom.getAlliance().get().getName());
     }
 }

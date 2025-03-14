@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.knightsofdarkness.web.alliance.IAllianceRepository;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
@@ -54,5 +55,17 @@ public class AllianceRepository implements IAllianceRepository {
         // TODO check if exists? maybe it should be a map?
         invitations.add(invitation);
         return invitation;
+    }
+
+    @Override
+    public Optional<AllianceInvitationEntity> getInvitationById(UUID id)
+    {
+        return invitations.stream().filter(invitation -> invitation.getId().equals(id)).findFirst();
+    }
+
+    @Override
+    public void deleteInvitation(AllianceInvitationEntity invitation)
+    {
+        invitations.remove(invitation);
     }
 }

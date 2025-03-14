@@ -3,6 +3,7 @@ package com.knightsofdarkness.web.alliance.model;
 import java.util.Optional;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -46,5 +47,17 @@ public class AllianceRepository implements IAllianceRepository {
     public AllianceInvitationEntity createInvitation(AllianceInvitationEntity invitation)
     {
         return allianceInvitationRepository.save(invitation);
+    }
+
+    @Override
+    public Optional<AllianceInvitationEntity> getInvitationById(UUID id)
+    {
+        return allianceInvitationRepository.findById(id);
+    }
+
+    @Override
+    public void deleteInvitation(AllianceInvitationEntity invitation)
+    {
+        allianceInvitationRepository.delete(invitation);
     }
 }

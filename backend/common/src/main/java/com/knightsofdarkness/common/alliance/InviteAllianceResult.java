@@ -1,13 +1,15 @@
 package com.knightsofdarkness.common.alliance;
 
-public record InviteAllianceResult(String message, boolean success) {
-    public static InviteAllianceResult success(String message)
+import java.util.Optional;
+
+public record InviteAllianceResult(String message, boolean success, Optional<AllianceInvitationDto> invitation) {
+    public static InviteAllianceResult success(String message, AllianceInvitationDto invitation)
     {
-        return new InviteAllianceResult(message, true);
+        return new InviteAllianceResult(message, true, Optional.of(invitation));
     }
 
     public static InviteAllianceResult failure(String message)
     {
-        return new InviteAllianceResult(message, false);
+        return new InviteAllianceResult(message, false, Optional.empty());
     }
 }

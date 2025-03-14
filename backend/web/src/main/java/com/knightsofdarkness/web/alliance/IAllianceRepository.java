@@ -3,6 +3,7 @@ package com.knightsofdarkness.web.alliance;
 import java.util.Optional;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
@@ -17,4 +18,8 @@ public interface IAllianceRepository {
     List<AllianceEntity> getAlliances();
 
     AllianceInvitationEntity createInvitation(AllianceInvitationEntity invitation);
+
+    Optional<AllianceInvitationEntity> getInvitationById(UUID id);
+
+    void deleteInvitation(AllianceInvitationEntity invitation);
 }
