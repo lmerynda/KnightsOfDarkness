@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.knightsofdarkness.common.alliance.AllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceResult;
-import com.knightsofdarkness.common.alliance.LeaveAllianceResult;
+import com.knightsofdarkness.common.alliance.InviteAllianceResult;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
@@ -41,40 +41,39 @@ public class AllianceService {
     }
 
     @Transactional
-    public LeaveAllianceResult leaveAlliance(String kingdomName)
+    public InviteAllianceResult leaveAlliance(String kingdomName)
     {
         var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
-            return LeaveAllianceResult.failure("Kingdom not found");
+            return InviteAllianceResult.failure("Kingdom not found");
         }
         var kingdom = maybeKingdom.get();
 
         var alliance = kingdom.getAlliance();
         if (alliance.isEmpty())
         {
-            return LeaveAllianceResult.failure("Kingdom is not in an alliance");
+            return InviteAllianceResult.failure("Kingdom is not in an alliance");
         }
 
         if (alliance.get().getEmperor().equals(kingdomName))
         {
             // TODO fix to check if emperor is the last kingdom in the alliance
-            return LeaveAllianceResult.failure("Emperor cannot leave the alliance");
+            return InviteAllianceResult.failure("Emperor cannot leave the alliance");
         }
 
         kingdom.removeAlliance();
         kingdomRepository.update(kingdom);
-        return LeaveAllianceResult.success("You've left the alliance");
+        return InviteAllianceResult.success("You've left the alliance");
     }
 
     @Transactional
-    public boolean inviteToAlliance(String invitee, String emperor, String allianceName)
+    public InviteAllianceResult inviteToAlliance(String invitee, String emperor, String allianceName)
     {
         var maybeKingdom = kingdomRepository.getKingdomByName(invitee);
         if (maybeKingdom.isEmpty())
         {
-            // TODO introduce return object
-            return false;
+            return InviteAllianceResult.failure("Invitee not found");
         }
         var kingdom = maybeKingdom.get();
 
@@ -82,21 +81,19 @@ public class AllianceService {
         var maybeAlliance = allianceRepository.getAllianceByName(allianceName);
         if (maybeAlliance.isEmpty())
         {
-            // TODO introduce return object
-            return false;
+            return InviteAllianceResult.failure("Alliance not found");
         }
         var alliance = maybeAlliance.get();
 
         if (!alliance.getEmperor().equals(emperor))
         {
-            // TODO introduce return object
-            return false;
+            return InviteAllianceResult.failure("Only the emperor can invite other kingdoms to the alliance");
         }
 
         var invitation = new AllianceInvitationEntity(Instant.now(), kingdom, alliance);
         allianceRepository.createInvitation(invitation);
 
-        return true;
+        return InviteAllianceResult.success("Invitation sent to " + invitee);
     }
 
     public List<AllianceDto> getAlliances()

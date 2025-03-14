@@ -34,7 +34,7 @@ public class KingdomBuilder {
 
     public String generateName()
     {
-        return UUID.randomUUID().toString().replace("-", "");
+        return "kingdom-" + UUID.randomUUID().toString().replace("-", "");
     }
 
     public KingdomBuilder withRichConfiguration()
