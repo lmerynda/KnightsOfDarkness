@@ -13,9 +13,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.knightsofdarkness.common.alliance.AcceptAllianceInvitationDto;
+import com.knightsofdarkness.common.alliance.AcceptAllianceInvitationResult;
+import com.knightsofdarkness.common.alliance.AddBotToAllianceDto;
 import com.knightsofdarkness.common.alliance.AllianceDto;
+import com.knightsofdarkness.common.alliance.AllianceInvitationDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.common.alliance.CreateAllianceResult;
+import com.knightsofdarkness.common.alliance.InviteAllianceResult;
+import com.knightsofdarkness.common.alliance.LeaveAllianceResult;
+import com.knightsofdarkness.common.alliance.RemoveFromAllianceDto;
+import com.knightsofdarkness.common.alliance.RemoveFromAllianceResult;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
@@ -41,6 +49,76 @@ public class AllianceController {
         log.info("Creating alliance");
         var result = allianceService.createAlliance(allianceDto, currentUser.getUsername());
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/leave")
+    public ResponseEntity<LeaveAllianceResult> leaveAlliance(@AuthenticationPrincipal UserData currentUser)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.info("Leaving alliance");
+        var result = allianceService.leaveAlliance(currentUser.getUsername());
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/invite")
+    public ResponseEntity<InviteAllianceResult> inviteToAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody AllianceInvitationDto inviteDto)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.info("Inviting to alliance");
+        var result = allianceService.inviteToAlliance(inviteDto.kingdomName(), currentUser.getUsername(), inviteDto.allianceName());
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/accept")
+    public ResponseEntity<AcceptAllianceInvitationResult> acceptAllianceInvitation(@AuthenticationPrincipal UserData currentUser, @RequestBody AcceptAllianceInvitationDto inviteDto)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.info("Accepting alliance invitation");
+        var result = allianceService.acceptAllianceInvitation(currentUser.getUsername(), inviteDto.invitationId());
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/remove")
+    public ResponseEntity<RemoveFromAllianceResult> removeFromAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody RemoveFromAllianceDto removeDto)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.info("Removing from alliance");
+        var result = allianceService.removeFromAlliance(removeDto.kingdomName(), currentUser.getUsername());
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/add-bot")
+    public ResponseEntity<Void> addBotToAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody AddBotToAllianceDto addBotDto)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.info("Adding bot to alliance");
+        allianceService.addBotToAlliance(currentUser.getUsername(), addBotDto.botName());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping()
