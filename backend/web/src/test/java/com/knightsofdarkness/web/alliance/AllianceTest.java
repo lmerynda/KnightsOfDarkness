@@ -98,6 +98,38 @@ public class AllianceTest {
     }
 
     @Test
+    void whenKingdomIsNotAllianceEmperor_itCannotRemoveAnotherKingdomFromAlliance()
+    {
+        var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
+        assertTrue(createResult.success());
+        var alliance = kingdom.getAlliance().get();
+
+        var otherKingdom = new KingdomBuilder(game).build();
+        game.addKingdom(otherKingdom);
+        alliance.addKingdom(otherKingdom);
+
+        var nonEmperorKingdom = new KingdomBuilder(game).build();
+        game.addKingdom(nonEmperorKingdom);
+
+        var removeResult = allianceService.removeFromAlliance(otherKingdom.getName(), nonEmperorKingdom.getName());
+        assertFalse(removeResult);
+    }
+
+    @Test
+    void whenKingdomIsNotInAlliance_itCannotRemoveAnotherKingdomFromAlliance()
+    {
+        var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
+        assertTrue(createResult.success());
+
+        var otherKingdom = new KingdomBuilder(game).build();
+        game.addKingdom(otherKingdom);
+        assertTrue(otherKingdom.getAlliance().isEmpty());
+
+        var removeResult = allianceService.removeFromAlliance(otherKingdom.getName(), kingdom.getName());
+        assertFalse(removeResult);
+    }
+
+    @Test
     void whenKingdomIsAllianceEmperor_itCanInviteAnotherKingdomToAlliance()
     {
         var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
