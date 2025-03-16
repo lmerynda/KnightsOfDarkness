@@ -13,6 +13,7 @@ import com.knightsofdarkness.common.alliance.CreateAllianceResult;
 import com.knightsofdarkness.common.alliance.InviteAllianceResult;
 import com.knightsofdarkness.common.alliance.LeaveAllianceResult;
 import com.knightsofdarkness.common.alliance.RejectAllianceInvitationResult;
+import com.knightsofdarkness.common.alliance.RemoveFromAllianceResult;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
@@ -73,29 +74,29 @@ public class AllianceService {
     }
 
     @Transactional
-    public boolean removeFromAlliance(String kingdomName, String emperor)
+    public RemoveFromAllianceResult removeFromAlliance(String kingdomName, String emperor)
     {
         var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
-            return false;
+            return RemoveFromAllianceResult.failure("Kingdom not found");
         }
         var kingdom = maybeKingdom.get();
 
         var alliance = kingdom.getAlliance();
         if (alliance.isEmpty())
         {
-            return false;
+            return RemoveFromAllianceResult.failure("Kingdom is not in an alliance");
         }
 
         if (!alliance.get().getEmperor().equals(emperor))
         {
-            return false;
+            return RemoveFromAllianceResult.failure("Only the emperor can remove kingdoms from the alliance");
         }
 
         kingdom.removeAlliance();
         kingdomRepository.update(kingdom);
-        return true;
+        return RemoveFromAllianceResult.success("Kingdom has been removed from the alliance");
     }
 
     @Transactional

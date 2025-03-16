@@ -93,7 +93,7 @@ public class AllianceTest {
         alliance.addKingdom(otherKingdom);
 
         var removeResult = allianceService.removeFromAlliance(otherKingdom.getName(), kingdom.getName());
-        assertTrue(removeResult);
+        assertTrue(removeResult.success());
         assertFalse(otherKingdom.getAlliance().isPresent());
     }
 
@@ -112,7 +112,7 @@ public class AllianceTest {
         game.addKingdom(nonEmperorKingdom);
 
         var removeResult = allianceService.removeFromAlliance(otherKingdom.getName(), nonEmperorKingdom.getName());
-        assertFalse(removeResult);
+        assertFalse(removeResult.success());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class AllianceTest {
         assertTrue(otherKingdom.getAlliance().isEmpty());
 
         var removeResult = allianceService.removeFromAlliance(otherKingdom.getName(), kingdom.getName());
-        assertFalse(removeResult);
+        assertFalse(removeResult.success());
     }
 
     @Test
