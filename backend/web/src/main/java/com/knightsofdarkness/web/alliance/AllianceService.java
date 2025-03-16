@@ -73,6 +73,32 @@ public class AllianceService {
     }
 
     @Transactional
+    public boolean removeFromAlliance(String kingdomName, String emperor)
+    {
+        var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            return false;
+        }
+        var kingdom = maybeKingdom.get();
+
+        var alliance = kingdom.getAlliance();
+        if (alliance.isEmpty())
+        {
+            return false;
+        }
+
+        if (!alliance.get().getEmperor().equals(emperor))
+        {
+            return false;
+        }
+
+        kingdom.removeAlliance();
+        kingdomRepository.update(kingdom);
+        return true;
+    }
+
+    @Transactional
     public InviteAllianceResult inviteToAlliance(String invitee, String emperor, String allianceName)
     {
         var maybeKingdom = kingdomRepository.getKingdomByName(invitee);
