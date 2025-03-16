@@ -32,7 +32,7 @@ public class KingdomBuilder {
         this.units = new KingdomUnitsDto(startingConfiguration.units().toMap(), new UnitsMapDto().getUnits());
     }
 
-    public String generateName()
+    public static String generateName()
     {
         return "kingdom-" + UUID.randomUUID().toString().replace("-", "");
     }

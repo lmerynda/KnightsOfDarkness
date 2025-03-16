@@ -16,7 +16,9 @@ import com.knightsofdarkness.common.alliance.RejectAllianceInvitationResult;
 import com.knightsofdarkness.common.alliance.RemoveFromAllianceResult;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
+import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
 import com.knightsofdarkness.web.utils.Id;
 
 import jakarta.transaction.Transactional;
@@ -25,11 +27,13 @@ import jakarta.transaction.Transactional;
 public class AllianceService {
     private final IAllianceRepository allianceRepository;
     private final IKingdomRepository kingdomRepository;
+    private final GameConfig gameConfig;
 
-    public AllianceService(IAllianceRepository allianceRepository, IKingdomRepository kingdomRepository)
+    public AllianceService(IAllianceRepository allianceRepository, IKingdomRepository kingdomRepository, GameConfig gameConfig)
     {
         this.allianceRepository = allianceRepository;
         this.kingdomRepository = kingdomRepository;
+        this.gameConfig = gameConfig;
     }
 
     @Transactional
@@ -184,6 +188,37 @@ public class AllianceService {
         // TODO notification
 
         return RejectAllianceInvitationResult.success("You've rejected the alliance invitation");
+    }
+
+    @Transactional
+    public boolean addBotToAlliance(String emperor, String botName)
+    {
+        var maybeKingdom = kingdomRepository.getKingdomByName(emperor);
+        if (maybeKingdom.isEmpty())
+        {
+            return false;
+        }
+        var kingdom = maybeKingdom.get();
+
+        var alliance = kingdom.getAlliance();
+        if (alliance.isEmpty())
+        {
+            return false;
+        }
+
+        var existingKingdom = kingdomRepository.getKingdomByName(botName);
+        if (existingKingdom.isPresent())
+        {
+            // new bot must have unique name
+            return false;
+        }
+
+        var kingdomCreator = new KingdomCreator(kingdomRepository, gameConfig);
+        var botKingdom = kingdomCreator.createKingdom(botName);
+
+        alliance.get().addKingdom(botKingdom);
+        kingdomRepository.update(botKingdom);
+        return true;
     }
 
     public List<AllianceDto> getAlliances()

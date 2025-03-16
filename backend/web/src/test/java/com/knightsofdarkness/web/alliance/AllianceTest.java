@@ -26,7 +26,7 @@ public class AllianceTest {
         game = new TestGame().get();
         kingdom = new KingdomBuilder(game).build();
         game.addKingdom(kingdom);
-        allianceService = new AllianceService(game.getAllianceRepository(), game.getKingdomRepository());
+        allianceService = new AllianceService(game.getAllianceRepository(), game.getKingdomRepository(), game.getConfig());
     }
 
     @Test
@@ -211,5 +211,20 @@ public class AllianceTest {
         var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), inviteResult.invitation().get().id());
         assertFalse(acceptResult.success());
         assertNotEquals(secondEmperor.getAlliance().get().getName(), inviteeKingdom.getAlliance().get().getName());
+    }
+
+    @Test
+    void whenEmperorAddsBotToAlliance_newKingdomIsCreated()
+    {
+        var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
+        assertTrue(createResult.success());
+
+        var botName = "Bot-" + KingdomBuilder.generateName();
+
+        var addResult = allianceService.addBotToAlliance(kingdom.getName(), botName);
+        assertTrue(addResult);
+
+        var botKingdom = game.getKingdomRepository().getKingdomByName(botName);
+        assertTrue(botKingdom.isPresent());
     }
 }
