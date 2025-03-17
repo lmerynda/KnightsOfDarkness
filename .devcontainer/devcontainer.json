@@ -2,7 +2,7 @@
     "image": "ghcr.io/lmerynda/knightsofdarkness-dev:latest",
     "features": {
         "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-        "ghcr.io/mikaello/devcontainer-features/modern-shell-utils:1": {}
+        "ghcr.io/mikaello/devcontainer-features/modern-shell-utils:2": {}
     },
     "postCreateCommand": "java -version && node --version && cd browser && npm install",
     "remoteUser": "vscode",
