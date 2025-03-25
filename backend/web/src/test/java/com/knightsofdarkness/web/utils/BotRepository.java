@@ -10,7 +10,7 @@ public class BotRepository implements IBotRepository {
     private final List<BotEntity> bots = new ArrayList<>();
 
     @Override
-    public List<BotEntity> findAll()
+    public List<BotEntity> findAllWithKingdoms()
     {
         return bots;
     }

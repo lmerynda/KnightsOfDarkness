@@ -38,7 +38,7 @@ public class BotsRunner {
     public void runEvery10Seconds()
     {
         log.info("Running bots every 10 second");
-        var bots = botRepository.findAll();
+        var bots = botRepository.findAllWithKingdoms();
         for (var bot : bots)
         {
             var kingdom = bot.getKingdom();

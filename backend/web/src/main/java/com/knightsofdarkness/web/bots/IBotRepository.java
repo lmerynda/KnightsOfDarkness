@@ -5,7 +5,7 @@ import java.util.List;
 import com.knightsofdarkness.web.bots.model.BotEntity;
 
 public interface IBotRepository {
-    List<BotEntity> findAll();
+    List<BotEntity> findAllWithKingdoms();
 
     BotEntity add(BotEntity bot);
 }
