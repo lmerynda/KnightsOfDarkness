@@ -7,7 +7,7 @@ import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 public interface IKingdomRepository {
     Optional<KingdomEntity> getKingdomByName(String name);
 
-    void add(KingdomEntity kingdom);
+    KingdomEntity add(KingdomEntity kingdom);
 
-    void update(KingdomEntity kingdom);
+    KingdomEntity update(KingdomEntity kingdom);
 }

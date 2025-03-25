@@ -19,7 +19,7 @@ public class KingdomRepository implements IKingdomRepository {
     }
 
     @Override
-    public void update(KingdomEntity kingdom)
+    public KingdomEntity update(KingdomEntity kingdom)
     {
         kingdom.getResources().syncResources();
         kingdom.getBuildings().syncBuildings();
@@ -31,7 +31,7 @@ public class KingdomRepository implements IKingdomRepository {
                 kingdoms.remove(savedKingdom);
                 kingdoms.add(kingdom);
 
-                return;
+                return kingdom;
             }
         }
 
@@ -39,12 +39,14 @@ public class KingdomRepository implements IKingdomRepository {
     }
 
     @Override
-    public void add(KingdomEntity kingdom)
+    public KingdomEntity add(KingdomEntity kingdom)
     {
         assert (!kingdoms.contains(kingdom));
         kingdom.getResources().syncResources();
         kingdom.getBuildings().syncBuildings();
         kingdom.getUnits().syncUnits();
         kingdoms.add(kingdom);
+
+        return kingdom;
     }
 }

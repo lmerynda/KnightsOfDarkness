@@ -1,6 +1,7 @@
 package com.knightsofdarkness.web.initializer;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,51 +14,74 @@ import com.google.gson.reflect.TypeToken;
 import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.common.kingdom.KingdomDto;
 import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
+import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingStartDto;
+import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
+import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.common.market.MarketOfferDto;
+import com.knightsofdarkness.web.bots.IBotRepository;
+import com.knightsofdarkness.web.bots.model.BotEntity;
+import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.KingdomService;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.market.MarketService;
+import com.knightsofdarkness.web.utils.Id;
+
+import jakarta.transaction.Transactional;
 
 @Component
 public class GameInitializer implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(GameInitializer.class);
 
+    private final IBotRepository botRepository;
+    private final IKingdomRepository kingdomRepository;
     private final KingdomService kingdomService;
     private final MarketService marketService;
     private final Gson gson;
+    private final int numberOfSpecialBuildings = 5;
 
-    public GameInitializer(KingdomService kingdomService, MarketService marketService, Gson gson)
+    public GameInitializer(KingdomService kingdomService, MarketService marketService, IKingdomRepository kingdomRepository, IBotRepository botRepository, Gson gson)
     {
         this.kingdomService = kingdomService;
         this.marketService = marketService;
+        this.botRepository = botRepository;
+        this.kingdomRepository = kingdomRepository;
         this.gson = gson;
     }
 
     @Override
     public void run(String... args)
     {
-        kingdomService.createKingdom(generateKingdom("uprzejmy"));
-        // kingdomService.startSpecialBuilding("uprzejmy", new KingdomSpecialBuildingStartDto(SpecialBuildingType.goldShaft));
-        kingdomService.createKingdom(generateKingdom("BlacksmithBot"));
-        kingdomService.createKingdom(generateKingdom("FarmerBot"));
-        kingdomService.createKingdom(generateKingdom("IronMinerBot"));
-        kingdomService.createKingdom(generateKingdom("GoldMinerBot"));
-        startBotsSpecialBuildings();
+
+        createKingdom("uprzejmy");
+        createBot("BlacksmithBot", SpecialBuildingType.forge);
+        createBot("FarmerBot", SpecialBuildingType.granary);
+        createBot("IronMinerBot", SpecialBuildingType.ironShaft);
+        createBot("GoldMinerBot", SpecialBuildingType.goldShaft);
         log.info("Kingdoms initialized");
         marketService.createOffers(generateMarketOffers());
         log.info("Market offers initialized");
     }
 
-    private void startBotsSpecialBuildings()
+    @Transactional
+    KingdomEntity createKingdom(String name)
     {
-        var numberOfSpecialBuildings = 5;
+        log.info("Initializing kingdom " + name);
+        KingdomDto kingdomDto = generateKingdom(name);
+        kingdomDto.lastTurnReport = new KingdomTurnReport();
+        kingdomDto.specialBuildings = new ArrayList<>();
+        return kingdomRepository.add(KingdomEntity.fromDto(kingdomDto));
+    }
+
+    @Transactional
+    void createBot(String name, SpecialBuildingType specialBuildingType)
+    {
+        var kingdom = createKingdom(name);
+        botRepository.add(new BotEntity(Id.generate(), kingdom));
         for (int i = 0; i < numberOfSpecialBuildings; i++)
         {
-            // kingdomService.startSpecialBuilding("FarmerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.granary));
-            // kingdomService.startSpecialBuilding("BlacksmithBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.forge));
-            // kingdomService.startSpecialBuilding("IronMinerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.ironShaft));
-            // kingdomService.startSpecialBuilding("GoldMinerBot", new KingdomSpecialBuildingStartDto(SpecialBuildingType.goldShaft));
+            kingdomService.startSpecialBuilding(name, new KingdomSpecialBuildingStartDto(specialBuildingType));
         }
     }
 

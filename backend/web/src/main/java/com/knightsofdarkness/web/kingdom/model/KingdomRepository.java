@@ -17,12 +17,12 @@ public class KingdomRepository implements IKingdomRepository {
         this.jpaRepository = jpaRepository;
     }
 
-    public void add(KingdomEntity kingdom)
+    public KingdomEntity add(KingdomEntity kingdom)
     {
         kingdom.resources.syncResources();
         kingdom.buildings.syncBuildings();
         kingdom.units.syncUnits();
-        jpaRepository.save(kingdom);
+        return jpaRepository.save(kingdom);
     }
 
     public Optional<KingdomEntity> getKingdomByName(String name)
@@ -35,11 +35,11 @@ public class KingdomRepository implements IKingdomRepository {
         return jpaRepository.findAll();
     }
 
-    public void update(KingdomEntity kingdom)
+    public KingdomEntity update(KingdomEntity kingdom)
     {
         kingdom.resources.syncResources();
         kingdom.buildings.syncBuildings();
         kingdom.units.syncUnits();
-        jpaRepository.save(kingdom);
+        return jpaRepository.save(kingdom);
     }
 }
