@@ -17,7 +17,6 @@ public class SchedulerConfig implements SchedulingConfigurer {
     private final TurnAdd turnAdd;
     private final MarketDataUpdater marketDataUpdater;
 
-    // Inject GameConfig and TurnAdd
     public SchedulerConfig(GameConfig gameConfig, TurnAdd turnAdd, MarketDataUpdater marketDataUpdater)
     {
         this.gameConfig = gameConfig;

@@ -26,4 +26,9 @@ public class BotEntity {
         id = uuid;
         kingdom = botKingdom;
     }
+
+    public KingdomEntity getKingdom()
+    {
+        return kingdom;
+    }
 }
