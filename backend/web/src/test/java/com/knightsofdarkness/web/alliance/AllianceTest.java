@@ -26,7 +26,7 @@ public class AllianceTest {
         game = new TestGame().get();
         kingdom = new KingdomBuilder(game).build();
         game.addKingdom(kingdom);
-        allianceService = new AllianceService(game.getAllianceRepository(), game.getKingdomRepository(), game.getConfig());
+        allianceService = new AllianceService(game.getAllianceRepository(), game.getKingdomRepository(), game.getBotRepository(), game.getConfig());
     }
 
     @Test
@@ -221,7 +221,7 @@ public class AllianceTest {
 
         var botName = "Bot-" + KingdomBuilder.generateName();
 
-        var addResult = allianceService.addBotToAlliance(kingdom.getName(), botName);
+        var addResult = allianceService.createNewBotAndAddToAlliance(kingdom.getName(), botName);
         assertTrue(addResult);
 
         var botKingdom = game.getKingdomRepository().getKingdomByName(botName);

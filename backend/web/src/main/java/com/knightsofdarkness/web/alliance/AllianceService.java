@@ -16,6 +16,8 @@ import com.knightsofdarkness.common.alliance.RejectAllianceInvitationResult;
 import com.knightsofdarkness.common.alliance.RemoveFromAllianceResult;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
+import com.knightsofdarkness.web.bots.IBotRepository;
+import com.knightsofdarkness.web.bots.model.BotEntity;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
@@ -27,12 +29,14 @@ import jakarta.transaction.Transactional;
 public class AllianceService {
     private final IAllianceRepository allianceRepository;
     private final IKingdomRepository kingdomRepository;
+    private final IBotRepository botRepository;
     private final GameConfig gameConfig;
 
-    public AllianceService(IAllianceRepository allianceRepository, IKingdomRepository kingdomRepository, GameConfig gameConfig)
+    public AllianceService(IAllianceRepository allianceRepository, IKingdomRepository kingdomRepository, IBotRepository botRepository, GameConfig gameConfig)
     {
         this.allianceRepository = allianceRepository;
         this.kingdomRepository = kingdomRepository;
+        this.botRepository = botRepository;
         this.gameConfig = gameConfig;
     }
 
@@ -191,7 +195,7 @@ public class AllianceService {
     }
 
     @Transactional
-    public boolean addBotToAlliance(String emperor, String botName)
+    public boolean createNewBotAndAddToAlliance(String emperor, String botName)
     {
         var maybeKingdom = kingdomRepository.getKingdomByName(emperor);
         if (maybeKingdom.isEmpty())
@@ -217,6 +221,7 @@ public class AllianceService {
         var botKingdom = kingdomCreator.createKingdom(botName);
 
         alliance.get().addKingdom(botKingdom);
+        botRepository.add(new BotEntity(Id.generate(), botKingdom));
         kingdomRepository.update(botKingdom);
         return true;
     }

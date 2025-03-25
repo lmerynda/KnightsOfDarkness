@@ -117,7 +117,7 @@ public class AllianceController {
         }
 
         log.info("Adding bot to alliance");
-        allianceService.addBotToAlliance(currentUser.getUsername(), addBotDto.botName());
+        allianceService.createNewBotAndAddToAlliance(currentUser.getUsername(), addBotDto.botName());
         return ResponseEntity.ok().build();
     }
 
