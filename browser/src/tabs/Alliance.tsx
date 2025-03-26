@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import AllianceList from "../components/AllianceList";
 import CreateAlliance from "../components/CreateAlliance";
 import { KingdomContext } from "../Kingdom";
+import KingdomAlliance from "../components/KingdomAlliance";
 
 const Alliance: React.FC = () => {
   const kingdomContext = useContext(KingdomContext);
@@ -10,7 +11,18 @@ const Alliance: React.FC = () => {
     throw new Error("Kingdom context is undefined");
   }
 
-  return <div>{kingdomContext.kingdom.allianceName ? <AllianceList /> : <CreateAlliance />}</div>;
+  return (
+    <div>
+      {kingdomContext.kingdom.allianceName ? (
+        <KingdomAlliance />
+      ) : (
+        <>
+          <CreateAlliance />
+          <AllianceList />
+        </>
+      )}
+    </div>
+  );
 };
 
 export default Alliance;

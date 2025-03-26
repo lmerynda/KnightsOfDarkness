@@ -121,11 +121,25 @@ public class AllianceController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping()
+    @GetMapping("/all")
     public ResponseEntity<List<AllianceDto>> getAlliances()
     {
         var alliances = allianceService.getAlliances();
         return ResponseEntity.ok(alliances);
+    }
+
+    @GetMapping()
+    public ResponseEntity<AllianceDto> getAlliance(@AuthenticationPrincipal UserData currentUser)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return allianceService.getKingdomAlliance(currentUser.getUsername())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     private void logUserUnauthenticated()

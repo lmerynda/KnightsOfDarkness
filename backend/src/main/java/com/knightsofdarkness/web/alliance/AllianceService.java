@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.alliance;
 
+import java.util.Optional;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -230,5 +232,23 @@ public class AllianceService {
     {
         var alliances = allianceRepository.getAlliances();
         return alliances.stream().map(alliance -> new AllianceDto(alliance.getName(), alliance.getEmperor())).toList();
+    }
+
+    public Optional<AllianceDto> getKingdomAlliance(String kingdomName)
+    {
+        var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            return Optional.empty();
+        }
+        var kingdom = maybeKingdom.get();
+
+        var alliance = kingdom.getAlliance();
+        if (alliance.isEmpty())
+        {
+            return Optional.empty();
+        }
+
+        return Optional.of(alliance.get().toDto());
     }
 }
