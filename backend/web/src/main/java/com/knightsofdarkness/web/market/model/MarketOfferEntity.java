@@ -2,8 +2,8 @@ package com.knightsofdarkness.web.market.model;
 
 import java.util.UUID;
 
-import com.knightsofdarkness.common.market.MarketOfferDto;
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.MarketOfferDto;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 
 import jakarta.persistence.Entity;

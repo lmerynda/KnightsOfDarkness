@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.knightsofdarkness.common.kingdom.UnitName;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 

@@ -5,10 +5,10 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.knightsofdarkness.common.kingdom.BuildingName;
-import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.common.kingdom.UnitName;
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;

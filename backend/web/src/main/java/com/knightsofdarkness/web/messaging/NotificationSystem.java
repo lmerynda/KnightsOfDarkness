@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import com.knightsofdarkness.common.messaging.NotificationDto;
+import com.knightsofdarkness.web.common.messaging.NotificationDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.utils.Id;
 

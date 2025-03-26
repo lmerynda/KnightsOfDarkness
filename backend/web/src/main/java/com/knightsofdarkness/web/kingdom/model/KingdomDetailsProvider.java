@@ -2,9 +2,9 @@ package com.knightsofdarkness.web.kingdom.model;
 
 import org.springframework.stereotype.Service;
 
-import com.knightsofdarkness.common.kingdom.BuildingName;
-import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.game.config.GameConfig;
 
 @Service

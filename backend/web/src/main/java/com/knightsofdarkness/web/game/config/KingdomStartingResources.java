@@ -2,8 +2,8 @@ package com.knightsofdarkness.web.game.config;
 
 import java.util.Map;
 
-import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
-import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.kingdom.KingdomResourcesDto;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
 
 public record KingdomStartingResources(int land, int buildingPoints, int unemployed, int gold, int iron, int food, int tools, int weapons, int turns) {
     public int getCount(ResourceName name)

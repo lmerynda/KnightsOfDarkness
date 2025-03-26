@@ -1,6 +1,6 @@
 package com.knightsofdarkness.web.game.config;
 
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.MarketResource;
 
 public record CarrierCapacity(int iron, int food, int tools, int weapons) {
     public int get(MarketResource resource)

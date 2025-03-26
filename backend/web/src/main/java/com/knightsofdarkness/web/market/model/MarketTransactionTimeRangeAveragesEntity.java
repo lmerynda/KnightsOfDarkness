@@ -3,7 +3,7 @@ package com.knightsofdarkness.web.market.model;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.MarketResource;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

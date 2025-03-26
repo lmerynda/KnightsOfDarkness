@@ -1,7 +1,7 @@
 package com.knightsofdarkness.web.kingdom.model;
 
-import com.knightsofdarkness.common.kingdom.LandTransaction;
-import com.knightsofdarkness.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.kingdom.LandTransaction;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
 
 public class KingdomOtherAction {
 

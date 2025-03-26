@@ -8,9 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.knightsofdarkness.common.alliance.CreateAllianceDto;
-import com.knightsofdarkness.common.alliance.InviteAllianceResult;
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
+import com.knightsofdarkness.web.common.alliance.InviteAllianceResult;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;

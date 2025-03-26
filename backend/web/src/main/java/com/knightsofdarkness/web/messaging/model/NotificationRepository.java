@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
-import com.knightsofdarkness.common.messaging.NotificationDto;
+import com.knightsofdarkness.web.common.messaging.NotificationDto;
 import com.knightsofdarkness.web.messaging.INotificationRepository;
 
 @Repository

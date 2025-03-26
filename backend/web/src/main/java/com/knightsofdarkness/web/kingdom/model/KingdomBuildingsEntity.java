@@ -3,8 +3,8 @@ package com.knightsofdarkness.web.kingdom.model;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.knightsofdarkness.common.kingdom.BuildingName;
-import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
+import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsDto;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;

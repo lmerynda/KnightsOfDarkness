@@ -3,12 +3,12 @@ package com.knightsofdarkness.web.kingdom.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.knightsofdarkness.common.kingdom.BuildingName;
-import com.knightsofdarkness.common.kingdom.KingdomPassTurnActionResult;
-import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
-import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
-import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
+import com.knightsofdarkness.web.common.kingdom.KingdomPassTurnActionResult;
+import com.knightsofdarkness.web.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
 

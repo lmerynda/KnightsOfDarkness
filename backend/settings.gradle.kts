@@ -1,2 +1,2 @@
 rootProject.name = "knights-of-darkness"
-include("web", "common")
+include("web")

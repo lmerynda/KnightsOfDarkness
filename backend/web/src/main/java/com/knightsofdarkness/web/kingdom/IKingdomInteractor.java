@@ -1,6 +1,6 @@
 package com.knightsofdarkness.web.kingdom;
 
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomOngoingAttackEntity;
 

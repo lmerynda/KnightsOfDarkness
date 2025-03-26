@@ -1,6 +1,6 @@
 package com.knightsofdarkness.web.game.config;
 
-import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
+import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
 
 public record SpecialBuildingCosts(int goldShaft, int ironShaft, int granary, int forge, int warehouse) {
 

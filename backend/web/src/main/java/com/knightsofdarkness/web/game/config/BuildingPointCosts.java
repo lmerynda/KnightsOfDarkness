@@ -1,6 +1,6 @@
 package com.knightsofdarkness.web.game.config;
 
-import com.knightsofdarkness.common.kingdom.BuildingName;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
 
 public record BuildingPointCosts(int house, int goldMine, int ironMine, int workshop, int farm, int market, int barracks, int guardHouse, int spyGuild, int tower, int castle) {
     public int getCost(BuildingName name)

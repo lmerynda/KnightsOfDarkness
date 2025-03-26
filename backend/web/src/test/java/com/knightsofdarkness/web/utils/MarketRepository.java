@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.market.model.IMarketOfferRepository;
 import com.knightsofdarkness.web.market.model.MarketOfferEntity;
 import com.knightsofdarkness.web.market.model.MarketTransactionEntity;

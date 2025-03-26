@@ -1,9 +1,9 @@
 package com.knightsofdarkness.web.kingdom.model;
 
-import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.common.kingdom.SendCarriersDto;
-import com.knightsofdarkness.common.kingdom.SendCarriersResult;
-import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.kingdom.SendCarriersDto;
+import com.knightsofdarkness.web.common.kingdom.SendCarriersResult;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.utils.Id;
 

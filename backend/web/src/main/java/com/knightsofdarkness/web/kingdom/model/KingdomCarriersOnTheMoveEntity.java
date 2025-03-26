@@ -2,8 +2,8 @@ package com.knightsofdarkness.web.kingdom.model;
 
 import java.util.UUID;
 
-import com.knightsofdarkness.common.kingdom.CarriersOnTheMoveDto;
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.kingdom.CarriersOnTheMoveDto;
+import com.knightsofdarkness.web.common.market.MarketResource;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

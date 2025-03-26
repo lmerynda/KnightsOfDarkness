@@ -2,8 +2,8 @@ package com.knightsofdarkness.web.game.config;
 
 import java.util.Map;
 
-import com.knightsofdarkness.common.kingdom.BuildingName;
-import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
+import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsDto;
 
 public record KingdomStartingBuildings(int house, int goldMine, int ironMine, int workshop, int farm, int market, int barracks, int guardHouse, int spyGuild, int tower, int castle) {
     public int getCount(BuildingName name)

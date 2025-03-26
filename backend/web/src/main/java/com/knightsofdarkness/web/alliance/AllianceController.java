@@ -13,17 +13,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knightsofdarkness.common.alliance.AcceptAllianceInvitationDto;
-import com.knightsofdarkness.common.alliance.AcceptAllianceInvitationResult;
-import com.knightsofdarkness.common.alliance.AddBotToAllianceDto;
-import com.knightsofdarkness.common.alliance.AllianceDto;
-import com.knightsofdarkness.common.alliance.AllianceInvitationDto;
-import com.knightsofdarkness.common.alliance.CreateAllianceDto;
-import com.knightsofdarkness.common.alliance.CreateAllianceResult;
-import com.knightsofdarkness.common.alliance.InviteAllianceResult;
-import com.knightsofdarkness.common.alliance.LeaveAllianceResult;
-import com.knightsofdarkness.common.alliance.RemoveFromAllianceDto;
-import com.knightsofdarkness.common.alliance.RemoveFromAllianceResult;
+import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationDto;
+import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
+import com.knightsofdarkness.web.common.alliance.AddBotToAllianceDto;
+import com.knightsofdarkness.web.common.alliance.AllianceDto;
+import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
+import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
+import com.knightsofdarkness.web.common.alliance.CreateAllianceResult;
+import com.knightsofdarkness.web.common.alliance.InviteAllianceResult;
+import com.knightsofdarkness.web.common.alliance.LeaveAllianceResult;
+import com.knightsofdarkness.web.common.alliance.RemoveFromAllianceDto;
+import com.knightsofdarkness.web.common.alliance.RemoveFromAllianceResult;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController

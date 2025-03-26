@@ -3,7 +3,7 @@ package com.knightsofdarkness.web.messaging.model;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.knightsofdarkness.common.messaging.NotificationDto;
+import com.knightsofdarkness.web.common.messaging.NotificationDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

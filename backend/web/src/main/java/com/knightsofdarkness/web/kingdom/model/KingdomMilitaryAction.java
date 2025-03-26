@@ -1,8 +1,8 @@
 package com.knightsofdarkness.web.kingdom.model;
 
-import com.knightsofdarkness.common.kingdom.SendAttackDto;
-import com.knightsofdarkness.common.kingdom.SendAttackResult;
-import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
+import com.knightsofdarkness.web.common.kingdom.SendAttackResult;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.utils.Id;
 import com.knightsofdarkness.web.utils.Utils;

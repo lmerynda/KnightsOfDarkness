@@ -6,7 +6,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 
 import com.google.gson.Gson;
-import com.knightsofdarkness.common.GsonFactory;
+import com.knightsofdarkness.web.common.GsonFactory;
 
 @Configuration
 public class GsonService {

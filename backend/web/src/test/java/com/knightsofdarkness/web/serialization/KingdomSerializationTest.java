@@ -3,12 +3,12 @@ package com.knightsofdarkness.web.serialization;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
-import com.knightsofdarkness.common.GsonFactory;
-import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
-import com.knightsofdarkness.common.kingdom.KingdomDto;
-import com.knightsofdarkness.common.kingdom.KingdomResourcesDto;
-import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
-import com.knightsofdarkness.common.kingdom.UnitsMapDto;
+import com.knightsofdarkness.web.common.GsonFactory;
+import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomResourcesDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomUnitsDto;
+import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 
 class KingdomSerializationTest {
     @Test

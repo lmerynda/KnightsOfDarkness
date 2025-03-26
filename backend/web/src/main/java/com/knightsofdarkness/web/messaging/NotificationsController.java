@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knightsofdarkness.common.messaging.NotificationDto;
+import com.knightsofdarkness.web.common.messaging.NotificationDto;
 import com.knightsofdarkness.web.market.MarketController;
 import com.knightsofdarkness.web.user.UserData;
 

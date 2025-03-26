@@ -3,12 +3,12 @@ package com.knightsofdarkness.web.bots;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.knightsofdarkness.common.kingdom.BuildingName;
-import com.knightsofdarkness.common.kingdom.KingdomBuildingsDto;
-import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.common.kingdom.UnitName;
-import com.knightsofdarkness.common.kingdom.UnitsMapDto;
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
+import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
+import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomBuildAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;

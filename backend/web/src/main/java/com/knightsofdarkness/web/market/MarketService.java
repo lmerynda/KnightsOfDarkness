@@ -11,10 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.knightsofdarkness.common.market.BuyMarketOfferResult;
-import com.knightsofdarkness.common.market.CreateMarketOfferResult;
-import com.knightsofdarkness.common.market.MarketOfferDto;
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
+import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.web.common.market.MarketOfferDto;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;

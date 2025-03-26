@@ -6,10 +6,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import com.knightsofdarkness.common.market.BuyMarketOfferResult;
-import com.knightsofdarkness.common.market.CreateMarketOfferResult;
-import com.knightsofdarkness.common.market.MarketResource;
-import com.knightsofdarkness.common.market.RemoveMarketOfferResult;
+import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
+import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.web.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.RemoveMarketOfferResult;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.market.model.MarketOfferEntity;
 import com.knightsofdarkness.web.market.model.MarketTransactionEntity;

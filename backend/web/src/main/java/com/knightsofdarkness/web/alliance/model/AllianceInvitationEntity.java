@@ -3,7 +3,7 @@ package com.knightsofdarkness.web.alliance.model;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.knightsofdarkness.common.alliance.AllianceInvitationDto;
+import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 
 import jakarta.persistence.Entity;

@@ -3,7 +3,7 @@ package com.knightsofdarkness.web.messaging;
 import java.util.List;
 import java.util.UUID;
 
-import com.knightsofdarkness.common.messaging.NotificationDto;
+import com.knightsofdarkness.web.common.messaging.NotificationDto;
 
 public interface INotificationSystem {
     void create(String kingdom, String message);

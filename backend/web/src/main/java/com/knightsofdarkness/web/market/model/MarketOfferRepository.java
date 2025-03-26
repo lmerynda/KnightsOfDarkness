@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.MarketResource;
 
 @Repository
 public class MarketOfferRepository implements IMarketOfferRepository {

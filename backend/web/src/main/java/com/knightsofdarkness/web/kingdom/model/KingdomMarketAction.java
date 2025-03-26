@@ -1,7 +1,7 @@
 package com.knightsofdarkness.web.kingdom.model;
 
-import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.market.model.MarketOfferEntity;
 
 public class KingdomMarketAction {

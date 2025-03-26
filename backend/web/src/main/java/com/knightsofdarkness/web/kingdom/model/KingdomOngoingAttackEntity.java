@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import com.knightsofdarkness.common.kingdom.AttackType;
-import com.knightsofdarkness.common.kingdom.OngoingAttackDto;
-import com.knightsofdarkness.common.kingdom.UnitsMapDto;
+import com.knightsofdarkness.web.common.kingdom.AttackType;
+import com.knightsofdarkness.web.common.kingdom.OngoingAttackDto;
+import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

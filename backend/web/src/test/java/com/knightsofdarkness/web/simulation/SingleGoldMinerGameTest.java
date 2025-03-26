@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.bots.GoldMinerBot;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 import com.knightsofdarkness.web.utils.KingdomPrinter;

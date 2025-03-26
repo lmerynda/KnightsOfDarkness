@@ -6,18 +6,18 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.knightsofdarkness.common.alliance.AcceptAllianceInvitationResult;
-import com.knightsofdarkness.common.alliance.AllianceDto;
-import com.knightsofdarkness.common.alliance.CreateAllianceDto;
-import com.knightsofdarkness.common.alliance.CreateAllianceResult;
-import com.knightsofdarkness.common.alliance.InviteAllianceResult;
-import com.knightsofdarkness.common.alliance.LeaveAllianceResult;
-import com.knightsofdarkness.common.alliance.RejectAllianceInvitationResult;
-import com.knightsofdarkness.common.alliance.RemoveFromAllianceResult;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
 import com.knightsofdarkness.web.bots.IBotRepository;
 import com.knightsofdarkness.web.bots.model.BotEntity;
+import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
+import com.knightsofdarkness.web.common.alliance.AllianceDto;
+import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
+import com.knightsofdarkness.web.common.alliance.CreateAllianceResult;
+import com.knightsofdarkness.web.common.alliance.InviteAllianceResult;
+import com.knightsofdarkness.web.common.alliance.LeaveAllianceResult;
+import com.knightsofdarkness.web.common.alliance.RejectAllianceInvitationResult;
+import com.knightsofdarkness.web.common.alliance.RemoveFromAllianceResult;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomCreator;

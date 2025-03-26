@@ -10,15 +10,15 @@ import java.util.stream.Collectors;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import com.knightsofdarkness.common.kingdom.BuildingName;
-import com.knightsofdarkness.common.kingdom.CarriersOnTheMoveDto;
-import com.knightsofdarkness.common.kingdom.KingdomDto;
-import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
-import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
-import com.knightsofdarkness.common.kingdom.OngoingAttackDto;
-import com.knightsofdarkness.common.kingdom.ResourceName;
-import com.knightsofdarkness.common.market.MarketResource;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
+import com.knightsofdarkness.web.common.kingdom.CarriersOnTheMoveDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.web.common.kingdom.OngoingAttackDto;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.game.config.GameConfig;
 
 import jakarta.persistence.CascadeType;

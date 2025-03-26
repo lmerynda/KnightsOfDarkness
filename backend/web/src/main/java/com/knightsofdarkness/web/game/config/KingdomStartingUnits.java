@@ -2,9 +2,9 @@ package com.knightsofdarkness.web.game.config;
 
 import java.util.Map;
 
-import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
-import com.knightsofdarkness.common.kingdom.UnitName;
-import com.knightsofdarkness.common.kingdom.UnitsMapDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomUnitsDto;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
+import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 
 public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, int blacksmith, int farmer, int carrier, int guard, int spy, int bowman, int infantry, int cavalry) {
     public int getCount(UnitName name)

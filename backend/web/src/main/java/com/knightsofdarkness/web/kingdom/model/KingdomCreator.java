@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.knightsofdarkness.common.kingdom.KingdomTurnReport;
+import com.knightsofdarkness.web.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.KingdomService;

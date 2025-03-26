@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.MarketResource;
 
 @Repository
 public interface MarketTransactionTimeRangeAveragesJpaRepository extends JpaRepository<MarketTransactionTimeRangeAveragesEntity, UUID> {

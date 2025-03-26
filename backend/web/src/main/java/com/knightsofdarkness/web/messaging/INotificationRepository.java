@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
 
-import com.knightsofdarkness.common.messaging.NotificationDto;
+import com.knightsofdarkness.web.common.messaging.NotificationDto;
 
 public interface INotificationRepository {
     List<NotificationDto> findByKingdomNameOrderByIsReadAscDateDesc(String kingdomName, int limit);

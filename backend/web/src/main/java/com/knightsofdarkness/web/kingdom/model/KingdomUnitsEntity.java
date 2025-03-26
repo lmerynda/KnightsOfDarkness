@@ -3,8 +3,8 @@ package com.knightsofdarkness.web.kingdom.model;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.knightsofdarkness.common.kingdom.KingdomUnitsDto;
-import com.knightsofdarkness.common.kingdom.UnitName;
+import com.knightsofdarkness.web.common.kingdom.KingdomUnitsDto;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;

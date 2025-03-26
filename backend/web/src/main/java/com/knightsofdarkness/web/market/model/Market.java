@@ -9,10 +9,10 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.knightsofdarkness.common.market.BuyMarketOfferResult;
-import com.knightsofdarkness.common.market.CreateMarketOfferResult;
-import com.knightsofdarkness.common.market.MarketResource;
-import com.knightsofdarkness.common.market.RemoveMarketOfferResult;
+import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
+import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.web.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.RemoveMarketOfferResult;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;

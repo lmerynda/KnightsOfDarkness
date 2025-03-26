@@ -2,8 +2,8 @@ package com.knightsofdarkness.web.kingdom.model;
 
 import java.util.UUID;
 
-import com.knightsofdarkness.common.kingdom.KingdomSpecialBuildingDto;
-import com.knightsofdarkness.common.kingdom.SpecialBuildingType;
+import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingDto;
+import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
-import com.knightsofdarkness.common.kingdom.KingdomDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomDto;
 
 @Repository
 public class KingdomReadRepository {

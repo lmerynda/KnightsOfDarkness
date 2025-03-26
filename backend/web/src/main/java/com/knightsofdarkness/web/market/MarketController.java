@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knightsofdarkness.common.market.BuyMarketOfferDto;
-import com.knightsofdarkness.common.market.BuyMarketOfferResult;
-import com.knightsofdarkness.common.market.CreateMarketOfferResult;
-import com.knightsofdarkness.common.market.MarketOfferDto;
-import com.knightsofdarkness.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.BuyMarketOfferDto;
+import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
+import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.web.common.market.MarketOfferDto;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController

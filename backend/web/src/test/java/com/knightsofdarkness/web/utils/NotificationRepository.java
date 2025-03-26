@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.knightsofdarkness.common.messaging.NotificationDto;
+import com.knightsofdarkness.web.common.messaging.NotificationDto;
 import com.knightsofdarkness.web.messaging.INotificationRepository;
 
 public class NotificationRepository implements INotificationRepository {

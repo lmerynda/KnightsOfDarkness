@@ -3,7 +3,7 @@ package com.knightsofdarkness.web.alliance.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.knightsofdarkness.common.alliance.AllianceDto;
+import com.knightsofdarkness.web.common.alliance.AllianceDto;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 
 import jakarta.persistence.CascadeType;
