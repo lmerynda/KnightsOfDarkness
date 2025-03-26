@@ -3,7 +3,7 @@ import com.adarshr.gradle.testlogger.theme.ThemeType
 plugins {
     id("java")
     id("com.adarshr.test-logger") version "4.0.+"
-    id("org.springframework.boot") version "3.4.3"
+    id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.+"
     id("jacoco")
     id("org.sonarqube") version "5.1.+"
