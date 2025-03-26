@@ -16,6 +16,8 @@ RUN curl -s https://repos.azul.com/azul-repo.key | gpg --dearmor -o /usr/share/k
 
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | zsh - && apt-get install -y nodejs
 
+RUN echo "plugins=(gradle)" >> ~/.zshrc
+
 RUN zsh -c "java --version && node --version"
 
 WORKDIR /workspaces/KnightsOfDarkness
