@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./gradlew web:bootRun
+./gradlew bootRun
