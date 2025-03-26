@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.common.kingdom;
 
+import java.util.Optional;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class KingdomDto {
     public KingdomTurnReport lastTurnReport;
     public List<CarriersOnTheMoveDto> carriersOnTheMove;
     public List<OngoingAttackDto> ongoingAttacks;
+    public Optional<String> allianceName;
 
     public KingdomDto()
     {
@@ -28,11 +31,12 @@ public class KingdomDto {
         this.lastTurnReport = new KingdomTurnReport();
         this.carriersOnTheMove = new ArrayList<>();
         this.ongoingAttacks = new ArrayList<>();
+        this.allianceName = Optional.empty();
         initializeDetails();
     }
 
     public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers, List<KingdomSpecialBuildingDto> specialBuildings,
-            KingdomTurnReport lastTurnReport, List<CarriersOnTheMoveDto> carriersOnTheMove, List<OngoingAttackDto> ongoingAttacks)
+            KingdomTurnReport lastTurnReport, List<CarriersOnTheMoveDto> carriersOnTheMove, List<OngoingAttackDto> ongoingAttacks, Optional<String> allianceName)
     {
         this.name = name;
         this.resources = resources;
@@ -43,6 +47,7 @@ public class KingdomDto {
         this.lastTurnReport = lastTurnReport;
         this.carriersOnTheMove = carriersOnTheMove;
         this.ongoingAttacks = ongoingAttacks;
+        this.allianceName = allianceName;
         initializeDetails();
     }
 
@@ -65,6 +70,7 @@ public class KingdomDto {
                 ", lastTurnReport=" + lastTurnReport +
                 ", carriersOnTheMove=" + carriersOnTheMove +
                 ", ongoingAttacks=" + ongoingAttacks +
+                ", allianceName=" + allianceName +
                 '}';
     }
 }

@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.common;
 
+import java.util.Optional;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,7 @@ public class KingdomDtoAdapter implements JsonSerializer<KingdomDto>, JsonDeseri
         jsonObject.add("lastTurnReport", context.serialize(src.lastTurnReport));
         jsonObject.add("carriersOnTheMove", context.serialize(src.carriersOnTheMove));
         jsonObject.add("ongoingAttacks", context.serialize(src.ongoingAttacks));
+        jsonObject.addProperty("allianceName", src.allianceName.orElse(null));
         return jsonObject;
     }
 
@@ -53,7 +56,8 @@ public class KingdomDtoAdapter implements JsonSerializer<KingdomDto>, JsonDeseri
         KingdomTurnReport lastTurnReport = context.deserialize(jsonObject.get("lastTurnReport"), KingdomTurnReport.class);
         List<CarriersOnTheMoveDto> carriersOnTheMove = context.deserialize(jsonObject.get("carriersOnTheMove"), ArrayList.class);
         List<OngoingAttackDto> ongoingAttacks = context.deserialize(jsonObject.get("ongoingAttacks"), ArrayList.class);
+        Optional<String> allianceName = Optional.ofNullable(jsonObject.get("allianceName")).map(JsonElement::getAsString);
 
-        return new KingdomDto(name, resources, buildings, units, marketOffers, specialBuildings, lastTurnReport, carriersOnTheMove, ongoingAttacks);
+        return new KingdomDto(name, resources, buildings, units, marketOffers, specialBuildings, lastTurnReport, carriersOnTheMove, ongoingAttacks, allianceName);
     }
 }
