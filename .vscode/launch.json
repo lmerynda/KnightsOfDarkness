@@ -9,7 +9,6 @@
             "name": "GameApplication",
             "request": "launch",
             "mainClass": "com.knightsofdarkness.web.GameApplication",
-            "projectName": "web",
         }
     ]
 }
