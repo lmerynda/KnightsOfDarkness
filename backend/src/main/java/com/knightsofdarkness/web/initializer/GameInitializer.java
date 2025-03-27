@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.knightsofdarkness.web.alliance.IAllianceRepository;
+import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.bots.IBotRepository;
 import com.knightsofdarkness.web.bots.model.BotEntity;
 import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsDto;
@@ -36,17 +38,19 @@ public class GameInitializer implements CommandLineRunner {
 
     private final IBotRepository botRepository;
     private final IKingdomRepository kingdomRepository;
+    private final IAllianceRepository allianceRepository;
     private final KingdomService kingdomService;
     private final MarketService marketService;
     private final Gson gson;
     private final int numberOfSpecialBuildings = 5;
 
-    public GameInitializer(KingdomService kingdomService, MarketService marketService, IKingdomRepository kingdomRepository, IBotRepository botRepository, Gson gson)
+    public GameInitializer(KingdomService kingdomService, MarketService marketService, IKingdomRepository kingdomRepository, IBotRepository botRepository, IAllianceRepository allianceRepository, Gson gson)
     {
         this.kingdomService = kingdomService;
         this.marketService = marketService;
         this.botRepository = botRepository;
         this.kingdomRepository = kingdomRepository;
+        this.allianceRepository = allianceRepository;
         this.gson = gson;
     }
 
@@ -55,13 +59,29 @@ public class GameInitializer implements CommandLineRunner {
     {
 
         createKingdom("uprzejmy");
+        createKingdom("Umbar");
         createBot("BlacksmithBot", SpecialBuildingType.forge);
         createBot("FarmerBot", SpecialBuildingType.granary);
         createBot("IronMinerBot", SpecialBuildingType.ironShaft);
         createBot("GoldMinerBot", SpecialBuildingType.goldShaft);
         log.info("Kingdoms initialized");
+        createAlliance("Legion", "uprzejmy", "Umbar");
+        log.info("Alliances initialized");
         marketService.createOffers(generateMarketOffers());
         log.info("Market offers initialized");
+    }
+
+    @Transactional
+    private void createAlliance(String allianceName, String emperor, String kingdom)
+    {
+        var kingdomEntity = kingdomRepository.getKingdomByName(kingdom).get();
+        var emperorEntity = kingdomRepository.getKingdomByName(emperor).get();
+        var alliance = new AllianceEntity(allianceName, emperorEntity.getName());
+        alliance.addKingdom(emperorEntity);
+        alliance.addKingdom(kingdomEntity);
+        allianceRepository.create(alliance);
+        kingdomRepository.update(kingdomEntity);
+        kingdomRepository.update(emperorEntity);
     }
 
     @Transactional
