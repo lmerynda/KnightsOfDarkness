@@ -65,7 +65,7 @@ public class GameInitializer implements CommandLineRunner {
         createBot("IronMinerBot", SpecialBuildingType.ironShaft);
         createBot("GoldMinerBot", SpecialBuildingType.goldShaft);
         log.info("Kingdoms initialized");
-        createAlliance("Legion", "uprzejmy", "Umbar");
+        createAlliance("Legion", "Umbar", "uprzejmy");
         log.info("Alliances initialized");
         marketService.createOffers(generateMarketOffers());
         log.info("Market offers initialized");
