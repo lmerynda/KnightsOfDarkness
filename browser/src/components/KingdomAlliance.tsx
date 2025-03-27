@@ -20,11 +20,6 @@ const KingdomAlliance: React.FC = () => {
 
   const allianceName = kingdomContext.kingdom.allianceName;
 
-  if (allianceName === null) {
-    // some log? user should never be here
-    return <div>You're not in the alliance</div>;
-  }
-
   const reloadAlliance = React.useCallback(async () => {
     const data = await fetchAllianceRequest();
     setAlliance(data);
@@ -34,16 +29,21 @@ const KingdomAlliance: React.FC = () => {
     reloadAlliance();
   }, [reloadAlliance]);
 
-  if (alliance === undefined) {
-    return <div>Loading {allianceName} ...</div>;
-  }
-
-  const handleLeaveAlliance = async () => {
+  const handleLeaveAlliance = async (): Promise<void> => {
     const result = await leaveAllianceRequest();
     console.log(`leave result: ${JSON.stringify(result)}`);
     setLastActionResult(result);
     reloadAlliance();
   };
+
+  if (allianceName === null) {
+    // some log? user should never be here
+    return <div>You're not in the alliance</div>;
+  }
+
+  if (alliance === undefined) {
+    return <div>Loading {allianceName} ...</div>;
+  }
 
   return (
     <div>
