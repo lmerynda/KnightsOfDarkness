@@ -1,53 +1,32 @@
 import { Button, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
-import React, { useContext } from "react";
-import { type AllianceData, fetchAllianceRequest, leaveAllianceRequest } from "../game-api-client/AllianceApi";
-import { KingdomContext } from "../Kingdom";
+import React from "react";
+import { type AllianceData, leaveAllianceRequest } from "../game-api-client/AllianceApi";
 
 type ActionResult = {
   success: boolean;
   message: string;
 };
 
-const KingdomAlliance: React.FC = () => {
-  const [alliance, setAlliance] = React.useState<AllianceData | undefined>(undefined);
+interface KingdomAllianceProps {
+  alliance: AllianceData;
+  leaveAlliance: () => void;
+}
+
+const KingdomAlliance: React.FC<KingdomAllianceProps> = ({ alliance, leaveAlliance }) => {
   const [lastActionResult, setLastActionResult] = React.useState<ActionResult | undefined>(undefined);
-
-  const kingdomContext = useContext(KingdomContext);
-  // ask someone how to better solve it, null object pattern?
-  if (kingdomContext === undefined) {
-    throw new Error("Kingdom context is undefined");
-  }
-
-  const allianceName = kingdomContext.kingdom.allianceName;
-
-  const reloadAlliance = React.useCallback(async () => {
-    const data = await fetchAllianceRequest();
-    setAlliance(data);
-  }, []);
-
-  React.useEffect(() => {
-    reloadAlliance();
-  }, [reloadAlliance]);
 
   const handleLeaveAlliance = async (): Promise<void> => {
     const result = await leaveAllianceRequest();
     console.log(`leave result: ${JSON.stringify(result)}`);
     setLastActionResult(result);
-    reloadAlliance();
+    if (result.success) {
+      leaveAlliance();
+    }
   };
-
-  if (allianceName === null) {
-    // some log? user should never be here
-    return <div>You're not in the alliance</div>;
-  }
-
-  if (alliance === undefined) {
-    return <div>Loading {allianceName} ...</div>;
-  }
 
   return (
     <div>
-      <h1>Alliance {allianceName}</h1>
+      <h1>Alliance {alliance.name}</h1>
       {lastActionResult && (
         <Typography variant="body1" component="p" color={lastActionResult.success ? "success" : "error"}>
           {lastActionResult.message}

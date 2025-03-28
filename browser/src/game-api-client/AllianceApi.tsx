@@ -225,7 +225,7 @@ export async function fetchAllAlliancesRequest(): Promise<AllianceData[]> {
   }
 }
 
-export async function fetchAllianceRequest(): Promise<AllianceData> {
+export async function fetchAllianceRequest(): Promise<AllianceData | undefined> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/alliance`, {
@@ -240,6 +240,10 @@ export async function fetchAllianceRequest(): Promise<AllianceData> {
     if (response.ok) {
       console.log(`get alliance request successful`);
       return response.json();
+    }
+
+    if (response.status === 404) {
+      return undefined;
     }
 
     throw new Error(`request failed, status: ${response.status}`);

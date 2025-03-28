@@ -72,7 +72,7 @@ export type KingdomData = {
   lastTurnReport: TurnReport;
   carriersOnTheMove: CarriersOnTheMove[];
   ongoingAttacks: OngoingAttack[];
-  allianceName: string | null;
+  allianceName: string | undefined;
 };
 
 export type MarketOfferData = {
