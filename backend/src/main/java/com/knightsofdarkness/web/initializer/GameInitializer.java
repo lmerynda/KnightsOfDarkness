@@ -76,7 +76,7 @@ public class GameInitializer implements CommandLineRunner {
     {
         var kingdomEntity = kingdomRepository.getKingdomByName(kingdom).get();
         var emperorEntity = kingdomRepository.getKingdomByName(emperor).get();
-        var alliance = new AllianceEntity(allianceName, emperorEntity.getName());
+        var alliance = new AllianceEntity(allianceName, kingdomEntity.getName());
         alliance.addKingdom(emperorEntity);
         alliance.addKingdom(kingdomEntity);
         allianceRepository.create(alliance);

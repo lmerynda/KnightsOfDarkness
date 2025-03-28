@@ -21,7 +21,9 @@ const Alliance: React.FC = () => {
     }
 
     const data = await fetchAllianceRequest();
-    if (data) setAlliance(data);
+    if (data) {
+      setAlliance(data);
+    }
   }, [kingdomContext.kingdom.allianceName]);
 
   React.useEffect(() => {
@@ -35,7 +37,12 @@ const Alliance: React.FC = () => {
   return (
     <div>
       {alliance ? (
-        <KingdomAlliance alliance={alliance} leaveAlliance={leaveAlliance} />
+        <KingdomAlliance
+          alliance={alliance}
+          leaveAlliance={leaveAlliance}
+          reloadAlliance={reloadAlliance}
+          isEmperor={kingdomContext.kingdom.name === alliance.emperor}
+        />
       ) : (
         <>
           <CreateAlliance />

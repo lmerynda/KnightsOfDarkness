@@ -14,6 +14,7 @@ import com.knightsofdarkness.web.bots.IBotRepository;
 import com.knightsofdarkness.web.bots.model.BotEntity;
 import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.AllianceDto;
+import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceResult;
 import com.knightsofdarkness.web.common.alliance.InviteAllianceResult;
@@ -106,7 +107,7 @@ public class AllianceService {
 
         kingdom.removeAlliance();
         kingdomRepository.update(kingdom);
-        return RemoveFromAllianceResult.success("Kingdom has been removed from the alliance");
+        return RemoveFromAllianceResult.success(String.format("Kingdom %s has been removed from the alliance", kingdomName));
     }
 
     @Transactional
@@ -234,7 +235,7 @@ public class AllianceService {
         return alliances.stream().map(alliance -> new AllianceDto(alliance.getName(), alliance.getEmperor())).toList();
     }
 
-    public Optional<AllianceDto> getKingdomAlliance(String kingdomName)
+    public Optional<AllianceWithMembersDto> getKingdomAlliance(String kingdomName)
     {
         var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
@@ -249,6 +250,6 @@ public class AllianceService {
             return Optional.empty();
         }
 
-        return Optional.of(alliance.get().toDto());
+        return Optional.of(alliance.get().toWithMembersDto());
     }
 }

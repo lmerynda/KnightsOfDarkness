@@ -18,6 +18,7 @@ import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.AddBotToAllianceDto;
 import com.knightsofdarkness.web.common.alliance.AllianceDto;
 import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
+import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceResult;
 import com.knightsofdarkness.web.common.alliance.InviteAllianceResult;
@@ -129,7 +130,7 @@ public class AllianceController {
     }
 
     @GetMapping()
-    public ResponseEntity<AllianceDto> getAlliance(@AuthenticationPrincipal UserData currentUser)
+    public ResponseEntity<AllianceWithMembersDto> getAlliance(@AuthenticationPrincipal UserData currentUser)
     {
         if (currentUser == null)
         {

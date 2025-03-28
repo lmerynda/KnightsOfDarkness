@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.knightsofdarkness.web.common.alliance.AllianceDto;
+import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 
 import jakarta.persistence.CascadeType;
@@ -46,6 +47,12 @@ public class AllianceEntity {
     public AllianceDto toDto()
     {
         return new AllianceDto(name, emperor);
+    }
+
+    public AllianceWithMembersDto toWithMembersDto()
+    {
+        List<String> kingdomNames = kingdoms.stream().map(KingdomEntity::getName).toList();
+        return new AllianceWithMembersDto(name, emperor, kingdomNames);
     }
 
     public String getName()

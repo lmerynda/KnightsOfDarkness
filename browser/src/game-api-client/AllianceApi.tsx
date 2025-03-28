@@ -8,6 +8,7 @@ export type CreateAllianceData = {
 export type AllianceData = {
   name: string;
   emperor: string;
+  members: string[] | undefined;
 };
 
 export type AllianceInvitationData = {
