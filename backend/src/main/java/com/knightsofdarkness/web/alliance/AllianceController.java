@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationDto;
 import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.AddBotToAllianceDto;
+import com.knightsofdarkness.web.common.alliance.AddBotToAllianceResult;
 import com.knightsofdarkness.web.common.alliance.AllianceDto;
 import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
@@ -109,7 +110,7 @@ public class AllianceController {
     }
 
     @PostMapping("/add-bot")
-    public ResponseEntity<Void> addBotToAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody AddBotToAllianceDto addBotDto)
+    public ResponseEntity<AddBotToAllianceResult> addBotToAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody AddBotToAllianceDto addBotDto)
     {
         if (currentUser == null)
         {
@@ -118,8 +119,8 @@ public class AllianceController {
         }
 
         log.info("Adding bot to alliance");
-        allianceService.createNewBotAndAddToAlliance(currentUser.getUsername(), addBotDto.botName());
-        return ResponseEntity.ok().build();
+        var result = allianceService.createNewBotAndAddToAlliance(currentUser.getUsername(), addBotDto.botName());
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/all")

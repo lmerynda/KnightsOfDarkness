@@ -28,6 +28,11 @@ export type AddBotToAllianceData = {
   botName: string;
 };
 
+export type AddBotToAllianceResult = {
+  success: boolean;
+  message: string;
+};
+
 export type CreateAllianceResult = {
   success: boolean;
   message: string;
@@ -177,7 +182,7 @@ export async function removeFromAllianceRequest(data: RemoveFromAllianceData): P
   }
 }
 
-export async function addBotToAllianceRequest(data: AddBotToAllianceData): Promise<void> {
+export async function addBotToAllianceRequest(data: AddBotToAllianceData): Promise<AddBotToAllianceResult> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/alliance/add-bot`, {
@@ -192,7 +197,7 @@ export async function addBotToAllianceRequest(data: AddBotToAllianceData): Promi
 
     if (response.ok) {
       console.log(`add bot to alliance request successful`);
-      return;
+      return response.json();
     }
 
     throw new Error(`request failed, status: ${response.status}`);

@@ -9,6 +9,14 @@
             "name": "GameApplication",
             "request": "launch",
             "mainClass": "com.knightsofdarkness.web.GameApplication",
-        }
+        },
+        {
+            "name": "Launch Edge against localhost",
+            "type": "msedge",
+            "request": "launch",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/browser",
+            "timeout": 30000
+          }
     ]
 }

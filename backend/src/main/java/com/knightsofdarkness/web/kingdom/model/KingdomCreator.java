@@ -7,17 +7,14 @@ import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.web.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.web.game.config.GameConfig;
-import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.KingdomService;
 
 public class KingdomCreator {
     private final Logger log = LoggerFactory.getLogger(KingdomService.class);
-    private final IKingdomRepository kingdomRepository;
     private final GameConfig gameConfig;
 
-    public KingdomCreator(IKingdomRepository kingdomRepository2, GameConfig gameConfig)
+    public KingdomCreator(GameConfig gameConfig)
     {
-        this.kingdomRepository = kingdomRepository2;
         this.gameConfig = gameConfig;
     }
 
@@ -37,7 +34,6 @@ public class KingdomCreator {
                 new KingdomUnitsEntity(startingUnitsDto.getAvailableUnits().getUnits(), startingUnitsDto.getMobileUnits().getUnits()),
                 new KingdomTurnReport());
 
-        kingdomRepository.add(kingdom);
         return kingdom;
     }
 }

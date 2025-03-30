@@ -13,6 +13,7 @@ import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
 import com.knightsofdarkness.web.bots.IBotRepository;
 import com.knightsofdarkness.web.bots.model.BotEntity;
 import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
+import com.knightsofdarkness.web.common.alliance.AddBotToAllianceResult;
 import com.knightsofdarkness.web.common.alliance.AllianceDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
@@ -198,35 +199,34 @@ public class AllianceService {
     }
 
     @Transactional
-    public boolean createNewBotAndAddToAlliance(String emperor, String botName)
+    public AddBotToAllianceResult createNewBotAndAddToAlliance(String emperor, String botName)
     {
         var maybeKingdom = kingdomRepository.getKingdomByName(emperor);
         if (maybeKingdom.isEmpty())
         {
-            return false;
+            return AddBotToAllianceResult.failure("Emperor kingdom not found");
         }
         var kingdom = maybeKingdom.get();
 
         var alliance = kingdom.getAlliance();
         if (alliance.isEmpty())
         {
-            return false;
+            return AddBotToAllianceResult.failure("Requested emperor is not part of any alliance");
         }
 
         var existingKingdom = kingdomRepository.getKingdomByName(botName);
         if (existingKingdom.isPresent())
         {
-            // new bot must have unique name
-            return false;
+            return AddBotToAllianceResult.failure("New kingdom must have a unique name");
         }
 
-        var kingdomCreator = new KingdomCreator(kingdomRepository, gameConfig);
-        var botKingdom = kingdomCreator.createKingdom(botName);
-
+        var kingdomCreator = new KingdomCreator(gameConfig);
+        var kingdomToCreate = kingdomCreator.createKingdom(botName);
+        var botKingdom = kingdomRepository.add(kingdomToCreate);
         alliance.get().addKingdom(botKingdom);
         botRepository.add(new BotEntity(Id.generate(), botKingdom));
-        kingdomRepository.update(botKingdom);
-        return true;
+
+        return AddBotToAllianceResult.success("Bot kingdom created and added to alliance");
     }
 
     public List<AllianceDto> getAlliances()

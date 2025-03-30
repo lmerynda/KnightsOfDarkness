@@ -1,6 +1,11 @@
-import { Button, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import { Button, Input, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import React from "react";
-import { type AllianceData, leaveAllianceRequest, removeFromAllianceRequest } from "../game-api-client/AllianceApi";
+import {
+  addBotToAllianceRequest,
+  type AllianceData,
+  leaveAllianceRequest,
+  removeFromAllianceRequest,
+} from "../game-api-client/AllianceApi";
 
 type ActionResult = {
   success: boolean;
@@ -16,6 +21,7 @@ interface KingdomAllianceProps {
 
 const KingdomAlliance: React.FC<KingdomAllianceProps> = ({ alliance, isEmperor, leaveAlliance, reloadAlliance }) => {
   const [lastActionResult, setLastActionResult] = React.useState<ActionResult | undefined>(undefined);
+  const [botName, setBotName] = React.useState<string>("");
 
   const handleLeaveAlliance = async (): Promise<void> => {
     const result = await leaveAllianceRequest();
@@ -27,6 +33,14 @@ const KingdomAlliance: React.FC<KingdomAllianceProps> = ({ alliance, isEmperor, 
 
   const handleRemoveFromAlliance = async (kingdomName: string): Promise<void> => {
     const result = await removeFromAllianceRequest({ kingdomName });
+    setLastActionResult(result);
+    if (result.success) {
+      reloadAlliance();
+    }
+  };
+
+  const handleAddBotToAlliance = async (): Promise<void> => {
+    const result = await addBotToAllianceRequest({ botName });
     setLastActionResult(result);
     if (result.success) {
       reloadAlliance();
@@ -65,6 +79,14 @@ const KingdomAlliance: React.FC<KingdomAllianceProps> = ({ alliance, isEmperor, 
           ))}
         </TableBody>
       </Table>
+      {isEmperor && (
+        <>
+          <Input type="text" value={botName} onChange={event => setBotName(event.target.value)} />
+          <Button variant="contained" onClick={() => handleAddBotToAlliance()}>
+            Add Bot to Alliance
+          </Button>
+        </>
+      )}
       <Button variant="contained" onClick={handleLeaveAlliance}>
         leave
       </Button>

@@ -222,7 +222,7 @@ public class AllianceTest {
         var botName = "Bot-" + KingdomBuilder.generateName();
 
         var addResult = allianceService.createNewBotAndAddToAlliance(kingdom.getName(), botName);
-        assertTrue(addResult);
+        assertTrue(addResult.success());
 
         var botKingdom = game.getKingdomRepository().getKingdomByName(botName);
         assertTrue(botKingdom.isPresent());

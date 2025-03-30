@@ -7,5 +7,9 @@ export default defineConfig({
     server: {
         host: true, // This allows Vite to listen on all network interfaces
         port: 3000, // Ensure this matches the exposed port
+        watch: {
+            usePolling: true,
+            interval: 100, // adjust as needed
+          }
     },
 })

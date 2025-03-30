@@ -80,8 +80,9 @@ public class KingdomService {
     @Transactional
     public KingdomEntity createKingdom(String name)
     {
-        var kingdomCreator = new KingdomCreator(kingdomRepository, gameConfig);
-        return kingdomCreator.createKingdom(name);
+        var kingdomCreator = new KingdomCreator(gameConfig);
+        var kingdom = kingdomCreator.createKingdom(name);
+        return kingdomRepository.add(kingdom);
     }
 
     public Optional<KingdomDto> getKingdomByName(String name)
