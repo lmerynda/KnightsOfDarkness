@@ -33,7 +33,7 @@ public class BotsRunner {
 
     // Runs every 10 seconds (units are in milliseconds)
     // @Scheduled(fixedRate = 1000 * 60 * 60)
-    @Scheduled(fixedRate = 1000 * 60 * 60)
+    @Scheduled(fixedRate = 1000 * 20)
     @Transactional
     public void runEvery10Seconds()
     {
