@@ -39,9 +39,10 @@ const Alliance: React.FC = () => {
       {alliance ? (
         <KingdomAlliance
           alliance={alliance}
+          isEmperor={kingdomContext.kingdom.name === alliance.emperor}
+          maxAllianceMembers={kingdomContext.gameConfig.common.allianceMaxMembers}
           leaveAlliance={leaveAlliance}
           reloadAlliance={reloadAlliance}
-          isEmperor={kingdomContext.kingdom.name === alliance.emperor}
         />
       ) : (
         <>

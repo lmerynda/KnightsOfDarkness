@@ -123,12 +123,27 @@ export type Production = Record<
     resource: ProductionResource;
   }
 >;
+
+export type Common = {
+  specialBuildingPerLevelProductionBonus: number;
+  maxTurns: number;
+  foodUpkeepPerUnit: number;
+  ironConsumptionPerProductionUnit: number;
+  specialBuildingMaxCount: number;
+  newTurnPeriodicity: number;
+  maxNotificationsCount: number;
+  turnsToDeliverResources: number;
+  kingdomBaseHousingCapacity: number;
+  allianceMaxMembers: number;
+};
+
 export type GameConfig = {
   buildingPointCosts: Record<Building, number>;
   buildingCapacity: Record<Building, number>;
   trainingCost: TrainingCost;
   production: Production;
   specialBuildingCosts: Record<SpecialBuildingType, number>; // not really, cost should be reworked
+  common: Common;
 };
 
 export const buildingOccupantsMap: Record<Building, readonly Unit[]> = {

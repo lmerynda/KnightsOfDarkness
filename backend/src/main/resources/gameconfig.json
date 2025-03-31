@@ -165,7 +165,8 @@
         "newTurnPeriodicity": 100000,
         "maxNotificationsCount": 15,
         "turnsToDeliverResources": 2,
-        "kingdomBaseHousingCapacity": 30
+        "kingdomBaseHousingCapacity": 30,
+        "allianceMaxMembers": 10
     },
     "attack": {
         "turnsToArrive": 4

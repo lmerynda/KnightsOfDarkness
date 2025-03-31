@@ -15,13 +15,15 @@ type ActionResult = {
 interface KingdomAllianceProps {
   alliance: AllianceData;
   isEmperor: boolean;
+  maxAllianceMembers: number;
   leaveAlliance: () => void;
   reloadAlliance: () => Promise<void>;
 }
 
-const KingdomAlliance: React.FC<KingdomAllianceProps> = ({ alliance, isEmperor, leaveAlliance, reloadAlliance }) => {
+const KingdomAlliance: React.FC<KingdomAllianceProps> = ({ alliance, isEmperor, maxAllianceMembers, leaveAlliance, reloadAlliance }) => {
   const [lastActionResult, setLastActionResult] = React.useState<ActionResult | undefined>(undefined);
   const [botName, setBotName] = React.useState<string>("");
+  const hasMaxMembers = (alliance.members?.length ?? maxAllianceMembers) >= maxAllianceMembers;
 
   const handleLeaveAlliance = async (): Promise<void> => {
     const result = await leaveAllianceRequest();
@@ -43,6 +45,7 @@ const KingdomAlliance: React.FC<KingdomAllianceProps> = ({ alliance, isEmperor, 
     const result = await addBotToAllianceRequest({ botName });
     setLastActionResult(result);
     if (result.success) {
+      setBotName("");
       reloadAlliance();
     }
   };
@@ -79,7 +82,7 @@ const KingdomAlliance: React.FC<KingdomAllianceProps> = ({ alliance, isEmperor, 
           ))}
         </TableBody>
       </Table>
-      {isEmperor && (
+      {isEmperor && !hasMaxMembers && (
         <>
           <Input type="text" value={botName} onChange={event => setBotName(event.target.value)} />
           <Button variant="contained" onClick={() => handleAddBotToAlliance()}>
