@@ -75,4 +75,9 @@ public class AllianceEntity {
     {
         return kingdoms;
     }
+
+    public int getMembersCount()
+    {
+        return kingdoms.size();
+    }
 }

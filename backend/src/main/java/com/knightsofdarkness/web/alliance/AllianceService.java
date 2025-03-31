@@ -214,6 +214,12 @@ public class AllianceService {
             return AddBotToAllianceResult.failure("Requested emperor is not part of any alliance");
         }
 
+        var membersCount = alliance.get().getMembersCount();
+        if (membersCount >= gameConfig.common().allianceMaxMembers())
+        {
+            return AddBotToAllianceResult.failure("Alliance has reached maximum members limit");
+        }
+
         var existingKingdom = kingdomRepository.getKingdomByName(botName);
         if (existingKingdom.isPresent())
         {

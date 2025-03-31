@@ -226,5 +226,25 @@ public class AllianceTest {
 
         var botKingdom = game.getKingdomRepository().getKingdomByName(botName);
         assertTrue(botKingdom.isPresent());
+        assertTrue(botKingdom.get().getAlliance().isPresent());
+        assertEquals(createResult.alliance().get().name(), botKingdom.get().getAlliance().get().getName());
+    }
+
+    @Test
+    void whenAllianceHasMaxMembers_emperorCannotAddBotToAlliance()
+    {
+        var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
+        assertTrue(createResult.success());
+
+        for (int i = 0; i < game.getConfig().common().allianceMaxMembers() - 1; i++)
+        {
+            var botName = "Bot-" + KingdomBuilder.generateName();
+            var addResult = allianceService.createNewBotAndAddToAlliance(kingdom.getName(), botName);
+            assertTrue(addResult.success());
+        }
+
+        var botName = "Bot-" + KingdomBuilder.generateName();
+        var addResult = allianceService.createNewBotAndAddToAlliance(kingdom.getName(), botName);
+        assertFalse(addResult.success());
     }
 }
