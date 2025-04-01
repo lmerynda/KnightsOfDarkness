@@ -8,7 +8,12 @@ export type CreateAllianceData = {
 export type AllianceData = {
   name: string;
   emperor: string;
-  members: string[] | undefined;
+  members: string[];
+};
+
+export type AllianceShortData = {
+  name: string;
+  emperor: string;
 };
 
 export type AllianceInvitationData = {
@@ -207,7 +212,7 @@ export async function addBotToAllianceRequest(data: AddBotToAllianceData): Promi
   }
 }
 
-export async function fetchAllAlliancesRequest(): Promise<AllianceData[]> {
+export async function fetchAllAlliancesRequest(): Promise<AllianceShortData[]> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/alliance/all`, {
@@ -220,7 +225,7 @@ export async function fetchAllAlliancesRequest(): Promise<AllianceData[]> {
     );
 
     if (response.ok) {
-      console.log(`get alliances request successful`);
+      console.log(`get all alliances request successful`);
       return response.json();
     }
 

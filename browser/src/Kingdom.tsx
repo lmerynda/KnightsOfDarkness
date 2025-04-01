@@ -31,7 +31,6 @@ const Kingdom: React.FC = () => {
 
   const reloadGameConfig = async (): Promise<void> => {
     const data = await fetchGameConfigRequest();
-    console.log("Game config data: ", JSON.stringify(data));
     setGameConfig(data);
   };
 

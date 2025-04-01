@@ -23,7 +23,7 @@ interface KingdomAllianceProps {
 const KingdomAlliance: React.FC<KingdomAllianceProps> = ({ alliance, isEmperor, maxAllianceMembers, leaveAlliance, reloadAlliance }) => {
   const [lastActionResult, setLastActionResult] = React.useState<ActionResult | undefined>(undefined);
   const [botName, setBotName] = React.useState<string>("");
-  const hasMaxMembers = (alliance.members?.length ?? maxAllianceMembers) >= maxAllianceMembers;
+  const hasMaxMembers = alliance.members.length >= maxAllianceMembers;
 
   const handleLeaveAlliance = async (): Promise<void> => {
     const result = await leaveAllianceRequest();
