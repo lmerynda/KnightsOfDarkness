@@ -15,7 +15,8 @@ import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
-public class AllianceTest {
+public class AllianceTest
+{
     private Game game;
     private KingdomEntity kingdom;
     private AllianceService allianceService;
@@ -204,6 +205,7 @@ public class AllianceTest {
         var secondEmperor = new KingdomBuilder(game).build();
         game.addKingdom(secondEmperor);
         createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance 2"), secondEmperor.getName());
+        assertTrue(createResult.success());
 
         InviteAllianceResult inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), secondEmperor.getName(), secondEmperor.getAlliance().get().getName());
         assertTrue(inviteResult.success());
