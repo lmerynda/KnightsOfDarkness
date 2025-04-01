@@ -8,7 +8,8 @@ import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 
-public class KingdomInteractor implements IKingdomInteractor {
+public class KingdomInteractor implements IKingdomInteractor
+{
     private static final Logger log = LoggerFactory.getLogger(KingdomInteractor.class);
     IKingdomRepository kingdomRepository;
 
@@ -47,7 +48,7 @@ public class KingdomInteractor implements IKingdomInteractor {
         var defendantKingdom = maybeDefendantKingdom.get();
 
         processDefenseSalvo(attackerKingdom, defendantKingdom, attack);
-        processAttackSalvo(attackerKingdom, defendantKingdom, attack);
+        processAttackSalvo(defendantKingdom, attack);
         processMelee(attackerKingdom, defendantKingdom, attack);
 
         for (UnitName unitName : UnitName.getMilitaryUnits())
@@ -85,7 +86,7 @@ public class KingdomInteractor implements IKingdomInteractor {
         log.info("[KingdomInteractor] Defender bowmen salvo killed {} bowmen, {} infantry, {} cavalry from attacking kingdom {}", killedAttackingBowmen, killedAttackingInfantry, killedAttackingCavalry, attackerKingdom.getName());
     }
 
-    void processAttackSalvo(KingdomEntity attackerKingdom, KingdomEntity defendantKingdom, KingdomOngoingAttackEntity attack)
+    void processAttackSalvo(KingdomEntity defendantKingdom, KingdomOngoingAttackEntity attack)
     {
         var attackerBowmenCount = attack.units.getCount(UnitName.bowman);
         var defenderUnits = defendantKingdom.units;

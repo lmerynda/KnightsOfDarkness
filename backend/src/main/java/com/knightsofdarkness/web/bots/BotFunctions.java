@@ -22,7 +22,8 @@ import com.knightsofdarkness.web.kingdom.model.KingdomTrainAction;
 import com.knightsofdarkness.web.market.IMarket;
 import com.knightsofdarkness.web.market.model.MarketOfferEntity;
 
-public final class BotFunctions {
+public final class BotFunctions
+{
     private static final Logger log = LoggerFactory.getLogger(BotFunctions.class);
     private final GameConfig gameConfig;
     private final KingdomEntity kingdom;
@@ -110,10 +111,10 @@ public final class BotFunctions {
     {
         var unusedLand = kingdom.getUnusedLand();
         assert unusedLand >= 0;
-        if (unusedLand < 2)
+        if (unusedLand < count)
         {
             var action = new KingdomOtherAction(kingdom);
-            return action.buyLand(2).amount();
+            return action.buyLand(count).amount();
         }
 
         return 0;
@@ -150,7 +151,7 @@ public final class BotFunctions {
         return trainedUnits.units().countAll();
     }
 
-    public int buyToolsToMaintainCount(IMarket market, KingdomEntity kingdom, int count)
+    public int buyToolsToMaintainCount(IMarket market, int count)
     {
         var optionalOffer = market.getCheapestOfferByResource(MarketResource.tools);
         if (optionalOffer.isEmpty())
@@ -176,6 +177,7 @@ public final class BotFunctions {
         }
 
         var toTrain = new UnitsMapDto();
+        toTrain.setCount(UnitName.builder, count);
         var action = new KingdomTrainAction(kingdom, gameConfig);
         var trainedUnits = action.train(toTrain);
         return trainedUnits.units().countAll();

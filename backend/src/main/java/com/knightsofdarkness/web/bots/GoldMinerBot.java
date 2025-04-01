@@ -9,7 +9,8 @@ import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.market.IMarket;
 
-public class GoldMinerBot extends Bot {
+public class GoldMinerBot extends Bot
+{
     private final IMarket market;
     private static final double builderToSpecialistRatio = 0.1;
     private static final double housesToSpecialistBuildingRatio = 0.6;
@@ -49,7 +50,7 @@ public class GoldMinerBot extends Bot {
         var hasAnythingHappened = 0;
 
         hasAnythingHappened += botFunctions.buyFoodForUpkeep(market);
-        hasAnythingHappened += botFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 15 + 20); // TODO calculate this from training cost configuration
+        hasAnythingHappened += botFunctions.buyToolsToMaintainCount(market, 5 * 15 + 20); // TODO calculate this from training cost configuration
         hasAnythingHappened += botFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
         hasAnythingHappened += botFunctions.trainUnits(kingdom, UnitName.goldMiner, 5);
         hasAnythingHappened += botFunctions.buyLandToMaintainUnused(kingdom, 2);

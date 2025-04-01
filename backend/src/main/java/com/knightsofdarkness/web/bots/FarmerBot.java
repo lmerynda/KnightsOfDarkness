@@ -10,7 +10,8 @@ import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.market.IMarket;
 
-public class FarmerBot extends Bot {
+public class FarmerBot extends Bot
+{
     private static final double builderToSpecialistRatio = 0.05;
     private static final double housesToSpecialistBuildingRatio = 0.55;
     private static final int weaponsProductionPercentage = 0;
@@ -53,7 +54,7 @@ public class FarmerBot extends Bot {
     {
         var hasAnythingHappened = 0;
 
-        hasAnythingHappened += botFunctions.buyToolsToMaintainCount(market, kingdom, 5 * 5 + 20);
+        hasAnythingHappened += botFunctions.buyToolsToMaintainCount(market, 5 * 5 + 20);
         // TODO calculate this from training cost configuration
         hasAnythingHappened += botFunctions.trainBuilders(kingdom, 1, builderToSpecialistRatio);
         hasAnythingHappened += botFunctions.trainUnits(kingdom, UnitName.farmer, 5);

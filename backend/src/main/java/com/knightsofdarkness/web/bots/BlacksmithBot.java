@@ -15,7 +15,8 @@ import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.market.IMarket;
 
-public class BlacksmithBot extends Bot {
+public class BlacksmithBot extends Bot
+{
     private static final Logger log = LoggerFactory.getLogger(BlacksmithBot.class);
     private static final double builderToSpecialistRatio = 0.07;
     private static final double housesToSpecialistBuildingRatio = 0.6;

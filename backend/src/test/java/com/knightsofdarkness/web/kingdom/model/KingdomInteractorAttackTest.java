@@ -16,7 +16,8 @@ import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
-class KingdomInteractorAttackTest {
+class KingdomInteractorAttackTest
+{
     private Game game;
     private GameConfig gameConfig;
     private KingdomEntity primaryKingdom;
@@ -113,7 +114,7 @@ class KingdomInteractorAttackTest {
         var attackerInfantryCount = attackingUnits.getCount(UnitName.infantry);
         var attackerCavalryCount = attackingUnits.getCount(UnitName.cavalry);
 
-        kingdomInteractor.processAttackSalvo(primaryKingdom, secondaryKingdom, ongoingAttack);
+        kingdomInteractor.processAttackSalvo(secondaryKingdom, ongoingAttack);
 
         assertEquals(attackerBowmanCount, attackingUnits.getCount(UnitName.bowman));
         assertEquals(attackerInfantryCount, attackingUnits.getCount(UnitName.infantry));
@@ -140,7 +141,7 @@ class KingdomInteractorAttackTest {
         var defenderInfantryCountBeforeAttackerSalvo = secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry);
         var defenderCavalryCountBeforeAttackerSalvo = secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry);
 
-        kingdomInteractor.processAttackSalvo(primaryKingdom, secondaryKingdom, ongoingAttack);
+        kingdomInteractor.processAttackSalvo(secondaryKingdom, ongoingAttack);
 
         assertThat(defenderBowmanCountBeforeAttackerSalvo).isGreaterThan(secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
         assertThat(defenderInfantryCountBeforeAttackerSalvo).isGreaterThan(secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
@@ -167,7 +168,7 @@ class KingdomInteractorAttackTest {
 
         kingdomInteractor.processDefenseSalvo(primaryKingdom, secondaryKingdom, ongoingAttack);
         assertEquals(0, ongoingAttack.units.getCount(UnitName.bowman));
-        kingdomInteractor.processAttackSalvo(primaryKingdom, secondaryKingdom, ongoingAttack);
+        kingdomInteractor.processAttackSalvo(secondaryKingdom, ongoingAttack);
 
         assertEquals(defenderBowmanCountBeforeAttackerSalvo, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
         assertEquals(defenderInfantryCountBeforeAttackerSalvo, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
