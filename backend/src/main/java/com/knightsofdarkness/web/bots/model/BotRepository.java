@@ -17,7 +17,7 @@ public class BotRepository implements IBotRepository {
 
     public List<BotEntity> findAllWithKingdoms()
     {
-        return botJpaRepository.findAllWithKingdoms();
+        return botJpaRepository.findAll();
     }
 
     @Override
