@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.web.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.web.game.config.GameConfig;
-import com.knightsofdarkness.web.kingdom.KingdomService;
 
-public class KingdomCreator {
-    private final Logger log = LoggerFactory.getLogger(KingdomService.class);
+public class KingdomCreator
+{
+    private static final Logger log = LoggerFactory.getLogger(KingdomCreator.class);
     private final GameConfig gameConfig;
 
     public KingdomCreator(GameConfig gameConfig)

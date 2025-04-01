@@ -7,8 +7,9 @@ import org.springframework.stereotype.Component;
 import com.knightsofdarkness.web.kingdom.KingdomService;
 
 @Component
-public class TurnAdd {
-    private final Logger log = LoggerFactory.getLogger(TurnAdd.class);
+public class TurnAdd
+{
+    private static final Logger log = LoggerFactory.getLogger(TurnAdd.class);
     private final KingdomService kingdomService;
 
     public TurnAdd(KingdomService kingdomService)

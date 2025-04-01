@@ -13,8 +13,9 @@ import com.knightsofdarkness.web.market.IMarket;
 import jakarta.transaction.Transactional;
 
 @Component
-public class MarketDataUpdater {
-    private final Logger log = LoggerFactory.getLogger(MarketDataUpdater.class);
+public class MarketDataUpdater
+{
+    private static final Logger log = LoggerFactory.getLogger(MarketDataUpdater.class);
     private final IMarket market;
     private final GameConfig gameConfig;
 

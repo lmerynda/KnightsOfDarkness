@@ -12,8 +12,9 @@ import org.springframework.stereotype.Component;
 import com.knightsofdarkness.web.bots.model.BotEntity;
 
 @Component
-public class Scheduler {
-    private final Logger log = LoggerFactory.getLogger(Scheduler.class);
+public class Scheduler
+{
+    private static final Logger log = LoggerFactory.getLogger(Scheduler.class);
     private final IBotRepository botRepository;
     private final BotsRunner botsRunner;
 

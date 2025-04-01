@@ -43,8 +43,9 @@ import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;
 
 @Service
-public class KingdomService {
-    private final Logger log = LoggerFactory.getLogger(KingdomService.class);
+public class KingdomService
+{
+    private static final Logger log = LoggerFactory.getLogger(KingdomService.class);
     private final KingdomRepository kingdomRepository;
     private final KingdomReadRepository kingdomReadRepository;
     private final MarketOfferReadRepository marketOfferReadRepository;

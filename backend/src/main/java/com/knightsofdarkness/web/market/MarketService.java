@@ -21,8 +21,9 @@ import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;
 
 @Service
-public class MarketService {
-    private final Logger log = LoggerFactory.getLogger(MarketService.class);
+public class MarketService
+{
+    private static final Logger log = LoggerFactory.getLogger(MarketService.class);
     private final IMarket market;
     private final KingdomRepository kingdomRepository;
     private final MarketOfferReadRepository marketOfferReadRepository;
