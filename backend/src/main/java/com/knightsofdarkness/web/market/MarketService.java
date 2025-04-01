@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.market;
 
+import java.util.Optional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -75,18 +77,19 @@ public class MarketService {
     }
 
     @Transactional
-    public ResponseEntity<BuyMarketOfferResult> buyOffer(UUID id, int amount, String buyerName)
+    public Optional<BuyMarketOfferResult> buyOffer(UUID id, int amount, String buyerName)
     {
         var maybeOffer = market.findOfferById(id);
         var maybeBuyerKingdom = kingdomRepository.getKingdomByName(buyerName);
         if (maybeOffer.isEmpty() || maybeBuyerKingdom.isEmpty())
         {
             log.warn("Offer or buyer not found");
-            return ResponseEntity.notFound().build();
+            return Optional.empty(); // TODO encapsulate message in the result
         }
 
         var buyer = maybeBuyerKingdom.get();
         var offer = maybeOffer.get();
+        // TODO still needed?
         // a case when buyer and seller is the same kingdom is handled here
         // to avoid complications in persistence layer deserialization
         var seller = offer.getSeller().getName().equals(buyerName) ? buyer : offer.getSeller();
@@ -96,7 +99,7 @@ public class MarketService {
         var result = market.buyExistingOffer(offer, seller, buyer, amount);
 
         // TODO report? what if the action failed?
-        return ResponseEntity.ok(result);
+        return Optional.of(result);
     }
 
     @Transactional

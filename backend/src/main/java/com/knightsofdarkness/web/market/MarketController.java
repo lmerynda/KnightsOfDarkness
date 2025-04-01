@@ -60,7 +60,8 @@ public class MarketController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return marketService.buyOffer(id, buyerData.count(), currentUser.getKingdomName());
+        return marketService.buyOffer(id, buyerData.count(), currentUser.getKingdomName()).map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping("/market/{id}/withdraw")

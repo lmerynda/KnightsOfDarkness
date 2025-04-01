@@ -110,10 +110,10 @@ public class Market implements IMarket {
     @Override
     public BuyMarketOfferResult buyExistingOffer(MarketOfferEntity offer, KingdomEntity seller, KingdomEntity buyer, int amount)
     {
-        log.info("Transaction request: buyer: {} seller: {} amount: {} offer: {}", buyer.getName(), seller.getName(), amount, offer);
+        log.info("Transaction request: buyer: {} seller: {} amount: {} offer: {}", buyer.getName(), seller.getName(), amount, offer.getId());
         var maxToSell = Math.min(offer.count, amount);
         var action = new KingdomMarketAction(seller);
-        var buyerGold = action.reserveGoldForOffer(offer.getPrice(), maxToSell);
+        var buyerGold = action.reserveGoldForOffer(buyer, offer.getPrice(), maxToSell);
         var buyerAmount = buyerGold / offer.getPrice();
 
         if (buyerAmount == 0)
@@ -122,8 +122,8 @@ public class Market implements IMarket {
             return new BuyMarketOfferResult(offer.getResource(), buyerAmount, offer.getPrice(), buyerGold);
         }
         offer.count -= buyerAmount;
-        action.acceptOffer(seller, buyerGold);
-        action.deliverResourcesFromOffer(offer.getResource(), buyerAmount);
+        action.acceptOffer(buyerGold);
+        action.deliverResourcesFromOffer(buyer, offer.getResource(), buyerAmount);
 
         assert (offer.count >= 0);
 
@@ -134,7 +134,7 @@ public class Market implements IMarket {
         if (offer.count == 0)
         {
             // TODO this should be debug log
-            log.info("Offer sold completely, removing {}", offer);
+            log.info("Offer sold completely, removing {}, seller {}", offer.getId(), seller.getName());
             offersRepository.remove(offer);
         } else
         {

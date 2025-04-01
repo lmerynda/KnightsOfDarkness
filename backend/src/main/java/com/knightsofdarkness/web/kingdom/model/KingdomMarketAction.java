@@ -23,7 +23,7 @@ public class KingdomMarketAction {
         return maxToPost;
     }
 
-    public void acceptOffer(KingdomEntity seller, int goldValue)
+    public void acceptOffer(int goldValue)
     {
         kingdom.getResources().addCount(ResourceName.gold, goldValue);
     }
@@ -36,19 +36,19 @@ public class KingdomMarketAction {
         }
     }
 
-    public int reserveGoldForOffer(int price, int amount)
+    public int reserveGoldForOffer(KingdomEntity buyer, int price, int amount)
     {
-        var gold = kingdom.getResources().getCount(ResourceName.gold);
+        var gold = buyer.getResources().getCount(ResourceName.gold);
         var maxToSpend = Math.min(gold, amount * price);
         var amoutTobuy = maxToSpend / price; // notice the truncation, it is important as should only pay for what can be bought
         maxToSpend = amoutTobuy * price;
-        kingdom.getResources().subtractCount(ResourceName.gold, maxToSpend);
+        buyer.getResources().subtractCount(ResourceName.gold, maxToSpend);
 
         return maxToSpend;
     }
 
-    public void deliverResourcesFromOffer(MarketResource resource, int amount)
+    public void deliverResourcesFromOffer(KingdomEntity buyer, MarketResource resource, int amount)
     {
-        kingdom.getResources().addCount(ResourceName.from(resource), amount);
+        buyer.getResources().addCount(ResourceName.from(resource), amount);
     }
 }
