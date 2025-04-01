@@ -8,8 +8,6 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +15,7 @@ import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
 import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
 import com.knightsofdarkness.web.common.market.MarketOfferDto;
 import com.knightsofdarkness.web.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.WithdrawMarketOfferResult;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;
@@ -103,24 +102,24 @@ public class MarketService {
     }
 
     @Transactional
-    public ResponseEntity<Boolean> withdraw(UUID id, String kingdomName)
+    public WithdrawMarketOfferResult withdraw(UUID id, String kingdomName)
     {
         var maybeOffer = market.findOfferById(id);
         if (maybeOffer.isEmpty())
         {
             log.warn("Offer not found");
-            return ResponseEntity.notFound().build();
+            return WithdrawMarketOfferResult.failure("Offer not found");
         }
 
         var offer = maybeOffer.get();
         if (!offer.getSeller().getName().equals(kingdomName))
         {
             log.warn("Offer does not belong to kingdom {}", kingdomName);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return WithdrawMarketOfferResult.failure("Offer does not belong to kingdom " + kingdomName);
         }
         log.info("Withdrawing offer {}", offer);
 
         market.removeOffer(offer);
-        return ResponseEntity.ok(true);
+        return WithdrawMarketOfferResult.success("Offer withdrawn successfully");
     }
 }

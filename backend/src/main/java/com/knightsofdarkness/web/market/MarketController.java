@@ -19,6 +19,7 @@ import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
 import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
 import com.knightsofdarkness.web.common.market.MarketOfferDto;
 import com.knightsofdarkness.web.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.WithdrawMarketOfferResult;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
@@ -65,7 +66,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/{id}/withdraw")
-    ResponseEntity<Boolean> withdrawOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
+    ResponseEntity<WithdrawMarketOfferResult> withdrawOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
     {
         if (currentUser == null)
         {
@@ -73,7 +74,8 @@ public class MarketController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return marketService.withdraw(id, currentUser.getKingdomName());
+        var result = marketService.withdraw(id, currentUser.getKingdomName());
+        return ResponseEntity.ok(result);
     }
 
     private void logUserUnauthenticated()

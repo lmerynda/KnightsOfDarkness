@@ -15,6 +15,11 @@ export type MarketOfferBuyResponse = {
   totalCost: number;
 };
 
+export type WithdrawMarketOfferResponse = {
+  message: string;
+  success: boolean;
+};
+
 export async function fetchMarketDataRequest(resource: MarketResource): Promise<MarketOfferData[]> {
   try {
     const response = await handleResponse(
@@ -66,7 +71,7 @@ export async function buyMarketOfferRequest(id: string, offerBuyer: OfferBuyer):
   }
 }
 
-export async function withdrawMarketOfferRequest(id: string): Promise<MarketOfferData[]> {
+export async function withdrawMarketOfferRequest(id: string): Promise<WithdrawMarketOfferResponse> {
   try {
     const response = await handleResponse(
       fetchData(`${GAME_API}/market/${id}/withdraw`, {
@@ -81,7 +86,7 @@ export async function withdrawMarketOfferRequest(id: string): Promise<MarketOffe
 
     if (response.ok) {
       const data = response.json();
-      console.log(`withdrawMarketOffer Request successful, status: ${response.status} data: ${JSON.stringify(data)}`);
+      console.log("withdrawMarketOffer Request successful");
       return data;
     }
 
