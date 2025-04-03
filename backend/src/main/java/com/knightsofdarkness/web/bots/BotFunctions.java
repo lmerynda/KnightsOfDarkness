@@ -2,15 +2,12 @@ package com.knightsofdarkness.web.bots;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
-import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
 import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomBuildAction;
@@ -20,7 +17,6 @@ import com.knightsofdarkness.web.kingdom.model.KingdomOtherAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomTrainAction;
 import com.knightsofdarkness.web.market.IMarket;
-import com.knightsofdarkness.web.market.model.MarketOfferEntity;
 
 public final class BotFunctions
 {
@@ -55,7 +51,7 @@ public final class BotFunctions
             }
 
             var offer = optionalOffer.get();
-            var result = buyOffer(market, amountToBuy, offer);
+            var result = BotTransactionalFunctions.buyOffer(market, amountToBuy, offer, kingdom);
             if (result.count() == 0)
             {
                 // Could not afford, TODO tests
@@ -67,12 +63,6 @@ public final class BotFunctions
         }
 
         return totalBought;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private BuyMarketOfferResult buyOffer(IMarket market, int amountToBuy, MarketOfferEntity offer)
-    {
-        return market.buyExistingOffer(offer, offer.getSeller(), kingdom, amountToBuy);
     }
 
     public int buyEnoughIronToMaintainFullProduction(KingdomEntity kingdom, IMarket market)
@@ -94,7 +84,7 @@ public final class BotFunctions
             }
 
             var offer = optionalOffer.get();
-            var result = buyOffer(market, amountToBuy, offer);
+            var result = BotTransactionalFunctions.buyOffer(market, amountToBuy, offer, kingdom);
             if (result.count() == 0)
             {
                 // Could not afford, TODO tests
@@ -160,7 +150,7 @@ public final class BotFunctions
         }
 
         var offer = optionalOffer.get();
-        var result = buyOffer(market, count, offer);
+        var result = BotTransactionalFunctions.buyOffer(market, count, offer, kingdom);
         return result.count();
     }
 
