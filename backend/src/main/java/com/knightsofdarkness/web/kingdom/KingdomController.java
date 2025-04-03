@@ -89,7 +89,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.demolish(currentUser.getKingdomName(), buildings);
+        return kingdomService.demolish(currentUser.getKingdomName(), buildings)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/start-special-building")
@@ -101,7 +103,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.startSpecialBuilding(currentUser.getKingdomName(), specialBuildingStartDto);
+        return kingdomService.startSpecialBuilding(currentUser.getKingdomName(), specialBuildingStartDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/demolish-special-building")
@@ -113,7 +117,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.demolishSpecialBuilding(currentUser.getKingdomName(), specialBuildingDemolishDto);
+        return kingdomService.demolishSpecialBuilding(currentUser.getKingdomName(), specialBuildingDemolishDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/build-special-building")
@@ -125,7 +131,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.buildSpecialBuilding(currentUser.getKingdomName(), specialBuildingBuildDto);
+        return kingdomService.buildSpecialBuilding(currentUser.getKingdomName(), specialBuildingBuildDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/train")
@@ -137,7 +145,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.train(currentUser.getKingdomName(), unitsToTrain);
+        return kingdomService.train(currentUser.getKingdomName(), unitsToTrain)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/fire")
@@ -149,7 +159,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.fireUnits(currentUser.getKingdomName(), unitsToFire);
+        return kingdomService.fireUnits(currentUser.getKingdomName(), unitsToFire)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping(value = "/pass-turn")
@@ -161,7 +173,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.passTurn(currentUser.getKingdomName(), weaponsProductionPercentage);
+        return kingdomService.passTurn(currentUser.getKingdomName(), weaponsProductionPercentage)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping(value = "/buy-land")
@@ -173,7 +187,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.buyLand(currentUser.getKingdomName(), amount);
+        return kingdomService.buyLand(currentUser.getKingdomName(), amount)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping(value = "/send-carriers")
@@ -185,7 +201,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.sendCarriers(currentUser.getKingdomName(), sendCarriersDto);
+        return kingdomService.sendCarriers(currentUser.getKingdomName(), sendCarriersDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping(value = "/withdraw-carriers")
@@ -197,7 +215,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.withdrawCarriers(currentUser.getKingdomName(), carriersOnTheMoveId);
+        return kingdomService.withdrawCarriers(currentUser.getKingdomName(), carriersOnTheMoveId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping(value = "/send-attack")
@@ -209,7 +229,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.sendAttack(currentUser.getKingdomName(), sendAttackDto);
+        return kingdomService.sendAttack(currentUser.getKingdomName(), sendAttackDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping(value = "/withdraw-attack")
@@ -221,7 +243,9 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.withdrawAttack(currentUser.getKingdomName(), attackId);
+        return kingdomService.withdrawAttack(currentUser.getKingdomName(), attackId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     private void logUserUnauthenticated()

@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,13 +117,13 @@ public class KingdomService
     }
 
     @Transactional
-    public ResponseEntity<KingdomBuildingsActionResult> demolish(String kingdomName, KingdomBuildingsDto buildings)
+    public Optional<KingdomBuildingsActionResult> demolish(String kingdomName, KingdomBuildingsDto buildings)
     {
         log.info("[{}] demolishing {}", kingdomName, buildings);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var kingdom = maybeKingdom.get();
@@ -132,17 +131,17 @@ public class KingdomService
         var buildAction = new KingdomBuildAction(kingdom, gameConfig);
         var buildingsDemolished = buildAction.demolish(buildings);
         kingdomRepository.update(kingdom);
-        return ResponseEntity.ok(buildingsDemolished);
+        return Optional.of(buildingsDemolished);
     }
 
     @Transactional
-    public ResponseEntity<KingdomUnitsActionResult> train(String name, UnitsMapDto unitsToTrain)
+    public Optional<KingdomUnitsActionResult> train(String name, UnitsMapDto unitsToTrain)
     {
         log.info("[{}] training {}", name, unitsToTrain);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var kingdom = maybeKingdom.get();
@@ -150,17 +149,17 @@ public class KingdomService
         var unitsTrained = action.train(unitsToTrain);
         kingdomRepository.update(kingdom);
 
-        return ResponseEntity.ok(unitsTrained);
+        return Optional.of(unitsTrained);
     }
 
     @Transactional
-    public ResponseEntity<KingdomUnitsActionResult> fireUnits(String name, UnitsMapDto unitsToFire)
+    public Optional<KingdomUnitsActionResult> fireUnits(String name, UnitsMapDto unitsToFire)
     {
         log.info("[{}] firing {}", name, unitsToFire);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var kingdom = maybeKingdom.get();
@@ -168,17 +167,17 @@ public class KingdomService
         var unitsFired = action.fireUnits(unitsToFire);
         kingdomRepository.update(kingdom);
 
-        return ResponseEntity.ok(unitsFired);
+        return Optional.of(unitsFired);
     }
 
     @Transactional
-    public ResponseEntity<KingdomPassTurnActionResult> passTurn(String name, int weaponsProductionPercentage)
+    public Optional<KingdomPassTurnActionResult> passTurn(String name, int weaponsProductionPercentage)
     {
         log.info("[{}] passing turn", name);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var kingdom = maybeKingdom.get();
@@ -190,17 +189,17 @@ public class KingdomService
             kingdomRepository.update(kingdom);
         }
 
-        return ResponseEntity.ok(result);
+        return Optional.of(result);
     }
 
     @Transactional
-    public ResponseEntity<LandTransaction> buyLand(String name, int amount)
+    public Optional<LandTransaction> buyLand(String name, int amount)
     {
         log.info("[{}] buying land {}", name, amount);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var kingdom = maybeKingdom.get();
@@ -208,7 +207,7 @@ public class KingdomService
         var transaction = action.buyLand(amount);
         kingdomRepository.update(kingdom);
 
-        return ResponseEntity.ok(transaction);
+        return Optional.of(transaction);
     }
 
     @Transactional
@@ -223,56 +222,55 @@ public class KingdomService
     }
 
     @Transactional
-    public ResponseEntity<KingdomSpecialBuildingEntity> startSpecialBuilding(String name, KingdomSpecialBuildingStartDto specialBuildingStartDto)
+    public Optional<KingdomSpecialBuildingEntity> startSpecialBuilding(String name, KingdomSpecialBuildingStartDto specialBuildingStartDto)
     {
         log.info("[{}] starting special building {}", name, specialBuildingStartDto.name());
 
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var kingdom = maybeKingdom.get();
         var action = new KingdomSpecialBuildingAction(kingdom, gameConfig);
         Optional<KingdomSpecialBuildingEntity> specialBuilding = action.startSpecialBuilding(specialBuildingStartDto.name());
         kingdomRepository.update(kingdom);
-        return ResponseEntity.of(specialBuilding);
+        return specialBuilding;
     }
 
     @Transactional
-    public ResponseEntity<Integer> buildSpecialBuilding(String name, KingdomSpecialBuildingBuildDto specialBuildingBuildDto)
+    public Optional<Integer> buildSpecialBuilding(String name, KingdomSpecialBuildingBuildDto specialBuildingBuildDto)
     {
         log.info("[{}] building special building {}", name, specialBuildingBuildDto);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var kingdom = maybeKingdom.get();
-        // TODO use repository please
         Optional<KingdomSpecialBuildingEntity> maybeSpecialBuilding = kingdom.getSpecialBuildings().stream().filter(specialBuilding -> specialBuilding.getId().equals(specialBuildingBuildDto.id())).findFirst();
         if (maybeSpecialBuilding.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var action = new KingdomSpecialBuildingAction(kingdom, gameConfig);
         var spentPoints = action.buildSpecialBuilding(maybeSpecialBuilding.get(), specialBuildingBuildDto.buildingPoints());
         kingdomRepository.update(kingdom);
 
-        return ResponseEntity.ok(spentPoints);
+        return Optional.of(spentPoints);
     }
 
     @Transactional
-    public ResponseEntity<Boolean> demolishSpecialBuilding(String name, KingdomSpecialBuildingDemolishDto specialBuildingDemolishDto)
+    public Optional<Boolean> demolishSpecialBuilding(String name, KingdomSpecialBuildingDemolishDto specialBuildingDemolishDto)
     {
         log.info("[{}] demolishing special building {}", name, specialBuildingDemolishDto);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var kingdom = maybeKingdom.get();
@@ -280,25 +278,24 @@ public class KingdomService
         var demolished = action.demolishSpecialBuilding(specialBuildingDemolishDto.id());
         kingdomRepository.update(kingdom);
 
-        return ResponseEntity.ok(demolished);
+        return Optional.of(demolished);
     }
 
     @Transactional
-    public ResponseEntity<SendCarriersResult> sendCarriers(String kingdomName, SendCarriersDto sendCarriersDto)
+    public Optional<SendCarriersResult> sendCarriers(String kingdomName, SendCarriersDto sendCarriersDto)
     {
         log.info("[{}] sending carriers {}", kingdomName, sendCarriersDto);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
         var kingdom = maybeKingdom.get();
 
-        // TODO no need to fetch entire kingdom, we only want to check if it exists
         Optional<KingdomEntity> maybeDestinationKingdom = kingdomRepository.getKingdomByName(sendCarriersDto.destinationKingdomName());
         if (maybeDestinationKingdom.isEmpty())
         {
-            return ResponseEntity.ok(SendCarriersResult.failure("Destination kingdom does not exist"));
+            return Optional.of(SendCarriersResult.failure("Destination kingdom does not exist"));
         }
 
         var action = new KingdomCarriersAction(kingdom, gameConfig);
@@ -308,48 +305,47 @@ public class KingdomService
             kingdomRepository.update(kingdom);
         }
 
-        return ResponseEntity.ok(result);
+        return Optional.of(result);
     }
 
     @Transactional
-    public ResponseEntity<Boolean> withdrawCarriers(String kingdomName, UUID carriersOnTheMoveId)
+    public Optional<Boolean> withdrawCarriers(String kingdomName, UUID carriersOnTheMoveId)
     {
         log.info("[{}] withdrawing carriers {}", kingdomName, carriersOnTheMoveId);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
         var kingdom = maybeKingdom.get();
         var carriersOnTheMove = kingdom.getCarriersOnTheMove().stream().filter(c -> c.getId().equals(carriersOnTheMoveId)).findFirst();
         if (carriersOnTheMove.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var action = new KingdomCarriersAction(kingdom, gameConfig);
         action.withdrawCarriers(carriersOnTheMove.get());
         kingdomRepository.update(kingdom);
 
-        return ResponseEntity.ok(true);
+        return Optional.of(true);
     }
 
     @Transactional
-    public ResponseEntity<SendAttackResult> sendAttack(String kingdomName, SendAttackDto sendAttackDto)
+    public Optional<SendAttackResult> sendAttack(String kingdomName, SendAttackDto sendAttackDto)
     {
         log.info("[{}] sending attack {}", kingdomName, sendAttackDto);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
         var kingdom = maybeKingdom.get();
 
-        // TODO no need to fetch entire kingdom, we only want to check if it exists
         Optional<KingdomEntity> maybeDestinationKingdom = kingdomRepository.getKingdomByName(sendAttackDto.destinationKingdomName());
         if (maybeDestinationKingdom.isEmpty())
         {
-            return ResponseEntity.ok(SendAttackResult.failure("Destination kingdom does not exist"));
+            return Optional.of(SendAttackResult.failure("Destination kingdom does not exist"));
         }
 
         var action = new KingdomMilitaryAction(kingdom, gameConfig);
@@ -359,29 +355,29 @@ public class KingdomService
             kingdomRepository.update(kingdom);
         }
 
-        return ResponseEntity.ok(result);
+        return Optional.of(result);
     }
 
     @Transactional
-    public ResponseEntity<Boolean> withdrawAttack(String kingdomName, UUID attackId)
+    public Optional<Boolean> withdrawAttack(String kingdomName, UUID attackId)
     {
         log.info("[{}] withdrawing attack {}", kingdomName, attackId);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
         var kingdom = maybeKingdom.get();
         var ongoingAttacks = kingdom.getOngoingAttacks().stream().filter(c -> c.getId().equals(attackId)).findFirst();
         if (ongoingAttacks.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var action = new KingdomMilitaryAction(kingdom, gameConfig);
         action.withdrawAttack(ongoingAttacks.get());
         kingdomRepository.update(kingdom);
 
-        return ResponseEntity.ok(true);
+        return Optional.of(true);
     }
 }
