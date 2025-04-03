@@ -34,7 +34,8 @@ import com.knightsofdarkness.web.user.UserData;
 
 @RestController
 @RequestMapping("/kingdom")
-public class KingdomController {
+public class KingdomController
+{
     private static final Logger log = LoggerFactory.getLogger(KingdomController.class);
     private final KingdomService kingdomService;
 
@@ -53,20 +54,15 @@ public class KingdomController {
     @GetMapping()
     ResponseEntity<KingdomDto> getKingdom(@AuthenticationPrincipal UserData currentUser)
     {
-        String kingdomName;
         if (currentUser == null)
         {
-            kingdomName = "uprzejmy";
-            // logUserUnauthenticated();
-            // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } else
-        {
-            kingdomName = currentUser.getKingdomName();
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // log.info("User {} requested kingdom", currentUser);
+        log.info("User {} requested kingdom", currentUser.email);
 
-        return kingdomService.getKingdomByName(kingdomName)
+        return kingdomService.getKingdomByName(currentUser.getKingdomName())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -80,7 +76,8 @@ public class KingdomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.build(currentUser.getKingdomName(), buildings);
+        return kingdomService.build(currentUser.getKingdomName(), buildings).map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/demolish")

@@ -88,7 +88,6 @@ public class KingdomService
 
     public Optional<KingdomDto> getKingdomByName(String name)
     {
-        // log.info("Looking for a kingdom with name {}", name);
         var maybeKingdom = kingdomReadRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
@@ -101,13 +100,13 @@ public class KingdomService
     }
 
     @Transactional
-    public ResponseEntity<KingdomBuildingsActionResult> build(String kingdomName, KingdomBuildingsDto buildings)
+    public Optional<KingdomBuildingsActionResult> build(String kingdomName, KingdomBuildingsDto buildings)
     {
         log.info("[{}] buildings to build {}", kingdomName, buildings);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         var kingdom = maybeKingdom.get();
@@ -115,7 +114,7 @@ public class KingdomService
         var buildAction = new KingdomBuildAction(kingdom, gameConfig);
         var buildingsBuilt = buildAction.build(buildings);
         kingdomRepository.update(kingdom);
-        return ResponseEntity.ok(buildingsBuilt);
+        return Optional.of(buildingsBuilt);
     }
 
     @Transactional
