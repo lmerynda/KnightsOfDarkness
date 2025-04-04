@@ -4,13 +4,14 @@ import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 
-public abstract class Bot implements IBot {
+public abstract class Bot implements IBot
+{
     final KingdomEntity kingdom;
     final KingdomDetailsProvider kingdomDetailsProvider;
     final GameConfig gameConfig;
     final BotFunctions botFunctions;
 
-    public Bot(KingdomEntity kingdom, GameConfig gameConfig)
+    protected Bot(KingdomEntity kingdom, GameConfig gameConfig)
     {
         this.kingdom = kingdom;
         this.gameConfig = gameConfig;
