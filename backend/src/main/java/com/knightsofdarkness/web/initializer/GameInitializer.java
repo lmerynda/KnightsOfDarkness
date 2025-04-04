@@ -1,6 +1,5 @@
 package com.knightsofdarkness.web.initializer;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -10,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.knightsofdarkness.web.alliance.IAllianceRepository;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.bots.IBotRepository;
@@ -25,6 +22,7 @@ import com.knightsofdarkness.web.common.kingdom.KingdomUnitsDto;
 import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.common.market.MarketOfferDto;
+import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.KingdomService;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
@@ -43,17 +41,15 @@ public class GameInitializer implements CommandLineRunner
     private final IAllianceRepository allianceRepository;
     private final KingdomService kingdomService;
     private final MarketService marketService;
-    private final Gson gson;
     private final int numberOfSpecialBuildings = 5;
 
-    public GameInitializer(KingdomService kingdomService, MarketService marketService, IKingdomRepository kingdomRepository, IBotRepository botRepository, IAllianceRepository allianceRepository, Gson gson)
+    public GameInitializer(KingdomService kingdomService, MarketService marketService, IKingdomRepository kingdomRepository, IBotRepository botRepository, IAllianceRepository allianceRepository)
     {
         this.kingdomService = kingdomService;
         this.marketService = marketService;
         this.botRepository = botRepository;
         this.kingdomRepository = kingdomRepository;
         this.allianceRepository = allianceRepository;
-        this.gson = gson;
     }
 
     @Override
@@ -116,9 +112,13 @@ public class GameInitializer implements CommandLineRunner
 
     private List<MarketOfferDto> generateMarketOffers()
     {
-        Type listType = new TypeToken<List<MarketOfferDto>>() {
-        }.getType();
-        return gson.fromJson(marketOffersPayload, listType);
+        List<MarketOfferDto> marketOffers = new ArrayList<>();
+        marketOffers.add(new MarketOfferDto(Id.generate(), "uprzejmy", MarketResource.food, 10000, 10));
+        marketOffers.add(new MarketOfferDto(Id.generate(), "uprzejmy", MarketResource.food, 500, 30));
+        marketOffers.add(new MarketOfferDto(Id.generate(), "uprzejmy", MarketResource.iron, 100, 50));
+        marketOffers.add(new MarketOfferDto(Id.generate(), "uprzejmy", MarketResource.iron, 150, 70));
+        marketOffers.add(new MarketOfferDto(Id.generate(), "uprzejmy", MarketResource.food, 100, 30));
+        return marketOffers;
     }
 
     private static final KingdomDto generateDefaultKingdomDto()
@@ -141,39 +141,4 @@ public class GameInitializer implements CommandLineRunner
         units.setUnit("farmer", 5);
         return units;
     }
-
-    private static final String marketOffersPayload = """
-            [
-                {
-                    "sellerName": "uprzejmy",
-                    "resource": "food",
-                    "count": 10000,
-                    "price": 10
-                },
-                {
-                    "sellerName": "uprzejmy",
-                    "resource": "food",
-                    "count": 500,
-                    "price": 30
-                },
-                {
-                    "sellerName": "uprzejmy",
-                    "resource": "iron",
-                    "count": 100,
-                    "price": 50
-                },
-                {
-                    "sellerName": "uprzejmy",
-                    "resource": "iron",
-                    "count": 150,
-                    "price": 70
-                },
-                {
-                    "sellerName": "uprzejmy",
-                    "resource": "food",
-                    "count": 100,
-                    "price": 30
-                }
-            ]
-            """;
 }
