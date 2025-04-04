@@ -9,13 +9,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @ComponentScan(basePackages =
-{ "com.knightsofdarkness.*" })
+{ "com.knightsofdarkness.web*" })
 @EntityScan(basePackages =
-{ "com.knightsofdarkness.*" })
+{ "com.knightsofdarkness.web*" })
 @EnableJpaRepositories(basePackages =
-{ "com.knightsofdarkness.*" })
+{ "com.knightsofdarkness.web*" })
 @EnableScheduling
-public class GameApplication {
+public class GameApplication
+{
     public static void main(String[] args)
     {
         SpringApplication.run(GameApplication.class, args);
