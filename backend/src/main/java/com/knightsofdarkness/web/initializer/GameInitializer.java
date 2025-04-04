@@ -2,6 +2,7 @@ package com.knightsofdarkness.web.initializer;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -33,7 +34,8 @@ import com.knightsofdarkness.web.utils.Id;
 import jakarta.transaction.Transactional;
 
 @Component
-public class GameInitializer implements CommandLineRunner {
+public class GameInitializer implements CommandLineRunner
+{
     private static final Logger log = LoggerFactory.getLogger(GameInitializer.class);
 
     private final IBotRepository botRepository;
@@ -123,7 +125,7 @@ public class GameInitializer implements CommandLineRunner {
     {
         var kingdom = new KingdomDto();
         kingdom.name = "default_kingdom_name";
-        kingdom.resources = new KingdomResourcesDto(100, 10000, 20, 1000, 1000, 20000, 100, 100, 20);
+        kingdom.resources = new EnumMap<>(new KingdomResourcesDto(100, 10000, 20, 1000, 1000, 20000, 100, 100, 20).getResources());
         kingdom.buildings = new KingdomBuildingsDto(10, 5, 5, 5, 5, 1, 1, 1, 0, 1, 0);
         kingdom.units = new KingdomUnitsDto(generateDefaultAvailableUnits().getUnits(), new UnitsMapDto().getUnits());
         return kingdom;

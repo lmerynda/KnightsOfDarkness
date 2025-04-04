@@ -92,7 +92,7 @@ public class KingdomEntity
     {
         var kingdomEntity = new KingdomEntity(
                 dto.name,
-                new KingdomResourcesEntity(dto.resources.getResources()),
+                new KingdomResourcesEntity(dto.resources),
                 new KingdomBuildingsEntity(dto.buildings.getBuildings()),
                 new ArrayList<>(),
                 new ArrayList<>(),

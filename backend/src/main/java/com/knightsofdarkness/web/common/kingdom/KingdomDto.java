@@ -3,13 +3,15 @@ package com.knightsofdarkness.web.common.kingdom;
 import java.util.Optional;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 
 import com.knightsofdarkness.web.common.market.MarketOfferDto;
 
-public class KingdomDto {
+public class KingdomDto
+{
     public String name;
-    public KingdomResourcesDto resources;
+    public EnumMap<ResourceName, Integer> resources;
     public KingdomBuildingsDto buildings;
     public KingdomUnitsDto units;
     public KingdomDetailsDto details;
@@ -23,7 +25,7 @@ public class KingdomDto {
     public KingdomDto()
     {
         this.name = "unknown";
-        this.resources = new KingdomResourcesDto();
+        this.resources = new EnumMap<>(ResourceName.class);
         this.buildings = new KingdomBuildingsDto();
         this.units = new KingdomUnitsDto();
         this.marketOffers = new ArrayList<>();
@@ -39,7 +41,7 @@ public class KingdomDto {
             KingdomTurnReport lastTurnReport, List<CarriersOnTheMoveDto> carriersOnTheMove, List<OngoingAttackDto> ongoingAttacks, Optional<String> allianceName)
     {
         this.name = name;
-        this.resources = resources;
+        this.resources = new EnumMap<>(resources.getResources());
         this.buildings = buildings;
         this.units = units;
         this.marketOffers = marketOffers;
