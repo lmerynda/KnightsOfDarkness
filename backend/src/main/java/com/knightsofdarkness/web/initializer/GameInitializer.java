@@ -126,7 +126,7 @@ public class GameInitializer implements CommandLineRunner
         var kingdom = new KingdomDto();
         kingdom.name = "default_kingdom_name";
         kingdom.resources = new EnumMap<>(new KingdomResourcesDto(100, 10000, 20, 1000, 1000, 20000, 100, 100, 20).getResources());
-        kingdom.buildings = new KingdomBuildingsDto(10, 5, 5, 5, 5, 1, 1, 1, 0, 1, 0);
+        kingdom.buildings = new EnumMap<>(new KingdomBuildingsDto(10, 5, 5, 5, 5, 1, 1, 1, 0, 1, 0).getBuildings());
         kingdom.units = new KingdomUnitsDto(generateDefaultAvailableUnits().getUnits(), new UnitsMapDto().getUnits());
         return kingdom;
     }

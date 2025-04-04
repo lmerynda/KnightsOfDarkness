@@ -12,9 +12,9 @@ public class KingdomDto
 {
     public String name;
     public EnumMap<ResourceName, Integer> resources;
-    public KingdomBuildingsDto buildings;
+    public EnumMap<BuildingName, Integer> buildings;
     public KingdomUnitsDto units;
-    public KingdomDetailsDto details;
+    public EnumMap<KingdomDetailName, Integer> details;
     public List<MarketOfferDto> marketOffers;
     public List<KingdomSpecialBuildingDto> specialBuildings;
     public KingdomTurnReport lastTurnReport;
@@ -26,8 +26,9 @@ public class KingdomDto
     {
         this.name = "unknown";
         this.resources = new EnumMap<>(ResourceName.class);
-        this.buildings = new KingdomBuildingsDto();
+        this.buildings = new EnumMap<>(BuildingName.class);
         this.units = new KingdomUnitsDto();
+        this.details = new EnumMap<>(KingdomDetailName.class);
         this.marketOffers = new ArrayList<>();
         this.specialBuildings = new ArrayList<>();
         this.lastTurnReport = new KingdomTurnReport();
@@ -37,12 +38,13 @@ public class KingdomDto
         initializeDetails();
     }
 
-    public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers, List<KingdomSpecialBuildingDto> specialBuildings,
-            KingdomTurnReport lastTurnReport, List<CarriersOnTheMoveDto> carriersOnTheMove, List<OngoingAttackDto> ongoingAttacks, Optional<String> allianceName)
+    public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers, List<KingdomSpecialBuildingDto> specialBuildings, KingdomTurnReport lastTurnReport,
+            List<CarriersOnTheMoveDto> carriersOnTheMove, List<OngoingAttackDto> ongoingAttacks, Optional<String> allianceName)
     {
         this.name = name;
         this.resources = new EnumMap<>(resources.getResources());
-        this.buildings = buildings;
+        this.buildings = new EnumMap<>(buildings.getBuildings());
+        this.details = new EnumMap<>(KingdomDetailName.class);
         this.units = units;
         this.marketOffers = marketOffers;
         this.specialBuildings = specialBuildings;
@@ -55,8 +57,11 @@ public class KingdomDto
 
     private void initializeDetails()
     {
-        details = new KingdomDetailsDto();
-        details.setCount(KingdomDetailName.usedLand, buildings.countAll());
+        for (var detail : KingdomDetailName.values())
+        {
+            details.put(detail, 0);
+        }
+        details.put(KingdomDetailName.usedLand, buildings.values().stream().mapToInt(Integer::intValue).sum());
     }
 
     public String toString()

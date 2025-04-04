@@ -93,11 +93,11 @@ public class KingdomEntity
         var kingdomEntity = new KingdomEntity(
                 dto.name,
                 new KingdomResourcesEntity(dto.resources),
-                new KingdomBuildingsEntity(dto.buildings.getBuildings()),
+                new KingdomBuildingsEntity(dto.buildings),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                new KingdomUnitsEntity(dto.units.getAvailableUnits().getUnits(), dto.units.getMobileUnits().getUnits()),
+                new KingdomUnitsEntity(dto.units.getAvailableUnits(), dto.units.getMobileUnits()),
                 dto.lastTurnReport);
 
         var specialBuildings = dto.specialBuildings.stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDto(specialBuilding, kingdomEntity)).toList();

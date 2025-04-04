@@ -17,7 +17,8 @@ import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomResourcesEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomUnitsEntity;
 
-public class KingdomBuilder {
+public class KingdomBuilder
+{
     private final KingdomResourcesDto resources;
     private final KingdomBuildingsDto buildings;
     private final KingdomUnitsDto units;
@@ -54,7 +55,7 @@ public class KingdomBuilder {
 
         for (var unit : UnitName.values())
         {
-            this.units.getAvailableUnits().setCount(unit, 1000);
+            this.units.getAvailableUnits().put(unit, 1000);
         }
 
         return this;
@@ -74,7 +75,7 @@ public class KingdomBuilder {
 
     public KingdomBuilder withUnit(UnitName unit, int count)
     {
-        this.units.getAvailableUnits().setCount(unit, count);
+        this.units.getAvailableUnits().put(unit, count);
         return this;
     }
 
@@ -99,7 +100,7 @@ public class KingdomBuilder {
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                new KingdomUnitsEntity(units.getAvailableUnits().getUnits(), units.getMobileUnits().getUnits()),
+                new KingdomUnitsEntity(units.getAvailableUnits(), units.getMobileUnits()),
                 new KingdomTurnReport());
     }
 }

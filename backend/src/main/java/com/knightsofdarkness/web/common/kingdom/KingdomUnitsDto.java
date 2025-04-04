@@ -1,10 +1,12 @@
 package com.knightsofdarkness.web.common.kingdom;
 
+import java.util.EnumMap;
 import java.util.Map;
 
-public class KingdomUnitsDto {
-    UnitsMapDto availableUnits = new UnitsMapDto();
-    UnitsMapDto mobileUnits = new UnitsMapDto();
+public class KingdomUnitsDto
+{
+    EnumMap<UnitName, Integer> availableUnits = new EnumMap<>(UnitName.class);
+    EnumMap<UnitName, Integer> mobileUnits = new EnumMap<>(UnitName.class);
 
     public KingdomUnitsDto()
     {
@@ -12,22 +14,22 @@ public class KingdomUnitsDto {
 
     public KingdomUnitsDto(Map<UnitName, Integer> availableUnits, Map<UnitName, Integer> mobileUnits)
     {
-        this.availableUnits = new UnitsMapDto(availableUnits);
-        this.mobileUnits = new UnitsMapDto(mobileUnits);
+        this.availableUnits = new EnumMap<>(availableUnits);
+        this.mobileUnits = new EnumMap<>(mobileUnits);
     }
 
     public KingdomUnitsDto(UnitsMapDto availableUnits, UnitsMapDto mobileUnits)
     {
-        this.availableUnits = availableUnits;
-        this.mobileUnits = mobileUnits;
+        this.availableUnits = new EnumMap<>(availableUnits.getUnits());
+        this.mobileUnits = new EnumMap<>(mobileUnits.getUnits());
     }
 
-    public UnitsMapDto getAvailableUnits()
+    public EnumMap<UnitName, Integer> getAvailableUnits()
     {
         return availableUnits;
     }
 
-    public UnitsMapDto getMobileUnits()
+    public EnumMap<UnitName, Integer> getMobileUnits()
     {
         return mobileUnits;
     }

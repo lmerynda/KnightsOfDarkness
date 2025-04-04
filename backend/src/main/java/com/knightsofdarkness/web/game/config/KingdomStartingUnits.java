@@ -44,6 +44,6 @@ public record KingdomStartingUnits(int goldMiner, int ironMiner, int builder, in
 
     public Map<UnitName, Integer> toMap()
     {
-        return toDto().getAvailableUnits().getUnits();
+        return toDto().getAvailableUnits();
     }
 }

@@ -31,7 +31,7 @@ public class KingdomCreator
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                new KingdomUnitsEntity(startingUnitsDto.getAvailableUnits().getUnits(), startingUnitsDto.getMobileUnits().getUnits()),
+                new KingdomUnitsEntity(startingUnitsDto.getAvailableUnits(), startingUnitsDto.getMobileUnits()),
                 new KingdomTurnReport());
 
         return kingdom;
