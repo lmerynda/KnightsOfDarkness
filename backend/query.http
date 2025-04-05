@@ -39,3 +39,9 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3MzE4MjU5O
     "resource": "food",
     "amount": 1111
 }
+
+###
+
+GET http://localhost:8080/kingdom/stats
+content-type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDM4MzI4OTQsImlhdCI6MTc0MzgzMjI5NCwianRpIjoiZmQzZDQ1NzUtM2U1OS00MjA2LTljYjgtNzI1NmM4NDVjY2QxIiwic3ViIjoidXByemVqbXkifQ.NRq1n5bNEYBe9eCSzlTDH8Tv-5mmQwmgqw7cVxiddZbPpEucoHDjZoOFnK7Q1jn9FspX-3-kSDDzzK0NwRxZmw

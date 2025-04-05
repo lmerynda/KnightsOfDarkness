@@ -3,6 +3,7 @@ package com.knightsofdarkness.web.kingdom;
 import java.util.Optional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import com.knightsofdarkness.web.common.kingdom.KingdomPassTurnActionResult;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingStartDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomStatsDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.web.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.web.common.kingdom.LandTransaction;
@@ -379,5 +381,12 @@ public class KingdomService
         kingdomRepository.update(kingdom);
 
         return Optional.of(true);
+    }
+
+    public List<KingdomStatsDto> getTopKingdomsStats()
+    {
+        log.info("Getting top kingdoms stats");
+        var kingdoms = kingdomReadRepository.getTopKingdomsByLand(10);
+        return kingdoms.stream().map(KingdomStatsDto::fromKingdom).toList();
     }
 }

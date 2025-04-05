@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.kingdom;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import com.knightsofdarkness.web.common.kingdom.KingdomPassTurnActionResult;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingStartDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomStatsDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.web.common.kingdom.LandTransaction;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
@@ -65,6 +67,19 @@ public class KingdomController
         return kingdomService.getKingdomByName(currentUser.getKingdomName())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/stats")
+    ResponseEntity<List<KingdomStatsDto>> getKingdomStats(@AuthenticationPrincipal UserData currentUser)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.info("User {} requested kingdom stats", currentUser.email);
+        return ResponseEntity.ok(kingdomService.getTopKingdomsStats());
     }
 
     @PostMapping("/build")

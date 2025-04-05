@@ -14,7 +14,8 @@ import jakarta.persistence.Transient;
 
 @Embeddable
 @Access(AccessType.FIELD)
-public class KingdomUnitsEntity {
+public class KingdomUnitsEntity
+{
     int availableGoldMiner;
     int availableIronMiner;
     int availableFarmer;
@@ -148,7 +149,7 @@ public class KingdomUnitsEntity {
         addAvailableCount(name, count);
     }
 
-    int countAvailableUnits()
+    public int countAvailableUnits()
     {
         return availableUnits.values().stream().mapToInt(Integer::intValue).sum();
     }
@@ -174,7 +175,7 @@ public class KingdomUnitsEntity {
         return unitRatios;
     }
 
-    int countAvailableMilitary()
+    public int countAvailableMilitary()
     {
         return UnitName.getMilitaryUnits().stream().mapToInt(availableUnits::get).sum();
     }
