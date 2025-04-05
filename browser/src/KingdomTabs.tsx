@@ -9,6 +9,7 @@ import Notifications from "./tabs/Notifications";
 import Transfers from "./tabs/Transfers";
 import Attacks from "./tabs/Attacks";
 import Alliance from "./tabs/Alliance";
+import Stats from "./tabs/Stats";
 
 const KingdomTabs: React.FC = () => {
   const [path, setPath] = React.useState("/overview");
@@ -25,6 +26,7 @@ const KingdomTabs: React.FC = () => {
           <Tab label="Transfers" value="/transfers" to="/transfers" component={Link} />
           <Tab label="Attacks" value="/attacks" to="/attacks" component={Link} />
           <Tab label="Notifications" value="/notifications" to="/notifications" component={Link} />
+          <Tab label="Stats" value="/stats" to="/stats" component={Link} />
         </Tabs>
       </AppBar>
       <Routes>
@@ -36,6 +38,7 @@ const KingdomTabs: React.FC = () => {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/transfers" element={<Transfers />} />
         <Route path="/attacks" element={<Attacks />} />
+        <Route path="/stats" element={<Stats />} />
         <Route path="*" element={<Navigate to="/overview" />} />
       </Routes>
     </Box>

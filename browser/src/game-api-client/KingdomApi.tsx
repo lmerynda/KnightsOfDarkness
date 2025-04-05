@@ -1,5 +1,5 @@
 import { GAME_API } from "../Consts";
-import type { BuildingActionReport, KingdomData, PassTurnReport, TrainingActionReport, UnitsMap } from "../GameTypes";
+import type { BuildingActionReport, KingdomData, PassTurnReport, TrainingActionReport, UnitsMap, KingdomStatsDto } from "../GameTypes";
 import { fetchData, handleResponse } from "./Common";
 
 export async function fetchKingdomDataRequest(): Promise<KingdomData> {
@@ -15,7 +15,7 @@ export async function fetchKingdomDataRequest(): Promise<KingdomData> {
     );
 
     if (response.ok) {
-      const data = response.json();
+      const data = await response.json();
       console.log(`fetchKingdomData Request successful, status: ${response.status} data: ${JSON.stringify(data)}`);
       return data;
     }
@@ -251,6 +251,31 @@ export async function demolishSpecialBuildingRequest(id: string): Promise<Respon
     throw new Error(`request failed, status: ${response.status}`);
   } catch (error) {
     console.error("special building demolish error:", error);
+    throw error;
+  }
+}
+
+export async function fetchKingdomStats(): Promise<KingdomStatsDto[]> {
+  try {
+    const response = await handleResponse(
+      fetchData(`${GAME_API}/kingdom/stats`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken") ?? ""}`,
+        },
+      }),
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(`fetchKingdomStats Request successful, status: ${response.status} data: ${JSON.stringify(data)}`);
+      return data;
+    }
+
+    throw new Error(`request failed, status: ${response.status}`);
+  } catch (error) {
+    console.error("Fetching kingdom stats error", error);
     throw error;
   }
 }

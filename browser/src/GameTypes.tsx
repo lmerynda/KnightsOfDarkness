@@ -205,3 +205,9 @@ export type OngoingAttack = {
   attackType: AttackType;
   units: UnitsMap;
 };
+
+export type KingdomStatsDto = {
+  kingdomName: string;
+  land: number;
+  army: number;
+};
