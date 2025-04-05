@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class MaintenanceController {
+public class MaintenanceController
+{
     private static final Logger log = LoggerFactory.getLogger(MaintenanceController.class);
 
     @GetMapping("/health")
@@ -15,6 +16,6 @@ public class MaintenanceController {
     {
         log.info("Health check requested");
 
-        return ResponseEntity.ok("OK");
+        return ResponseEntity.ok("{\"result\": \"OK\"}");
     }
 }
