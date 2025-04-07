@@ -24,7 +24,6 @@ public class GameController {
     @PostMapping("/config")
     ResponseEntity<GameConfig> getConfig(@AuthenticationPrincipal UserData currentUser)
     {
-        log.info("User {} requested game config", currentUser);
         if (currentUser == null)
         {
             log.error("User not read from authentication context");

@@ -62,8 +62,6 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        log.info("User {} requested kingdom", currentUser.email);
-
         return kingdomService.getKingdomByName(currentUser.getKingdomName())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -78,7 +76,6 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        log.info("User {} requested kingdom stats", currentUser.email);
         return ResponseEntity.ok(kingdomService.getTopKingdomsStats());
     }
 
