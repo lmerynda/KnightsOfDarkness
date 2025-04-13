@@ -20,6 +20,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build with Gradle
+        run: ./gradlew build
+        working-directory: backend
+
+      - run: npm install && npm run build
+        working-directory: browser
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -31,12 +40,6 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Download backend JAR artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: kod-game-server-jar
-          path: backend/build/libs/
 
       - name: Build, tag, and push game image to Amazon ECR
         env:
