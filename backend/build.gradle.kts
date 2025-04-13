@@ -44,6 +44,10 @@ dependencies {
     // runtimeOnly("org.postgresql:postgresql:42.7.5")
 }
 
+tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
+    archiveFileName.set("kod-game-server.jar")
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
     jvmArgs("-ea")
