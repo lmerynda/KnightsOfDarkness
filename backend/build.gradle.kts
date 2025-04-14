@@ -40,8 +40,8 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.11.3"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
     testImplementation("org.assertj:assertj-core:3.26.3")
-    runtimeOnly("com.h2database:h2")
-    // runtimeOnly("org.postgresql:postgresql:42.7.5")
+    // runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.postgresql:postgresql:42.7.5")
 }
 
 tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
