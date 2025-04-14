@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build with Gradle
-        run: ./gradlew build -Pversion=${{ github.ref_name }}
+        run: ./gradlew bootJar -Pversion=${{ github.ref_name }}
         working-directory: backend
 
       - name: Build frontend with npm
