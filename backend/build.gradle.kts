@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.knightsofdarkness"
-version = "0.0.1-SNAPSHOT"
+version = project.findProperty("version")?.toString() ?: "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
@@ -42,10 +42,6 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.26.3")
     // runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql:42.7.5")
-}
-
-tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
-    archiveFileName.set("kod-game-server.jar")
 }
 
 tasks.withType<Test> {

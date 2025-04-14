@@ -24,10 +24,11 @@ jobs:
           fetch-depth: 0
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build -Pversion=${{ github.ref_name }}
         working-directory: backend
 
-      - run: npm install && npm run build
+      - name: Build frontend with npm
+        run: npm install && npm run build
         working-directory: browser
 
       - name: Configure AWS credentials
