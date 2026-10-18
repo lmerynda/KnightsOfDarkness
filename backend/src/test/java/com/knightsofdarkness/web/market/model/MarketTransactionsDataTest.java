@@ -3,6 +3,8 @@ package com.knightsofdarkness.web.market.model;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
 
 import java.time.Instant;
 
@@ -38,9 +40,13 @@ class MarketTransactionsDataTest {
         assertTrue(result.success());
         var offer = market.findOfferById(result.data().get().id());
         assertTrue(offer.isPresent());
-        market.buyExistingOffer(offer.get(), kingdom, kingdom, 1);
-
-        Instant now = Instant.now();
+        Instant now = Instant.parse("2026-01-01T12:00:00Z");
+        Instant transactionTime = now.minusSeconds(1);
+        try (var clock = mockStatic(Instant.class, CALLS_REAL_METHODS))
+        {
+            clock.when(Instant::now).thenReturn(transactionTime);
+            market.buyExistingOffer(offer.get(), kingdom, kingdom, 1);
+        }
         Instant minuteAgo = now.minusSeconds(60);
         var transactions = market.getTransactionsByResourceAndTimeRange(resource, minuteAgo, now);
         assertThat(transactions).isNotEmpty();
@@ -59,9 +65,13 @@ class MarketTransactionsDataTest {
         var offer = market.findOfferById(result.data().get().id());
         assertTrue(offer.isPresent());
 
-        market.buyExistingOffer(offer.get(), kingdom, kingdom, 1);
-
-        var now = Instant.now();
+        var now = Instant.parse("2026-01-01T12:00:00Z");
+        var transactionTime = now.minusSeconds(1);
+        try (var clock = mockStatic(Instant.class, CALLS_REAL_METHODS))
+        {
+            clock.when(Instant::now).thenReturn(transactionTime);
+            market.buyExistingOffer(offer.get(), kingdom, kingdom, 1);
+        }
         var minuteAgo = now.minusSeconds(60);
         market.updateMarketTransactionsAverages(minuteAgo, now);
         double average = market.getLast24TransactionAverages(resource).orElse(0.0);
