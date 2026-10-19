@@ -2,11 +2,11 @@ import com.adarshr.gradle.testlogger.theme.ThemeType
 
 plugins {
     id("java")
-    id("com.adarshr.test-logger") version "4.0.+"
+    id("com.adarshr.test-logger") version "4.0.0"
     id("org.springframework.boot") version "4.0.8"
-    id("io.spring.dependency-management") version "1.1.+"
+    id("io.spring.dependency-management") version "1.1.7"
     id("jacoco")
-    id("org.sonarqube") version "5.1.+"
+    id("org.sonarqube") version "7.5.0.8588"
     id("com.github.ben-manes.versions") version "0.51.0"
 }
 
@@ -59,7 +59,13 @@ tasks.withType<Test> {
     }
 }
 
+// Preserve coverage diagnostics when an assertion fails.
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
 tasks.jacocoTestReport {
+    mustRunAfter(tasks.test)
     reports {
         xml.required.set(true)
     }
@@ -75,5 +81,6 @@ sonar {
     property("sonar.projectKey", "Uprzejmy_KnightsOfDarkness")
     property("sonar.organization", "uprzejmy")
     property("sonar.host.url", "https://sonarcloud.io")
+    property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
