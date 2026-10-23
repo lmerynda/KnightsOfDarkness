@@ -5,34 +5,47 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: read
+
 env:
   AWS_REGION: eu-north-1
   ECR_BROWSER_REGISTRY: knightsofdarkness-frontend
   ECR_GAME_REGISTRY: knightsofdarkness-game-server
+  IMAGE_TAG: ${{ github.ref_name }}
+
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/lmerynda/knightsofdarkness-dev:latest
-      credentials:
-        username: lmerynda
-        password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
-      - name: Build with Gradle
-        run: ./gradlew bootJar -Pversion=${{ github.ref_name }}
-        working-directory: backend
+      - name: Set up Java 21
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+          cache-dependency-path: |
+            backend/*.gradle.kts
+            backend/gradle/wrapper/gradle-wrapper.properties
 
-      - name: Build frontend with npm
-        run: npm install && npm run build
-        working-directory: browser
+      - name: Build, test, and package backend
+        working-directory: backend
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon clean check jacocoTestReport bootJar "-Pversion=$IMAGE_TAG"
+
+      - name: Build application images
+        run: |
+          docker build --tag "${ECR_GAME_REGISTRY}:${IMAGE_TAG}" backend
+          docker build --tag "${ECR_BROWSER_REGISTRY}:${IMAGE_TAG}" browser
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -40,22 +53,13 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2
 
-      - name: Build, tag, and push game image to Amazon ECR
+      - name: Tag and push application images to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.ref_name }}
         run: |
-          cd backend
-          docker build -t $ECR_REGISTRY/$ECR_GAME_REGISTRY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_GAME_REGISTRY:$IMAGE_TAG
-
-      - name: Build, tag, and push frontend browser image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.ref_name }}
-        run: |
-          cd browser
-          docker build -t $ECR_REGISTRY/$ECR_BROWSER_REGISTRY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_BROWSER_REGISTRY:$IMAGE_TAG
+          docker tag "${ECR_GAME_REGISTRY}:${IMAGE_TAG}" "${ECR_REGISTRY}/${ECR_GAME_REGISTRY}:${IMAGE_TAG}"
+          docker tag "${ECR_BROWSER_REGISTRY}:${IMAGE_TAG}" "${ECR_REGISTRY}/${ECR_BROWSER_REGISTRY}:${IMAGE_TAG}"
+          docker push "${ECR_REGISTRY}/${ECR_GAME_REGISTRY}:${IMAGE_TAG}"
+          docker push "${ECR_REGISTRY}/${ECR_BROWSER_REGISTRY}:${IMAGE_TAG}"
