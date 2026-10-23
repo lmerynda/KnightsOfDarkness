@@ -140,5 +140,6 @@ jobs:
           path: backend/build
       - name: Analyze validated backend outputs
         if: env.SONAR_TOKEN != ''
-        run: ./gradlew --no-daemon --stacktrace sonar -x test
+        # setup-java already provides a supported runtime; avoid provisioning another JRE.
+        run: ./gradlew --no-daemon --stacktrace sonar -x test -Dsonar.scanner.skipJreProvisioning=true
         working-directory: backend
