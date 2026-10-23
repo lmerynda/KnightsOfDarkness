@@ -3,7 +3,10 @@ package com.knightsofdarkness.web.messaging;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -66,8 +69,15 @@ class NotificationsTest {
     @Test
     void testGetNotificationsOrder()
     {
-        notificationSystem.create(kingdom.getName(), "First notification");
-        notificationSystem.create(kingdom.getName(), "Second notification");
+        var firstTime = Instant.parse("2026-01-01T12:00:00Z");
+        var secondTime = firstTime.plusSeconds(1);
+        try (var clock = mockStatic(Instant.class, CALLS_REAL_METHODS))
+        {
+            clock.when(Instant::now).thenReturn(firstTime);
+            notificationSystem.create(kingdom.getName(), "First notification");
+            clock.when(Instant::now).thenReturn(secondTime);
+            notificationSystem.create(kingdom.getName(), "Second notification");
+        }
 
         var notifications = notificationSystem.getNotifications(kingdom.getName());
 
