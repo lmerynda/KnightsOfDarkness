@@ -1846,6 +1846,10 @@ function clampField(flow, field, v) {
 }
 function setField(flow, field, v) {
   const st = S.f[flow];
+  const current = flow === "build" || flow === "recruit" ? st.items[field] : flow === "march" ? st.comp[field] : st[field];
+  // Number inputs emit change on blur after input has already updated the plan.
+  // Keep the existing review button in place so that blur cannot swallow its click.
+  if (current === v) return;
   if (flow === "build") st.items[field] = v;
   else if (flow === "recruit") st.items[field] = v;
   else if (flow === "march") st.comp[field] = v;
