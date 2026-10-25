@@ -308,6 +308,7 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus,.recon:focus{outline:none}
 .obj.current .mark{border-color:var(--or);color:var(--or)}
 .obj .why{font-size:.86rem;color:var(--text-2)}
 .recon{margin-top:12px}
+.recon-world{display:block;font-size:.78rem;color:var(--text-3)}
 
 /* ---------- banners / footer ---------- */
 .banner{border-radius:var(--r);padding:12px 16px;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
@@ -554,16 +555,22 @@ const KOD = (() => {
   }
   const might = (k) => 10 * builtCount(k) + C.TYPES.reduce((a, t) => a + (k.home[t] + k.away[t]) * (C.T[t].atk + C.T[t].def), 0);
   const levy = (k) => Math.floor(k.commoners / 10);
-  function forecast(k, bells) { const sim = clone(k); const out = []; for (let i = 0; i < bells; i++) out.push({ report: bell(sim), stocks: Object.assign({}, sim.s), commoners: sim.commoners, state: i === bells - 1 ? sim : null }); return out; }
+  // Battle (blueprint 8.5). A march always has AP ≥ 1: zero-troop dispatches are rejected, and every troop has Attack ≥ 1.
+  // DP is 0 only where nobody defends. AP and DP are whole numbers, so AP = DP is an exact tie, and the defender wins it.
+  // Levy, militia, Darkness garrisons and the Hollow Host are strength without troops: they never take losses.
   function battle(o) {
-    const R = o.ap / o.dp, victory = o.ap > o.dp;
+    if (!Number.isInteger(o.ap) || o.ap < 1) throw new RangeError("No battle without an attacking force: a zero-troop march is rejected at dispatch.");
+    if (!Number.isInteger(o.dp) || o.dp < 0) throw new RangeError("Defense must be a whole number, 0 or more.");
+    const victory = o.ap > o.dp;
     const La = Math.min(0.2, Math.max(0.03, (0.08 * o.dp) / o.ap));
-    const Ld = Math.min(0.15, Math.max(0.02, (0.06 * o.ap) / o.dp));
+    const Ld = o.dp === 0 ? 0 : Math.min(0.15, Math.max(0.02, (0.06 * o.ap) / o.dp)); // DP 0: there is nobody to lose
+    const excess = o.dp === 0 ? 1 : Math.min(1, Math.max(0, o.ap / o.dp - 1)); // plunder input, capped at 1
+    const margin = o.dp === 0 ? null : Math.round((o.ap / o.dp - 1) * 100); // shown as "+33%"; null when undefended
     const cas = (list, L) => { if (!list) return []; const N = list.reduce((a, c) => a + c.n, 0); const total = Math.floor(L * N + 0.5); const parts = apportion(total, list.map((c, i) => ({ weight: c.n, rank: i }))); return list.map((c, i) => Object.assign({}, c, { lost: parts[i] })); };
-    return { R, victory, La, Ld, attackerLosses: cas(o.attackers, La), defenderLosses: cas(o.defenders, Ld) };
+    return { victory, La, Ld, excess, margin, attackerLosses: cas(o.attackers, La), defenderLosses: cas(o.defenders, Ld) };
   }
   function plunder(o) {
-    const p = 0.1 + 0.1 * Math.min(1, Math.max(0, o.R - 1)); const take = {}; let sum = 0;
+    const p = 0.1 + 0.1 * o.excess; const take = {}; let sum = 0;
     for (const s of C.STOCKS) { take[s] = Math.floor(p * Math.max(0, (o.stocks[s] || 0) - o.vault)); sum += take[s]; }
     if (sum > o.carry) for (const s of C.STOCKS) take[s] = Math.floor((take[s] * o.carry) / sum);
     return { p, take };
@@ -574,7 +581,7 @@ const KOD = (() => {
       home: { spearman: 20, archer: 10, knight: 0 }, away: { spearman: 0, archer: 0, knight: 0 }, training: [],
       s: { gold: 2000, grain: 1500, iron: 100, tools: 150, arms: 40 }, priority: ["farm", "mine", "forge", "market"], projects: [], queue: [] };
   }
-  return { C, clone, builtCount, freeAcres, housing, troopCap, crews, staff, wages, troopGrain, apportion, bell, orderBuilding, orderWorks, worksLevel, clearCost, recruit, might, levy, forecast, battle, plunder, start, troopTotal, troopsAll, guildMult, dreadMult };
+  return { C, clone, builtCount, freeAcres, housing, troopCap, crews, staff, wages, troopGrain, apportion, bell, orderBuilding, orderWorks, worksLevel, clearCost, recruit, might, levy, battle, plunder, start, troopTotal, troopsAll, guildMult, dreadMult };
 })();
 
 /* ======================================================================
@@ -633,7 +640,7 @@ function midWorld() {
     meta: { kingdom: "Hollowmere", ruler: "Lady Isolde Vane", coalition: "The Ashen Oath", role: "Sworn", banner: ["#2e4d7a", "#c9a14a", "#e8e1d0"], day: 9, phase: "The Long Dusk", nextIn: "23 min", firstClock: { bell: 202, hour: 15 }, season: 3 },
     world: {
       median: 858,
-      incoming: [{ id: "in1", from: "Ironhold", coalition: "Crown of Valemire", comp: { knight: 60, archer: 50, spearman: 30 }, arrive: 207, sent: 198 }],
+      incoming: [{ id: "in1", from: "Ironhold", coalition: "Crown of Valemire", comp: { knight: 60, archer: 50, spearman: 30 }, arrive: 207, sent: 199 }],
       exps: [{ id: "x0", kind: "garrison", dest: "greywatch", comp: { spearman: 120, archer: 30, knight: 0 }, depart: 180, arrive: 184, state: "stationed" }],
       holds: [
         { id: "greywatch", name: "Greywatch", travel: 4, status: "held", by: "ashen", allies: [{ owner: "Ser Aldric", type: "spearman", n: 80 }, { owner: "Brother Cael", type: "archer", n: 40 }], tide: { bell: 210, tp: 1180 }, x: 214, y: 58 },
@@ -664,8 +671,9 @@ function midWorld() {
       camps: [{ id: "reaver", name: "Reaver hall", tier: 3, dp: 400, travel: 3, loot: { gold: 1500, grain: 800, iron: 200, arms: 100 } }],
       chronicle: [
         { bell: 200, type: "coalition", title: "Brother Cael called for aid: grain", body: "His granary empties in 8 bells. The War Table has a supply order.", unread: true },
+        { bell: 200, type: "kingdom", title: "Recruiting 20 Spearmen", body: "Paid 500 gold · 40 arms. Ready at bell 202, in time for Ironhold's raid.", unread: false },
         { bell: 199, type: "kingdom", title: "Farm complete", body: "+10 jobs. Farms now employ 400 farmers.", unread: true },
-        { bell: 198, type: "battles", title: "Incoming raid from Ironhold", body: "60 Knights, 50 Archers, 30 Spearmen (attack 370) arrive at bell 207. Your defense then: 689 with recruits.", unread: true },
+        { bell: 199, type: "battles", title: "Incoming raid from Ironhold", body: "60 Knights, 50 Archers, 30 Spearmen (attack 370) left Ironhold at bell 199 and arrive at bell 207. Muster forecasts your defense for that bell.", unread: true },
         { bell: 196, type: "battles", title: "Ironhold scouted your defenses", body: "Scouts from Ironhold (Crown of Valemire) counted your troops and stores. A raid often follows.", unread: true },
         { bell: 194, type: "frontier", title: "Tide repelled at Emberstead", report: "emberstead194" },
         { bell: 188, type: "coalition", title: "Oath sworn: Break the Tide", body: "Repel 2 tides by bell 236 for 150 renown. Sworn by Ser Aldric." },
@@ -681,7 +689,7 @@ function foundWorld() {
   const pos = { greywatch: [214, 58], emberstead: [232, 128], ravenmoor: [176, 196], mirefold: [150, 96], blackwater: [206, 250], saltcairn: [132, 300], vigil: [124, 22] };
   return {
     scenario: "found", k,
-    meta: { kingdom: "Ashvale", ruler: "Lord Edric Thorne", coalition: null, role: null, banner: ["#3e6a3b", "#d9d4c7", "#8e2f25"], day: 1, phase: "Kindling", nextIn: "38 min", season: 3 },
+    meta: { kingdom: "Ashvale", ruler: "Lord Edric Thorne", coalition: null, role: null, banner: ["#3e6a3b", "#d9d4c7", "#8e2f25"], day: 1, phase: "Kindling", nextIn: "38 min", season: 3, worldBell: 0 },
     world: {
       holds: holdNames.map(([id, name, travel], i) => ({ id, name, travel, status: "unclaimed", firstTide: 25 + Math.floor((24 * i) / 7), x: pos[id][0], y: pos[id][1] })),
       camps: [
@@ -694,7 +702,7 @@ function foundWorld() {
         { name: "Thornwall Compact", members: 3, of: 6, policy: "Invitation only", motto: "Root and wall." }
       ],
       exps: [],
-      chronicle: [{ bell: 0, type: "kingdom", title: "Ashvale is founded", body: "Protected from raids for 72 bells. You have 12 founding bells to learn the loop.", unread: true }]
+      chronicle: [{ bell: 0, type: "kingdom", title: "Ashvale is founded", body: "Protected from raids for 72 world bells. You have 12 founding bells to learn the loop.", unread: true }]
     },
     found: { left: 12, used: 0, recon: null, flags: {}, choice: null }
   };
@@ -711,7 +719,8 @@ function resetFlows() {
     exch: { step: "plan", good: "grain", mode: "buy", n: 0 },
     recruit: { step: "plan", items: { spearman: 0, archer: 0, knight: 0 } },
     march: { step: "plan", dest: null, comp: { spearman: 0, archer: 0, knight: 0 }, depart: 0 },
-    caravan: { step: "plan", n: 500 }
+    caravan: { step: "plan", n: 500 },
+    endFounding: { step: "plan" }
   };
 }
 function load(scenario) {
@@ -732,47 +741,199 @@ function bellTime(b) {
   return `≈ ${String(h).padStart(2, "0")}:00`;
 }
 const bellAt = (b) => (S.scenario === "mid" ? `bell ${b} (${bellTime(b)})` : `bell ${b}`);
+function holdById(id) { return S.world.holds.find((h) => h.id === id); }
+
+/* ======================================================================
+   World phase (blueprint 8.4) and forecasts (13.5). One function resolves a
+   bell's world events for live bells and for forecasts alike, so a forecast
+   and the bell it predicts run the same rules on the same inputs.
+   ====================================================================== */
+// The mid-season sample resolves live bells only up to bell 203. Later world events
+// (Ravenmoor's tide at 204, Ironhold's raid at 207, the tide at Greywatch at 210) exist only in forecasts.
+const LIVE_LAST_BELL = { mid: 203, found: Infinity };
+const canRingLive = () => S.k.bell < LIVE_LAST_BELL[S.scenario];
+const ZERO = () => ({ spearman: 0, archer: 0, knight: 0 });
+const hasAny = (c) => !!c && KOD.C.TYPES.some((t) => (c[t] || 0) > 0);
+const hasCargo = (c) => !!c && STORES.some((s) => (c[s] || 0) > 0);
+const lostOf = (list) => list.reduce((a, c) => a + c.lost, 0);
+const lossText = (list) => list.filter((c) => c.lost).map((c) => `${c.lost} ${c.lost === 1 ? T_ONE[c.type] : T_MANY[c.type]}`).join(", ") || "no troops";
+const contingents = (comp, owner) => KOD.C.TYPES.filter((t) => comp[t] > 0).map((t, i) => ({ owner, type: t, n: comp[t], rank: i }));
+const troopCounts = (k) => Object.fromEntries(KOD.C.TYPES.map((t) => [t, KOD.troopsAll(k, t)]));
+function moveTroops(k, comp, from, to) { KOD.C.TYPES.forEach((t) => { k[from][t] -= comp[t] || 0; k[to][t] += comp[t] || 0; }); }
+// Home defense (8.3): troop defense plus levy from the commoners present at that moment, times Walls.
+function homeDefense(k, home) {
+  const h = home || k.home, troopsD = KOD.C.TYPES.reduce((a, t) => a + h[t] * KOD.C.T[t].def, 0), levy = KOD.levy(k);
+  return { troopsD, levy, base: troopsD + levy, dp: Math.round((troopsD + levy) * (1 + 0.1 * k.walls)) };
+}
+// Garrison order for apportioning losses: earliest-arriving owner first (8.5). In the sample, Aldric and Wren came before you.
+function garrisonList(h, mine) {
+  const early = (c) => c.owner === "Ser Aldric" || c.owner === "Dame Wren";
+  return (h.allies || []).filter(early).concat(contingents(mine || ZERO(), "you"), (h.allies || []).filter((c) => !early(c)));
+}
+function worldPhase(W, b, mode) {
+  if (mode === "live" && b > LIVE_LAST_BELL[S.scenario]) throw new Error(`This sample resolves live bells only up to bell ${LIVE_LAST_BELL[S.scenario]}.`);
+  const k = W.k, ev = [], TY = KOD.C.TYPES;
+  const holdOf = (id) => W.holds.find((h) => h.id === id);
+  const campOf = (id) => W.camps.find((c) => c.id === id) || W.camps[0];
+  const travelOf = (e) => e.travel || (e.kind === "raid" ? 8 : e.kind === "camp" ? campOf(e.dest).travel : holdOf(e.dest).travel);
+  const sendHome = (e, loot) => { e.state = "returning"; e.survivors = Object.assign({}, e.comp); e.loot = loot || {}; e.ret = b + travelOf(e); };
+  const loseFrom = (e, losses) => losses.forEach((c) => { e.comp[c.type] -= c.lost; k.away[c.type] -= c.lost; });
+  W.tides = W.tides || {};
+  // 1. Arrivals: returns home with their cargo, garrisons and claims, caravans.
+  for (const e of W.exps) {
+    if (e.state === "returning" && e.ret <= b) {
+      moveTroops(k, e.survivors, "away", "home");
+      STORES.forEach((s) => (k.s[s] += (e.loot && e.loot[s]) || 0));
+      e.state = "done";
+      ev.push({ key: "home:" + e.id, type: "battles", title: hasCargo(e.loot) ? "Troops home with loot" : "Troops home", text: `${comp2text(e.survivors)} back home${hasCargo(e.loot) ? ` with ${costText(e.loot)}` : ""}.`, cargo: Object.assign({}, e.loot) });
+    } else if (e.state === "marching" && e.arrive <= b && (e.kind === "garrison" || e.kind === "claim")) {
+      const h = holdOf(e.dest);
+      if (h.status === "unclaimed" || (h.status === "held" && h.by === "ashen")) {
+        if (h.status === "unclaimed") { h.status = "held"; h.by = "ashen"; h.allies = []; }
+        const at = W.exps.find((x) => x !== e && x.state === "stationed" && x.dest === e.dest);
+        if (at) { TY.forEach((t) => (at.comp[t] += e.comp[t] || 0)); e.state = "merged"; } else e.state = "stationed";
+        ev.push({ key: "arrive:" + e.id, type: "frontier", title: `Garrison reached ${h.name}`, text: `${comp2text(e.comp)} added to the garrison at ${h.name}.` });
+      } else {
+        sendHome(e);
+        ev.push({ key: "halt:" + e.id, type: "frontier", title: `March halted at ${h.name}`, halted: e.id, text: `${h.name} is ${h.status === "fallen" ? "Fallen" : "held by a rival"} now, so the troops turn for home and arrive at bell ${e.ret}.` });
+      }
+    } else if (e.state === "marching" && e.arrive <= b && e.kind === "caravan") {
+      e.state = "done";
+      ev.push({ key: "caravan:" + e.id, type: "coalition", title: `Caravan reached ${e.dest}`, text: `${n(e.cargo)} grain delivered.` });
+    }
+  }
+  // 2. Tides at Holds at their published strength, and entrenchment at Fallen Holds. Your coalition's
+  //    garrisons are fully visible to you; elsewhere the published garrison defense or militia is used.
+  for (const h of W.holds) {
+    if (h.status === "fallen" && h.entrench && h.entrench.bell === b) { h.darkness += Math.round(0.25 * h.entrench.tp); h.entrench = null; continue; }
+    if (!h.tide || h.tide.bell !== b) continue;
+    const tp = h.tide.tp; h.tide = null; // the next tide is not modeled: its strength needs the realm median when it is scheduled
+    if (h.status === "unclaimed") { const militia = Math.floor(0.75 * tp); W.tides[h.id] = { bell: b, dp: militia, tp, stands: militia >= tp }; if (militia < tp) { h.status = "fallen"; h.darkness = Math.round(0.5 * tp); } continue; }
+    const mineE = W.exps.find((x) => x.state === "stationed" && x.dest === h.id);
+    const yours = mineE ? Object.assign({}, mineE.comp) : ZERO();
+    const list = h.allies ? garrisonList(h, yours) : null;
+    const D = list ? D_OF(list) : null, dp = list ? Math.round(D * 1.5) : h.dp, stands = dp >= tp;
+    const bt = list ? KOD.battle({ attackers: null, defenders: list, ap: tp, dp }) : null;
+    W.tides[h.id] = { bell: b, list, D, dp, tp, stands, bt, yours };
+    if (!mineE) { if (!stands) { h.status = "fallen"; h.by = null; h.darkness = Math.round(0.5 * tp); } continue; }
+    const yl = bt.defenderLosses.filter((c) => c.owner === "you");
+    loseFrom(mineE, yl);
+    if (!stands) { h.status = "fallen"; h.by = null; h.darkness = Math.round(0.5 * tp); h.allies = []; sendHome(mineE); }
+    ev.push({ key: "tide:" + h.id, type: "frontier", title: stands ? `Tide repelled at ${h.name}` : `${h.name} fell to the tide`, text: `Tide ${n(tp)} against defense ${n(dp)}: ${stands ? "held" : "Hold lost"}. Your losses: ${lossText(yl)}${stands ? "" : `; survivors routed home by bell ${mineE.ret}`}.` });
+  }
+  // 3. Hold assaults: reclaims. The Darkness hides nothing, so this is exact unless another coalition reclaims first.
+  for (const e of W.exps) {
+    if (!(e.state === "marching" && e.arrive <= b && e.kind === "reclaim")) continue;
+    const h = holdOf(e.dest);
+    if (h.status !== "fallen") { sendHome(e); ev.push({ key: "halt:" + e.id, type: "frontier", title: `March halted at ${h.name}`, halted: e.id, text: `${h.name} is no longer Fallen, so the troops turn for home and arrive at bell ${e.ret}.` }); continue; }
+    const dp = Math.round(1.5 * h.darkness), ap = A_OF(e.comp);
+    const bt = KOD.battle({ attackers: contingents(e.comp, "you"), defenders: null, ap, dp });
+    loseFrom(e, bt.attackerLosses);
+    if (bt.victory) { h.status = "held"; h.by = "ashen"; h.allies = []; e.state = "stationed"; e.kind = "garrison"; } else sendHome(e);
+    ev.push({ key: "reclaim:" + e.id, type: "frontier", title: bt.victory ? `${h.name} reclaimed` : `Repelled at ${h.name}`, assault: { id: e.id, ap, dp, victory: bt.victory, losses: bt.attackerLosses, ret: e.ret }, text: `Attack ${n(ap)} against the Darkness ${n(dp)}: ${bt.victory ? "reclaimed" : "repelled"}. Your losses: ${lossText(bt.attackerLosses)}${bt.victory ? "" : `; survivors home by bell ${e.ret}`}.` });
+  }
+  // 4. Raids and outlaw camps.
+  for (const inc of W.incoming) {
+    if (inc.done || inc.arrive > b) continue;
+    const home = Object.assign({}, k.home), H = homeDefense(k, home), ap = A_OF(inc.comp);
+    const bt = KOD.battle({ attackers: contingents(inc.comp, inc.from), defenders: contingents(home, "you"), ap, dp: H.dp });
+    bt.defenderLosses.forEach((c) => (k.home[c.type] -= c.lost));
+    let take = {};
+    if (bt.victory) { const carry = CARRY_OF(Object.fromEntries(bt.attackerLosses.map((c) => [c.type, c.n - c.lost]))); take = KOD.plunder({ excess: bt.excess, stocks: k.s, vault: KOD.C.keep.vault * k.keep, carry }).take; STORES.forEach((s) => (k.s[s] -= take[s])); }
+    inc.done = true;
+    const raid = { id: inc.id, ap, dp: H.dp, levy: H.levy, commoners: k.commoners, home, victory: bt.victory, La: bt.La, Ld: bt.Ld, yourLosses: bt.defenderLosses, theirLost: lostOf(bt.attackerLosses), take };
+    ev.push({ key: "raid:" + inc.id, type: "battles", raid, title: bt.victory ? `Raid from ${inc.from} broke through` : `Raid from ${inc.from} repelled`, text: `Attack ${n(ap)} against your defense ${n(H.dp)}. Your losses: ${lossText(bt.defenderLosses)}; ${inc.from}'s losses: ${raid.theirLost}${bt.victory ? `; plunder taken: ${costText(take) || "nothing above your vault"}` : ""}.` });
+  }
+  for (const e of W.exps) {
+    if (!(e.state === "marching" && e.arrive <= b && e.kind === "raid")) continue;
+    // The outcome depends on the rival's hidden defense: forecasts show it as an estimate and fold nothing in.
+    if (mode === "live") throw new Error("Live bells in this sample stop before your raid could land.");
+    sendHome(e); e.estimate = true;
+    ev.push({ key: "raidout:" + e.id, type: "battles", estimate: true, title: "Your raid reaches Ironhold", text: "Its outcome depends on Ironhold's defense at that bell, which you cannot see. It stays an estimate: this forecast keeps your troops at full strength and adds no plunder." });
+  }
+  for (const e of W.exps) {
+    if (!(e.state === "marching" && e.arrive <= b && e.kind === "camp")) continue;
+    const c = campOf(e.dest), ap = A_OF(e.comp);
+    const bt = KOD.battle({ attackers: contingents(e.comp, "you"), defenders: null, ap, dp: c.dp });
+    loseFrom(e, bt.attackerLosses);
+    const loot = {};
+    if (bt.victory) { const carry = CARRY_OF(e.comp), total = Object.values(c.loot).reduce((a, v) => a + v, 0); Object.keys(c.loot).forEach((s) => (loot[s] = carry >= total ? c.loot[s] : Math.floor((c.loot[s] * carry) / total))); }
+    sendHome(e, loot);
+    e.result = { victory: bt.victory, text: bt.victory ? `Victory at bell ${b}: ${n(ap)} vs ${c.dp}; lost ${lossText(bt.attackerLosses)}; carrying ${costText(loot)}.` : `Repelled at bell ${b}: ${n(ap)} vs ${c.dp}; lost ${lossText(bt.attackerLosses)}.` };
+    if (mode === "live" && S.found && bt.victory && c.id === "ashford") S.found.flags.ashford = true;
+    ev.push({ key: "camp:" + e.id, type: "battles", title: bt.victory ? `Victory at ${c.name}` : `Repelled at ${c.name}`, text: e.result.text });
+  }
+  // 5–6. Renown accrual and the scheduling of new tides are not modeled in this prototype.
+  // 7. Scheduled departures leave at the close of their bell, after its battles, and are checked again first.
+  for (const e of W.exps) {
+    if (!(e.state === "scheduled" && e.depart <= b)) continue;
+    const short = TY.filter((t) => (e.comp[t] || 0) > k.home[t]);
+    if (short.length) { e.state = "cancelled"; e.result = { victory: false, text: `Cancelled after bell ${b}: not enough ${short.map((t) => T_MANY[t]).join(" or ")} at home.` }; ev.push({ key: "cancel:" + e.id, type: "battles", title: "Scheduled march cancelled", cancelled: e.id, text: e.result.text }); }
+    else { moveTroops(k, e.comp, "home", "away"); e.state = "marching"; ev.push({ key: "depart:" + e.id, type: "battles", title: "Scheduled march left", text: `${comp2text(e.comp)} on the road after bell ${b}; arrival at bell ${e.arrive}.` }); }
+  }
+  return ev;
+}
+function liveWorld() { return { k: S.k, exps: S.world.exps, incoming: S.world.incoming || [], holds: S.world.holds, camps: S.world.camps }; }
+// One live bell: the economy, then the world phase (16.4). Events go to the Chronicle.
+function advance() {
+  const report = KOD.bell(S.k), events = worldPhase(liveWorld(), S.k.bell, "live");
+  events.forEach((e) => S.world.chronicle.unshift({ bell: S.k.bell, type: e.type, title: e.title, body: e.text, unread: true }));
+  return { report, events };
+}
+// Forecast (13.5): the same rules run forward on a copy, assuming nobody gives a new order. Dread stays at its current level.
+function project(bells, opts = {}) {
+  const W = KOD.clone({ k: opts.k || S.k, exps: S.world.exps, incoming: S.world.incoming || [], holds: S.world.holds });
+  W.camps = S.world.camps;
+  if (opts.planned) {
+    const p = opts.planned, e = { id: "planned", kind: p.kind, dest: p.dest, comp: Object.assign({}, p.comp), depart: p.depart, arrive: p.arrive, travel: p.travel, state: p.depart > W.k.bell ? "scheduled" : "marching" };
+    if (e.state === "marching") moveTroops(W.k, e.comp, "home", "away");
+    W.exps.push(e);
+  }
+  const out = [];
+  for (let i = 0; i < bells; i++) {
+    const report = KOD.bell(W.k), econ = Object.assign({}, W.k.s), events = worldPhase(W, W.k.bell, "forecast");
+    out.push({ bell: W.k.bell, report, econ, events, stocks: Object.assign({}, W.k.s), commoners: W.k.commoners, troops: troopCounts(W.k), home: Object.assign({}, W.k.home), state: i === bells - 1 ? W.k : null, world: W });
+  }
+  return out;
+}
 function nextBell() {
-  const f = KOD.forecast(S.k, 1)[0];
-  const d = {}; STORES.forEach((s) => (d[s] = f.stocks[s] - S.k.s[s]));
-  return { f, r: f.report, d, people: f.commoners - S.k.commoners };
+  const f = project(1)[0], d = {}, econ = {};
+  STORES.forEach((s) => { d[s] = f.stocks[s] - S.k.s[s]; econ[s] = f.econ[s] - S.k.s[s]; });
+  return { f, r: f.report, d, econ, world: f.events, people: f.commoners - S.k.commoners };
 }
 function grainOutlook(k, bells = 24) {
-  const fc = KOD.forecast(k, bells);
+  const fc = project(bells, { k });
   const path = fc.map((x) => x.stocks.grain);
   const zero = path.findIndex((g) => g <= 0);
   const hunger = fc.findIndex((x) => x.report.events.includes("hunger"));
   const net12 = fc.length >= 12 ? fc[11].stocks.grain - fc[10].stocks.grain : 0; // net during the 12th bell
-  return { path, emptyBell: zero >= 0 ? k.bell + zero + 1 : null, hungerBell: hunger >= 0 ? k.bell + hunger + 1 : null, end: path[path.length - 1], net12 };
+  return { path, emptyBell: zero >= 0 ? k.bell + zero + 1 : null, hungerBell: hunger >= 0 ? k.bell + hunger + 1 : null, end: path[path.length - 1], net12, tides: fc[fc.length - 1].world.tides };
 }
-function homeTroopsAt(b, planned) {
-  const h = Object.assign({}, S.k.home);
-  for (const t of S.k.training) if (S.k.bell + t.left <= b) h[t.type] += t.n;
-  for (const e of S.world.exps) {
-    if (e.state === "scheduled" && e.depart <= b) KOD.C.TYPES.forEach((t) => (h[t] -= e.comp[t] || 0));
-    if ((e.kind === "raid" || e.kind === "camp") && e.state === "marching" && e.ret <= b) KOD.C.TYPES.forEach((t) => (h[t] += e.survivors ? e.survivors[t] : e.comp[t] || 0));
-  }
-  if (planned && (planned.depart <= b)) KOD.C.TYPES.forEach((t) => (h[t] -= planned.comp[t] || 0));
-  return h;
+// The raid at your home as forecast, with or without a planned march.
+function raidForecast(inc, planned) {
+  if (inc.arrive <= S.k.bell) return null;
+  const f = project(inc.arrive - S.k.bell, { planned });
+  return f[f.length - 1].events.find((e) => e.raid && e.raid.id === inc.id).raid;
 }
-function homeDPof(h) {
-  const base = h.spearman * 3 + h.archer * 2 + h.knight * 1 + KOD.levy(S.k);
-  return { base, dp: Math.round(base * (1 + 0.1 * S.k.walls)) };
+// Troops at home once bell b has fully resolved: its battles, then any departures already scheduled for it.
+function homeAfterBell(b) {
+  if (b <= S.k.bell) return Object.assign({}, S.k.home);
+  const f = project(b - S.k.bell);
+  return f[f.length - 1].home;
 }
-function holdById(id) { return S.world.holds.find((h) => h.id === id); }
-function yourContingentsAt(hold, bell, planned) {
-  const c = { spearman: 0, archer: 0, knight: 0 };
-  for (const e of S.world.exps) if (e.dest === hold.id && e.kind === "garrison" && (e.state === "stationed" || ((e.state === "marching" || e.state === "scheduled") && e.arrive <= bell))) KOD.C.TYPES.forEach((t) => (c[t] += e.comp[t] || 0));
-  if (planned && planned.arrive <= bell) KOD.C.TYPES.forEach((t) => (c[t] += planned.comp[t] || 0));
-  return c;
-}
+// A Hold's tide as forecast: garrison present when it resolves (arrivals come first in the bell), outcome and losses.
 function holdForecast(hold, planned) {
-  const yours = yourContingentsAt(hold, hold.tide.bell, planned);
-  const list = (hold.allies || []).filter((c) => c.owner === "Ser Aldric" || c.owner === "Dame Wren").concat(
-    KOD.C.TYPES.filter((t) => yours[t] > 0).map((t) => ({ owner: "you", type: t, n: yours[t] })),
-    (hold.allies || []).filter((c) => !(c.owner === "Ser Aldric" || c.owner === "Dame Wren")));
-  const D = D_OF(list); const dp = Math.round(D * 1.5);
-  return { list, D, dp, tp: hold.tide.tp, stands: dp >= hold.tide.tp, yours };
+  const f = project(hold.tide.bell - S.k.bell, { planned }), t = f[f.length - 1].world.tides[hold.id];
+  return { list: t.list, D: t.D, dp: t.dp, tp: t.tp, stands: t.stands, yours: t.yours, bt: t.bt, events: f.flatMap((x) => x.events) };
+}
+const listText = (a) => (a.length < 2 ? a.join("") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`);
+// Forecasts hold Dread at today's level, because Hold outcomes elsewhere depend on marches you cannot see; this names the tides that could change it.
+function dreadNote(tides) {
+  if (S.scenario === "found") return "No Dread: Kindling tides cannot take a Hold.";
+  const now = S.k.dread, falls = S.world.holds.filter((h) => tides[h.id] && !tides[h.id].stands).sort((a, b) => tides[a.id].bell - tides[b.id].bell).map((h) => `${h.name} (bell ${tides[h.id].bell})`);
+  const head = `Dread held at −${now * 3}%, today's level.`;
+  if (!falls.length) return `${head} No published tide in this window takes a Hold at today's garrisons.`;
+  return `${head} At today's garrisons, published tides take ${listText(falls)}; that would deepen it to −${Math.min(5, now + falls.length) * 3}%, each step from the bell after a fall.`;
 }
 function minToHold(hold, type) {
   const base = holdForecast(hold).D;
@@ -794,7 +955,7 @@ function renderMast() {
   const sub = S.scenario === "mid" ? `${esc(m.ruler)} · ${esc(m.role)} of ${esc(m.coalition)}` : `${esc(m.ruler)} · no coalition yet`;
   const clock = S.scenario === "mid"
     ? `<p class="clock-bell"><span class="label">Bell</span> ${S.k.bell} <span class="phase-chip">${esc(m.phase)}</span></p><p class="dim">Day ${m.day} of 28 · next bell in ${esc(m.nextIn)} · ${bellTime(S.k.bell + 1)}</p>`
-    : `<p class="clock-bell"><span class="label">Bell</span> ${S.k.bell} <span class="phase-chip">Founding</span></p><p class="dim">Day 1 · protected until bell 72 · world bell in ${esc(m.nextIn)}</p>`;
+    : `<p class="clock-bell"><span class="label">Kingdom bell</span> ${S.k.bell} <span class="phase-chip">${S.found.ended ? "Kindling" : "Founding"}</span></p><p class="dim">Day 1 · world bell ${m.worldBell} · ${S.found.ended ? `protection ended at world bell ${S.found.endedAt}` : "protected until world bell 72"} · next world bell in ${esc(m.nextIn)}</p>`;
   $("#masthead").innerHTML = `
     <div class="mast-row">
       <p class="brand"><span class="brand-mark" aria-hidden="true"></span><span>Knights of Darkness</span></p>
@@ -806,16 +967,16 @@ function renderMast() {
       <div class="clock">${clock}</div>
     </div>
     <ul class="stores" aria-label="Stores, with the change expected at the next bell">
-      ${STORES.map((s) => `<li class="store"><span class="label">${S_NAME[s]}</span><span class="store-val">${n(S.k.s[s])}</span><span class="delta ${cls(nb.d[s])}"><span aria-hidden="true">${arrow(nb.d[s])}</span> ${sgn(nb.d[s])}<span class="sr-only"> per bell</span></span></li>`).join("")}
+      ${STORES.map((s) => `<li class="store"><span class="label">${S_NAME[s]}</span><span class="store-val">${n(S.k.s[s])}</span><span class="delta ${cls(nb.d[s])}"><span aria-hidden="true">${arrow(nb.d[s])}</span> ${sgn(nb.d[s])}<span class="sr-only"> at the next bell</span></span></li>`).join("")}
     </ul>
     <div class="proto" id="proto" ${S.protoOpen ? "" : "hidden"}>
-      <p><strong>Design prototype.</strong> Kingdoms, players and numbers are invented. Forecasts come from an embedded model of the blueprint's rules. Use these controls to see the other scenario and the error and recovery states.</p>
+      <p><strong>Design prototype.</strong> Kingdoms, players and numbers are invented. Forecasts come from an embedded model of the blueprint's rules, world phase included. In the mid-season sample, live bells stop at bell 203, so later events (Ironhold's raid, the tide at Greywatch) appear only in forecasts. Use these controls to see the other scenario and the error and recovery states.</p>
       <fieldset><legend>Scenario</legend>
         <label><input type="radio" name="scenario" value="mid" ${S.scenario === "mid" ? "checked" : ""}> Mid-season: Hollowmere, day 9</label>
         <label><input type="radio" name="scenario" value="found" ${S.scenario === "found" ? "checked" : ""}> First session: Ashvale, founding</label>
       </fieldset>
       <fieldset><legend>Simulate on your next Confirm or Dispatch</legend>
-        <label><input type="checkbox" data-sim="conflict" ${S.sim.conflict ? "checked" : ""}> A bell rings during review</label>
+        <label><input type="checkbox" data-sim="conflict" ${S.sim.conflict ? "checked" : ""} ${canRingLive() ? "" : "disabled"}> A bell rings during review${canRingLive() ? "" : ` <span class="fine">(unavailable: this sample rings live bells only to bell ${LIVE_LAST_BELL[S.scenario]}; later events appear in forecasts)</span>`}</label>
         <label><input type="checkbox" data-sim="unknown" ${S.sim.unknown ? "checked" : ""}> Response lost (outcome unknown)</label>
         <label><input type="checkbox" data-sim="offline" ${S.sim.offline ? "checked" : ""}> Connection lost</label>
         <label><input type="checkbox" data-sim="expired" ${S.sim.expired ? "checked" : ""}> Session expired</label>
@@ -841,11 +1002,10 @@ function counsel() {
   const out = [];
   if (S.scenario === "mid") {
     for (const h of myHolds()) {
-      const yours = yourContingentsAt(h, 9999);
-      if (!yours.spearman && !yours.archer && !yours.knight) continue;
       const f = holdForecast(h);
-      if (!f.stands) { const m = minToHold(h, "spearman"); out.push({ sev: "danger", sym: "!", title: `${h.name} falls at bell ${h.tide.bell} unless reinforced`, body: `Garrison defense ${n(f.dp)} vs tide ${n(f.tp)}. Send at least ${m} Spearmen; they need ${h.travel} bells.`, actions: [{ label: "Plan reinforcement", act: "preset-march", arg: `${h.id}:spearman:${m}` }] }); }
-      else out.push({ sev: "ok", sym: "✓", title: `${h.name} should hold at bell ${h.tide.bell}`, body: `Defense ${n(f.dp)} vs tide ${n(f.tp)}, counting troops already on the march.`, actions: [] });
+      if (!hasAny(f.yours)) continue;
+      if (!f.stands) { const m = minToHold(h, "spearman"); out.push({ sev: "danger", sym: "!", title: `${h.name} falls at bell ${h.tide.bell} unless reinforced`, body: `Garrison defense ${n(f.dp)} vs tide ${n(f.tp)} if nothing changes. Send at least ${m} Spearmen; they need ${h.travel} bells.`, actions: [{ label: "Plan reinforcement", act: "preset-march", arg: `${h.id}:spearman:${m}` }] }); }
+      else out.push({ sev: "ok", sym: "✓", title: `${h.name} should hold at bell ${h.tide.bell}`, body: `Defense ${n(f.dp)} vs tide ${n(f.tp)}, counting troops already on the march, if nobody recalls any.`, actions: [] });
     }
     const g = grainOutlook(S.k);
     if (g.emptyBell) out.push({ sev: g.hungerBell && g.hungerBell - S.k.bell <= 8 ? "danger" : "warning", sym: "▲", title: `Granary runs dry at bell ${g.emptyBell}`, body: `Grain changes ${sgn(nextBell().d.grain)} per bell. ${g.hungerBell === g.emptyBell ? "People start leaving that same bell." : `People start leaving at bell ${g.hungerBell}.`} Four more Farms would balance it.`, actions: [{ label: "Plan 4 Farms", act: "preset-build", arg: "farm:4" }, { label: "Buy grain", act: "goto", arg: "kingdom:p-exchange" }] });
@@ -874,16 +1034,17 @@ function renderAside() {
   };
   const g = grainOutlook(k);
   const comps = r.completed.map((c) => B_ONE[c.target] + (c.kind === "building" ? "" : " level")).concat(Object.keys(r.trained).map((t) => `${r.trained[t]} ${T_MANY[t]} ready`));
+  const worldLines = nb.world.map((e) => `<li>${e.estimate ? "Estimate: " : ""}${esc(e.title)}${hasCargo(e.cargo) ? `: ${esc(STORES.filter((s) => e.cargo[s]).map((s) => `${sgn(e.cargo[s])} ${s}`).join(", "))}` : ""}</li>`);
   const cs = counsel();
   const inc = S.scenario === "mid" ? S.world.incoming[0] : null;
   let incHtml = "";
   if (inc) {
-    const ap = A_OF(inc.comp), at = homeDPof(homeTroopsAt(inc.arrive)).dp, holds = at >= ap;
-    incHtml = `<section class="panel"><h2>Incoming</h2><p style="margin-top:8px"><strong>Raid from ${esc(inc.from)}</strong> <span class="faint">(${esc(inc.coalition)})</span></p><p class="dim">${comp2text(inc.comp)} · attack ${n(ap)} · arrives ${bellAt(inc.arrive)}</p><p class="verdict ${holds ? "ok-t" : "danger-t"}" style="margin-top:6px">${holds ? "✓ Holds" : "✕ Breaks through"}: your defense then ${n(at)} vs ${n(ap)}</p><div class="actions"><a class="btn btn-sm" href="#muster" data-act="goto" data-arg="muster:p-defense">Open Muster</a></div></section>`;
+    const R = raidForecast(inc), holds = !R.victory;
+    incHtml = `<section class="panel"><h2>Incoming</h2><p style="margin-top:8px"><strong>Raid from ${esc(inc.from)}</strong> <span class="faint">(${esc(inc.coalition)})</span></p><p class="dim">${comp2text(inc.comp)} · attack ${n(R.ap)} · arrives ${bellAt(inc.arrive)}</p><p class="verdict ${holds ? "ok-t" : "danger-t"}" style="margin-top:6px">${holds ? "✓ Holds" : "✕ Breaks through"} if nothing changes: your defense then ${n(R.dp)} vs ${n(R.ap)}</p><div class="actions"><a class="btn btn-sm" href="#muster" data-act="goto" data-arg="muster:p-defense">Open Muster</a></div></section>`;
   } else if (S.scenario === "found") {
-    incHtml = `<section class="panel"><h2>Protection</h2><p class="dim" style="margin-top:8px">No kingdom can raid you until bell 72. Holds and your outlaw camps are open to you.</p></section>`;
+    incHtml = `<section class="panel"><h2>Protection</h2><p class="dim" style="margin-top:8px">${S.found.ended ? `Founding ended at world bell ${S.found.endedAt}. Raids can now be sent against you; the first could land at world bell ${S.found.endedAt + 8}.` : "No kingdom can raid you until world bell 72. Holds and your outlaw camps are open to you."}</p></section>`;
   }
-  const head = S.scenario === "mid" ? `Bell ${k.bell + 1} · ${bellTime(k.bell + 1)} · assuming no new orders` : `Next bell (founding or world) · assuming no new orders`;
+  const head = S.scenario === "mid" ? `Bell ${k.bell + 1} · ${bellTime(k.bell + 1)} · assuming no new orders · world events included` : `Next bell (founding or world) · assuming no new orders · world events included`;
   const ring = S.scenario === "found" ? `<div class="actions"><button class="btn btn-primary" type="button" data-act="ring" data-n="1" ${S.found.left ? "" : "disabled"}>Ring founding bell</button><span class="faint">${S.found.left} left</span></div>` : "";
   $("#aside").className = "aside" + (S.asideOpen ? " open" : "");
   $("#aside").innerHTML = `
@@ -893,13 +1054,15 @@ function renderAside() {
         <h2 id="nb-h">Next bell</h2>
         <p class="fine" style="margin-top:4px">${head}</p>
         <dl class="nb-lines">
-          ${STORES.map((s) => `<dt>${S_NAME[s]}</dt><dd class="${cls(nb.d[s])}">${sgn(nb.d[s])}</dd><dd class="why">${why[s]}</dd>`).join("")}
+          ${STORES.map((s) => `<dt>${S_NAME[s]}</dt><dd class="${cls(nb.d[s])}">${sgn(nb.d[s])}</dd><dd class="why">${why[s]}${nb.d[s] !== nb.econ[s] ? `; world events ${sgn(nb.d[s] - nb.econ[s])}` : ""}</dd>`).join("")}
         </dl>
         <p style="margin-top:8px">People ${sgn(nb.people)} <span class="faint">(${n(k.commoners)} → ${n(nb.f.commoners)} of ${n(KOD.housing(nb.f.state || k))} housing)</span></p>
         ${comps.length ? `<p class="dim">Completes: ${esc(comps.join(" · "))}</p>` : ""}
+        ${worldLines.length ? `<p class="label" style="margin-top:8px">World events in this forecast</p><ul class="list-dots fine">${worldLines.join("")}</ul>` : ""}
         <p class="label" style="margin-top:10px">Grain, next 24 bells</p>
         ${runwayBars(g.path, `Grain over the next 24 bells: from ${n(k.s.grain)} to ${n(g.end)}.`)}
         <p class="fine ${g.emptyBell ? "danger-t" : ""}">${grainSentence(g)}</p>
+        <p class="fine">${esc(dreadNote(g.tides))}</p>
         ${ring}
       </section>
       <section class="panel" aria-labelledby="cn-h">
@@ -940,14 +1103,14 @@ function refreshFlow(name, focusSel) {
 function snapshot() { return { s: Object.assign({}, S.k.s), commoners: S.k.commoners, bell: S.k.bell, b: Object.assign({}, S.k.b), projects: S.k.projects.length, home: Object.assign({}, S.k.home) }; }
 function worldBell() {
   const before = snapshot();
-  const r = KOD.bell(S.k);
-  if (S.scenario === "mid") { S.meta.nextIn = "60 min"; }
-  processExpeditions();
+  const { report: r, events } = advance();
+  if (S.scenario === "mid") S.meta.nextIn = "60 min"; else S.meta.worldBell += 1;
   const ch = [];
   STORES.forEach((s) => { if (S.k.s[s] !== before.s[s]) ch.push(`${S_NAME[s]} ${n(before.s[s])} → ${n(S.k.s[s])}`); });
   if (S.k.commoners !== before.commoners) ch.push(`People ${n(before.commoners)} → ${n(S.k.commoners)}`);
   r.completed.forEach((c) => ch.push(`${B_ONE[c.target]}${c.kind === "building" ? "" : " level"} completed; a crew is free`));
   Object.keys(r.trained).forEach((t) => ch.push(`${r.trained[t]} ${T_MANY[t]} finished training`));
+  events.forEach((e) => ch.push(`${e.title}: ${e.text.replace(/\.$/, "")}`));
   S.world.chronicle.unshift({ bell: S.k.bell, type: "kingdom", title: `Bell ${S.k.bell} rang`, body: ch.join(". ") + ".", unread: true });
   return ch;
 }
@@ -960,7 +1123,7 @@ function confirmFlow(name) {
   st.key = "k-" + Math.random().toString(16).slice(2, 10);
   st.step = "pending"; refreshFlow(name); say(F.pendingLabel || "Ordering…");
   setTimeout(() => {
-    if (S.sim.conflict) {
+    if (S.sim.conflict && canRingLive()) {
       S.sim.conflict = false;
       st.conflict = worldBell(); st.step = "conflict";
       renderAll(); focus(`#${name}-result`); say("Your kingdom changed while you reviewed. Nothing was ordered.", true); return;
@@ -1165,89 +1328,98 @@ function marchModel() {
   const allKnights = st.comp.knight > 0 && !st.comp.spearman && !st.comp.archer;
   const travel = allKnights ? Math.ceil(d.travel * 0.75) : d.travel;
   const arrive = depart + travel;
-  const planned = { comp: st.comp, depart, arrive };
+  const planned = { kind: d.kind, dest: d.id, comp: st.comp, depart, arrive, travel };
   const total = KOD.C.TYPES.reduce((a, t) => a + (st.comp[t] || 0), 0);
-  const avail = homeTroopsAt(depart);
-  const shortages = KOD.C.TYPES.filter((t) => (st.comp[t] || 0) > Math.max(0, S.k.home[t] + (depart > now ? avail[t] - S.k.home[t] : 0)));
+  // Troops that can leave: those at home now, or for a scheduled departure, those still at home once
+  // that bell's battles and any earlier-scheduled departures have resolved (8.4).
+  const avail = homeAfterBell(depart);
+  const shortages = KOD.C.TYPES.filter((t) => (st.comp[t] || 0) > Math.max(0, avail[t]));
   return { st, d, now, depart, travel, arrive, planned, total, allKnights, shortages, avail };
 }
+// Events of a forecast that includes the planned march, up to bell b.
+const plannedEvents = (M, b) => project(Math.max(1, b - M.now), { planned: M.planned }).flatMap((x) => x.events);
 function marchForecastHtml(M) {
-  const lines = [], st = M.st;
-  let objective = "", ok = true, err = "";
-  if (!M.total) return { ok: false, html: `<p class="dim">Choose troops to see arrival, outcome and what it means for your home defense.</p>` };
-  if (M.shortages.length) { err = M.shortages.map((t) => `Not enough ${T_MANY[t]}: you will have ${n(M.depart > M.now ? M.avail[t] : S.k.home[t])} at home at departure.`).join(" "); return { ok: false, err, html: `<p class="msg error" role="alert">${esc(err)}</p>` }; }
+  const st = M.st;
+  let objective = "", err = "";
+  if (!M.total) return { ok: false, err: "Choose at least one troop: a march with no troops cannot be dispatched.", html: `<p class="dim">Choose troops to see arrival, outcome and what it means for your home defense.</p>` };
+  if (M.shortages.length) { err = M.shortages.map((t) => `Not enough ${T_MANY[t]}: you will have ${n(M.avail[t])} at home ${M.depart > M.now ? `when it leaves after bell ${M.depart}` : "now"}.`).join(" "); return { ok: false, err, html: `<p class="msg error" role="alert">${esc(err)}</p>` }; }
   const ap = A_OF(st.comp);
   if (M.d.kind === "garrison") {
     const h = holdById(M.d.id), before = holdForecast(h), after = holdForecast(h, M.planned);
-    const inTime = M.arrive <= h.tide.bell;
-    const bt = KOD.battle({ attackers: [{ owner: "Hollow Host", type: "host", n: 1 }], defenders: after.list, ap: h.tide.tp, dp: after.dp });
-    const yourLoss = bt.defenderLosses.filter((c) => c.owner === "you").reduce((a, c) => a + c.lost, 0), allLoss = bt.defenderLosses.reduce((a, c) => a + c.lost, 0);
+    const inTime = M.arrive <= h.tide.bell; // arrivals resolve before the tide in the same bell (8.4)
+    const late = inTime ? null : plannedEvents(M, M.arrive).find((e) => e.halted === "planned");
+    const yourLoss = lostOf(after.bt.defenderLosses.filter((c) => c.owner === "you")), allLoss = lostOf(after.bt.defenderLosses);
     const shares = after.list.reduce((m, c) => { m[c.owner] = (m[c.owner] || 0) + c.n * KOD.C.T[c.type].def; return m; }, {});
     const owners = Object.keys(shares); const split = KOD.apportion(40, owners.map((o, i) => ({ weight: shares[o], rank: i })));
     const yourRenown = split[owners.indexOf("you")] || 0;
     const margin = after.dp - h.tide.tp, top = Math.max(after.dp, h.tide.tp);
-    objective = `<p class="verdict ${after.stands && inTime ? "ok-t" : "danger-t"}">${after.stands && inTime ? `✓ Greywatch holds at the tide (bell ${h.tide.bell}), margin ${n(margin)}${margin < 30 ? " (very thin)" : ""}` : `✕ Greywatch falls at the tide (bell ${h.tide.bell}), short by ${n(-margin)}`}</p>
+    objective = `<p class="verdict ${after.stands ? "ok-t" : "danger-t"}">${after.stands ? `✓ Greywatch holds at the tide (bell ${h.tide.bell}), margin ${n(margin)}${margin < 30 ? " (very thin)" : ""}` : `✕ Greywatch falls at the tide (bell ${h.tide.bell}), short by ${n(-margin)}`}</p>
       <div class="vs" aria-hidden="true"><div class="vsrow"><span>Garrison</span><div class="vsbar"><i class="d" style="width:${Math.min(100, (after.dp / top) * 100)}%"></i></div><b>${n(after.dp)}</b></div><div class="vsrow"><span>Hollow tide</span><div class="vsbar"><i class="h" style="width:${Math.min(100, (h.tide.tp / top) * 100)}%"></i></div><b>${n(h.tide.tp)}</b></div></div>
-      <dl class="kv"><dt>Defense at the tide</dt><dd>${n(before.dp)} → <strong>${n(after.dp)}</strong> vs tide <strong>${n(h.tide.tp)}</strong> (Hold ×1.5)</dd>
-      <dt>Arrival</dt><dd>${inTime ? `${bellAt(M.arrive)}, ${h.tide.bell - M.arrive} ${plural(h.tide.bell - M.arrive, "bell", "bells")} before the tide` : `<span class="danger-t">${bellAt(M.arrive)}, after the tide</span>`}</dd>
-      ${after.stands ? `<dt>If it holds</dt><dd>garrison loses about ${allLoss} (yours ${yourLoss}); +40 renown shared, about ${yourRenown} yours</dd>` : `<dt>If it falls</dt><dd>survivors are routed home; Dread rises for every kingdom</dd>`}</dl>`;
-    ok = true;
+      <dl class="kv"><dt>Defense at the tide</dt><dd>${n(before.dp)} → <strong>${n(after.dp)}</strong> vs tide <strong>${n(h.tide.tp)}</strong> (Hold ×1.5; the Hold stands while defense ≥ tide)</dd>
+      <dt>Arrival</dt><dd>${inTime ? (h.tide.bell === M.arrive ? `${bellAt(M.arrive)}, the tide's bell: arrivals come first, so it counts` : `${bellAt(M.arrive)}, ${h.tide.bell - M.arrive} ${plural(h.tide.bell - M.arrive, "bell", "bells")} before the tide`) : `<span class="danger-t">${bellAt(M.arrive)}, after the tide, so it does not count</span>${late ? `. ${esc(late.text)}` : ""}`}</dd>
+      <dt>${after.stands ? "If nothing changes" : "If it falls"}</dt><dd>the garrison loses ${allLoss} (${yourLoss} yours); ${after.stands ? `+40 renown shared, ${yourRenown} yours` : "survivors are routed home, and Dread rises for every kingdom from the next bell"}</dd></dl>`;
   } else if (M.d.kind === "reclaim") {
     const h = holdById("mirefold"), entrenched = M.arrive >= h.entrench.bell;
     const gar = entrenched ? h.darkness + Math.round(0.25 * h.entrench.tp) : h.darkness, need = Math.round(gar * 1.5);
     const pledged = S.world.orders.find((o) => o.id === "o2").pledges.reduce((a, p) => a + p.ap, 0);
     const together = ap + pledged;
-    objective = `<p class="verdict ${together > need ? "ok-t" : "danger-t"}">${together > need ? "✓ Enough to reclaim, if every pledge marches" : "✕ Not enough to reclaim"}</p>
-      <dl class="kv"><dt>Needed</dt><dd>attack above <strong>${n(need)}</strong> (Darkness garrison ${n(gar)} × 1.5${entrenched ? `, already entrenched at bell ${h.entrench.bell}` : ""})</dd>
+    const alone = plannedEvents(M, M.arrive).find((e) => e.assault && e.assault.id === "planned");
+    objective = `<p class="verdict ${together > need ? "ok-t" : "danger-t"}">${together > need ? "✓ Enough to reclaim if all three pledges are dispatched to arrive on bell 211" : "✕ Not enough to reclaim, even with every pledge"}</p>
+      <dl class="kv"><dt>Needed</dt><dd>attack above <strong>${n(need)}</strong>, so at least ${n(need + 1)} (Darkness ${n(gar)} × 1.5${entrenched ? `, entrenched at bell ${h.entrench.bell}` : ""}; a tie is repelled)</dd>
       <dt>Your attack</dt><dd>${n(ap)}${M.arrive === 211 ? " · arrives on the muster bell 211" : ` · arrives at bell ${M.arrive}; the muster is bell 211`}</dd>
-      <dt>Pledged, not yet sent</dt><dd>${n(pledged)} (Aldric 160 · Wren 200 · Osric 240)</dd>
-      <dt>Combined</dt><dd><strong>${n(together)}</strong> vs ${n(need)}${M.arrive !== 211 ? ` · <span class="warn-t">it arrives alone unless the bells match</span>` : ""}</dd></dl>`;
+      <dt>Pledged, not dispatched</dt><dd>${n(pledged)} (Aldric 160 · Wren 200 · Osric 240). Pledges are promises, so the forecast leaves them out.</dd>
+      <dt>Combined, if the bells match</dt><dd><strong>${n(together)}</strong> vs ${n(need)}</dd>
+      <dt>Forecast as things stand</dt><dd>${alone ? esc(alone.text) : "It arrives alone."}</dd></dl>`;
   } else if (M.d.kind === "claim") {
-    const h = holdById("vigil"), dp = Math.round(DEF_OF(st.comp) * 1.5), inTime = M.arrive < h.tide.bell;
-    objective = `<p class="verdict ${dp >= h.tide.tp && inTime ? "ok-t" : "danger-t"}">${dp >= h.tide.tp && inTime ? "✓ You can hold Vigil" : "✕ Claimed, then lost to the tide"}</p>
-      <dl class="kv"><dt>Arrival</dt><dd>${bellAt(M.arrive)} · claims it for The Ashen Oath</dd><dt>At the tide (bell ${h.tide.bell})</dt><dd>your defense ${n(dp)} vs ${n(h.tide.tp)}</dd><dt>Advice</dt><dd>${dp >= h.tide.tp ? "Holding a third Hold makes your coalition's tides 25% stronger." : "Too much for one kingdom. Post it on the War Table."}</dd></dl>`;
+    const h = holdById("vigil"), dp = Math.round(DEF_OF(st.comp) * 1.5), inTime = M.arrive <= h.tide.bell; // arrivals come before the tide
+    const evs = plannedEvents(M, Math.max(M.arrive, h.tide.bell)), tideEv = evs.find((e) => e.key === "tide:vigil"), halt = evs.find((e) => e.halted === "planned");
+    objective = inTime
+      ? `<p class="verdict ${dp >= h.tide.tp ? "ok-t" : "danger-t"}">${dp >= h.tide.tp ? "✓ You can hold Vigil" : "✕ Claimed, then lost to the tide"}</p>
+      <dl class="kv"><dt>Arrival</dt><dd>${bellAt(M.arrive)} · claims it for The Ashen Oath, unless another coalition claims it first</dd><dt>At the tide (bell ${h.tide.bell})</dt><dd>your defense ${n(dp)} vs ${n(h.tide.tp)}${tideEv ? `. ${esc(tideEv.text)}` : ""}</dd><dt>Advice</dt><dd>${dp >= h.tide.tp ? "A third Hold makes your coalition's next tides 25% stronger." : "Too much for one kingdom. Post it on the War Table."}</dd></dl>`
+      : `<p class="verdict danger-t">✕ Arrives after the tide, which takes Vigil at bell ${h.tide.bell}</p>
+      <dl class="kv"><dt>Arrival</dt><dd>${bellAt(M.arrive)}${halt ? `. ${esc(halt.text)}` : ""}</dd><dt>Advice</dt><dd>Leave by bell ${h.tide.bell - M.travel} to claim it before the tide.</dd></dl>`;
   } else if (M.d.kind === "raid") {
-    const sc = S.world.scout, bt = KOD.battle({ attackers: KOD.C.TYPES.filter((t) => st.comp[t]).map((t, i) => ({ owner: "you", type: t, n: st.comp[t], rank: i })), ap, dp: sc.dp });
-    const lost = bt.attackerLosses.reduce((a, c) => a + c.lost, 0), ret = M.arrive + M.travel;
+    const sc = S.world.scout, bt = KOD.battle({ attackers: contingents(st.comp, "you"), ap, dp: sc.dp });
+    const lost = lostOf(bt.attackerLosses), ret = M.arrive + M.travel;
     let pl = "";
-    if (bt.victory) { const surv = {}; bt.attackerLosses.forEach((c) => (surv[c.type] = c.n - c.lost)); const p = KOD.plunder({ R: bt.R, stocks: Object.fromEntries(Object.entries(sc.stores).map(([s, v]) => [s, v + 800])), vault: 800, carry: CARRY_OF(surv) }); pl = `<dt>Plunder</dt><dd>${costText(p.take)}</dd>`; }
-    objective = `<p class="verdict ${bt.victory ? "ok-t" : "danger-t"}">${bt.victory ? "✓ Victory if their defense is unchanged" : "✕ Repelled at their scouted strength"}</p>
-      <dl class="kv"><dt>Attack vs defense</dt><dd>${n(ap)} vs ${n(sc.dp)} <span class="faint">(scouted at bell ${sc.bell}, ${S.k.bell - sc.bell} bells old)</span></dd><dt>Expected losses</dt><dd>about ${lost} of yours (${Math.round((bt.victory ? bt.La : bt.La) * 100)}%)</dd>${pl}<dt>Timing</dt><dd>arrives ${bellAt(M.arrive)} · home ${bellAt(ret)}</dd><dt>Note</dt><dd>Ironhold sees this army for ${M.travel} bells and may reinforce.</dd></dl>`;
+    if (bt.victory) { const surv = {}; bt.attackerLosses.forEach((c) => (surv[c.type] = c.n - c.lost)); const p = KOD.plunder({ excess: bt.excess, stocks: Object.fromEntries(Object.entries(sc.stores).map(([s, v]) => [s, v + 800])), vault: 800, carry: CARRY_OF(surv) }); pl = `<dt>Estimated plunder</dt><dd>${costText(p.take)}, from the stores they had above their vault when scouted</dd>`; }
+    objective = `<p class="verdict ${bt.victory ? "ok-t" : "danger-t"}">Estimate: ${bt.victory ? `✓ victory if their defense is still ${n(sc.dp)}` : "✕ repelled at their scouted strength"}</p>
+      <dl class="kv"><dt>Attack vs defense</dt><dd>${n(ap)} vs ${n(sc.dp)} <span class="faint">(scouted at bell ${sc.bell}, ${S.k.bell - sc.bell} bells old)</span></dd><dt>Estimated losses</dt><dd>${lost} of yours (${Math.round(bt.La * 100)}%)</dd>${pl}<dt>Timing</dt><dd>arrives ${bellAt(M.arrive)} · home ${bellAt(ret)}</dd><dt>In your forecast</dt><dd>Only the timing. The outcome stays an estimate until the battle resolves, so the forecast keeps these troops at full strength and adds no plunder.</dd><dt>Note</dt><dd>Ironhold sees this army for ${M.travel} bells and may reinforce.</dd></dl>`;
   } else if (M.d.kind === "camp") {
     const c = S.scenario === "found" ? S.world.camps.find((x) => x.id === M.d.id) : S.world.camps[0];
-    const bt = KOD.battle({ attackers: KOD.C.TYPES.filter((t) => st.comp[t]).map((t, i) => ({ owner: "you", type: t, n: st.comp[t], rank: i })), ap, dp: c.dp });
+    const bt = KOD.battle({ attackers: contingents(st.comp, "you"), ap, dp: c.dp });
     const surv = {}; bt.attackerLosses.forEach((x) => (surv[x.type] = x.n - x.lost));
     const carry = CARRY_OF(surv), lootTotal = Object.values(c.loot).reduce((a, v) => a + v, 0);
     const ret = M.arrive + M.travel;
-    objective = `<p class="verdict ${bt.victory ? "ok-t" : "danger-t"}">${bt.victory ? `✓ Victory (+${Math.round((bt.R - 1) * 100)}%)` : "✕ Repelled"}</p>
-      <dl class="kv"><dt>Attack vs defense</dt><dd>${n(ap)} vs ${n(c.dp)} (fully scouted)</dd><dt>Expected losses</dt><dd>${bt.attackerLosses.filter((x) => x.lost).map((x) => `${x.lost} ${x.lost === 1 ? T_ONE[x.type] : T_MANY[x.type]}`).join(", ") || "none"}</dd>
+    objective = `<p class="verdict ${bt.victory ? "ok-t" : "danger-t"}">${bt.victory ? `✓ Victory (${bt.margin === null ? "undefended" : `+${bt.margin}%`})` : "✕ Repelled"}</p>
+      <dl class="kv"><dt>Attack vs defense</dt><dd>${n(ap)} vs ${n(c.dp)} (fully scouted, so the outcome is exact)</dd><dt>Losses</dt><dd>${lossText(bt.attackerLosses).replace("no troops", "none")}</dd>
       ${bt.victory ? `<dt>Loot</dt><dd>${costText(c.loot)} · your survivors carry ${n(carry)} of ${n(lootTotal)}${carry < lootTotal ? ` <span class="warn-t">(some is left behind)</span>` : " ✓"}</dd>` : ""}
       <dt>Timing</dt><dd>arrives ${bellAt(M.arrive)} · home ${bellAt(ret)}${S.scenario === "found" ? " (founding bells move this march)" : ""}</dd></dl>`;
   }
   let home = "";
   if (S.scenario === "mid") {
-    const inc = S.world.incoming[0], iap = A_OF(inc.comp), hNow = homeDPof(homeTroopsAt(inc.arrive)).dp, hAfter = homeDPof(homeTroopsAt(inc.arrive, M.planned)).dp;
-    home = `<div class="msg ${hAfter >= iap ? "ok" : "error"}" style="margin-top:10px"><strong>Home when Ironhold's raid lands (bell ${inc.arrive}):</strong> defense ${n(hNow)} → <strong>${n(hAfter)}</strong> vs attack ${n(iap)}. ${hAfter >= iap ? "✓ Still holds." : "✕ The raid would break through and plunder your stores."}</div>`;
-  } else home = `<p class="msg info" style="margin-top:10px">You are protected during Founding; home defense while away does not matter yet.</p>`;
+    const inc = S.world.incoming[0], rNow = raidForecast(inc), rAfter = raidForecast(inc, M.planned), holds = !rAfter.victory;
+    home = `<div class="msg ${holds ? "ok" : "error"}" style="margin-top:10px"><strong>Home when Ironhold's raid lands (bell ${inc.arrive}):</strong> defense ${n(rNow.dp)} → <strong>${n(rAfter.dp)}</strong> vs attack ${n(rAfter.ap)}. ${holds ? `✓ Still holds; you lose ${lostOf(rAfter.yourLosses)}.` : `✕ The raid breaks through: you lose ${lostOf(rAfter.yourLosses)} troops and ${costText(rAfter.take) || "nothing above your vault"}.`}${M.depart > M.now && M.depart >= inc.arrive ? " These troops defend that bell before they leave." : ""}</div>`;
+  } else home = `<p class="msg info" style="margin-top:10px">${S.found.ended ? `Founding has ended: no raid can land before world bell ${S.found.endedAt + 8}, but plan home defense from then.` : "You are protected during Founding; home defense while away does not matter yet."}</p>`;
   const up = KOD.C.TYPES.reduce((a, t) => a + (st.comp[t] || 0) * KOD.C.T[t].wage, 0);
-  const departTxt = M.depart > M.now ? `departs at ${bellAt(M.depart)} (troops defend home until then)` : "departs now";
-  return { ok: ok && !err, err, html: `<h4>Forecast</h4><p class="dim" style="margin-bottom:6px">${esc(comp2text(st.comp))} · attack ${n(ap)} · ${departTxt} · ${M.travel} ${plural(M.travel, "bell", "bells")} on the road${M.allKnights ? " (all Knights: 25% faster)" : ""}</p>${objective}${home}<p class="fine" style="margin-top:8px">Troops away still draw ${n(up)} gold in wages per bell, plus grain. That is already in your forecast.</p>` };
+  const departTxt = M.depart > M.now ? `leaves after bell ${M.depart} resolves, defending home through that bell` : "departs now";
+  return { ok: !err, err, html: `<h4>Forecast</h4><p class="dim" style="margin-bottom:6px">${esc(comp2text(st.comp))} · attack ${n(ap)} · ${departTxt} · ${M.travel} ${plural(M.travel, "bell", "bells")} on the road${M.allKnights ? " (all Knights: 25% faster)" : ""} · assuming no new orders</p>${objective}${home}<p class="fine" style="margin-top:8px">Troops away still draw ${n(up)} gold in wages per bell, plus grain. That is already in your forecast.</p>` };
 }
 FLOWS.march = {
   title() { const M = marchModel(); return `${comp2text(M.st.comp)} to ${M.d.name}`; },
   reviewLabel: "Review march", confirmLabel: "Dispatch", pendingLabel: "Dispatching…", againLabel: "Plan another march",
   preview() { const M = marchModel(), f = marchForecastHtml(M); return { ok: f.ok, clear: false, errorText: f.err, html: f.html }; },
-  review() { const M = marchModel(); return `<p><strong>${esc(comp2text(M.st.comp))}</strong> ${M.depart > M.now ? `will depart at ${bellAt(M.depart)} and` : "depart now and"} arrive at <strong>${esc(M.d.name)}</strong> at ${bellAt(M.arrive)}. ${M.d.kind === "garrison" || M.d.kind === "claim" ? "They stay as garrison until recalled." : "Survivors return automatically."}</p><p class="fine" style="margin-top:6px">You can turn the march back at any time; the return takes as many bells as have passed. Arrival checks run again: if the target changes, the troops halt and come home with a report.</p>`; },
+  review() { const M = marchModel(); return `<p><strong>${esc(comp2text(M.st.comp))}</strong> ${M.depart > M.now ? `will defend home through bell ${M.depart}, leave once it resolves, and` : "depart now and"} arrive at <strong>${esc(M.d.name)}</strong> at ${bellAt(M.arrive)}. ${M.d.kind === "garrison" || M.d.kind === "claim" ? "They stay as garrison until recalled." : "Survivors return automatically."}</p><p class="fine" style="margin-top:6px">${M.depart > M.now ? "Until it leaves, the march is private and every check runs again at departure; if the troops are no longer at home, it is cancelled with a report. " : ""}You can turn the march back at any time; the return takes as many bells as have passed. Arrival checks run again: if the target changes, the troops halt and come home with a report.</p>`; },
   apply() {
-    const M = marchModel(); if (M.shortages.length) return { ok: false, error: "Troops are no longer available." };
+    const M = marchModel(); if (!M.total) return { ok: false, error: "Choose at least one troop: a march with no troops cannot be dispatched." }; if (M.shortages.length) return { ok: false, error: "Troops are no longer available." };
     const comp = Object.assign({}, M.st.comp), scheduled = M.depart > M.now;
-    const e = { id: "x" + S.receiptSeq, kind: M.d.kind, dest: M.d.id, comp, depart: M.depart, arrive: M.arrive, ret: M.arrive + M.travel, state: scheduled ? "scheduled" : "marching" };
+    const e = { id: "x" + S.receiptSeq, kind: M.d.kind, dest: M.d.id, comp, depart: M.depart, arrive: M.arrive, travel: M.travel, ret: M.arrive + M.travel, state: scheduled ? "scheduled" : "marching" };
     if (!scheduled) KOD.C.TYPES.forEach((t) => { S.k.home[t] -= comp[t]; S.k.away[t] += comp[t]; });
     S.world.exps.push(e);
     if (M.d.kind === "garrison" && S.world.orders) { const o = S.world.orders.find((x) => x.hold === M.d.id); if (o) o.mine = (o.mine || 0) + Math.round(DEF_OF(comp) * 1.5); }
     if (M.d.kind === "reclaim" && S.world.orders) { const o = S.world.orders.find((x) => x.id === "o2"); if (o) o.mineAp = (o.mineAp || 0) + A_OF(comp); }
     const t = `${scheduled ? "Scheduled" : "Dispatched"}: ${comp2text(comp)} to ${M.d.name}`;
-    return { ok: true, chronType: "battles", receipt: { id: receiptId(), title: t, text: `${scheduled ? `Departs at bell ${M.depart}, arrives` : "Arrives"} at bell ${M.arrive}.`, html: `<p>${scheduled ? `Departs at ${bellAt(M.depart)}; arrives` : "Arrives"} at <strong>${bellAt(M.arrive)}</strong>.${M.d.kind === "camp" || M.d.kind === "raid" ? ` Survivors home at ${bellAt(M.arrive + M.travel)}.` : ""} You can follow it under Expeditions.</p>` } };
+    return { ok: true, chronType: "battles", receipt: { id: receiptId(), title: t, text: `${scheduled ? `Leaves after bell ${M.depart}, arrives` : "Arrives"} at bell ${M.arrive}.`, html: `<p>${scheduled ? `Leaves after ${bellAt(M.depart)} resolves; arrives` : "Arrives"} at <strong>${bellAt(M.arrive)}</strong>.${M.d.kind === "camp" || M.d.kind === "raid" ? ` Survivors home at ${bellAt(M.arrive + M.travel)}.` : ""} You can follow it under Expeditions.</p>` } };
   }
 };
 
@@ -1263,6 +1435,22 @@ FLOWS.caravan = {
   },
   review() { return `<p>Send <strong>${n(S.f.caravan.n)} grain</strong> to Brother Cael (Cael's Rest). It arrives at ${bellAt(S.k.bell + 4)}. Grain leaves your granary now.</p>`; },
   apply() { const q = S.f.caravan.n; if (q > S.k.s.grain) return { ok: false, error: "Not enough grain." }; S.k.s.grain -= q; S.world.exps.push({ id: "c" + S.receiptSeq, kind: "caravan", dest: "Brother Cael", cargo: q, comp: { spearman: 0, archer: 0, knight: 0 }, arrive: S.k.bell + 4, state: "marching" }); const o = S.world.orders.find((x) => x.id === "o3"); o.sent = (o.sent || 0) + q; return { ok: true, chronType: "coalition", receipt: { id: receiptId(), title: `Caravan of ${n(q)} grain sent to Brother Cael`, text: `Arrives at bell ${S.k.bell + 4}.`, html: `<p>Arrives at <strong>${bellAt(S.k.bell + 4)}</strong>. The War Table order counts it as delivered on arrival.</p>` } }; }
+};
+
+/* ---------- ending Founding early (11.2): a separate, confirmed, irreversible order ---------- */
+FLOWS.endFounding = {
+  title() { return "end Founding now"; }, reviewLabel: "Review ending Founding", confirmLabel: "End my protection", againLabel: "Close",
+  preview() {
+    const F = S.found, w = S.meta.worldBell;
+    if (F.ended) return { ok: false, html: `<p class="dim">Founding ended at world bell ${F.endedAt}.</p>` };
+    return { ok: true, clear: false, html: `<dl class="kv"><dt>Protection</dt><dd>ends now, at world bell ${w}, instead of world bell 72</dd><dt>Raids on you</dt><dd>can be sent from now; the first could land at world bell ${w + 8}</dd><dt>Founding bells</dt><dd>the ${F.left} left are lost</dd><dt>Unlocks</dt><dd>raiding player kingdoms, assaulting rival-held Holds, sending caravans</dd><dt>Undo</dt><dd>not possible</dd></dl>` };
+  },
+  review() { return `<p>End Founding for Ashvale now. <strong>This cannot be undone</strong>, and raids can be sent against you from this moment.</p>`; },
+  apply() {
+    const F = S.found, lost = F.left; if (F.ended) return { ok: false, error: "Founding has already ended." };
+    F.ended = true; F.endedAt = S.meta.worldBell; F.left = 0;
+    return { ok: true, receipt: { id: receiptId(), title: "Founding ended", text: `Protection ended at world bell ${F.endedAt}; ${lost} founding ${plural(lost, "bell", "bells")} forfeited.`, html: `<p>Protection ended at world bell ${F.endedAt}, and ${lost} founding ${plural(lost, "bell", "bells")} were forfeited. The earliest raid could land at world bell ${F.endedAt + 8}.</p>` } };
+  }
 };
 
 /* ======================================================================
@@ -1286,7 +1474,7 @@ function maxFor(flow, field) {
   return { value: 0, reason: "" };
 }
 function viewHead(title, lede) {
-  const eye = S.scenario === "mid" ? `Day ${S.meta.day} · ${S.meta.phase} · bell ${S.k.bell}` : `Founding · bell ${S.k.bell} · ${S.found.left} founding bells left`;
+  const eye = S.scenario === "mid" ? `Day ${S.meta.day} · ${S.meta.phase} · bell ${S.k.bell}` : `${S.found.ended ? "Founding ended" : "Founding"} · kingdom bell ${S.k.bell} · ${S.found.left} founding bells left`;
   return `<header class="view-head"><p class="eyebrow">${esc(eye)}</p><h1 id="view-h1" tabindex="-1">${esc(title)}</h1><p class="lede">${esc(lede)}</p></header>${banners()}`;
 }
 function banners() {
@@ -1309,21 +1497,24 @@ function pFounding() {
   const done = (key) => (key === "bell" ? F.used > 0 : !!fl[key]);
   const current = objs.findIndex((o) => !done(o[0]));
   return `<section class="panel" id="p-founding" aria-labelledby="h-found">
-    <div class="panel-head"><h2 id="h-found">Founding</h2><p class="meta">Protected until bell 72 · <strong>${F.left}</strong> founding ${plural(F.left, "bell", "bells")} left</p></div>
-    <p class="dim">A founding bell moves only your own lands: production, construction, training and marches to your outlaw camps. Other kingdoms and the Holds keep world time. Unused founding bells vanish when protection ends.</p>
+    <div class="panel-head"><h2 id="h-found">Founding</h2><p class="meta">${F.ended ? `Protection ended at world bell ${F.endedAt}` : "Protected until world bell 72"} · <strong>${F.left}</strong> founding ${plural(F.left, "bell", "bells")} left</p></div>
+    <p class="dim">A founding bell moves only your own lands: production, construction, training and marches to your outlaw camps. It does not move the world clock, so your kingdom bell runs ahead of world bell ${S.meta.worldBell}; other kingdoms, Holds and tides keep world time. Unused founding bells vanish when Founding ends.</p>
     <ol class="objectives">${objs.map((o, i) => `<li class="obj ${done(o[0]) ? "done" : i === current ? "current" : ""}"><span class="mark" aria-hidden="true">${done(o[0]) ? "✓" : i + 1}</span><span><strong>${esc(o[1])}</strong><span class="sr-only">${done(o[0]) ? " (done)" : i === current ? " (current)" : ""}</span><br><span class="why">${esc(o[2])}</span></span>${done(o[0]) ? "" : `<button class="btn btn-sm" type="button" data-act="goto" data-arg="${o[3]}">Go</button>`}</li>`).join("")}</ol>
     <div class="actions"><button class="btn btn-primary" type="button" data-act="ring" data-n="1" ${F.left ? "" : "disabled"}>Ring founding bell ${F.used + 1}</button><button class="btn" type="button" data-act="ring" data-n="4" ${F.left >= 4 ? "" : "disabled"}>Ring 4 bells</button></div>
     <div class="recon" id="recon" tabindex="-1">${reconHtml()}</div>
+    <div class="sub"><button class="btn btn-sm btn-ghost" type="button" data-act="toggle-end" aria-expanded="${!!F.endOpen}" aria-controls="end-founding">End Founding early… <span aria-hidden="true">${F.endOpen ? "▴" : "▾"}</span></button>
+      <div id="end-founding" ${F.endOpen ? "" : "hidden"}><p class="fine" style="margin-top:6px">Needed only to raid a player kingdom or assault a rival-held Hold before world bell 72. No dispatch ends Founding for you; this confirmed order is the only way.</p><div class="flow" id="flow-endFounding">${flowShell("endFounding")}</div></div></div>
   </section>`;
 }
 function reconHtml() {
   const R = S.found && S.found.recon;
   if (!R) return "";
-  const rows = STORES.map((s) => [S_NAME[s], R.fc.stocks[s], R.actual.s[s]]).concat([["People", R.fc.commoners, R.actual.commoners]]);
-  const allOk = rows.every((r) => r[1] === r[2]);
-  return `<h3 style="margin-top:4px">Bell ${R.bell}: forecast vs actual ${allOk ? `<span class="ok-t">✓ all matched</span>` : `<span class="danger-t">mismatch</span>`}</h3>
-    <div class="tablewrap"><table class="rtable"><thead><tr><th scope="col">Store</th><th scope="col" class="n">Forecast</th><th scope="col" class="n">Actual</th><th scope="col" class="n">Match</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row">${r[0]}</th><td class="n">${n(r[1])}</td><td class="n">${n(r[2])}</td><td class="n ${r[1] === r[2] ? "ok-t" : "danger-t"}">${r[1] === r[2] ? "✓" : "✕"}</td></tr>`).join("")}</tbody></table></div>
-    ${R.events.length ? `<ul class="list-dots" style="margin-top:8px">${R.events.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}`;
+  const rows = reconRows(R), evs = reconEvents(R), allOk = reconOk(R);
+  const done = R.report.completed.map((c) => `${B_ONE[c.target]}${c.kind === "building" ? "" : " level"} completed`).concat(Object.keys(R.report.trained).map((t) => `${R.report.trained[t]} ${T_MANY[t]} finished training`));
+  return `<h3 style="margin-top:4px">Bell ${R.bell}: forecast vs result ${allOk ? `<span class="ok-t">✓ all matched, world events included</span>` : `<span class="danger-t">mismatch</span>`}</h3>
+    <div class="tablewrap"><table class="rtable"><caption class="sr-only">The forecast made just before kingdom bell ${R.bell}, compared with the result</caption><thead><tr><th scope="col">Line</th><th scope="col" class="n">Forecast</th><th scope="col" class="n">Result</th><th scope="col" class="n">Match</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row">${r.label}</th><td class="n">${n(r.fc)}${r.world ? `<span class="recon-world">incl. ${sgn(r.world)} from world events</span>` : ""}</td><td class="n">${n(r.act)}</td><td class="n ${r.ok ? "ok-t" : "danger-t"}">${r.ok ? "✓" : "✕"}</td></tr>`).join("")}</tbody></table></div>
+    ${done.length ? `<p class="fine" style="margin-top:8px">Economy: ${esc(done.join(" · "))}.</p>` : ""}
+    ${evs.length ? `<p class="label" style="margin-top:8px">World events, forecast and result</p><ul class="list-dots">${evs.map((e) => `<li><span class="${e.ok ? "ok-t" : "danger-t"}" aria-hidden="true">${e.ok ? "✓" : "✕"}</span> ${esc((e.a || e.f).title)}: ${esc((e.a || e.f).text)}${e.ok ? `<span class="sr-only"> Forecast and result match.</span>` : ` <span class="danger-t">(forecast: ${esc(e.f ? e.f.text : "not expected")})</span>`}</li>`).join("")}</ul>` : `<p class="fine" style="margin-top:8px">No world events were due this bell.</p>`}`;
 }
 function pConstruction() {
   const k = S.k, st = S.f.build, crews = KOD.crews(k);
@@ -1405,25 +1596,24 @@ function vKingdom() {
     (S.scenario === "found" ? pFounding() : "") + pConstruction() + pPeople() + pLand() + pExchange();
 }
 function vMuster() {
-  const k = S.k, h = homeDPof(k.home);
+  const k = S.k, h = homeDefense(k);
   const inc = S.scenario === "mid" ? S.world.incoming[0] : null;
   let threat = "";
   if (inc) {
-    const ap = A_OF(inc.comp), at = homeDPof(homeTroopsAt(inc.arrive)), holds = at.dp >= ap;
-    const bt = KOD.battle({ attackers: KOD.C.TYPES.filter((t) => inc.comp[t]).map((t, i) => ({ owner: inc.from, type: t, n: inc.comp[t], rank: i })), defenders: KOD.C.TYPES.filter((t) => homeTroopsAt(inc.arrive)[t] > 0).map((t, i) => ({ owner: "you", type: t, n: homeTroopsAt(inc.arrive)[t], rank: i })), ap, dp: at.dp });
+    const R = raidForecast(inc), holds = !R.victory;
     threat = `<article class="threat" aria-labelledby="threat-h"><div class="threat-head"><h3 id="threat-h">Raid from ${esc(inc.from)} <span class="faint" style="font-family:var(--sans);font-weight:400;font-size:.9rem">${esc(inc.coalition)}</span></h3><span class="chip">arrives ${bellAt(inc.arrive)}</span></div>
-      <p class="dim" style="margin-top:4px">${comp2text(inc.comp)} · attack <strong>${n(ap)}</strong> · sent at bell ${inc.sent}</p>
-      <p class="verdict ${holds ? "ok-t" : "danger-t"}" style="margin-top:8px">${holds ? "✓ Expected to hold" : "✕ Expected to break through"}: your defense at bell ${inc.arrive} is ${n(at.dp)}${k.training.length ? " (with recruits finishing)" : ""}</p>
-      <p class="fine" style="margin-top:4px">If it lands as forecast: ${esc(inc.from)} loses about ${bt.attackerLosses.reduce((a, c) => a + c.lost, 0)}, you lose about ${bt.defenderLosses.reduce((a, c) => a + c.lost, 0)}${holds ? "" : ", plus plunder above your vault"}.</p>
+      <p class="dim" style="margin-top:4px">${comp2text(inc.comp)} · attack <strong>${n(R.ap)}</strong> · left at bell ${inc.sent}; you see every march sent against you from the bell it leaves</p>
+      <p class="verdict ${holds ? "ok-t" : "danger-t"}" style="margin-top:8px">${holds ? "✓ Holds if nothing changes" : "✕ Breaks through if nothing changes"}: your defense at bell ${inc.arrive} will be ${n(R.dp)}</p>
+      <p class="fine" style="margin-top:4px">That counts the recruits finishing before then and the levy from the ${n(R.commoners)} people forecast for that bell. If it lands as forecast, ${esc(inc.from)} loses ${R.theirLost} and you lose ${lostOf(R.yourLosses)} (${esc(lossText(R.yourLosses))})${holds ? "" : `, plus ${esc(costText(R.take) || "nothing above your vault")}`}. It changes only if someone gives a new order: ${esc(inc.from)} turning back, an ally reinforcing or recalling, or you sending troops away.</p>
       <div class="actions"><button class="btn btn-sm" type="button" data-act="goto" data-arg="muster:p-troops">Recruit Spearmen (ready in 2 bells)</button><button class="btn btn-sm" type="button" data-act="goto" data-arg="coalition:p-orders">Call for aid</button></div></article>`;
-  } else threat = `<p class="msg info" style="margin-top:12px">Founding protection: nobody can raid you until bell 72.</p>`;
+  } else threat = `<p class="msg info" style="margin-top:12px">${S.found.ended ? `Founding ended at world bell ${S.found.endedAt}: raids can be sent against you, and the first could land at world bell ${S.found.endedAt + 8}.` : "Founding protection: nobody can raid you until world bell 72."}</p>`;
   const st = S.f.recruit;
   const room = KOD.troopCap(k) - KOD.troopTotal(k);
-  const exps = S.world.exps.filter((e) => e.kind !== "caravan" && e.state !== "done");
+  const exps = S.world.exps.filter((e) => e.kind !== "caravan" && e.state !== "done" && e.state !== "merged");
   const expRow = (e) => {
     const dest = e.kind === "camp" && S.scenario === "found" ? S.world.camps.find((c) => c.id === e.dest).name : e.kind === "camp" ? "Reaver hall" : (holdById(e.dest) || { name: "Ironhold" }).name;
     const what = { garrison: "Garrison", reclaim: "Reclaim", claim: "Claim", raid: "Raid", camp: "Clear" }[e.kind];
-    const status = e.state === "stationed" ? `stationed at ${dest}` : e.state === "scheduled" ? `departs at bell ${e.depart}, arrives ${e.arrive}` : e.state === "returning" ? `returning, home at bell ${e.ret}` : `marching, arrives ${bellAt(e.arrive)}`;
+    const status = e.state === "stationed" ? `stationed at ${dest}` : e.state === "scheduled" ? `leaves after bell ${e.depart}, arrives ${e.arrive}` : e.state === "cancelled" ? "did not leave" : e.state === "returning" ? `returning, home at bell ${e.ret}` : `marching, arrives ${bellAt(e.arrive)}`;
     return `<li class="exp"><div><strong>${what} · ${esc(dest)}</strong><p class="row-info">${esc(comp2text(e.comp))} · ${status}</p>${e.result ? `<p class="fine ${e.result.victory ? "ok-t" : "danger-t"}">${esc(e.result.text)}</p>` : ""}</div>${e.state === "stationed" ? `<button class="btn btn-sm" type="button" data-act="noop" title="Prototype: recall is shown, not simulated">Recall</button>` : e.state === "marching" ? `<button class="btn btn-sm" type="button" data-act="noop" title="Prototype: turn back is shown, not simulated">Turn back</button>` : ""}</li>`;
   };
   const M = marchModel();
@@ -1449,7 +1639,7 @@ function vMuster() {
       <div class="dests">${destinations().map((d) => `<label class="dest"><input type="radio" name="dest" value="${d.id}" ${M.st.dest === d.id ? "checked" : ""} data-bind="march|dest"><span class="dname">${esc(d.name)}</span><span class="dnote">${esc(d.note)}</span></label>`).join("")}</div>
     </fieldset>
     <div class="comp">${KOD.C.TYPES.map((t) => `<div class="row"><div><label class="row-name" for="m-${t}">${T_MANY[t]}</label><p class="row-info">${n(k.home[t])} at home · attack ${KOD.C.T[t].atk}, defense ${KOD.C.T[t].def}</p></div>${stepper("m-" + t, T_MANY[t] + " to send", M.st.comp[t], 999, "march", t, 1, T_MANY[t] + " to send")}</div>`).join("")}
-      ${S.scenario === "mid" ? `<div class="row"><div><label class="row-name" for="m-depart">Departure</label><p class="row-info">Schedule it so you arrive with your coalition. Troops defend home until they leave.</p></div><select id="m-depart" class="select" data-bind="march|depart">${departOpts.map((b) => `<option value="${b}" ${M.depart === b ? "selected" : ""}>${b === S.k.bell ? `Now (bell ${b})` : `Bell ${b} (${bellTime(b)})`}</option>`).join("")}</select></div>` : ""}
+      ${S.scenario === "mid" ? `<div class="row"><div><label class="row-name" for="m-depart">Departure</label><p class="row-info">Schedule it so you arrive with your coalition. Troops defend home through their departure bell, then leave once it resolves.</p></div><select id="m-depart" class="select" data-bind="march|depart">${departOpts.map((b) => `<option value="${b}" ${M.depart === b ? "selected" : ""}>${b === S.k.bell ? `Now (bell ${b})` : `After bell ${b} (${bellTime(b)})`}</option>`).join("")}</select></div>` : ""}
     </div>
     <div class="flow" id="flow-march">${flowShell("march")}</div>
   </section>`;
@@ -1460,8 +1650,8 @@ function holdCard(h) {
   let chip = "", lines = "", act = "";
   if (h.status === "held") {
     chip = `<span class="chip ${h.by}">${esc(co[h.by])}</span>`;
-    const dp = h.allies ? holdForecast(h).dp : h.dp, stands = dp >= h.tide.tp;
-    const yours = h.allies ? yourContingentsAt(h, h.tide.bell) : null;
+    const hf = h.allies ? holdForecast(h) : null, dp = hf ? hf.dp : h.dp, stands = dp >= h.tide.tp;
+    const yours = hf ? hf.yours : null;
     lines = `<p class="fine" style="margin-top:4px">${h.travel} bells away · garrison defense <strong>${n(dp)}</strong></p><p style="margin-top:4px">Tide at ${bellAt(h.tide.bell)}: <strong>${n(h.tide.tp)}</strong> → <span class="verdict ${stands ? "ok-t" : "danger-t"}">${stands ? "✓ holds" : "✕ falls unless reinforced"}</span></p>${yours && (yours.spearman || yours.archer || yours.knight) ? `<p class="fine">Yours there: ${esc(comp2text(yours))}</p>` : ""}`;
     if (h.by === "ashen") act = `<button class="btn btn-sm" type="button" data-act="preset-march" data-arg="${h.id}:">Reinforce</button>`;
   } else if (h.status === "fallen") {
@@ -1524,7 +1714,7 @@ function vCoalition() {
   const gw = holdById("greywatch"), gf = holdForecast(gw), short = Math.max(0, gw.tide.tp - gf.dp);
   const pledgedAp = o2.pledges.reduce((a, p) => a + p.ap, 0) + (o2.mineAp || 0);
   const need2 = Math.round(holdById("mirefold").darkness * 1.5) + 1;
-  const memberRow = (m) => { const might = m.you ? KOD.might(S.k) : m.might, home = m.you ? homeDPof(S.k.home).dp : m.home; return `<li class="member"><div class="mwho"><span class="mname">${esc(m.kingdom)}</span><br><span class="mrole">${esc(m.ruler)} · ${esc(m.role)}</span></div><div class="mnum"><b>${n(might)}</b><span>Might</span></div><div class="mnum"><b>${n(home)}</b><span>Home defense</span></div><div class="mstat ${m.tone}">${esc(m.status)}<br><span class="faint">active ${esc(m.seen)}</span></div></li>`; };
+  const memberRow = (m) => { const might = m.you ? KOD.might(S.k) : m.might, home = m.you ? homeDefense(S.k).dp : m.home; return `<li class="member"><div class="mwho"><span class="mname">${esc(m.kingdom)}</span><br><span class="mrole">${esc(m.ruler)} · ${esc(m.role)}</span></div><div class="mnum"><b>${n(might)}</b><span>Might</span></div><div class="mnum"><b>${n(home)}</b><span>Home defense</span></div><div class="mstat ${m.tone}">${esc(m.status)}<br><span class="faint">active ${esc(m.seen)}</span></div></li>`; };
   return viewHead("Coalition", "What your coalition needs from you. Progress counts only what is actually dispatched; pledges are promises.") + `
   <section class="panel" id="p-coal" aria-labelledby="h-coal">
     <div class="co-head"><span class="shield" aria-hidden="true" style="--t1:#8e2f25;--t2:#1d1a1f;--c:#d6ae5c;width:44px;height:52px"></span><div><h2 id="h-coal" class="plain-h" style="font-size:1.35rem">The Ashen Oath</h2><p class="dim">Rank 2 of 4 · <strong>${n(4410)}</strong> renown (+21 per bell) · 5 of 6 kingdoms · you are Sworn</p></div></div>
@@ -1560,16 +1750,16 @@ function vCoalition() {
 function reportHtml(id) {
   if (id === "greywatch186") {
     const gar = [{ owner: "Ser Aldric", type: "spearman", n: 84 }, { owner: "you", type: "spearman", n: 127 }, { owner: "you", type: "archer", n: 32 }, { owner: "Brother Cael", type: "archer", n: 42 }];
-    const D = D_OF(gar), dp = Math.round(D * 1.5), tp = 1021, bt = KOD.battle({ attackers: [{ owner: "Hollow Host", type: "host", n: 1 }], defenders: gar, ap: tp, dp });
+    const D = D_OF(gar), dp = Math.round(D * 1.5), tp = 1021, bt = KOD.battle({ attackers: null, defenders: gar, ap: tp, dp });
     const sh = { "Ser Aldric": 252, you: 445, "Brother Cael": 84 }, owners = Object.keys(sh), split = KOD.apportion(40, owners.map((o, i) => ({ weight: sh[o], rank: i })));
     return `<div class="report"><p><strong>The tide was repelled.</strong> The rule: the Hold stands while defense ≥ tide. ${n(dp)} ≥ ${n(tp)}.</p>
       <div class="tablewrap"><table class="rtable"><caption class="sr-only">Garrison at Greywatch, bell 186</caption><thead><tr><th scope="col">Contingent</th><th scope="col" class="n">Troops</th><th scope="col" class="n">Defense</th><th scope="col" class="n">Lost</th></tr></thead><tbody>${bt.defenderLosses.map((c) => `<tr><th scope="row">${c.owner === "you" ? "You" : esc(c.owner)} · ${T_MANY[c.type]}</th><td class="n">${c.n}</td><td class="n">${n(c.n * KOD.C.T[c.type].def)}</td><td class="n">${c.lost}</td></tr>`).join("")}<tr><th scope="row">Total × 1.5 (Hold)</th><td class="n">${gar.reduce((a, c) => a + c.n, 0)}</td><td class="n">${n(D)} → ${n(dp)}</td><td class="n">${bt.defenderLosses.reduce((a, c) => a + c.lost, 0)}</td></tr></tbody></table></div>
       <p class="fine">Losses: ${(bt.Ld * 100).toFixed(1)}% = 0.06 × tide ÷ defense, shared by count using largest remainder. Renown +40 by defense share: ${owners.map((o, i) => `${o === "you" ? "you" : o} ${split[i]}`).join(", ")}.</p>
-      <p class="msg ok">Reconciliation: forecast at bell 185 said ${n(dp)} vs ${n(tp)}, about 15 lost. The actual result matched.</p></div>`;
+      <p class="msg ok">Reconciliation: the forecast made at bell 185 said ${n(dp)} vs ${n(tp)} with ${lostOf(bt.defenderLosses)} lost, and nobody changed the garrison before the tide. The result matched.</p></div>`;
   }
   if (id === "emberstead194") {
     const gar = [{ owner: "Dame Wren", type: "spearman", n: 200 }, { owner: "Lord Osric", type: "archer", n: 130 }];
-    const D = D_OF(gar), dp = Math.round(D * 1.5), tp = 1089, bt = KOD.battle({ attackers: [{ owner: "Hollow Host", type: "host", n: 1 }], defenders: gar, ap: tp, dp });
+    const D = D_OF(gar), dp = Math.round(D * 1.5), tp = 1089, bt = KOD.battle({ attackers: null, defenders: gar, ap: tp, dp });
     const split = KOD.apportion(40, [{ weight: 600, rank: 0 }, { weight: 260, rank: 1 }]);
     return `<div class="report"><p>Tide ${n(tp)} against defense ${n(dp)} (${n(D)} × 1.5): <strong>held</strong>. Losses ${(bt.Ld * 100).toFixed(1)}%: Dame Wren ${bt.defenderLosses[0].lost}, Lord Osric ${bt.defenderLosses[1].lost}. Renown: Wren ${split[0]}, Osric ${split[1]}. This counts toward your Oath.</p></div>`;
   }
@@ -1595,46 +1785,32 @@ const VIEW_FN = { kingdom: vKingdom, muster: vMuster, frontier: vFrontier, coali
 /* ======================================================================
    Founding bells
    ====================================================================== */
-function processExpeditions() {
-  for (const e of S.world.exps) {
-    if (e.state === "scheduled" && S.k.bell >= e.depart) { KOD.C.TYPES.forEach((t) => { S.k.home[t] -= e.comp[t]; S.k.away[t] += e.comp[t]; }); e.state = "marching"; }
-    if (e.kind === "camp" && e.state === "marching" && S.k.bell >= e.arrive) {
-      const c = S.scenario === "found" ? S.world.camps.find((x) => x.id === e.dest) : S.world.camps[0];
-      const ap = A_OF(e.comp), list = KOD.C.TYPES.filter((t) => e.comp[t]).map((t, i) => ({ owner: "you", type: t, n: e.comp[t], rank: i }));
-      const bt = KOD.battle({ attackers: list, ap, dp: c.dp });
-      const surv = {}; KOD.C.TYPES.forEach((t) => (surv[t] = e.comp[t] || 0)); bt.attackerLosses.forEach((x) => { surv[x.type] = x.n - x.lost; S.k.away[x.type] -= x.lost; });
-      let loot = {};
-      if (bt.victory) { const carry = CARRY_OF(surv), total = Object.values(c.loot).reduce((a, v) => a + v, 0); Object.keys(c.loot).forEach((s) => (loot[s] = carry >= total ? c.loot[s] : Math.floor((c.loot[s] * carry) / total))); }
-      e.survivors = surv; e.loot = loot; e.state = "returning";
-      const lostTxt = bt.attackerLosses.filter((x) => x.lost).map((x) => `${x.lost} ${x.lost === 1 ? T_ONE[x.type] : T_MANY[x.type]}`).join(", ") || "no losses";
-      e.result = { victory: bt.victory, text: bt.victory ? `Victory at bell ${e.arrive}: ${n(ap)} vs ${c.dp}; lost ${lostTxt}; carrying ${costText(loot)}.` : `Repelled at bell ${e.arrive}: ${n(ap)} vs ${c.dp}; lost ${lostTxt}.` };
-      if (S.found && bt.victory && c.id === "ashford") S.found.flags.ashford = true;
-      S.world.chronicle.unshift({ bell: S.k.bell, type: "battles", title: bt.victory ? `Victory at ${c.name}` : `Repelled at ${c.name}`, body: e.result.text, unread: true });
-    } else if (e.kind === "camp" && e.state === "returning" && S.k.bell >= e.ret) {
-      KOD.C.TYPES.forEach((t) => { S.k.away[t] -= e.survivors[t]; S.k.home[t] += e.survivors[t]; });
-      Object.keys(e.loot).forEach((s) => (S.k.s[s] += e.loot[s]));
-      e.state = "done";
-      S.world.chronicle.unshift({ bell: S.k.bell, type: "battles", title: "Troops home with loot", body: `${comp2text(e.survivors)} returned with ${costText(e.loot) || "nothing"}.`, unread: true });
-    }
-  }
+// Reconciliation (13.5): the full forecast made just before the bell against the result, line by line.
+function reconRows(R) {
+  const rows = STORES.map((s) => ({ label: S_NAME[s], fc: R.fc.stocks[s], act: R.actual.s[s], world: R.fc.stocks[s] - R.fc.econ[s] }))
+    .concat([{ label: "People", fc: R.fc.commoners, act: R.actual.commoners, world: 0 }],
+      KOD.C.TYPES.filter((t) => R.fc.troops[t] || R.actual.troops[t]).map((t) => ({ label: T_MANY[t], fc: R.fc.troops[t], act: R.actual.troops[t], world: 0 })));
+  rows.forEach((r) => (r.ok = r.fc === r.act));
+  return rows;
 }
+function reconEvents(R) {
+  const keys = [...new Set(R.fc.events.map((e) => e.key).concat(R.actual.events.map((e) => e.key)))];
+  return keys.map((key) => { const f = R.fc.events.find((e) => e.key === key), a = R.actual.events.find((e) => e.key === key); return { f, a, ok: !!f && !!a && f.title === a.title && f.text === a.text }; });
+}
+const reconOk = (R) => reconRows(R).every((r) => r.ok) && reconEvents(R).every((e) => e.ok);
 function ringFounding(times) {
   const F = S.found; if (!F) return;
+  let allOk = true;
   for (let i = 0; i < times && F.left > 0; i++) {
-    const fc = KOD.forecast(S.k, 1)[0];
-    const r = KOD.bell(S.k);
-    const actual = { s: Object.assign({}, S.k.s), commoners: S.k.commoners };
+    const fc = project(1)[0]; // the full forecast: economy plus every world event due this bell
+    const before = Object.assign({}, S.k.s), people = S.k.commoners;
+    const { report, events } = advance();
     F.left -= 1; F.used += 1;
-    const evBefore = S.world.chronicle.length;
-    processExpeditions();
-    const events = [];
-    r.completed.forEach((c) => events.push(`${B_ONE[c.target]} completed`));
-    Object.keys(r.trained).forEach((t) => events.push(`${r.trained[t]} ${T_MANY[t]} finished training`));
-    S.world.chronicle.slice(0, S.world.chronicle.length - evBefore).forEach((e) => events.push(e.title + ": " + (e.body || "")));
-    F.recon = { bell: S.k.bell, fc, actual, events };
-    S.world.chronicle.unshift({ bell: S.k.bell, type: "kingdom", title: `Founding bell ${F.used}: the forecast matched`, body: `Gold ${sgn(r.produced.gold - r.consumed.wages)}, grain ${sgn(r.produced.grain - r.consumed.grain)}, people ${sgn(r.growth - (r.left || 0))}.`, unread: true });
+    F.recon = { bell: S.k.bell, fc, actual: { s: Object.assign({}, S.k.s), commoners: S.k.commoners, troops: troopCounts(S.k), events }, report };
+    const ok = reconOk(F.recon); allOk = allOk && ok;
+    S.world.chronicle.unshift({ bell: S.k.bell, type: "kingdom", title: `Founding bell ${F.used}: ${ok ? "the forecast matched" : "the forecast did not match"}`, body: `Gold ${sgn(S.k.s.gold - before.gold)}, grain ${sgn(S.k.s.grain - before.grain)}, people ${sgn(S.k.commoners - people)}${events.length ? `, world events included (${events.map((e) => e.title).join("; ")})` : ""}.`, unread: true });
   }
-  renderAll(); focus("#recon"); say(`Founding bell ${F.used} rang. Forecast and actual matched. ${F.left} founding bells left.`);
+  renderAll(); focus("#recon"); say(`Founding bell ${F.used} rang. ${allOk ? "Forecast and result matched, world events included." : "Forecast and result differ; see the reconciliation."} ${F.left} founding bells left.`);
 }
 
 /* ======================================================================
@@ -1717,6 +1893,7 @@ document.addEventListener("click", (ev) => {
     case "preset-build": { const [t, q] = arg.split(":"); S.f.build.items[t] = parseInt(q, 10); S.f.build.step = "plan"; goto("kingdom:p-build"); break; }
     case "preset-march": { const [dest, type, q] = arg.split(":"); setMarchDest(dest); if (type) { S.f.march.comp = { spearman: 0, archer: 0, knight: 0 }; S.f.march.comp[type] = Math.min(parseInt(q, 10), S.k.home[type]); } goto("muster:p-march"); break; }
     case "ring": ringFounding(parseInt(a.dataset.n, 10) || 1); break;
+    case "toggle-end": S.found.endOpen = !S.found.endOpen; renderMain(); focus('[data-act="toggle-end"]'); break;
     case "signin": S.session = null; S.sim.expired = false; for (const f of Object.keys(S.f)) if (S.f[f].step === "review") S.f[f].step = "review"; renderAll(); focus("#view-h1"); say("Signed in. Your plan was kept; review and confirm it again."); break;
     case "coal-choice": S.found.choice = arg; S.found.flags.banner = true; renderAll(); focus("#coal-result"); break;
     case "filter": S.chronFilter = arg; renderMain(); focus(`[data-act="filter"][data-arg="${arg}"]`); break;

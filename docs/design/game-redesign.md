@@ -6,12 +6,13 @@
 **Companion:** `docs/design/redesign-concept.html`, an interactive design prototype with invented sample data. It is not the working game.
 - **What it shows**, in two scenarios (mid-season "Hollowmere" on day 9, and a first session in Founding):
   - Kingdom planning with live forecasts and Max buttons that report their limiting reason.
-  - Founding bells with forecast-versus-actual reconciliation.
+  - Founding bells whose full forecast (economy and world events) is reconciled line by line with the result.
   - March planning that forecasts the Hold, the home timeline and scheduled departures.
   - The coalition War Table, Oath and caravans.
   - Chronicle reports.
   - Conflict, unknown-outcome, offline and session-expired states, switched on from its prototype controls.
-- **Shown but not simulated:** recall, turn back, scouting, pacts and other kingdoms' moves.
+  - Ending Founding early, as a confirmed order.
+- **Shown but not simulated:** recall, turn back, scouting, pacts and other kingdoms' moves. Appendix C lists the prototype's other limits.
 
 > **About the numbers.** Every quantity below is a launch default, chosen so that the rules agree with each other. Every worked example was computed with a scratch model of these exact rules, and the prototype embeds the same model. That shows the examples are internally consistent. It does not show the game is balanced or fun. Tune by simulation (slice S8) and human playtests (section 19).
 
@@ -68,7 +69,7 @@ The ten decisions that define the redesign:
 | Pillar | What it means | How we check it |
 |---|---|---|
 | **A few weighty decisions per visit** | A check-in is read, decide, commit, leave. | Median check-in ≤ 12 min, with ≥ 2 decisions that change tomorrow's state. |
-| **Trust the ledger** | Every cost and outcome is previewed by the server before commit, and every receipt and report matches its preview. | A one-bell forecast equals the actual bell in 100% of automated checks. |
+| **Trust the ledger** | Every cost and outcome is previewed by the server before commit, and every receipt and report matches its preview. | Every exact line of the next-bell forecast, world events included, equals the processed bell in 100% of automated checks (13.5). |
 | **Stand together or fall apart** | The best play needs other people. The shared enemy makes cooperation rational, and rivalry keeps it fragile. | ≥ 70% of active players are in a coalition by day 3, and War Table orders get pledges. |
 | **Fair to the absent** | The world moves for everyone at once. Defense is passive, and protections cap losses while away. | Renown per active day for 2-check-in players stays within 30% of 6-check-in players. |
 | **Losses hurt, never eliminate** | No elimination, no land loss, no destroyed buildings. A recovery step is always visible. | A raided kingdom returns to its pre-raid Might within 24 bells (median). |
@@ -95,7 +96,9 @@ The UI always pairs relative and absolute time: "arrives in 4 bells · ≈ 19:00
 
 ### 4.2 Founding bells (onboarding only)
 
-Every new kingdom receives **12 founding bells**, usable whenever the player likes during **Founding** (its first 72 world bells, the protection period described in section 11.2). A founding bell advances **only that kingdom's own lands**: economy, construction, training, and marches to its private outlaw camps (section 8.10). Nothing that involves other kingdoms, Holds or caravans moves. Unused founding bells disappear when Founding ends, and the header shows that countdown.
+Every new kingdom receives **12 founding bells**, usable whenever the player likes during **Founding** (its first 72 world bells, the protection period described in section 11.2). A founding bell advances **only that kingdom's own lands**: economy, construction, training, and marches to its private outlaw camps (section 8.10). Nothing that involves other kingdoms, Holds or caravans moves. Unused founding bells disappear when Founding ends, at its 72nd world bell or earlier if the player ends it (11.2), and the header shows that countdown.
+
+**Kingdom bells and world bells.** A founding bell does not move the world clock. Timers count bells remaining, so a founding bell advances every timer of that kingdom by one, exactly as a world bell does. The kingdom's own count of bells experienced since founding therefore runs ahead of the world bells elapsed since then, by the founding bells it has rung. The first-session numbers in 5.3 count these **kingdom bells**. Founding's end, tides and other kingdoms' marches stay on world bells, and scheduled departures (8.4) run on world bells only. The prototype's first-session header shows both clocks.
 
 This lets a newcomer complete the full loop several times in one sitting. Everyone, including late joiners, receives the same 12, so there is no inequity. Founding kingdoms cannot send caravans, so founding bells cannot be turned into resource farms for another kingdom (section 12).
 
@@ -108,7 +111,7 @@ A season is **672 bells (28 days)**. Bell 0 is the opening. Day *d* covers bells
 | **Kindling** | 1–3 | 1–72 | All season-start kingdoms are in Founding. Holds can be claimed. Tides probe from day 2 but cannot take a Hold. Hold renown is paid at the Kindling rate. |
 | **Long Dusk** | 4–21 | 73–504 | Full rules. Each Hold gets a tide every 24 bells. Unclaimed Holds fall to their next tide. |
 | **Nightfall** | 22–28 | 505–672 | Tides come every 12 bells and hit harder. Hold renown is paid at the Nightfall rate. Coalition rosters lock from bell 601 (day 26). New kingdoms cannot join. |
-| **Reckoning** | after bell 672 | n/a | Standings freeze, titles are awarded, and the realm gets Dawn or the Long Night. The realm stays read-only for 48 hours, then the next season opens. |
+| **Reckoning** | after bell 672 | n/a | Standings freeze, titles are awarded, and the realm gets Dawn or the Long Night. The realm stays read-only for 48 bells (48 hours at live speed), then the next season opens. |
 
 ### 4.4 Downtime
 
@@ -144,14 +147,14 @@ The world never skips bells silently. After an outage, the server catches up on 
 
 | Min | Step | What the player sees and decides | Numbers |
 |---|---|---|---|
-| 0–2 | **Found** | Name the kingdom; pick a banner (two tinctures and a charge) and a ruler's title. Banner: "Founding: protected for 72 bells · 12 founding bells". | |
+| 0–2 | **Found** | Name the kingdom; pick a banner (two tinctures and a charge) and a ruler's title. Banner: "Founding: protected for 72 world bells · 12 founding bells". | |
 | 2–4 | **Choice: put idle hands to work** | Counsel: "40 people are idle; each workplace employs 10." Four options, each showing its effect: Farm +30 grain/bell, Mine +10 iron/bell, Forge +10 tools or arms per bell (iron-limited), Market +40 gold/bell. The recommended pair is highlighted, not forced. | Path: Farm + Market = 350 gold, 20 tools. Farm ready at bell 4, Market at bell 5. Crews 2 of 2. Stores after: 1,650 gold, 130 tools. |
 | 4–5 | **Shelter newcomers** | Counsel: "Housing 190 of 220: newcomers arrive each bell while there is room (+3 next bell), and growth slows as it fills." Queue a Cottage; it starts when a crew frees up. | 120 gold, 8 tools. Starts at bell 4, ready at bell 7. |
 | 5–6 | **Choice: raise a levy?** | Recruit now, or keep the gold. Recruits leave the commoners immediately and draw wages from the moment they are ordered. | 10 Spearmen = 250 gold, 20 arms, ready in 2 bells. Commoners 190 → 180. |
 | 6–7 | **Ring founding bell 1** | The forecast is shown first, then the reconciliation: every line matches. | Gold +260 tithe and merchants − 40 wages → 1,500. Grain +240 − 220 → 1,520. Iron 110, tools 136, arms 26, people +4 → 184. |
 | 7–9 | **Ring bells 2–3** | Spearmen are ready at bell 2. Counsel: "Outlaws hold Ashford, 1 bell away (defense 30)." | At bell 3: 1,952 gold, 1,548 grain, people 192/220. |
 | 9–11 | **Choice: first march** | Compose a force; the preview compares options honestly (table below). | Dispatch at bell 3, battle at bell 4, home at bell 5. |
-| 11–13 | **Ring bells 4–5** | Bell 4: Farm complete, battle report (victory), Cottage starts. Order a Mine; it queues. Bell 5: Market complete; troops and loot home. | Loot: 150 gold, 100 grain, 20 iron. Mine ready at bell 9. |
+| 11–13 | **Ring bells 4–5** | Bell 4: Farm complete, battle report (victory), Cottage starts. Order a Mine; it queues. Bell 5: Market complete; troops and loot home. Each forecast already includes its bell's world events: bell 4's shows the battle and its losses, and bell 5's adds the returning loot, so both reconcile line by line. | Loot: 150 gold, 100 grain, 20 iron. Mine ready at bell 9. Bell 5 forecast and result: 2,391 gold (+150 from the loot), 1,693 grain (+100), 170 iron (+20). |
 | 13–14 | **Choice: what to do with 2,391 gold** | Keep level 2 (+1 crew, +40 housing, +40 troop capacity, vault 800), Walls 1 (+10% home defense), or clear land (next acre 83 gold). | Path: Keep = 1,500 gold, 100 tools, 12 bells. It starts at bell 7 and is ready at bell 19. |
 | 14–15 | **Choose a banner; look west** | Join an open coalition, petition one, found one, or stand alone for now. The Frontier shows the 7 Holds and the first tide schedule. Leave with 7 founding bells unspent, plus a "while you're away" forecast. | End state at bell 5: 891 gold · 1,693 grain · 170 iron · 80 tools · 50 arms; people 198/220; 29 Spearmen, 9 Archers. |
 
@@ -295,7 +298,7 @@ Beyond 500 units of one good per kingdom in any rolling 24 bells, buying costs �
 
 **C. Unpaid wages.** Wages 392, gold 300. Gold drops to 0, and ⌈5% × 174 troops at home⌉ = 9 desert, apportioned as 5 Spearmen, 3 Archers and 1 Knight.
 
-**D. Planning a shortage away (prototype sample "Hollowmere", bell 201).** Grain is 1,950. Production is 1,280 (Millers +10%, Dread −3%) against a need of 1,372, so grain falls 92 per bell. The granary runs dry at bell 219, and people start leaving that same bell. Ordering 2 Farms leaves grain still falling 59 per bell once they open. **Four Farms make it +5 per bell by the twelfth bell.** The preview shows each option's 24-bell grain curve before the player commits.
+**D. Planning a shortage away (prototype sample "Hollowmere", bell 201).** Grain is 1,950. Production is 1,280 (Millers +10%, Dread −3%) against a need of 1,372, so grain falls 92 per bell. The forecast assumes no new orders and holds Dread at −3% (13.5). It also counts the 16 Hollowmere troops expected to fall, because fewer troops eat less: 6 when Ironhold's raid is repelled at bell 207, and 10 when the tide takes Greywatch at bell 210. The granary runs dry at bell 220, and people start leaving that same bell. (Without those two battles it would be bell 219.) Ordering 2 Farms leaves grain still falling 42 per bell by the twelfth bell. **Four Farms make it +22 per bell by the twelfth bell.** The preview shows each option's 24-bell grain curve before the player commits. The curve also marks the published tides that would take Greywatch (bell 210), Vigil of Aurewynd (213) and Blackwater Ford (215) at today's garrisons; each fall would deepen Dread by 3% from the following bell.
 
 ### 7.10 Season growth curve (simulated upper bound)
 
@@ -352,36 +355,49 @@ The player picks a **destination**, and the order follows from it:
 | Rival kingdom | Raid | 8 | Battle; survivors return with plunder |
 | Coalition member's kingdom | Reinforce | 4 | Stationed there; defends it |
 
-**Validity checks at dispatch:** availability, ownership, phase, protections, brackets and pacts (sections 10.8 and 11.2). **Checks again at arrival:** if the target changed (a Hold fell, a target entered Respite, an ally left the coalition, a pact formed), the expedition halts and returns home with a report saying why. Garrisons arriving at a Hold that is now their own coalition's simply join. An assault that arrives at an unclaimed Hold claims it.
+**Validity checks at dispatch:** at least one troop (a zero-troop march is rejected: 8.5), availability, ownership, phase, protections, brackets and pacts (sections 10.8 and 11.2). Power brackets are measured only at dispatch, so a Might change on either side never halts a march en route. **Checks again at arrival:** if the target changed (a Hold fell, a target entered Respite, an ally left the coalition, a pact formed), the expedition halts and returns home with a report saying why. Garrisons arriving at a Hold that is now their own coalition's simply join; a garrison arriving at a Hold that has since fallen or passed to a rival halts and returns. An assault that arrives at an unclaimed Hold claims it.
 
 **Recall** brings stationed troops home over that route's travel time. **Turn back** reverses a march in progress; the return takes as many bells as had elapsed. Wages and grain are paid for troops wherever they are.
 
-**Scheduled departure.** A march may be set to depart at a later bell, so that it arrives exactly when the coalition needs it. Until departure the troops stay home and defend. All checks run again at departure, and a march that can no longer leave is cancelled with a report. The preview models the home-defense timeline, including any incoming attack that lands after the troops leave.
+**Scheduled departure.** A march may be set to leave after a later world bell D, at most 24 bells ahead, so that it arrives exactly when the coalition needs it.
+- **When it leaves:** at the close of bell D, as step 7 of the world phase below, after that bell's battles. The troops defend home through bell D, are on the road from bell D + 1, and arrive at D + travel, exactly as if the player had dispatched them by hand once bell D resolved. A march dispatched now leaves at once (D is the current bell).
+- **Checks:** when it is scheduled, every dispatch check runs as if it were leaving now, and the home timeline must show the troops still at home after bell D. All checks run again at departure. A march that can no longer leave (troops lost at bell D, a target now protected, a pact formed) is cancelled with a report.
+- **Visibility:** a scheduled march is visible to its own coalition only. Its target sees it from the moment it departs, as with any march.
+- **Eligibility:** scheduled departures run on world bells only, so founding bells never trigger them, and camp marches always leave at once. A kingdom in Founding cannot schedule a raid or an assault on a rival-held Hold, whatever the departure bell (11.2).
+- **Home exposure:** previews and forecasts count a march as at home for every battle up to and including its departure bell, and away from the next bell on. The preview's home-defense timeline uses this rule, including any incoming attack that lands after the troops leave.
 
 **Combined attacks.** Expeditions from one coalition that reach the same target in the same bell fight as **one** attacking force. Each contingent keeps its owner, and losses, plunder and renown are shared by Attack contribution. Defenders at a location always fight together. War Table assault orders therefore name a **muster bell**, not a deadline.
 
 **Resolution order within a bell (world phase, after every economy):**
 
-1. Arrivals: returns home, reinforcements, garrisons and claims, caravans.
-2. Tides at Holds.
+1. Arrivals: returns home with their cargo, reinforcements, garrisons and claims, caravans.
+2. Tides at Holds, and entrenchment at Fallen Holds.
 3. Hold assaults.
-4. Raids.
+4. Raids and outlaw-camp battles.
 5. Renown accrual for control at the end of step 4.
 6. Scheduling of new tides.
+7. Scheduled departures for this bell, in the order they were scheduled.
 
-Within each step, the earliest dispatch goes first, with ties broken by expedition id. When two garrisons from different coalitions reach an unclaimed Hold in the same bell, the higher DP claims it, and the other halts and returns.
+Because arrivals come first, troops that arrive in a bell fight in its battles: a reinforcement landing with a raid defends against it, and a garrison arriving in a tide's bell meets the tide. Within each step, the earliest dispatch goes first, with ties broken by expedition id. When two garrisons from different coalitions reach an unclaimed Hold in the same bell, the higher DP claims it, and the other halts and returns. If their DP is equal, the earlier dispatch claims it, then the lower expedition id.
 
 ### 8.5 Battle algorithm (deterministic)
 
 ```text
-victory          = AP > DP                       # ties favor the defender
+victory          = AP > DP                       # whole numbers; AP = DP is a defender win
 La (attacker)    = clamp(0.08 × DP / AP, 0.03, 0.20)
-Ld (defender)    = clamp(0.06 × AP / DP, 0.02, 0.15)
-casualties(side) = roundHalfUp(L × total troops on that side)
+Ld (defender)    = clamp(0.06 × AP / DP, 0.02, 0.15)     # DP = 0: nobody to lose
+casualties(side) = roundHalfUp(L × troops on that side)  # troops only: never levy, militia or Darkness
 apportion casualties over contingents (owner, type) by count, largest remainder;
     contingent order: earliest-arriving owner first, then Spearman, Archer, Knight;
     ties: larger fractional part, then larger contingent, then contingent order
 ```
+
+**Boundaries:**
+- **No empty forces.** A march needs at least one troop. Preview and commit reject a zero-troop march (`VALIDATION`, no state change), and the engine refuses a battle without one. Every troop has Attack and Defense of at least 1, so every march has AP ≥ 1. Desertion and starvation take only troops at home, so a march still has its troops when it arrives. No formula ever divides by zero.
+- **Zero defense.** DP = 0 only where nobody defends: a kingdom with no troops at home, no stationed allies and fewer than 10 commoners, or a militia or Darkness strength that rounds to 0 in a near-empty realm. A held Hold always has troops, because it becomes unclaimed when the last one leaves. Against DP = 0 the attack wins, the attacker takes La's 3% floor, the defender has nobody to lose, and plunder takes its cap, p = 0.20. Reports say "undefended" instead of showing a ratio.
+- **Strength without troops.** Levy, militia, Darkness garrisons and the Hollow Host add strength but never take losses or count toward casualties. A kingdom defended only by levy loses no troops, while the attacker's losses still follow La, so at least 3%. A failed reclaim leaves the Darkness garrison unchanged, and a repelled tide simply dissipates.
+- **Exact ties.** AP, DP and tide strength are whole numbers after rounding, compared exactly. At AP = DP the defender wins with La = 0.08 and Ld = 0.06 (the ratio is 1, so neither clamp applies): no plunder, no capture, no Respite. Every threshold uses the same rule. An assault or reclaim needs AP ≥ DP + 1, so "attack above 810" means at least 811. A Hold stands at its tide while DP ≥ TP. The minimum reinforcement is the smallest that reaches DP ≥ TP.
+- **No side is wiped out.** Losses are at most 20% of a side, rounded half up, which is always fewer than its troops (a side of 1 or 2 loses none), so survivors always remain to hold or return home.
 
 Effects:
 
@@ -396,7 +412,7 @@ Effects:
 ### 8.6 Plunder
 
 ```text
-p      = 0.10 + 0.10 × min(1, AP/DP − 1)
+p      = 0.10 + 0.10 × min(1, AP/DP − 1)          # DP = 0: p = 0.20
 vault  = 400 × target Keep level  (for each store)
 take_s = floor(p × max(0, stock_s − vault))   for s in gold, grain, iron, tools, arms
 if Σ take > carry(survivors): take_s = floor(take_s × carry ÷ Σ take)
@@ -408,18 +424,18 @@ Plunder travels home with the survivors and arrives on their return bell.
 
 - **Scout:** 100 gold, instant. Reveals the target's current home defense, broken down by type, walls, levy and stationed allies, plus its stores above the vault. The target is told who scouted them. Limit: one scout per target per 6 bells. Scouting is both intelligence and a visible threat.
 - Every march preview names its information source and age: "Ironhold defense 455, scouted 5 bells ago. They will see your army for 8 bells."
-- Defenders always see incoming expeditions the moment they are dispatched: sender, exact composition and attack power, and arrival bell. Holds publish their total garrison DP, and composition is visible only to the holding coalition. The Hollow Host hides nothing.
+- Defenders always see incoming expeditions the moment they depart: sender, exact composition and attack power, and arrival bell. A scheduled march stays private to its coalition until it leaves. Holds publish their total garrison DP, and composition is visible only to the holding coalition. The Hollow Host hides nothing.
 
 ### 8.8 Reports
 
 Each battle report contains:
 - Location and bell (with local time).
 - Both forces and how AP and DP were computed, listing every modifier.
-- The outcome rule ("370 is less than 581: the attack failed").
+- The outcome rule ("370 is less than 583: the attack failed").
 - Losses by contingent, with the percentage and formula.
 - Plunder, with vault protection shown.
 - Renown changes and return times.
-- A **reconciliation** with the dispatch preview ("Previewed 1,245 vs 1,180; actual matched").
+- A **reconciliation** with the dispatch preview ("Previewed 1,245 vs 1,180; actual matched"). If an input changed after the preview, the reconciliation names it instead of claiming a match ("Previewed against 455, scouted at bell 196; their defense at arrival was 470").
 - For the defender, "What you can do next" actions: raise Walls, recruit Spearmen, request reinforcement.
 
 ### 8.9 Worked examples
@@ -430,7 +446,7 @@ Each battle report contains:
 - Plunder p = 11.6%. With a Keep level 2 vault of 800 against stores of 5,200 gold, 3,000 grain, 600 iron, 400 tools and 300 arms, the take is 510 gold and 255 grain. Carry capacity is 56 × 25 + 37 × 10 = 1,770, so nothing is cut.
 - The defender enters a 12-bell Respite.
 
-**Holding against a raid at home (prototype sample).** Ironhold's raid (60 Knights, 50 Archers, 30 Spearmen, AP 370) arrives at bell 207. Hollowmere's home DP is 617 now. By bell 207 it is 689, because 20 recruits finish training at bell 202; the forecast counts them. After sending 30 Spearmen west, defense at bell 207 is 581, which still holds. When the raid arrives it is repelled: Ironhold loses 18 troops (12.6%) and Hollowmere loses 6 (3.8%). Sending 60 Spearmen and 60 Archers away instead would drop defense at bell 207 to 329, and the raid would succeed; the march preview says so in red before dispatch.
+**Holding against a raid at home (prototype sample, forecast at bell 201).** Ironhold's raid (60 Knights, 50 Archers, 30 Spearmen, AP 370) left at bell 199 and arrives at bell 207. Hollowmere's home DP is 617 now. The forecast for bell 207 is 691: 20 recruits finish training at bell 202, and the levy rises to 102 because 1,024 commoners are forecast for that bell. After sending 30 Spearmen west, the forecast for bell 207 is 583, which still holds. If nothing else changes, the raid is repelled: Ironhold loses 18 troops (12.6%) and Hollowmere loses 6 (3.8%). Sending 60 Spearmen and 60 Archers away instead would drop it to 331, and the raid would break through and take 1,571 gold; the march preview says so in red before dispatch. These are exact forecasts, not estimates, because the defender sees the raid's composition and its own defense. They change only if someone gives a new order first: Ironhold turns back, an ally reinforces or recalls, or Hollowmere sends troops away.
 
 ### 8.10 Outlaw camps (private practice)
 
@@ -470,12 +486,12 @@ Only coalition members can garrison or assault Holds; standing alone limits you 
 - **Strength.** TP = round(factor(arrival day) × realm median defense × brightness). The median and brightness are measured when the tide is scheduled, and the factor is the one for the day the tide arrives. All three are known at scheduling, so TP is fixed from that moment.
   - **realm median defense** = median over active kingdoms of (Σ troop Defense + levy), wherever the troops are, without walls;
   - **factor:** Kindling 0.5 (tides cannot take a Hold); Long Dusk 0.80 + 0.06 × (day − 4), so 0.80 on day 4, 1.10 on day 9 and 1.82 on day 21; Nightfall 2.0 + 0.1 × (day − 22), up to 2.6;
-  - **brightness** = 1 + 0.25 × (Holds the controlling coalition owns − 1). "The brightest fire draws the dark."
-- **Unclaimed Holds** are defended by militia worth 1.5 × TP during Kindling, so they stand, and 0.75 × TP afterwards, so they fall. From day 4, the Darkness advances wherever no coalition stands.
+  - **brightness** = 1 + 0.25 × (Holds the controlling coalition holds − 1) for a held Hold. An unclaimed or Fallen Hold has no controlling coalition, so its brightness is 1. "The brightest fire draws the dark." Like the median, brightness is counted at scheduling, so a Hold that is claimed or changes hands afterwards keeps its published tide.
+- **Unclaimed Holds** are defended by militia of ceil(1.5 × TP) during Kindling, so they stand, and floor(0.75 × TP) afterwards, so they fall. From day 4, the Darkness advances wherever no coalition stands.
 
 ### 9.3 Fallen Holds and Dread
 
-- A Fallen Hold's Darkness garrison starts at round(0.5 × the tide that took it). Each later scheduled tide adds round(0.25 × that tide's strength) ("the dark entrenches"). Reclaiming requires AP > garrison × 1.5.
+- A Fallen Hold's Darkness garrison starts at round(0.5 × the tide that took it). Each later scheduled tide adds round(0.25 × that tide's strength) ("the dark entrenches"). The Hold defends with DP = round(1.5 × Darkness garrison), and reclaiming needs AP ≥ DP + 1: a garrison of 540 has DP 810 and needs 811 (one of 541 has DP 812 and needs 813). The Darkness takes no losses, so a failed reclaim leaves it unchanged.
 - **Dread:** every Fallen Hold reduces grain and gold production for **all** kingdoms by 3%, to a maximum of 15%. The forecast shows Dread as its own line. Everyone pays for a Fallen Hold, which gives rival coalitions a reason to defend.
 
 ### 9.4 Renown
@@ -495,14 +511,14 @@ Per-bell hold renown and tide renown are split among the garrison's owners by th
 
 ### 9.5 Worked example: Greywatch at bell 201 (prototype sample, day 9)
 
-- The Ashen Oath holds Greywatch and Emberstead, so brightness is 1.25. Realm median defense is 858.
-- The tide at bell 210: TP = round(1.10 × 858 × 1.25) = **1,180**.
-- Garrison: Ser Aldric's 80 Spearmen, your 120 Spearmen and 30 Archers, Brother Cael's 40 Archers. Defense 740 × 1.5 = **1,110**, so the Hold **falls** unless reinforced. The minimum is 16 Spearmen or 24 Archers (DP 1,182).
-- You send 30 Spearmen (4 bells; they arrive at bell 205): DP **1,245**, so the Hold holds (ratio 0.95).
+- When this tide was scheduled at bell 186, the Ashen Oath held Greywatch and Emberstead (brightness 1.25), and the realm median defense was 858.
+- The tide at bell 210, published since then: TP = round(1.10 × 858 × 1.25) = **1,180**.
+- Garrison: Ser Aldric's 80 Spearmen, your 120 Spearmen and 30 Archers, Brother Cael's 40 Archers. Defense 740 × 1.5 = **1,110**, so the Hold **falls** unless reinforced. The minimum is 16 Spearmen or 24 Archers (DP 1,182 ≥ 1,180).
+- You send 30 Spearmen (4 bells; they arrive at bell 205): DP **1,245**, so the Hold holds (ratio 0.95) unless someone recalls troops before bell 210.
 - The garrison loses 5.7%, or 17 troops: Aldric 5, you 8 Spearmen and 2 Archers, Cael 2.
 - Renown +40 is split by Defense share (240 / 510 / 80): Aldric 11, you 25, Cael 4.
 - While Greywatch is held, its 12 renown per bell splits 4 / 7 / 1.
-- Your home defense when Ironhold's raid lands at bell 207 (after 20 recruits finish) drops from 689 to 581, still above the raid's 370.
+- Your forecast home defense when Ironhold's raid lands at bell 207 (recruits and the forecast levy counted) drops from 691 to 583, still above the raid's 370.
 
 ---
 
@@ -620,12 +636,17 @@ Rivals see only name, banner, coalition, Might and acres; anything more needs sc
 
 | Protection | Rule |
 |---|---|
-| **Founding** | First 72 world bells: cannot be raided, cannot raid player kingdoms. It ends early if you raid a player or assault a rival's Hold. Holds and camps stay available. |
+| **Founding** | First 72 world bells after founding. Nobody can raid you, and you cannot raid player kingdoms or assault rival-held Holds. Garrisons, claims, reclaims, reinforcing members and outlaw camps stay open, and none of them ends Founding. It protects your home, not troops you send to Holds. |
 | **Respite** | 12 bells of raid immunity after any successful raid on you. A second raid landing in the same bell halts and returns. |
 | **Power brackets** | You may raid only kingdoms with Might ≥ 60% of yours; renown requires ≥ 75%. Might = 10 × buildings + Σ troops at home or away × (Attack + Defense). |
 | **Vault** | 400 × Keep level of each store can never be plundered. |
 | **No destruction** | Raids never take land or destroy buildings. |
 | **Slumber** | After 72 bells without a login: immune to raids; excluded from realm medians and active counts; production continues; stationed troops stay where they are. Logging in ends slumber. |
+
+**Ending Founding.** Founding ends at its 72nd world bell, or earlier through the separate order `END_FOUNDING`, and in no other way.
+- **The opt-out is confirmed.** Its review states that protection ends at once, so raids can be dispatched against you from that moment and the first could land 8 bells later. Unused founding bells are lost. Raids, rival-Hold assaults and caravans unlock. It cannot be undone.
+- **No dispatch ends it as a side effect.** While Founding lasts, a raid or rival-Hold assault fails its preview with `FOUNDING_ACTIVE`, plus an "End Founding first" action that opens the review above. After confirming, the player returns to the same march plan and reviews it as usual.
+- **Scheduled departures cannot pre-arrange an attack.** A kingdom in Founding cannot schedule a raid or rival-Hold assault, even to depart after Founding ends. Raids against a kingdom in Founding are refused when dispatched or scheduled (`TARGET_PROTECTED`).
 
 ### 11.3 Anti-snowball rules
 
@@ -729,10 +750,10 @@ Secondary routes, reached from the header menu: `/standings`, `/realm` (kingdom 
   - Land clearing quote; works upgrade cards that show "affordable in N bells" from the forecast.
 - **Muster:**
   - Defense card: troops, levy and walls, as a formula with numbers.
-  - Incoming cards: sender, composition, AP, arrival bell and time, verdict against current defense, and actions (recall, request reinforcement, recruit Spearmen with "ready in 2 bells").
+  - Incoming cards: sender, composition, AP, arrival bell and time, the verdict against your defense forecast for that bell (recruits finishing and the forecast levy included), and actions (recall, request reinforcement, recruit Spearmen with "ready in 2 bells").
   - Troop cards with recruit steppers and the capacity meter.
   - The expedition list.
-  - **March planner:** destination cards → composition steppers → live forecast (arrival and return bells and times; outcome against the target's known strength and its age; expected losses; plunder; home DP after departure against each incoming threat; effect on the Hold at its next tide) → Review → Dispatch.
+  - **March planner:** destination cards → composition steppers → live forecast (arrival and return bells and times; the outcome, exact against camps, tides and the Darkness, or an estimate against a rival's last known strength and its age; losses; plunder; home DP against each incoming threat from the bell after departure; effect on the Hold at its next tide) → Review → Dispatch.
 - **Frontier:** phase timeline; Dread meter; Hold cards (controller, garrison DP, next tide bell and strength, verdict, your contribution, actions); a standings summary (the full table lives at `/standings`). A schematic map is a visual extra with a text equivalent; the list is the source of truth and the default on phones.
 - **Coalition:** header (banner, rank, renown and rate, members out of 6, your role); Marshal's word; Oath progress with contributions; War Table orders with pledges, real progress and one-tap planners; members with defense, threats, runway and activity; caravan planner; invites and petitions; pacts.
 - **Chronicle:** a digest at the top ("6 bells since your last visit: Market complete; tide repelled at Greywatch, +25 renown; Ironhold scouted you"). Filter chips: All, Battles, Kingdom, Coalition, Frontier. Entries expand into full reports with a reconciliation table. Unread entries are marked.
@@ -758,9 +779,23 @@ Secondary routes, reached from the header menu: `/standings`, `/realm` (kingdom 
 
 ### 13.5 Forecasts
 
-- **Next bell:** per-store deltas with the six-step breakdown (7.7), people change, completions, arrivals, and battles due.
-- **12- and 24-bell runway:** grain and gold curves, completion markers, tides, incoming arrivals. A "Hunger in N bells" or "Wages unpaid in N bells" marker appears whenever one applies.
-- Forecasts assume no new orders and include only known world events (scheduled tides, dispatched marches). They are labeled that way: "Assuming no new orders."
+A forecast is the authoritative engine run forward on a copy of the world **as the player can see it**, assuming nobody gives a new order. It runs the same code as bell processing: every economy, then the world phase of 8.4.
+
+- **Modeled inputs:**
+  - your kingdom and its standing orders;
+  - your marches (dispatched and scheduled), stationed forces, and returns with their cargo;
+  - everything you can see heading for you: incoming marches, allied reinforcements, caravans;
+  - your coalition's Holds with their full garrisons, plus published tides and garrison totals elsewhere;
+  - Darkness garrisons and your outlaw camps;
+  - Dread at its current level.
+- **Exact lines** depend only on modeled inputs: stores, people, construction, training, home troops, arrivals, and the battles at your home, your camps, Fallen Holds and Holds where your troops stand. They equal the result unless a modeled input changes first, through a new order from anyone (dispatch, recall, turn back), a coalition change, a pact, or another coalition reaching the same unclaimed or Fallen Hold first or in the same bell. When an input changes, the forecast updates, and the reconciliation names the change instead of claiming a match.
+- **Estimates** depend on what you cannot see: the outcome, losses and plunder of your raid or assault on a rival. They appear beside the forecast with their source and age ("Ironhold defense 455, scouted 5 bells ago") and are never folded into exact lines. Until such a battle resolves, the forecast carries your troops at full strength and adds no plunder. Pledges are promises, not orders, so forecasts leave them out.
+- **Dread is held at its current level,** because Hold outcomes outside your coalition depend on marches you cannot see. Instead, the runway marks each published tide that would take a Hold at today's garrisons, with the Dread it would add. A bell's tides change Dread only from the following bell's economy, so the next-bell forecast never depends on them.
+- **Next bell:** the forecast's first bell. Per-store deltas with the six-step economy breakdown (7.7), plus a world line for each arrival, returning cargo, battle and plunder due that bell; people change; completions.
+- **12- and 24-bell runway:** the same forecast continued, so its first bell always equals the next-bell forecast. Grain and gold curves; completion, arrival, battle and tide markers; a "Hunger in N bells" or "Wages unpaid in N bells" marker whenever one applies. Tides not yet scheduled are left out, because their strength is unknown until then.
+- **Labels:** every forecast states its assumptions: "Assuming no new orders · Dread held at −3% · world events included."
+- **Reconciliation:** founding-bell results, receipts and battle reports compare the forecast made just before the bell with the result, line by line, with economy and world events shown separately. A founding bell moves only your own lands, so its reconciliation must always match exactly.
+- **Contract test (C1, 19):** for every kingdom at every bell, the next-bell forecast computed from the final pre-bell state, using only that kingdom's visible inputs, equals the processed bell on every exact line. Apart from estimates, a kingdom's next bell depends only on what it can see. The one exception is a claim or reclaim contested in the same bell; that is the only permitted difference, and the reconciliation must name it.
 - Forecasts come from the server engine, never from client-side reimplementation. The prototype computes them client-side only because it has no server.
 
 ### 13.6 States
@@ -882,8 +917,9 @@ Secondary routes, reached from the header menu: `/standings`, `/realm` (kingdom 
 - **Pure, deterministic Java engine** with no clock, randomness or I/O:
   - `KingdomEconomy.advance(state, modifiers) → (state', report)`
   - `BattleEngine.resolve(attackers, defenders, context) → result`
+  - `WorldPhase.resolve(world, bell) → (world', events)`, the seven steps of 8.4
   - `TideEngine.schedule(...)`
-- **The same code serves** bell processing, founding bells, previews (run against a copy of the state) and forecasts (repeated advance on a copy). Forecast-equals-actual holds because both run this code.
+- **The same code serves** bell processing, founding bells, previews (run against a copy of the state) and forecasts (economy and world phase repeated on a copy of the player's visible world: 13.5). Forecast-equals-actual holds because both run this code on the same inputs, and a kingdom's next bell depends only on inputs it can see, apart from the estimates and the one exception named in 13.5.
 - **Golden tests** reproduce every worked example in this document.
 
 ### 16.2 API (v2, alongside the legacy API until cutover)
@@ -893,9 +929,9 @@ Secondary routes, reached from the header menu: `/standings`, `/realm` (kingdom 
 - `GET /api/v2/kingdom/forecast?bells=12|24`.
 - `POST /api/v2/kingdom/actions/preview`; `POST /api/v2/kingdom/actions` (with `Idempotency-Key`); `GET /api/v2/actions/{key}`.
 - **Action envelope:** `{"type":"BUILD","params":{"items":[{"building":"FARM","count":2}]},"expectedVersion":418}`. Lists replace maps; no field may be omitted; unknown fields are rejected.
-- **Action types:** `BUILD`, `CANCEL_PROJECT`, `DEMOLISH`, `UPGRADE_WORKS`, `CHOOSE_GUILD`, `CLEAR_LAND`, `SET_STAFFING_PRIORITY`, `SET_FORGE_SPLIT`, `RECRUIT`, `DISBAND`, `DISPATCH`, `RECALL`, `TURN_BACK`, `SCOUT`, `EXCHANGE_TRADE`, `SEND_CARAVAN`, `RING_FOUNDING_BELL`.
+- **Action types:** `BUILD`, `CANCEL_PROJECT`, `DEMOLISH`, `UPGRADE_WORKS`, `CHOOSE_GUILD`, `CLEAR_LAND`, `SET_STAFFING_PRIORITY`, `SET_FORGE_SPLIT`, `RECRUIT`, `DISBAND`, `DISPATCH`, `RECALL`, `TURN_BACK`, `SCOUT`, `EXCHANGE_TRADE`, `SEND_CARAVAN`, `RING_FOUNDING_BELL`, `END_FOUNDING`.
 - **Coalition endpoints:** `/api/v2/coalitions/…`. Consequential actions (leave, kick, accept, pact) use the same preview and commit contract.
-- **Errors** are `application/problem+json` with stable codes (`INSUFFICIENT_STORES`, `NO_FREE_ACRES`, `TROOP_CAPACITY`, `STATE_CONFLICT`, `TARGET_PROTECTED`, `OUT_OF_BRACKET`, `PACT_ACTIVE`, `PHASE_LOCKED`, `NOT_PERMITTED`, `VALIDATION`) and structured `need`/`have`/`field` details. HTTP 200 always means applied.
+- **Errors** are `application/problem+json` with stable codes (`INSUFFICIENT_STORES`, `NO_FREE_ACRES`, `TROOP_CAPACITY`, `STATE_CONFLICT`, `TARGET_PROTECTED`, `FOUNDING_ACTIVE`, `OUT_OF_BRACKET`, `PACT_ACTIVE`, `PHASE_LOCKED`, `NOT_PERMITTED`, `VALIDATION`) and structured `need`/`have`/`field` details. HTTP 200 always means applied.
 
 ### 16.3 Data model (PostgreSQL)
 
@@ -939,8 +975,18 @@ Secondary routes, reached from the header menu: `/standings`, `/realm` (kingdom 
    - Take and verify a database export.
    - No data changes.
 2. **M1, accounts:** create `account` from `user_entity`, keeping password hashes. Lower-case emails; conflicts go to admin resolution, never auto-merge. Tokens move to account ids. `user_entity` stays until the migration is verified.
+   - M1 also classifies every legacy kingdom name into a read-only report, `legacy_name_claim` (name key, claiming accounts, archived kingdom row if any). Legacy `user_entity.kingdomName` is not unique, so this cannot assume one owner per name.
+   - **Sole claim:** exactly one account names the kingdom.
+   - **Disputed claim:** two or more accounts name the same kingdom, or names collide once case is folded into `name_key`. The assessment's B1 produced exactly this: a second registration reused a kingdom name, reset that kingdom's state, and left both accounts able to read it.
+   - **Orphan:** a kingdom row that no account names, such as bots and seeds.
 3. **M2, v2 schema:** v2 tables are created beside the legacy ones. Legacy kingdoms, alliances, market and notifications are **not converted**; they become read-only (renamed `legacy_*` or moved to a `legacy` schema) and the legacy UI and API are withdrawn at cutover.
-4. **M3, first season:** accounts carry over. Each account's legacy kingdom name is reserved for that account for the first 72 bells.
+4. **M3, first season:** accounts carry over, and legacy names are reserved by claim class:
+   - A sole claim is reserved for its account for season 1's first 72 bells.
+   - A disputed name is **quarantined**: reserved for nobody, including its claimants, until an admin decides. Both accounts stay fully usable. At sign-in, each claimant is told the name is under review and can found a season kingdom under another name at once, with one free rename if the decision later gives them the name.
+   - The admin decision is one of: give the name to one claimant, release it, or keep it reserved. It is recorded with its evidence and reason in an append-only audit log, both claimants are notified, and it changes only the season name. Evidence is the archived rows, the M0 export and any surviving registration logs.
+   - Legacy rows, including a shared and possibly reset kingdom, stay exactly as archived. Nothing is merged, restored or reassigned to either account.
+   - No disputed name is given out automatically. An undecided quarantine continues past the 72 bells; it never lapses into first come, first served.
+   - Orphan names reserve nothing.
 5. **M4, cleanup:** legacy tables may be dropped only after season 1 ends, an export exists, and the owner explicitly decides to.
 
 Every migration is tested in CI against a disposable PostgreSQL (Testcontainers), including a restart-persistence test (which covers assessment B6).
@@ -953,15 +999,15 @@ Order matters: each slice ships behind the previous one's gates. The first human
 
 | Slice | Delivers | Acceptance criteria (automated unless stated) |
 |---|---|---|
-| **S0: integrity platform** | M0–M1; account and kingdom identity; v2 action envelope (preview, commit, idempotency, problem+json); strict validation; locking; refresh tokens; browser session, error and retry infrastructure | Sequential and concurrent duplicate registration → 409 with no mutation (B1). Replaying an idempotency key returns the original response without re-applying. Property tests over negative, zero, omitted, oversized, overflow and unknown-field payloads → 400 with an unchanged state hash (B2, B3). A restart against PostgreSQL preserves state (B6). A config-load failure recovers through retry (U3). |
-| **S1: season and bell engine** | Season entity; scheduler with catch-up and pause; pure economy engine; construction and training; land; Exchange; forecast endpoint | Golden tests reproduce 5.2, 5.3, 7.6 and 7.9 exactly. Randomized invariants (10,000 cases): no negative stores or counts; population is conserved by recruit and disband; determinism; forecast(1) equals actual. Reprocessing bell N is a no-op. Catch-up processes 6 bells and then pauses. |
-| **S2: shell, Kingdom, Founding** | Five-destination shell; header, stores and forecast panel; counsel; construction planner; staffing; forge; land; works; Exchange; founding bells and objectives | Playwright: a new account completes founding objectives 1–5 at 390px and 1440px using the keyboard only. `document.scrollWidth ≤ innerWidth` at 320, 390, 768 and 1440. axe-core reports zero serious or critical violations. Direct loads, refreshes and Back/Forward keep the navigation selection correct. Every committed receipt equals its preview. |
-| **S3: military** | Recruitment and disband; outlaw camps; expeditions with recall, turn-back and scheduled departure; combined same-bell attacks; battle engine; plunder; scouting; reports; incoming warnings | Golden battle tests (8.9; 30 scripted mixes at 10, 100 and 1,000 troops). Casualty totals equal roundHalfUp(L × N). Plunder respects vault and carry. Expedition state machine tests cover halting at arrival and at scheduled departure. Same-coalition arrivals in one bell merge into one battle, with shares by Attack. The home-defense timeline in previews matches resolved battles. Reports reconcile with previews. **Human playtest 1** (section 19). |
+| **S0: integrity platform** | M0–M1; account and kingdom identity; v2 action envelope (preview, commit, idempotency, problem+json); strict validation; locking; refresh tokens; browser session, error and retry infrastructure | Sequential and concurrent duplicate registration → 409 with no mutation (B1). Replaying an idempotency key returns the original response without re-applying. Property tests over negative, zero, omitted, oversized, overflow and unknown-field payloads → 400 with an unchanged state hash (B2, B3). A restart against PostgreSQL preserves state (B6). A config-load failure recovers through retry (U3). The M1 dry run on a copy of the M0 export reports sole, disputed and orphan name claims; a fixture where two accounts share one legacy kingdom name yields a quarantined name that neither receives, both accounts sign in, and the archived rows' hashes are unchanged. |
+| **S1: season and bell engine** | Season entity; scheduler with catch-up and pause; pure economy engine; construction and training; land; Exchange; forecast endpoint | Golden tests reproduce 5.2, 5.3, 7.6 and 7.9 exactly. Randomized invariants (10,000 cases): no negative stores or counts; population is conserved by recruit and disband; determinism; every exact line of forecast(1), world phase included, equals the processed bell. Reprocessing bell N is a no-op. Catch-up processes 6 bells and then pauses. |
+| **S2: shell, Kingdom, Founding** | Five-destination shell; header, stores and forecast panel; counsel; construction planner; staffing; forge; land; works; Exchange; founding bells and objectives | Playwright: a new account completes founding objectives 1–5 at 390px and 1440px using the keyboard only (synthesized keys; human keyboard and screen-reader acceptance is U5). `document.scrollWidth ≤ innerWidth` at 320, 390, 768 and 1440. axe-core reports zero serious or critical violations. Direct loads, refreshes and Back/Forward keep the navigation selection correct. Every committed receipt equals its preview. |
+| **S3: military** | Recruitment and disband; outlaw camps; expeditions with recall, turn-back and scheduled departure; combined same-bell attacks; battle engine; plunder; scouting; reports; incoming warnings | Golden battle tests (8.9; 30 scripted mixes at 10, 100 and 1,000 troops). Casualty totals equal roundHalfUp(L × N). Plunder respects vault and carry. Expedition state machine tests cover halting at arrival and at scheduled departure. A scheduled march defends home through its departure bell and leaves after that bell's battles. Zero-troop dispatches are rejected, and battles against DP 0, levy-only defense and exact ties follow 8.5 without NaN or infinite values. Same-coalition arrivals in one bell merge into one battle, with shares by Attack. The home-defense timeline in previews matches resolved battles. Reports reconcile with previews. **Human playtest 1** (section 19). |
 | **S4: coalitions** | Create, invite, petition, accept, decline, leave, kick, promote, transfer, disband; caravans; reinforcement; War Table; Marshal's word; call for aid | Two fresh browser accounts complete create → invite → accept → caravan → reinforce → leave through the UI. A role × action authorization matrix test. Caravan caps and the 24-bell rule. Renown attribution survives leaving. |
 | **S5: Frontier** | Holds; tide scheduling and strength; militia; Fallen Holds; Dread; renown ledger; Oaths; standings; phases | Golden test of 9.5. Tide schedule and published strength are deterministic and frozen at scheduling. Ledger totals equal standings. Dread changes production exactly. A 48-bell scenario (4 kingdoms, 2 Holds) matches its expected ledger. |
-| **S6: PvP and pacts** | Raids; Respite; brackets; pacts; scouting notices | Protections are enforced at dispatch **and** at arrival. Two raids landing in the same bell resolve in order, and the second halts under Respite. |
-| **S7: season lifecycle** | Late join and Rising Banner; slumber and succession; Reckoning; honors; archive; next season | Packages apply by founding day. Rising Banner ends at the threshold or at Nightfall. Slumber starts at 72 bells and ends at login. Reckoning freezes standings and awards titles. **Human playtest 2**, a compressed coalition season. |
-| **S8: measurement** | Bots reworked as strategy simulators; nightly balance report; privacy-respecting telemetry | Four strategies (builder, trader, militarist, holder) × 672 bells run in CI. Curves are published as artifacts. Telemetry has no third-party trackers and offers an opt-out. |
+| **S6: PvP and pacts** | Raids; Respite; brackets; pacts; scouting notices | Protections are enforced at dispatch **and** at arrival. Two raids landing in the same bell resolve in order, and the second halts under Respite. A kingdom in Founding can neither raid, assault a rival-held Hold nor schedule either; `END_FOUNDING` is confirmed, immediate and irreversible, and no dispatch ends Founding by itself. |
+| **S7: season lifecycle** | Late join and Rising Banner; slumber and succession; Reckoning; honors; archive; next season | Packages apply by founding day. Rising Banner ends at the threshold or at Nightfall. Slumber starts at 72 bells and ends at login. Reckoning freezes standings and awards titles. **Human playtest 2**: a compressed mechanics season (section 19). |
+| **S8: measurement** | Bots reworked as strategy simulators; nightly balance report; privacy-respecting telemetry | Four strategies (builder, trader, militarist, holder) × 672 bells run in CI. Curves are published as artifacts. Telemetry has no third-party trackers and offers an opt-out. **Human playtest 3**: the real-time retention study (section 19), which gates launch. |
 
 ---
 
@@ -976,7 +1022,7 @@ These assumptions resolve open intent questions so the work is not blocked. The 
 | A3 | No monetization; any future monetization is cosmetic only | n/a |
 | A4 | No in-game free chat at launch; coalitions use the War Table and their own Discord | 10.6 |
 | A5 | Dark, grounded tone; the cartoon character prompts are superseded for UI and illustration | 1, 14 |
-| A6 | 28-day seasons with hourly bells; alpha seasons may compress to 10-minute bells | 4 |
+| A6 | 28-day seasons with hourly bells; alpha seasons may compress to 10-minute bells, which test mechanics but not daily rhythm (19) | 4, 19 |
 | A7 | Legacy game state is archived, not converted; accounts carry over | 16.5 |
 | A8 | Polling at 30 s plus bell boundaries is enough; server-sent events can come later | 13.6 |
 | A9 | English first, with externalized strings | n/a |
@@ -999,7 +1045,7 @@ These assumptions resolve open intent questions so the work is not blocked. The 
 **Rule:** never tune for fun on a build that fails correctness. If comprehension fails while correctness passes, the problem is in UX or design. If fun fails while comprehension passes, the problem is in the systems.
 
 **Correctness (automated, must pass before any human test):**
-- **C1:** the one-bell forecast equals actual for every kingdom in a 7-day staging season.
+- **C1:** in staging runs of scripted kingdoms, for every kingdom at every bell, every exact line of the next-bell forecast equals the processed bell. Each forecast is computed from the final pre-bell state with only that kingdom's visible inputs (13.5). Before playtest 1 the runs cover the slices built so far; from playtest 2 on, they are full 672-bell seasons played by the S8 strategy simulators.
 - **C2:** zero invariant violations (negative values, conservation, unpaid progress, duplicate identity).
 - **C3:** every battle report reconciles to engine inputs; every receipt equals its preview.
 
@@ -1011,23 +1057,33 @@ These assumptions resolve open intent questions so the work is not blocked. The 
 - **U5:** a keyboard-only participant and a screen-reader participant complete objectives 1–4.
 - **U6:** each participant recovers from one rejected action and one simulated connection loss without help.
 
-**Fun and fairness (playtest 2, after S7; 12–30 players, compressed 672-bell season):**
-- **F1, return:** at least 60% of players return on at least 5 of the first 7 real days; median 2–4 check-ins per day of 5–12 minutes each.
-- **F2, fairness to the absent:** renown per active day for self-reported 2-check-in players is at least 70% of 6-check-in players; median Likert score of at least 4/5 for "I could compete without being online constantly".
-- **F3, coalition value:** at least 70% are in a coalition by day 3; at least 50% of War Table orders receive a pledge and a dispatch; median of at least 4/5 for "my coalition needed me".
-- **F4, the Darkness matters:** at least one Fallen Hold every 3 days during Long Dusk; at least 50% are reclaimed within 48 bells; players can say why Dread matters to them.
-- **F5, raids without griefing:** the median raided kingdom regains its pre-raid Might within 24 bells; quitting within 48 h of being raided is no more than 10 points above the baseline.
-- **F6, real decisions:** in exit interviews, players name at least 2 trade-offs they struggled with (forge split, Hold versus home, Keep versus land, Guild choice).
-- **F7, snowball check:** the leading coalition's renown share on day 21 is at most 45%; measured across seasons, Nightfall changes the leader at least sometimes.
+**Fun and fairness: two playtests that answer different questions.** A compressed season is fast enough to play a whole arc. But at 10-minute bells one real day covers six game days, so nobody can play at the intended rhythm of 2–4 check-ins per game day. Its results never stand in for daily participation or for fairness to the absent.
+
+| | Playtest 2: compressed mechanics season | Playtest 3: real-time retention study |
+|---|---|---|
+| When | After S7 | After playtest 2 passes and S8's telemetry ships; gates launch |
+| Clock | `bellSeconds` 600: the 672 bells take 112 hours (4 days 16 hours), plus 48 bells (8 hours) of Reckoning | Live `bellSeconds` 3600: one game day per real day |
+| Length | One full season | At least 7 consecutive real days (Kindling and Long Dusk days 4–7), ideally the full 28-day season |
+| Players | 12–30 | 12–30, mostly people who were not in playtest 2 |
+| Answers | F3–F7, measured in bells and game days | F1 and F2, plus F3, F5 and F6 at the real pace |
+| Cannot answer | F1, F2, or any question about daily habit | F7, unless it runs the full season |
+
+- **F1, return (playtest 3 only):** at least 60% of players return on at least 5 of the first 7 real days; median 2–4 check-ins per real day of 5–12 minutes each.
+- **F2, fairness to the absent (playtest 3 only):** renown per active day for self-reported 2-check-in players is at least 70% of 6-check-in players; median Likert score of at least 4/5 for "I could compete without being online constantly".
+- **F3, coalition value (both):** at least 70% are in a coalition by game day 3 (bell 72); at least 50% of War Table orders receive a pledge and a dispatch; median of at least 4/5 for "my coalition needed me".
+- **F4, the Darkness matters (playtest 2):** at least one Fallen Hold every 72 bells during Long Dusk; at least 50% are reclaimed within 48 bells; players can say why Dread matters to them.
+- **F5, raids without griefing (both):** the median raided kingdom regains its pre-raid Might within 24 bells. In playtest 3 only, quitting within 48 real hours of being raided is no more than 10 points above the baseline.
+- **F6, real decisions (both):** in exit interviews, players name at least 2 trade-offs they struggled with (forge split, Hold versus home, Keep versus land, Guild choice).
+- **F7, snowball check (playtest 2, then live seasons):** the leading coalition's renown share at bell 504 (end of game day 21) is at most 45%. Whether Nightfall changes the leader "at least sometimes" needs several seasons, so it is tracked across the first live seasons, not judged from one playtest.
 
 **Instrumentation:**
 - Objective completion times.
-- Forecast-versus-actual differences (must be zero).
+- Forecast-versus-actual differences: zero on exact lines; any other difference attributed to a named input change.
 - Action outcome codes.
 - Coalition membership over time.
 - Hold control timeline.
 - Raid and recovery curves.
-- Check-in timing.
+- Check-in timing (judged against F1 only in playtest 3).
 
 All of it is stored first-party, aggregated, with an opt-out.
 
@@ -1057,6 +1113,7 @@ All of it is stored first-party, aggregated, with an opt-out.
 | `troops` | see 8.1 | 8.1 |
 | `knightOnlyTravelFactor` | 0.75 (round up) | 8.1 |
 | `travel` | camp 1/2/3, Hold 4–6, raid 8, reinforce 4, caravan 4 | 8.4 |
+| `schedule.maxAheadBells` | 24 | 8.4 |
 | `battle.La` / `battle.Ld` | 0.08 clamped to [0.03, 0.20] / 0.06 clamped to [0.02, 0.15] | 8.5 |
 | `plunder.base` / `plunder.slope` | 0.10 / 0.10 | 8.6 |
 | `scout.cost` / `scout.cooldown` | 100 / 6 bells | 8.7 |
@@ -1065,7 +1122,7 @@ All of it is stored first-party, aggregated, with an opt-out.
 | `tide.interval` | 24 (Nightfall 12) | 9.2 |
 | `tide.factor` | Kindling 0.5; Long Dusk 0.80 + 0.06(d−4); Nightfall 2.0 + 0.1(d−22) | 9.2 |
 | `tide.brightnessStep` | 0.25 | 9.2 |
-| `militia` | Kindling 1.5 × TP; later 0.75 × TP | 9.2 |
+| `militia` | Kindling ceil(1.5 × TP); later floor(0.75 × TP) | 9.2 |
 | `darkness.garrison` / `entrench` | 0.5 × TP / +0.25 × TP per scheduled tide | 9.3 |
 | `dread.perFallen` / `dread.max` | 0.03 / 0.15 | 9.3 |
 | `renown` | see 9.4 | 9.4 |
@@ -1079,12 +1136,16 @@ All of it is stored first-party, aggregated, with an opt-out.
 | `lateJoin` | days 4–10: Keep 2, stores ×2; days 11–21: Keep 3, stores ×3, +20 free acres | 11.5 |
 | `risingBanner` | +40% production, −25% build time, while Might < 60% of median | 11.5 |
 | `rosterLockBell` | 601 | 4.3 |
+| `reckoningBells` | 48 | 4.3, 11.6 |
+| `legacy.nameReserveBells` | 72 for a sole claim; a disputed name stays quarantined until an admin decides | 16.5 |
 
 ## Appendix B. Glossary
 
 - **Bell:** one world tick (1 hour live).
-- **Founding:** a new kingdom's 72-bell protection.
+- **Founding:** a new kingdom's protection for its first 72 world bells; it ends early only through the confirmed order `END_FOUNDING`.
 - **Founding bell:** a personal bell during Founding that moves only your own lands.
+- **Kingdom bell:** a kingdom's own count of bells experienced since founding; it runs ahead of the world bells elapsed since then by the founding bells rung.
+- **Forecast:** the engine run forward on what you can see, assuming no new orders; each line is exact or marked as an estimate.
 - **Commoners:** non-military population.
 - **Idle:** commoners without a job.
 - **Crew:** one construction slot.
@@ -1105,14 +1166,45 @@ All of it is stored first-party, aggregated, with an opt-out.
 - **Pact:** timed non-aggression between coalitions.
 - **Wardens:** season winners.
 - **Dawn:** the realm-wide outcome when half the Holds stand.
+- **Quarantined name:** a legacy kingdom name claimed by more than one account, reserved for nobody until an admin decides.
 
 ## Appendix C. How the numbers were checked
 
-- A scratch model of sections 7–9 (economy bell, construction, recruitment, battle, plunder, apportionment) produced every worked example here. It was not committed; the prototype embeds an equivalent copy for its live forecasts.
+- A scratch model of sections 7–9 (economy bell, construction, recruitment, battle, plunder, apportionment) produced every worked example here. It was not committed; the prototype embeds an equivalent copy, plus the world phase of 8.4, for its live forecasts.
 - The checks confirmed:
-  - one-bell forecasts equal actual results in the first-session script;
+  - next-bell forecasts, world events included, equal the results in the first-session script;
   - the hunger example settles where described;
   - casualty and renown apportionment totals are exact;
   - the steepening land rule prevents the gold runaway seen with linear land prices (7.10).
-- The prototype was driven in headless Chrome through the first-session path of 5.3. Every intermediate store value and completion bell matched this document, and all ringing bells reconciled. The Greywatch, raid and Mirefold forecasts match 8.9 and 9.5. No layout overflowed horizontally at 320, 390, 768 or 1440px, including expanded panels and inline review states.
+- The prototype was driven in headless Chrome through the first-session path of 5.3. Every intermediate store value and completion bell matched this document. The Greywatch, raid and Mirefold forecasts match 7.9, 8.9 and 9.5. No layout overflowed horizontally at 320, 390, 768 or 1440px.
 - The checks do **not** establish balance, pacing quality or fun; sections 17 (S8) and 19 cover those.
+
+**Review round 2 (2026-10-25): corrections and checks**
+- **Forecast versus reconciliation.** The prototype's founding reconciliation had compared an economy-only forecast with a snapshot taken before the world phase. At bell 5 it showed 2,241 gold, 1,593 grain and 150 iron as "all matched", while the stores became 2,391, 1,693 and 170 once the loot landed. Forecasts now run the world phase too (13.5), and the reconciliation covers stores, people, troops and world events. The 5.3 end states were already right and are unchanged.
+- **Corrected numbers.**
+  - Home defense at bell 207 had used today's levy instead of the levy forecast for that bell: 689 → 691, 581 → 583, 329 → 331. Raid losses are unchanged (18 and 6).
+  - Counting the forecast battles in the grain runway moved 7.9 D: dry at bell 220 (was 219), −42 per bell with 2 Farms (was −59), +22 with 4 Farms (was +5).
+  - Ironhold's raid now leaves at bell 199: listed as sent at bell 198, it would have landed at 206.
+  - The Vigil claim preview had treated arrival in the tide's own bell as too late, contrary to the arrivals-first order of 8.4.
+- **New or sharpened rules.** Battle boundaries (8.5), the Fallen Hold threshold (9.3), brightness and militia rounding (9.2), scheduled-departure timing, visibility and eligibility (8.4), ending Founding (11.2), kingdom bells (4.2), Reckoning in bells (4.3), legacy name claims (16.5), and the split between compressed and real-time playtests (19).
+- **Checks run.**
+  - Headless Chrome, driven through the DevTools protocol with programmatic clicks and input events:
+    - the 5.3 path end to end, with every line matching at founding bells 1, 4 and 5 (bell 5: 2,391 / 1,693 / 170 / 180 / 50, people 198, 29 Spearmen, 9 Archers);
+    - ending Founding through preview, review and confirm;
+    - the mid-season counsel, incoming warning and threat card;
+    - march previews for Greywatch (16, 30, and 60 + 60 troops; a departure after bell 207), Mirefold (after bell 206; after bell 207, which is blocked with 58 Archers and 23 Knights left), Vigil (now; after bell 208), Ironhold, Reaver hall and an empty march;
+    - the 2- and 4-Farm grain runways;
+    - live bells 202 and 203, after which the bell simulation is withdrawn.
+
+    There were no console errors or exceptions. Horizontal overflow (`scrollWidth − clientWidth`) was 0 at 320, 390, 768 and 1440px in all five mid-season views and in the first-session reconciliation and End Founding panels.
+  - Node, against the prototype's embedded model: 20 battle-boundary assertions all pass, with no NaN or infinite value in any result. They cover zero, negative and fractional AP rejected; DP 0; levy-only defense; exact ties at 8% and 6% losses; reclaim thresholds of 811 and 813; no side wiped out from 1 to 100 troops; and the 8.9 raid's 18 and 6 losses. A separately written script of the mid-season forecast agrees with the prototype on 220, 691, 583 and 331.
+  - A Markdown check of this file: every table row has its header's cell count, and code fences balance.
+- **Not run.** T3 `html_preview` and `html_render`; physical-keyboard, screen-reader and real-device tests. Earlier keyboard checks used synthesized key events and DOM calls, which do not count as keyboard or screen-reader acceptance. Those need people and assistive technology (19, U4 and U5).
+- **Remaining prototype limits.**
+  - Recall, turn back, scouting, pacts and other kingdoms' moves are shown but not simulated.
+  - Mid-season live bells stop at bell 203. Later world events (Ravenmoor's tide at 204, Ironhold's raid at 207, the tide at Greywatch at 210) exist only in forecasts.
+  - The sample has no hidden defense for Ironhold, so your raid there stays an estimate and is never resolved.
+  - Renown accrual and the scheduling of new tides are not modeled, so forecasts include only tides already published.
+  - The prototype forecasts on the client from its one sample world, which stands in for "what the player can see".
+  - The first-session sample shows ending Founding and its effects, but has no rival kingdom to raid afterwards.
+  - Fonts vary by operating system, because only system fonts are used.
