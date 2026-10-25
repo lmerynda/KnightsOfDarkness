@@ -1,0 +1,1764 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Knights of Darkness: redesign concept (design prototype, invented sample data)</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  color-scheme:dark;
+  --bg:#0f0d10;--sunken:#161318;--panel:#1b171d;--panel-2:#231e26;--panel-3:#2a242e;
+  --line-soft:#2e2731;--line:#4a3f4d;--control-line:#857788;
+  --text:#ece3cf;--text-2:#c2b59a;--text-3:#968a73;
+  --or:#d6ae5c;--or-hi:#e6c47c;--or-ink:#1a1408;
+  --gules:#ec8b74;--gules-bg:#33181a;--gules-line:#9a4434;
+  --vert:#86b071;--vert-bg:#17231a;--vert-line:#557a45;
+  --azure:#7ea0d6;--azure-bg:#161f30;--azure-line:#45679c;
+  --amber:#e2a447;--amber-bg:#2b2113;--amber-line:#946a22;
+  --hollow:#9d8fb0;--hollow-bg:#211c29;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","URW Palladio L",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:10px;
+}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;color:var(--text);background-color:var(--bg);background-image:radial-gradient(900px 420px at 10% -160px,rgba(214,174,92,.10),transparent 70%),radial-gradient(640px 360px at 100% -60px,rgba(126,160,214,.05),transparent 70%);background-repeat:no-repeat;font:15px/1.5 var(--sans);font-variant-numeric:tabular-nums lining-nums}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.2;margin:0;letter-spacing:.005em}
+h1{font-size:1.8rem}
+h2{font-size:1.2rem;display:flex;align-items:center;gap:.55em}
+h2::before{content:"";width:.4em;height:.4em;background:var(--or);transform:rotate(45deg);flex:none}
+h3{font-size:1.02rem}
+h4{font-size:1rem}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+a{color:var(--or)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--or);outline-offset:2px;border-radius:4px}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip-link{position:absolute;left:12px;top:-80px;z-index:20;background:var(--or);color:var(--or-ink);padding:10px 14px;border-radius:8px;font-weight:600;text-decoration:none}
+.skip-link:focus{top:12px}
+.label,.eyebrow{font-variant-caps:all-small-caps;letter-spacing:.08em;color:var(--text-2);font-size:.98rem}
+.dim{color:var(--text-2)}.faint{color:var(--text-3)}.fine{font-size:.86rem;color:var(--text-2)}
+.up{color:var(--vert)}.down{color:var(--gules)}.flat{color:var(--text-2)}
+.warn-t{color:var(--amber)}.danger-t{color:var(--gules)}.ok-t{color:var(--vert)}.info-t{color:var(--azure)}
+
+/* ---------- layout ---------- */
+.app{max-width:1440px;margin:0 auto;padding:0 24px 24px;display:grid;grid-template-columns:216px minmax(0,1fr) 320px;grid-template-areas:"rail head head" "rail main aside";column-gap:24px}
+.masthead{grid-area:head;padding:18px 0 14px;min-width:0}
+.rail{grid-area:rail;align-self:start;position:sticky;top:0;padding:20px 0 24px}
+main{grid-area:main;min-width:0;outline:none}
+.aside{grid-area:aside;min-width:0;align-self:start}
+
+/* ---------- brand / rail ---------- */
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:1.06rem;letter-spacing:.02em}
+.brand-mark{width:22px;height:26px;flex:none;background:linear-gradient(90deg,#8e2f25 50%,#1d1a1f 50%);clip-path:polygon(0 0,100% 0,100% 58%,50% 100%,0 58%);box-shadow:inset 0 0 0 2px var(--or)}
+.brand-mark{outline:1px solid transparent}
+.rail .brand{padding:0 8px 18px;border-bottom:1px solid var(--line-soft);margin-bottom:12px}
+.nav a{display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--text-2);font-weight:500}
+.nav a svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.nav a:hover{background:var(--panel);color:var(--text)}
+.nav a[aria-current="page"]{background:var(--panel-2);color:var(--text);box-shadow:inset 3px 0 0 var(--or)}
+.nav .badge{margin-left:auto;min-width:22px;padding:0 6px;border-radius:999px;background:var(--or);color:var(--or-ink);font-size:.78rem;font-weight:700;text-align:center;line-height:20px}
+.rail-season{margin:18px 8px 0;padding-top:14px;border-top:1px solid var(--line-soft)}
+.rail-season .bar{height:6px;border-radius:3px;background:var(--panel-3);margin:8px 0 6px;overflow:hidden}
+.rail-season .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--or),#9c7a3a)}
+
+/* ---------- masthead ---------- */
+.mast-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.mast-row .brand{display:none}
+.proto-chip{display:inline-flex;align-items:center;gap:8px;min-height:32px;padding:4px 12px;border-radius:999px;border:1px dashed var(--amber-line);background:var(--amber-bg);color:var(--amber);font-size:.84rem;font-weight:600;cursor:pointer}
+.proto-chip:hover{border-style:solid}
+.mast-id{display:flex;align-items:center;gap:14px;margin-top:10px;flex-wrap:wrap}
+.shield{width:34px;height:40px;flex:none;position:relative;background:linear-gradient(90deg,var(--t1) 50%,var(--t2) 50%);clip-path:polygon(0 0,100% 0,100% 58%,50% 100%,0 58%)}
+.shield::after{content:"";position:absolute;left:50%;top:40%;width:34%;height:29%;background:var(--c);transform:translate(-50%,-50%) rotate(45deg)}
+.id-text{min-width:0;flex:1 1 220px}
+.k-name{font-family:var(--serif);font-size:1.5rem;font-weight:600;line-height:1.15}
+.k-sub{color:var(--text-2);font-size:.92rem}
+.clock{text-align:right}
+.clock-bell{font-family:var(--serif);font-size:1.15rem}
+.phase-chip{display:inline-block;margin-left:6px;padding:0 8px;border-radius:999px;border:1px solid var(--line);font-size:.8rem;color:var(--text-2);vertical-align:2px}
+.stores{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px}
+.store{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:8px 12px;min-width:0}
+.store .label{display:block;font-size:.9rem;line-height:1.1}
+.store-val{display:block;font-size:1.22rem;font-weight:650;line-height:1.3}
+.delta{display:block;font-size:.84rem;white-space:nowrap}
+.proto{margin-top:14px;background:var(--sunken);border:1px dashed var(--amber-line);border-radius:var(--r);padding:14px 16px;display:grid;gap:12px}
+.proto[hidden]{display:none}
+.proto fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+.proto legend{font-weight:600;margin-bottom:6px;padding:0;width:100%}
+.proto label{display:inline-flex;align-items:center;gap:8px;min-height:32px;cursor:pointer}
+.proto input{accent-color:var(--or);width:18px;height:18px}
+
+/* ---------- panels ---------- */
+.view-head{padding:6px 0 16px}
+.view-head .lede{color:var(--text-2);margin-top:4px;max-width:62ch}
+.panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:16px 18px;box-shadow:inset 0 1px 0 rgba(255,236,200,.035)}
+.panel+.panel,.banner+.panel,.panel+.banner{margin-top:16px}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:6px 16px;flex-wrap:wrap;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid var(--line-soft)}
+.panel-head .meta{color:var(--text-2);font-size:.9rem}
+.sub{margin-top:18px}
+.sub>h3{margin-bottom:8px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px;padding:12px 14px;min-width:0}
+
+/* ---------- buttons, inputs ---------- */
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--control-line);background:var(--panel-2);color:var(--text);font-weight:600;font-size:.94rem;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--panel-3)}
+.btn-primary{background:var(--or);border-color:var(--or);color:var(--or-ink)}
+.btn-primary:hover{background:var(--or-hi)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--or);text-decoration:underline;text-underline-offset:3px;padding:0 10px}
+.btn-ghost:hover{background:var(--panel-2)}
+.btn-sm{min-height:36px;padding:0 12px;font-size:.88rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.stepper{display:inline-flex;align-items:stretch;border:1px solid var(--control-line);border-radius:8px;overflow:hidden;background:var(--sunken);flex:none}
+.stepper button{width:44px;min-height:44px;border:0;background:var(--panel-2);font-size:1.15rem;cursor:pointer;color:var(--text)}
+.stepper button:hover{background:var(--panel-3)}
+.stepper input{width:60px;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--sunken);text-align:center;font-weight:650;font-size:1rem;-moz-appearance:textfield;appearance:textfield}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.step-wrap{display:inline-flex;gap:6px;align-items:stretch;flex:none}
+.max-btn{min-height:44px;min-width:52px;padding:0 10px;border-radius:8px;border:1px solid var(--control-line);background:transparent;color:var(--or);font-weight:650;cursor:pointer}
+.max-btn:hover{background:var(--panel-3)}
+select.select{min-height:44px;border:1px solid var(--control-line);border-radius:8px;background:var(--sunken);padding:0 10px;max-width:100%}
+input[type=range]{width:100%;accent-color:var(--or);min-height:32px}
+.seg{display:inline-flex;border:1px solid var(--control-line);border-radius:8px;overflow:hidden}
+.seg label{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;cursor:pointer;color:var(--text-2)}
+.seg input{position:absolute;opacity:0;width:1px;height:1px}
+.seg input:checked+span{color:var(--or-ink)}
+.seg label:has(input:checked){background:var(--or);color:var(--or-ink);font-weight:650}
+.seg label:has(input:focus-visible){outline:2px solid var(--or);outline-offset:-3px}
+
+/* ---------- construction ---------- */
+.crews{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.crew{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px;padding:10px 12px;min-width:0}
+.crew.idle{border-style:dashed;background:transparent}
+.crew .crew-what{font-weight:600;display:block}
+.bar{height:6px;border-radius:3px;background:var(--panel-3);overflow:hidden;margin:6px 0 4px}
+.bar i{display:block;height:100%;background:var(--or)}
+.queue-line{margin-top:8px;font-size:.9rem;color:var(--text-2)}
+.rows{display:grid;gap:8px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center;padding:10px 12px;background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px}
+.row-name{font-weight:650;font-family:var(--serif);font-size:1.05rem}
+.row-have{color:var(--text-3);font-size:.86rem;margin-left:6px;font-family:var(--sans);font-weight:400}
+.row-info{font-size:.88rem;color:var(--text-2)}
+.row-cost{font-size:.88rem}
+.works{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pips{display:inline-flex;gap:3px;vertical-align:1px;margin-left:6px}
+.pips i{width:8px;height:8px;transform:rotate(45deg);border:1px solid var(--or);display:inline-block}
+.pips i.on{background:var(--or)}
+
+/* ---------- flow (preview / review / receipt) ---------- */
+.flow{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.preview h4,.review h4,.receipt h4,.errorbox h4,.conflict h4{margin-bottom:8px}
+.kv{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 16px;font-size:.93rem}
+.kv dt{color:var(--text-2)}
+.kv dd{margin:0}
+.list-dots li{position:relative;padding-left:16px;margin:3px 0}
+.list-dots li::before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;transform:rotate(45deg);background:var(--text-3)}
+.review,.receipt,.errorbox,.conflict,.pending{border-radius:8px;padding:12px 14px;outline:none}
+.review:focus,.receipt:focus,.errorbox:focus,.conflict:focus{outline:none;box-shadow:0 0 0 3px rgba(214,174,92,.30)}
+h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus,.recon:focus{outline:none}
+.vsrow{display:grid;grid-template-columns:7.5rem minmax(0,1fr) 4rem;gap:8px;align-items:center;font-size:.86rem;color:var(--text-2)}
+.vsrow b{color:var(--text);text-align:right;font-weight:650}
+.plain-h::before{display:none}
+.review{background:var(--panel-2);border:1px solid var(--or)}
+.receipt{background:var(--vert-bg);border:1px solid var(--vert-line)}
+.errorbox{background:var(--gules-bg);border:1px solid var(--gules-line)}
+.conflict{background:var(--amber-bg);border:1px solid var(--amber-line)}
+.pending{background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--or);animation:spin .9s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.msg{margin-top:8px;padding:8px 10px;border-radius:6px;font-size:.92rem}
+.msg.error{background:var(--gules-bg);border:1px solid var(--gules-line)}
+.msg.warn{background:var(--amber-bg);border:1px solid var(--amber-line)}
+.msg.ok{background:var(--vert-bg);border:1px solid var(--vert-line)}
+.msg.info{background:var(--azure-bg);border:1px solid var(--azure-line)}
+.verdict{display:inline-flex;align-items:center;gap:6px;font-weight:650}
+.vs{display:grid;gap:6px;margin:6px 0}
+.vsbar{position:relative;height:10px;border-radius:5px;background:var(--panel-3);overflow:hidden}
+.vsbar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.vsbar .a{background:var(--or)}.vsbar .d{background:var(--azure)}.vsbar .h{background:var(--hollow)}
+
+/* ---------- runway ---------- */
+.runway{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));align-items:end;gap:2px;height:46px;margin:6px 0 4px;padding:0 1px;border-bottom:1px solid var(--line)}
+.runway i{display:block;background:var(--vert-line);border-radius:2px 2px 0 0;min-height:2px}
+.runway i.low{background:var(--amber-line)}
+.runway i.zero{background:var(--gules-line);min-height:4px}
+.runway-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:10px}
+
+/* ---------- aside ---------- */
+.aside-toggle{display:none}
+.nb-lines{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:4px 12px;align-items:baseline;margin-top:10px}
+.nb-lines dt{font-weight:600}
+.nb-lines dd{margin:0}
+.nb-lines .why{color:var(--text-3);font-size:.84rem;min-width:0}
+.aside .panel+.panel{margin-top:14px}
+.counsel-list{display:grid;gap:10px}
+.cn{border-radius:8px;padding:10px 12px;border:1px solid var(--line-soft);background:var(--panel-2);box-shadow:inset 3px 0 0 var(--c)}
+.cn.danger{--c:var(--gules)}.cn.warning{--c:var(--amber)}.cn.info{--c:var(--azure)}.cn.ok{--c:var(--vert)}
+.cn-title{font-weight:650;display:flex;gap:8px;align-items:baseline}
+.cn-title .sym{flex:none;font-size:.85rem}
+.cn p{font-size:.9rem;color:var(--text-2);margin-top:2px}
+.cn .actions{margin-top:8px}
+
+/* ---------- muster ---------- */
+.formula{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;font-size:.95rem}
+.formula .term{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.formula .op{color:var(--text-3)}
+.threat{margin-top:14px;border:1px solid var(--gules-line);background:var(--gules-bg);border-radius:8px;padding:12px 14px}
+.threat-head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.troops{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.troop .stats{display:flex;gap:10px;font-size:.86rem;color:var(--text-2);flex-wrap:wrap;margin:2px 0 8px}
+.troop .counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;font-size:.88rem;margin-bottom:8px}
+.troop .counts b{display:block;font-size:1.08rem}
+.dests{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.dest{position:relative;display:block;cursor:pointer;background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px;padding:10px 12px 10px 38px;min-height:44px}
+.dest input{position:absolute;left:12px;top:13px;width:18px;height:18px;accent-color:var(--or);margin:0}
+.dest:has(input:checked){border-color:var(--or);box-shadow:inset 0 0 0 1px var(--or)}
+.dest .dname{font-weight:650;display:block}
+.dest .dnote{font-size:.84rem;color:var(--text-2);display:block}
+.comp{display:grid;gap:8px;margin-top:12px}
+.exp-list{display:grid;gap:8px}
+.exp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px;padding:10px 12px}
+
+/* ---------- frontier ---------- */
+.phases{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-top:6px}
+.phases .ph{padding:6px 8px;font-size:.82rem;color:var(--text-2);background:var(--panel-2);border-right:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.phases .ph:last-child{border-right:0}
+.phases .ph.now{background:var(--amber-bg);color:var(--amber);font-weight:650}
+.season-marker{position:relative;height:16px;margin-top:2px}
+.season-marker span{position:absolute;transform:translateX(-50%);font-size:.78rem;color:var(--amber);white-space:nowrap}
+.mapwrap{margin-top:14px;border:1px solid var(--line-soft);border-radius:8px;background:var(--sunken);overflow:hidden}
+.mapwrap svg{display:block;width:100%;height:auto}
+.mapcap{font-size:.84rem;color:var(--text-3);padding:6px 10px;border-top:1px solid var(--line-soft)}
+.holds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.hold{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px;padding:12px 14px;min-width:0}
+.hold-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.hold-name{font-family:var(--serif);font-weight:600;font-size:1.08rem}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:.8rem;white-space:nowrap}
+.chip.ashen{border-color:var(--gules-line);color:var(--gules)}
+.chip.crown{border-color:var(--azure-line);color:var(--azure)}
+.chip.thorn{border-color:var(--vert-line);color:var(--vert)}
+.chip.fallen{border-color:#5d4f70;color:var(--hollow);background:var(--hollow-bg)}
+.chip.unclaimed{border-style:dashed;color:var(--text-2)}
+.chip.you{border-color:var(--or);color:var(--or)}
+.dread{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.dread-meter{display:flex;gap:4px}
+.dread-meter i{width:22px;height:10px;border:1px solid #5d4f70;border-radius:2px}
+.dread-meter i.on{background:var(--hollow)}
+.standings{display:grid;gap:6px}
+.stand{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line-soft)}
+.stand.mine{border-color:var(--or)}
+.stand .rank{font-family:var(--serif);font-size:1.1rem;color:var(--text-2);text-align:center}
+
+/* ---------- coalition ---------- */
+.co-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.word{margin-top:14px;padding:12px 16px;border-left:3px solid var(--or);background:var(--panel-2);border-radius:0 8px 8px 0;font-family:var(--serif);font-size:1.06rem;line-height:1.45}
+.word cite{display:block;margin-top:6px;font-family:var(--sans);font-style:normal;font-size:.86rem;color:var(--text-2)}
+.oath-prog{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:10px 0}
+.oath-prog i{height:12px;border-radius:3px;border:1px solid var(--or);display:block}
+.oath-prog i.on{background:var(--or)}
+.contrib{display:grid;gap:4px;font-size:.9rem}
+.contrib-row{display:grid;grid-template-columns:minmax(0,9rem) minmax(0,1fr) 3rem;gap:8px;align-items:center}
+.contrib-row .bar{margin:0}
+.orders{display:grid;gap:10px}
+.order{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px;padding:12px 14px}
+.order-head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.order h4{font-family:var(--serif)}
+.pledges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.members{display:grid;gap:8px}
+.member{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(2,minmax(0,.7fr)) minmax(0,1.4fr);gap:6px 12px;align-items:center;padding:10px 12px;background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px}
+.member .mname{font-weight:650}
+.member .mrole{font-size:.84rem;color:var(--text-2)}
+.member .mstat{font-size:.88rem}
+.member .mnum b{display:block}
+.member .mnum span{font-size:.8rem;color:var(--text-3)}
+.co-browse{display:grid;gap:10px}
+
+/* ---------- chronicle ---------- */
+.digest{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px;padding:12px 14px}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 10px}
+.filters button{min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--control-line);background:transparent;color:var(--text-2);cursor:pointer;font-weight:600;font-size:.88rem}
+.filters button[aria-pressed="true"]{background:var(--or);border-color:var(--or);color:var(--or-ink)}
+.feed{display:grid;gap:8px}
+.entry{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px}
+.entry.unread{box-shadow:inset 3px 0 0 var(--or)}
+.entry summary,.entry .entry-static{display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 12px;padding:10px 12px;cursor:pointer;list-style:none;align-items:baseline}
+.entry .entry-static{cursor:default}
+.entry summary::-webkit-details-marker{display:none}
+.entry .ebell{font-family:var(--serif);color:var(--text-2);font-size:.92rem}
+.entry .etitle{font-weight:600}
+.entry .etype{font-size:.8rem;color:var(--text-3);display:block;font-weight:400}
+.entry summary .more{color:var(--or);font-size:.84rem;font-weight:600}
+.entry[open] summary .more::after{content:" (open)"}
+.report{padding:2px 14px 14px 88px;display:grid;gap:10px}
+.rtable{width:100%;border-collapse:collapse;font-size:.9rem}
+.rtable th,.rtable td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+.rtable th{color:var(--text-2);font-weight:600;font-variant-caps:all-small-caps;letter-spacing:.06em}
+.rtable td.n,.rtable th.n{text-align:right}
+.tablewrap{overflow-x:auto}
+
+/* ---------- founding ---------- */
+.objectives{display:grid;gap:6px;margin-top:12px;counter-reset:obj}
+.obj{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:8px 10px;border-radius:8px;border:1px solid var(--line-soft);background:var(--panel-2)}
+.obj .mark{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:.85rem;color:var(--text-2)}
+.obj.done .mark{background:var(--vert-bg);border-color:var(--vert-line);color:var(--vert)}
+.obj.current{border-color:var(--or)}
+.obj.current .mark{border-color:var(--or);color:var(--or)}
+.obj .why{font-size:.86rem;color:var(--text-2)}
+.recon{margin-top:12px}
+
+/* ---------- banners / footer ---------- */
+.banner{border-radius:var(--r);padding:12px 16px;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.banner.offline{background:var(--amber-bg);border:1px solid var(--amber-line)}
+.banner.session{background:var(--panel-2);border:1px solid var(--or);display:block}
+.banner.session .actions{margin-top:10px}
+.field{display:grid;gap:4px;margin-top:10px;max-width:320px}
+.field input{min-height:44px;border-radius:8px;border:1px solid var(--control-line);background:var(--sunken);padding:0 12px}
+.colophon{max-width:1440px;margin:0 auto;padding:18px 24px 32px;color:var(--text-3);font-size:.86rem;border-top:1px solid var(--line-soft)}
+.colophon strong{color:var(--text-2)}
+.noscript{padding:16px 24px;color:var(--amber)}
+
+/* ---------- tablet ---------- */
+@media (max-width:1099px){
+  .app{grid-template-columns:92px minmax(0,1fr);grid-template-areas:"rail head" "rail aside" "rail main";column-gap:18px;padding:0 18px 20px}
+  .rail .brand span:last-child,.rail-season{display:none}
+  .rail .brand{justify-content:center;padding:0 0 14px}
+  .nav a{flex-direction:column;gap:4px;font-size:.78rem;padding:8px 4px;text-align:center}
+  .nav .badge{margin:0;position:absolute;transform:translate(14px,-6px)}
+  .nav a{position:relative}
+  .nav a[aria-current="page"]{box-shadow:inset 0 -3px 0 var(--or)}
+  .aside{margin-bottom:16px}
+  .aside-toggle{display:flex}
+  .aside-body{display:none;margin-top:10px}
+  .aside.open .aside-body{display:block}
+  .aside-toggle{width:100%;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:8px 14px;border-radius:var(--r);border:1px solid var(--line);background:var(--panel);cursor:pointer;text-align:left}
+  .aside-toggle .chev{transition:transform .15s}
+  .aside.open .aside-toggle .chev{transform:rotate(180deg)}
+}
+/* ---------- phone ---------- */
+@media (max-width:699px){
+  body{font-size:15px}
+  .app{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "rail" "aside" "main";padding:0 12px 18px}
+  .masthead{padding:12px 0 10px}
+  .mast-row .brand{display:flex;font-size:.98rem}
+  .rail{position:sticky;top:0;z-index:5;padding:6px 0 8px;background:var(--bg);border-bottom:1px solid var(--line-soft);margin-bottom:12px}
+  .rail .brand{display:none}
+  .nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px}
+  .nav a{min-height:52px;font-size:.74rem;padding:6px 2px}
+  .nav a span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .nav .badge{transform:translate(12px,-4px);font-size:.7rem;min-width:18px;line-height:17px}
+  h1{font-size:1.45rem}
+  .k-name{font-size:1.22rem}
+  .shield{width:28px;height:33px}
+  .mast-id{gap:10px}
+  .clock{text-align:left;flex-basis:100%}
+  .stores{gap:4px}
+  .store{padding:6px 6px;border-radius:8px}
+  .store .label{font-size:.8rem}
+  .store-val{font-size:1rem}
+  .delta{font-size:.74rem}
+  .panel{padding:14px 12px}
+  .grid-2,.works,.troops,.holds,.runway-pair{grid-template-columns:minmax(0,1fr)}
+  .row{grid-template-columns:minmax(0,1fr)}
+  .row .stepper,.row .step-wrap{justify-self:start}
+  .member{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .member .mwho{grid-column:1/-1}
+  .member .mstat{grid-column:1/-1}
+  .report{padding:2px 8px 10px}
+  .rtable th,.rtable td{padding:4px 4px;font-size:.82rem}
+  .entry summary,.entry .entry-static{grid-template-columns:52px minmax(0,1fr)}
+  .nb-lines{grid-template-columns:minmax(0,1fr) max-content}
+  .nb-lines .why{grid-column:1/-1;margin:-2px 0 4px;min-width:0;overflow-wrap:anywhere}
+  .phases{display:grid;grid-template-columns:minmax(0,1fr)}
+  .phases .ph{border-right:0;border-bottom:1px solid var(--line);white-space:normal}
+  .phases .ph:last-child{border-bottom:0}
+  .season-marker{display:none}
+  .kv{grid-template-columns:minmax(0,1fr)}
+  .kv dd{margin-bottom:6px}
+  .colophon{padding:16px 12px 24px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="app">
+  <header class="masthead" id="masthead"></header>
+  <nav class="rail" id="rail" aria-label="Primary"></nav>
+  <aside class="aside" id="aside" aria-label="Next bell and counsel"></aside>
+  <main id="main" tabindex="-1"></main>
+</div>
+<footer class="colophon">
+  <p><strong>Knights of Darkness: redesign concept.</strong> A design prototype with invented sample data, not the working game. It makes no network requests and stores nothing. Numbers come from an embedded model of the rules in <code>docs/design/game-redesign.md</code>, and every launch value there awaits playtesting.</p>
+</footer>
+<div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+<div id="alert" class="sr-only" role="alert" aria-atomic="true"></div>
+<noscript><p class="noscript">This design prototype needs JavaScript for its interactive states.</p></noscript>
+<script>
+(() => {
+"use strict";
+
+/* ======================================================================
+   Embedded model of the blueprint rules (game-redesign.md, sections 7–9).
+   Prototype only: in the real game the server engine is authoritative.
+   ====================================================================== */
+const KOD = (() => {
+  const C = {
+    B: {
+      cottage: { gold: 120, tools: 8, bells: 3, housing: 15 },
+      farm: { gold: 150, tools: 10, bells: 4, jobs: 10 },
+      mine: { gold: 180, tools: 12, bells: 4, jobs: 10 },
+      forge: { gold: 220, tools: 15, bells: 5, jobs: 10 },
+      market: { gold: 200, tools: 10, bells: 5, jobs: 10, cargo: 150 },
+      barracks: { gold: 300, tools: 20, bells: 6, troopCap: 40 }
+    },
+    WORKS: {
+      keep: [null, null, { gold: 1500, tools: 100, bells: 12 }, { gold: 4000, tools: 250, bells: 18 }, { gold: 9000, tools: 500, bells: 24 }, { gold: 18000, tools: 900, bells: 30 }],
+      walls: [null, { gold: 600, tools: 60, bells: 8 }, { gold: 1500, tools: 150, bells: 12 }, { gold: 3500, tools: 300, bells: 16 }, { gold: 7000, tools: 550, bells: 20 }, { gold: 12000, tools: 900, bells: 24 }],
+      guild: [null, { gold: 800, tools: 80, bells: 10 }, { gold: 2400, tools: 200, bells: 16 }, { gold: 6000, tools: 450, bells: 24 }]
+    },
+    rate: { farm: 3, mine: 1, forge: 1, market: 4, tithe: 1 },
+    keep: { housing: 40, troopCap: 40, vault: 400 },
+    growth: 0.1, leave: 0.05,
+    T: {
+      spearman: { gold: 25, arms: 2, bells: 2, atk: 1, def: 3, wage: 1, grain: 1, carry: 10 },
+      archer: { gold: 35, arms: 3, bells: 3, atk: 2, def: 2, wage: 1, grain: 1, carry: 10 },
+      knight: { gold: 90, arms: 6, bells: 4, atk: 4, def: 1, wage: 3, grain: 2, carry: 25 }
+    },
+    TYPES: ["spearman", "archer", "knight"],
+    STOCKS: ["gold", "grain", "iron", "tools", "arms"]
+  };
+  const clone = (x) => JSON.parse(JSON.stringify(x));
+  const builtCount = (k) => Object.values(k.b).reduce((a, n) => a + n, 0);
+  const pendingAcres = (k) => k.projects.concat(k.queue).filter((p) => p.kind === "building").length;
+  const freeAcres = (k) => k.acres - builtCount(k) - pendingAcres(k);
+  const housing = (k) => k.b.cottage * C.B.cottage.housing + k.keep * C.keep.housing;
+  const troopCap = (k) => k.b.barracks * C.B.barracks.troopCap + k.keep * C.keep.troopCap;
+  const crews = (k) => 1 + k.keep;
+  const trainingCount = (k, t) => k.training.filter((x) => t === undefined || x.type === t).reduce((a, x) => a + x.n, 0);
+  const troopsAll = (k, t) => k.home[t] + k.away[t] + trainingCount(k, t);
+  const troopTotal = (k) => C.TYPES.reduce((a, t) => a + troopsAll(k, t), 0);
+  const guildMult = (k, g) => (k.guild === g ? 1 + 0.1 * k.guildLevel : 1);
+  const dreadMult = (k) => 1 - Math.min(0.15, 0.03 * k.dread);
+  function staff(k) {
+    let left = k.commoners; const w = {};
+    for (const p of k.priority) { const jobs = k.b[p] * C.B[p].jobs; w[p] = Math.min(left, jobs); left -= w[p]; }
+    w.idle = left; return w;
+  }
+  const wages = (k) => C.TYPES.reduce((a, t) => a + troopsAll(k, t) * C.T[t].wage, 0);
+  const troopGrain = (k) => C.TYPES.reduce((a, t) => a + troopsAll(k, t) * C.T[t].grain, 0);
+  function apportion(total, items) {
+    const sum = items.reduce((a, it) => a + it.weight, 0);
+    if (sum === 0 || total === 0) return items.map(() => 0);
+    const raw = items.map((it) => (total * it.weight) / sum);
+    const out = raw.map(Math.floor);
+    let rest = total - out.reduce((a, n) => a + n, 0);
+    const order = raw.map((r, i) => ({ i, frac: r - Math.floor(r), weight: items[i].weight, rank: items[i].rank ?? i }))
+      .sort((a, b) => b.frac - a.frac || b.weight - a.weight || a.rank - b.rank);
+    for (let j = 0; j < order.length && rest > 0; j++, rest--) out[order[j].i]++;
+    return out;
+  }
+  function desert(k) {
+    const total = C.TYPES.reduce((a, t) => a + k.home[t], 0);
+    const n = Math.ceil(C.leave * total);
+    const parts = apportion(n, C.TYPES.map((t, i) => ({ weight: k.home[t], rank: i })));
+    const lost = {}; C.TYPES.forEach((t, i) => { k.home[t] -= parts[i]; lost[t] = parts[i]; });
+    return lost;
+  }
+  function bell(k) {
+    const r = { bell: k.bell + 1, produced: {}, consumed: {}, events: [], completed: [], trained: {} };
+    const w = staff(k); r.staff = Object.assign({}, w);
+    const grain = Math.floor(w.farm * C.rate.farm * guildMult(k, "millers") * dreadMult(k));
+    const iron = Math.floor(w.mine * C.rate.mine * guildMult(k, "miners"));
+    k.s.iron += iron;
+    const forgeCap = Math.floor(w.forge * C.rate.forge * guildMult(k, "smiths"));
+    const used = Math.min(k.s.iron, forgeCap);
+    const arms = Math.floor((used * k.armsPct) / 100);
+    const tools = used - arms;
+    k.s.iron -= used; k.s.tools += tools; k.s.arms += arms;
+    const tithe = k.commoners * C.rate.tithe, merch = w.market * C.rate.market * guildMult(k, "merchants");
+    const gold = Math.floor((tithe + merch) * dreadMult(k));
+    k.s.gold += gold; k.s.grain += grain;
+    r.produced = { gold, grain, iron, tools, arms, ironUsed: used, tithe, merch };
+    const wg = wages(k); r.consumed.wages = wg;
+    if (k.s.gold >= wg) k.s.gold -= wg; else { r.consumed.wagesPaid = k.s.gold; k.s.gold = 0; r.deserted = desert(k); r.events.push("unpaid"); }
+    const tg = troopGrain(k); const need = tg + k.commoners;
+    r.consumed.grain = need; r.consumed.troopGrain = tg; r.consumed.commonerGrain = k.commoners;
+    let hungry = false;
+    if (k.s.grain >= need) k.s.grain -= need;
+    else {
+      hungry = true;
+      if (k.s.grain < tg) r.deserted = desert(k);
+      r.consumed.grainEaten = k.s.grain; k.s.grain = 0;
+      const leaving = Math.ceil(C.leave * k.commoners); k.commoners -= leaving; r.left = leaving; r.events.push("hunger");
+    }
+    const H = housing(k); r.growth = 0;
+    if (k.commoners > H) { r.left = (r.left || 0) + (k.commoners - H); k.commoners = H; }
+    else if (!hungry && k.s.grain > 0 && k.commoners < H) { const g = Math.ceil(C.growth * (H - k.commoners)); k.commoners += g; r.growth = g; }
+    for (const p of k.projects) p.left -= 1;
+    const done = k.projects.filter((p) => p.left <= 0);
+    k.projects = k.projects.filter((p) => p.left > 0);
+    for (const p of done) {
+      if (p.kind === "building") k.b[p.target] += 1;
+      else if (p.kind === "keep") k.keep += 1;
+      else if (p.kind === "walls") k.walls += 1;
+      else if (p.kind === "guild") k.guildLevel += 1;
+      r.completed.push({ kind: p.kind, target: p.target, tag: p.tag });
+    }
+    while (k.projects.length < crews(k) && k.queue.length) { const q = k.queue.shift(); k.projects.push({ kind: q.kind, target: q.target, left: q.bells, total: q.bells, tag: q.tag }); }
+    for (const t of k.training) t.left -= 1;
+    for (const t of k.training.filter((x) => x.left <= 0)) { k.home[t.type] += t.n; r.trained[t.type] = (r.trained[t.type] || 0) + t.n; }
+    k.training = k.training.filter((x) => x.left > 0);
+    k.bell += 1;
+    return r;
+  }
+  function canPay(k, cost) {
+    for (const res of Object.keys(cost)) if ((k.s[res] || 0) < cost[res]) return { res, need: cost[res], have: k.s[res] };
+    return null;
+  }
+  function pay(k, cost) { for (const res of Object.keys(cost)) k.s[res] -= cost[res]; }
+  function orderBuilding(k, type, n, tag) {
+    const def = C.B[type]; const cost = { gold: def.gold * n, tools: def.tools * n };
+    if (freeAcres(k) < n) return { ok: false, code: "NO_FREE_ACRES", need: n, have: freeAcres(k) };
+    const e = canPay(k, cost); if (e) return { ok: false, code: "INSUFFICIENT_STORES", ...e };
+    pay(k, cost);
+    for (let i = 0; i < n; i++) {
+      if (k.projects.length < crews(k)) k.projects.push({ kind: "building", target: type, left: def.bells, total: def.bells, tag });
+      else k.queue.push({ kind: "building", target: type, bells: def.bells, tag });
+    }
+    return { ok: true, cost };
+  }
+  function worksLevel(k, kind) { return kind === "keep" ? k.keep : kind === "walls" ? k.walls : k.guildLevel; }
+  function orderWorks(k, kind, tag) {
+    if (k.projects.concat(k.queue).some((p) => p.kind === kind)) return { ok: false, code: "IN_PROGRESS" };
+    const def = C.WORKS[kind][worksLevel(k, kind) + 1];
+    if (!def) return { ok: false, code: "MAX_LEVEL" };
+    if (kind === "guild" && !k.guild) return { ok: false, code: "CHOOSE_GUILD" };
+    const cost = { gold: def.gold, tools: def.tools };
+    const e = canPay(k, cost); if (e) return { ok: false, code: "INSUFFICIENT_STORES", ...e };
+    pay(k, cost);
+    if (k.projects.length < crews(k)) k.projects.push({ kind, target: kind, left: def.bells, total: def.bells, tag });
+    else k.queue.push({ kind, target: kind, bells: def.bells, tag });
+    return { ok: true, cost };
+  }
+  function clearCost(acres, n) { let c = 0; for (let i = 0; i < n; i++) c += Math.round(((acres + i) * (acres + i)) / 40) + 20; return c; }
+  function recruit(k, type, n) {
+    const def = C.T[type]; const cost = { gold: def.gold * n, arms: def.arms * n };
+    if (troopTotal(k) + n > troopCap(k)) return { ok: false, code: "TROOP_CAPACITY", need: n, have: troopCap(k) - troopTotal(k) };
+    if (k.commoners < n) return { ok: false, code: "NO_COMMONERS" };
+    const e = canPay(k, cost); if (e) return { ok: false, code: "INSUFFICIENT_STORES", ...e };
+    pay(k, cost); k.commoners -= n; k.training.push({ type, n, left: def.bells });
+    return { ok: true, cost };
+  }
+  const might = (k) => 10 * builtCount(k) + C.TYPES.reduce((a, t) => a + (k.home[t] + k.away[t]) * (C.T[t].atk + C.T[t].def), 0);
+  const levy = (k) => Math.floor(k.commoners / 10);
+  function forecast(k, bells) { const sim = clone(k); const out = []; for (let i = 0; i < bells; i++) out.push({ report: bell(sim), stocks: Object.assign({}, sim.s), commoners: sim.commoners, state: i === bells - 1 ? sim : null }); return out; }
+  function battle(o) {
+    const R = o.ap / o.dp, victory = o.ap > o.dp;
+    const La = Math.min(0.2, Math.max(0.03, (0.08 * o.dp) / o.ap));
+    const Ld = Math.min(0.15, Math.max(0.02, (0.06 * o.ap) / o.dp));
+    const cas = (list, L) => { if (!list) return []; const N = list.reduce((a, c) => a + c.n, 0); const total = Math.floor(L * N + 0.5); const parts = apportion(total, list.map((c, i) => ({ weight: c.n, rank: i }))); return list.map((c, i) => Object.assign({}, c, { lost: parts[i] })); };
+    return { R, victory, La, Ld, attackerLosses: cas(o.attackers, La), defenderLosses: cas(o.defenders, Ld) };
+  }
+  function plunder(o) {
+    const p = 0.1 + 0.1 * Math.min(1, Math.max(0, o.R - 1)); const take = {}; let sum = 0;
+    for (const s of C.STOCKS) { take[s] = Math.floor(p * Math.max(0, (o.stocks[s] || 0) - o.vault)); sum += take[s]; }
+    if (sum > o.carry) for (const s of C.STOCKS) take[s] = Math.floor((take[s] * o.carry) / sum);
+    return { p, take };
+  }
+  function start() {
+    return { bell: 0, acres: 50, keep: 1, walls: 0, guild: null, guildLevel: 0, dread: 0, armsPct: 30,
+      b: { cottage: 12, farm: 8, mine: 3, forge: 2, market: 2, barracks: 1 }, commoners: 190,
+      home: { spearman: 20, archer: 10, knight: 0 }, away: { spearman: 0, archer: 0, knight: 0 }, training: [],
+      s: { gold: 2000, grain: 1500, iron: 100, tools: 150, arms: 40 }, priority: ["farm", "mine", "forge", "market"], projects: [], queue: [] };
+  }
+  return { C, clone, builtCount, freeAcres, housing, troopCap, crews, staff, wages, troopGrain, apportion, bell, orderBuilding, orderWorks, worksLevel, clearCost, recruit, might, levy, forecast, battle, plunder, start, troopTotal, troopsAll, guildMult, dreadMult };
+})();
+
+/* ======================================================================
+   Vocabulary and formatting
+   ====================================================================== */
+const BUILD_TYPES = ["farm", "mine", "forge", "market", "cottage", "barracks"]; // also the start order within one order
+const B_ONE = { cottage: "Cottage", farm: "Farm", mine: "Mine", forge: "Forge", market: "Market", barracks: "Barracks", keep: "Keep", walls: "Walls", guild: "Guild" };
+const B_MANY = { cottage: "Cottages", farm: "Farms", mine: "Mines", forge: "Forges", market: "Markets", barracks: "Barracks" };
+const B_EFFECT = { cottage: "+15 housing", farm: "10 jobs · 3 grain per farmer", mine: "10 jobs · 1 iron per miner", forge: "10 jobs · each smith turns 1 iron into a tool or arm", market: "10 jobs · 4 gold per merchant · +150 caravan cargo", barracks: "+40 troop capacity" };
+const T_ONE = { spearman: "Spearman", archer: "Archer", knight: "Knight" };
+const T_MANY = { spearman: "Spearmen", archer: "Archers", knight: "Knights" };
+const T_ROLE = { spearman: "Holds the line", archer: "Strikes and holds", knight: "Strikes hard, travels fast" };
+const STORES = ["gold", "grain", "iron", "tools", "arms"];
+const S_NAME = { gold: "Gold", grain: "Grain", iron: "Iron", tools: "Tools", arms: "Arms" };
+const JOB = { farm: ["Farms", "farmers"], mine: ["Mines", "miners"], forge: ["Forges", "smiths"], market: ["Markets", "merchants"] };
+const GUILDS = { millers: "Millers (+10% grain per level)", miners: "Miners (+10% iron per level)", smiths: "Smiths (+10% forge throughput per level)", merchants: "Merchants (+10% merchant gold per level)", drillmasters: "Drillmasters (+5% troop attack and defense per level)" };
+const NF = new Intl.NumberFormat("en-US");
+const n = (x) => NF.format(Math.round(x));
+const sgn = (x) => (x > 0 ? "+" : x < 0 ? "−" : "±") + NF.format(Math.abs(Math.round(x)));
+const cls = (x) => (x > 0 ? "up" : x < 0 ? "down" : "flat");
+const arrow = (x) => (x > 0 ? "▲" : x < 0 ? "▼" : "◆");
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const plural = (k, one, many) => (k === 1 ? one : many);
+const comp2text = (c) => KOD.C.TYPES.filter((t) => c[t] > 0).map((t) => `${n(c[t])} ${c[t] === 1 ? T_ONE[t] : T_MANY[t]}`).join(", ") || "no troops";
+const costText = (c) => Object.keys(c).filter((r) => c[r] > 0).map((r) => `${n(c[r])} ${r}`).join(" · ");
+const D_OF = (list) => list.reduce((a, c) => a + c.n * KOD.C.T[c.type].def, 0);
+const A_OF = (c) => KOD.C.TYPES.reduce((a, t) => a + (c[t] || 0) * KOD.C.T[t].atk, 0);
+const DEF_OF = (c) => KOD.C.TYPES.reduce((a, t) => a + (c[t] || 0) * KOD.C.T[t].def, 0);
+const CARRY_OF = (c) => KOD.C.TYPES.reduce((a, t) => a + (c[t] || 0) * KOD.C.T[t].carry, 0);
+const ICON = {
+  kingdom: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V10l2-1V5h2.5v2H11V5h2v2h2.5V5H18v4l2 1v11z"/><path d="M10 21v-4a2 2 0 0 1 4 0v4"/></svg>',
+  muster: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20 17 7"/><path d="M15 5l4-1-1 4z"/><path d="M20 20 7 7"/><path d="M9 5 5 4l1 4z"/><path d="M7 15l2 2M17 15l-2 2"/></svg>',
+  frontier: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2.2 3 5 5 5 9a5 5 0 0 1-10 0c0-2.2 1.2-3.6 2.3-4.6.1 2 1 3.2 2.2 3.4C11 8.2 10.6 5.8 12 3z"/><path d="M5 21h14"/></svg>',
+  coalition: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3"/><path d="M6 4h12l-2.5 4.5L18 13H6"/></svg>',
+  chronicle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h10a3 3 0 0 1 3 3v15H9a3 3 0 0 1-3-3z"/><path d="M9 21a3 3 0 0 1 0-6h10"/><path d="M10 7h6M10 10h6"/></svg>'
+};
+const VIEWS = ["kingdom", "muster", "frontier", "coalition", "chronicle"];
+const VIEW_LABEL = { kingdom: "Kingdom", muster: "Muster", frontier: "Frontier", coalition: "Coalition", chronicle: "Chronicle" };
+
+/* ======================================================================
+   Sample worlds (invented data)
+   ====================================================================== */
+function midWorld() {
+  const k = KOD.start();
+  Object.assign(k, {
+    bell: 201, acres: 164, keep: 4, walls: 2, guild: "millers", guildLevel: 1, dread: 1, armsPct: 40,
+    b: { cottage: 58, farm: 40, mine: 18, forge: 12, market: 22, barracks: 5 }, commoners: 1004,
+    home: { spearman: 90, archer: 60, knight: 24 }, away: { spearman: 120, archer: 30, knight: 0 },
+    training: [{ type: "spearman", n: 20, left: 1 }],
+    s: { gold: 6840, grain: 1950, iron: 380, tools: 920, arms: 410 },
+    projects: [{ kind: "walls", target: "walls", left: 9, total: 16, tag: "pre" }, { kind: "building", target: "market", left: 2, total: 5, tag: "pre" }, { kind: "building", target: "cottage", left: 1, total: 3, tag: "pre" }],
+    queue: []
+  });
+  return {
+    scenario: "mid", k,
+    meta: { kingdom: "Hollowmere", ruler: "Lady Isolde Vane", coalition: "The Ashen Oath", role: "Sworn", banner: ["#2e4d7a", "#c9a14a", "#e8e1d0"], day: 9, phase: "The Long Dusk", nextIn: "23 min", firstClock: { bell: 202, hour: 15 }, season: 3 },
+    world: {
+      median: 858,
+      incoming: [{ id: "in1", from: "Ironhold", coalition: "Crown of Valemire", comp: { knight: 60, archer: 50, spearman: 30 }, arrive: 207, sent: 198 }],
+      exps: [{ id: "x0", kind: "garrison", dest: "greywatch", comp: { spearman: 120, archer: 30, knight: 0 }, depart: 180, arrive: 184, state: "stationed" }],
+      holds: [
+        { id: "greywatch", name: "Greywatch", travel: 4, status: "held", by: "ashen", allies: [{ owner: "Ser Aldric", type: "spearman", n: 80 }, { owner: "Brother Cael", type: "archer", n: 40 }], tide: { bell: 210, tp: 1180 }, x: 214, y: 58 },
+        { id: "emberstead", name: "Emberstead", travel: 4, status: "held", by: "ashen", allies: [{ owner: "Dame Wren", type: "spearman", n: 200 }, { owner: "Lord Osric", type: "archer", n: 130 }], tide: { bell: 218, tp: 1247 }, x: 232, y: 128 },
+        { id: "ravenmoor", name: "Ravenmoor", travel: 5, status: "held", by: "crown", dp: 1560, tide: { bell: 204, tp: 1169 }, x: 176, y: 196 },
+        { id: "mirefold", name: "Mirefold", travel: 5, status: "fallen", darkness: 540, entrench: { bell: 212, tp: 943 }, x: 150, y: 96 },
+        { id: "blackwater", name: "Blackwater Ford", travel: 5, status: "held", by: "crown", dp: 1020, tide: { bell: 215, tp: 1177 }, x: 206, y: 250 },
+        { id: "saltcairn", name: "Saltcairn", travel: 6, status: "held", by: "thorn", dp: 1140, tide: { bell: 208, tp: 945 }, x: 132, y: 300 },
+        { id: "vigil", name: "Vigil of Aurewynd", travel: 6, status: "unclaimed", militia: 707, tide: { bell: 213, tp: 943 }, x: 124, y: 22 }
+      ],
+      coalitions: { ashen: "The Ashen Oath", crown: "Crown of Valemire", thorn: "Thornwall Compact" },
+      standings: [{ id: "crown", name: "Crown of Valemire", renown: 4820, rate: 21, holds: 2 }, { id: "ashen", name: "The Ashen Oath", renown: 4410, rate: 21, holds: 2, mine: true }, { id: "thorn", name: "Thornwall Compact", renown: 3050, rate: 12, holds: 1 }, { id: "grey", name: "Grey Pilgrims", renown: 1240, rate: 0, holds: 0 }],
+      members: [
+        { kingdom: "Dunmarrow", ruler: "Ser Aldric", role: "Marshal", might: 3410, home: 820, status: "80 Spearmen at Greywatch", tone: "", seen: "within 1 h" },
+        { kingdom: "Hollowmere", ruler: "Lady Isolde Vane (you)", role: "Sworn", might: null, home: null, status: "Raid from Ironhold lands at bell 207", tone: "danger-t", seen: "now", you: true },
+        { kingdom: "Cael's Rest", ruler: "Brother Cael", role: "Captain", might: 2120, home: 410, status: "Grain runs out in 7 bells", tone: "warn-t", seen: "today" },
+        { kingdom: "Wrenfield", ruler: "Dame Wren", role: "Sworn", might: 3050, home: 540, status: "200 Spearmen at Emberstead", tone: "", seen: "within 1 h" },
+        { kingdom: "Osric's Reach", ruler: "Lord Osric", role: "Sworn", might: 2640, home: 480, status: "130 Archers at Emberstead", tone: "", seen: "2 days+" }
+      ],
+      orders: [
+        { id: "o1", kind: "reinforce", hold: "greywatch", title: "Reinforce Greywatch before the tide at bell 210", by: "Ser Aldric", posted: 198, pledges: [] },
+        { id: "o2", kind: "reclaim", hold: "mirefold", title: "Reclaim Mirefold: muster on bell 211, before it entrenches at 212", by: "Ser Aldric", posted: 199, pledges: [{ who: "Ser Aldric", what: "40 Knights", ap: 160 }, { who: "Dame Wren", what: "100 Archers", ap: 200 }, { who: "Lord Osric", what: "60 Knights", ap: 240 }] },
+        { id: "o3", kind: "supply", member: "Brother Cael", title: "Grain for Brother Cael: his granary empties in 7 bells", by: "Brother Cael (call for aid)", posted: 200, need: 700, pledges: [] }
+      ],
+      oath: { name: "Break the Tide", goal: "Repel 2 tides", progress: 1, of: 2, deadline: 236, reward: 150, contributions: [{ who: "Dame Wren", pct: 70 }, { who: "Lord Osric", pct: 30 }] },
+      word: "Greywatch is our anchor. Hold it through the tide at bell 210, then we take Mirefold back before the dark entrenches at 212.",
+      scout: { target: "Ironhold", bell: 196, dp: 455, might: 3240, stores: { gold: 3900, grain: 1200, iron: 300, tools: 150, arms: 200 } },
+      camps: [{ id: "reaver", name: "Reaver hall", tier: 3, dp: 400, travel: 3, loot: { gold: 1500, grain: 800, iron: 200, arms: 100 } }],
+      chronicle: [
+        { bell: 200, type: "coalition", title: "Brother Cael called for aid: grain", body: "His granary empties in 8 bells. The War Table has a supply order.", unread: true },
+        { bell: 199, type: "kingdom", title: "Farm complete", body: "+10 jobs. Farms now employ 400 farmers.", unread: true },
+        { bell: 198, type: "battles", title: "Incoming raid from Ironhold", body: "60 Knights, 50 Archers, 30 Spearmen (attack 370) arrive at bell 207. Your defense then: 689 with recruits.", unread: true },
+        { bell: 196, type: "battles", title: "Ironhold scouted your defenses", body: "Scouts from Ironhold (Crown of Valemire) counted your troops and stores. A raid often follows.", unread: true },
+        { bell: 194, type: "frontier", title: "Tide repelled at Emberstead", report: "emberstead194" },
+        { bell: 188, type: "coalition", title: "Oath sworn: Break the Tide", body: "Repel 2 tides by bell 236 for 150 renown. Sworn by Ser Aldric." },
+        { bell: 186, type: "battles", title: "Tide repelled at Greywatch: you earned renown", report: "greywatch186" },
+        { bell: 180, type: "frontier", title: "Mirefold fell to the Hollow Host", body: "A tide of 1,080 broke a garrison of 960. The Darkness holds it with 540; every kingdom suffers Dread −3% grain and gold until it is reclaimed." }
+      ]
+    }
+  };
+}
+function foundWorld() {
+  const k = KOD.start();
+  const holdNames = [["greywatch", "Greywatch", 4], ["emberstead", "Emberstead", 4], ["ravenmoor", "Ravenmoor", 5], ["mirefold", "Mirefold", 5], ["blackwater", "Blackwater Ford", 5], ["saltcairn", "Saltcairn", 6], ["vigil", "Vigil of Aurewynd", 6]];
+  const pos = { greywatch: [214, 58], emberstead: [232, 128], ravenmoor: [176, 196], mirefold: [150, 96], blackwater: [206, 250], saltcairn: [132, 300], vigil: [124, 22] };
+  return {
+    scenario: "found", k,
+    meta: { kingdom: "Ashvale", ruler: "Lord Edric Thorne", coalition: null, role: null, banner: ["#3e6a3b", "#d9d4c7", "#8e2f25"], day: 1, phase: "Kindling", nextIn: "38 min", season: 3 },
+    world: {
+      holds: holdNames.map(([id, name, travel], i) => ({ id, name, travel, status: "unclaimed", firstTide: 25 + Math.floor((24 * i) / 7), x: pos[id][0], y: pos[id][1] })),
+      camps: [
+        { id: "ashford", name: "Ashford outlaw camp", tier: 1, dp: 30, travel: 1, loot: { gold: 150, grain: 100, iron: 20 } },
+        { id: "holloway", name: "Brigand fort at Holloway", tier: 2, dp: 120, travel: 2, loot: { gold: 500, grain: 300, iron: 80, tools: 40 } }
+      ],
+      open: [
+        { name: "The Ashen Oath", members: 4, of: 6, policy: "Open to petitions", motto: "We hold what we swear." },
+        { name: "Crown of Valemire", members: 6, of: 6, policy: "Full", motto: "Order before dawn." },
+        { name: "Thornwall Compact", members: 3, of: 6, policy: "Invitation only", motto: "Root and wall." }
+      ],
+      exps: [],
+      chronicle: [{ bell: 0, type: "kingdom", title: "Ashvale is founded", body: "Protected from raids for 72 bells. You have 12 founding bells to learn the loop.", unread: true }]
+    },
+    found: { left: 12, used: 0, recon: null, flags: {}, choice: null }
+  };
+}
+
+/* ======================================================================
+   State
+   ====================================================================== */
+const S = { sim: { conflict: false, unknown: false, offline: false, expired: false }, session: null, asideOpen: false, protoOpen: false, chronFilter: "all", nav: "kingdom" };
+function resetFlows() {
+  S.f = {
+    build: { step: "plan", items: { cottage: 0, farm: 0, mine: 0, forge: 0, market: 0, barracks: 0 }, works: { keep: false, walls: false, guild: false }, guildPick: "millers" },
+    land: { step: "plan", n: 0 },
+    exch: { step: "plan", good: "grain", mode: "buy", n: 0 },
+    recruit: { step: "plan", items: { spearman: 0, archer: 0, knight: 0 } },
+    march: { step: "plan", dest: null, comp: { spearman: 0, archer: 0, knight: 0 }, depart: 0 },
+    caravan: { step: "plan", n: 500 }
+  };
+}
+function load(scenario) {
+  const w = scenario === "found" ? foundWorld() : midWorld();
+  S.scenario = w.scenario; S.k = w.k; S.meta = w.meta; S.world = w.world; S.found = w.found || null;
+  S.receiptSeq = 1; S.session = null; S.chronFilter = "all";
+  S.sim = { conflict: false, unknown: false, offline: false, expired: false };
+  resetFlows();
+  setMarchDest(scenario === "found" ? "ashford" : "greywatch");
+}
+
+/* ======================================================================
+   Derived values
+   ====================================================================== */
+function bellTime(b) {
+  if (S.scenario !== "mid") return "";
+  const h = (((S.meta.firstClock.hour + (b - S.meta.firstClock.bell)) % 24) + 24) % 24;
+  return `≈ ${String(h).padStart(2, "0")}:00`;
+}
+const bellAt = (b) => (S.scenario === "mid" ? `bell ${b} (${bellTime(b)})` : `bell ${b}`);
+function nextBell() {
+  const f = KOD.forecast(S.k, 1)[0];
+  const d = {}; STORES.forEach((s) => (d[s] = f.stocks[s] - S.k.s[s]));
+  return { f, r: f.report, d, people: f.commoners - S.k.commoners };
+}
+function grainOutlook(k, bells = 24) {
+  const fc = KOD.forecast(k, bells);
+  const path = fc.map((x) => x.stocks.grain);
+  const zero = path.findIndex((g) => g <= 0);
+  const hunger = fc.findIndex((x) => x.report.events.includes("hunger"));
+  const net12 = fc.length >= 12 ? fc[11].stocks.grain - fc[10].stocks.grain : 0; // net during the 12th bell
+  return { path, emptyBell: zero >= 0 ? k.bell + zero + 1 : null, hungerBell: hunger >= 0 ? k.bell + hunger + 1 : null, end: path[path.length - 1], net12 };
+}
+function homeTroopsAt(b, planned) {
+  const h = Object.assign({}, S.k.home);
+  for (const t of S.k.training) if (S.k.bell + t.left <= b) h[t.type] += t.n;
+  for (const e of S.world.exps) {
+    if (e.state === "scheduled" && e.depart <= b) KOD.C.TYPES.forEach((t) => (h[t] -= e.comp[t] || 0));
+    if ((e.kind === "raid" || e.kind === "camp") && e.state === "marching" && e.ret <= b) KOD.C.TYPES.forEach((t) => (h[t] += e.survivors ? e.survivors[t] : e.comp[t] || 0));
+  }
+  if (planned && (planned.depart <= b)) KOD.C.TYPES.forEach((t) => (h[t] -= planned.comp[t] || 0));
+  return h;
+}
+function homeDPof(h) {
+  const base = h.spearman * 3 + h.archer * 2 + h.knight * 1 + KOD.levy(S.k);
+  return { base, dp: Math.round(base * (1 + 0.1 * S.k.walls)) };
+}
+function holdById(id) { return S.world.holds.find((h) => h.id === id); }
+function yourContingentsAt(hold, bell, planned) {
+  const c = { spearman: 0, archer: 0, knight: 0 };
+  for (const e of S.world.exps) if (e.dest === hold.id && e.kind === "garrison" && (e.state === "stationed" || ((e.state === "marching" || e.state === "scheduled") && e.arrive <= bell))) KOD.C.TYPES.forEach((t) => (c[t] += e.comp[t] || 0));
+  if (planned && planned.arrive <= bell) KOD.C.TYPES.forEach((t) => (c[t] += planned.comp[t] || 0));
+  return c;
+}
+function holdForecast(hold, planned) {
+  const yours = yourContingentsAt(hold, hold.tide.bell, planned);
+  const list = (hold.allies || []).filter((c) => c.owner === "Ser Aldric" || c.owner === "Dame Wren").concat(
+    KOD.C.TYPES.filter((t) => yours[t] > 0).map((t) => ({ owner: "you", type: t, n: yours[t] })),
+    (hold.allies || []).filter((c) => !(c.owner === "Ser Aldric" || c.owner === "Dame Wren")));
+  const D = D_OF(list); const dp = Math.round(D * 1.5);
+  return { list, D, dp, tp: hold.tide.tp, stands: dp >= hold.tide.tp, yours };
+}
+function minToHold(hold, type) {
+  const base = holdForecast(hold).D;
+  for (let k = 0; k < 2000; k++) if (Math.round((base + k * KOD.C.T[type].def) * 1.5) >= hold.tide.tp) return k;
+  return null;
+}
+function grainSentence(g) {
+  if (!g.emptyBell) return `Stays above zero; ${n(g.end)} in 24 bells.`;
+  return g.hungerBell === g.emptyBell ? `Runs dry at bell ${g.emptyBell}; people start leaving that bell.` : `Empty at bell ${g.emptyBell}; hunger from bell ${g.hungerBell}.`;
+}
+function myHolds() { return S.scenario === "mid" ? S.world.holds.filter((h) => h.by === "ashen") : []; }
+
+/* ======================================================================
+   Rendering: masthead, rail, aside
+   ====================================================================== */
+const $ = (sel, root = document) => root.querySelector(sel);
+function renderMast() {
+  const m = S.meta, nb = nextBell();
+  const sub = S.scenario === "mid" ? `${esc(m.ruler)} · ${esc(m.role)} of ${esc(m.coalition)}` : `${esc(m.ruler)} · no coalition yet`;
+  const clock = S.scenario === "mid"
+    ? `<p class="clock-bell"><span class="label">Bell</span> ${S.k.bell} <span class="phase-chip">${esc(m.phase)}</span></p><p class="dim">Day ${m.day} of 28 · next bell in ${esc(m.nextIn)} · ${bellTime(S.k.bell + 1)}</p>`
+    : `<p class="clock-bell"><span class="label">Bell</span> ${S.k.bell} <span class="phase-chip">Founding</span></p><p class="dim">Day 1 · protected until bell 72 · world bell in ${esc(m.nextIn)}</p>`;
+  $("#masthead").innerHTML = `
+    <div class="mast-row">
+      <p class="brand"><span class="brand-mark" aria-hidden="true"></span><span>Knights of Darkness</span></p>
+      <button class="proto-chip" type="button" data-act="toggle-proto" aria-expanded="${S.protoOpen}" aria-controls="proto">Design prototype · invented sample data <span aria-hidden="true">${S.protoOpen ? "▴" : "▾"}</span></button>
+    </div>
+    <div class="mast-id">
+      <span class="shield" aria-hidden="true" style="--t1:${m.banner[0]};--t2:${m.banner[1]};--c:${m.banner[2]}"></span>
+      <div class="id-text"><p class="k-name">${esc(m.kingdom)}</p><p class="k-sub">${sub}</p></div>
+      <div class="clock">${clock}</div>
+    </div>
+    <ul class="stores" aria-label="Stores, with the change expected at the next bell">
+      ${STORES.map((s) => `<li class="store"><span class="label">${S_NAME[s]}</span><span class="store-val">${n(S.k.s[s])}</span><span class="delta ${cls(nb.d[s])}"><span aria-hidden="true">${arrow(nb.d[s])}</span> ${sgn(nb.d[s])}<span class="sr-only"> per bell</span></span></li>`).join("")}
+    </ul>
+    <div class="proto" id="proto" ${S.protoOpen ? "" : "hidden"}>
+      <p><strong>Design prototype.</strong> Kingdoms, players and numbers are invented. Forecasts come from an embedded model of the blueprint's rules. Use these controls to see the other scenario and the error and recovery states.</p>
+      <fieldset><legend>Scenario</legend>
+        <label><input type="radio" name="scenario" value="mid" ${S.scenario === "mid" ? "checked" : ""}> Mid-season: Hollowmere, day 9</label>
+        <label><input type="radio" name="scenario" value="found" ${S.scenario === "found" ? "checked" : ""}> First session: Ashvale, founding</label>
+      </fieldset>
+      <fieldset><legend>Simulate on your next Confirm or Dispatch</legend>
+        <label><input type="checkbox" data-sim="conflict" ${S.sim.conflict ? "checked" : ""}> A bell rings during review</label>
+        <label><input type="checkbox" data-sim="unknown" ${S.sim.unknown ? "checked" : ""}> Response lost (outcome unknown)</label>
+        <label><input type="checkbox" data-sim="offline" ${S.sim.offline ? "checked" : ""}> Connection lost</label>
+        <label><input type="checkbox" data-sim="expired" ${S.sim.expired ? "checked" : ""}> Session expired</label>
+      </fieldset>
+      <div><button class="btn btn-sm" type="button" data-act="reset">Reset this scenario</button></div>
+    </div>`;
+}
+function renderRail() {
+  const unread = S.world.chronicle.filter((e) => e.unread).length;
+  const day = S.meta.day, pct = Math.round((day / 28) * 100);
+  $("#rail").innerHTML = `
+    <p class="brand"><span class="brand-mark" aria-hidden="true"></span><span>Knights of Darkness</span></p>
+    <ul class="nav">
+      ${VIEWS.map((v) => `<li><a href="#${v}" ${S.nav === v ? 'aria-current="page"' : ""}>${ICON[v]}<span>${VIEW_LABEL[v]}</span>${v === "chronicle" && unread ? `<span class="badge" aria-label="${unread} unread">${unread}</span>` : ""}</a></li>`).join("")}
+    </ul>
+    <div class="rail-season"><p class="label">Season ${S.meta.season}</p><p>Day ${day} of 28</p><div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div><p class="faint">${esc(S.meta.phase)}</p></div>`;
+}
+function runwayBars(path, label) {
+  const max = Math.max(1, ...path);
+  return `<div class="runway" aria-hidden="true">${path.map((g) => `<i class="${g <= 0 ? "zero" : g < max * 0.25 ? "low" : ""}" style="height:${g <= 0 ? 4 : Math.max(3, Math.round((g / max) * 100))}%"></i>`).join("")}</div><p class="sr-only">${esc(label)}</p>`;
+}
+function counsel() {
+  const out = [];
+  if (S.scenario === "mid") {
+    for (const h of myHolds()) {
+      const yours = yourContingentsAt(h, 9999);
+      if (!yours.spearman && !yours.archer && !yours.knight) continue;
+      const f = holdForecast(h);
+      if (!f.stands) { const m = minToHold(h, "spearman"); out.push({ sev: "danger", sym: "!", title: `${h.name} falls at bell ${h.tide.bell} unless reinforced`, body: `Garrison defense ${n(f.dp)} vs tide ${n(f.tp)}. Send at least ${m} Spearmen; they need ${h.travel} bells.`, actions: [{ label: "Plan reinforcement", act: "preset-march", arg: `${h.id}:spearman:${m}` }] }); }
+      else out.push({ sev: "ok", sym: "✓", title: `${h.name} should hold at bell ${h.tide.bell}`, body: `Defense ${n(f.dp)} vs tide ${n(f.tp)}, counting troops already on the march.`, actions: [] });
+    }
+    const g = grainOutlook(S.k);
+    if (g.emptyBell) out.push({ sev: g.hungerBell && g.hungerBell - S.k.bell <= 8 ? "danger" : "warning", sym: "▲", title: `Granary runs dry at bell ${g.emptyBell}`, body: `Grain changes ${sgn(nextBell().d.grain)} per bell. ${g.hungerBell === g.emptyBell ? "People start leaving that same bell." : `People start leaving at bell ${g.hungerBell}.`} Four more Farms would balance it.`, actions: [{ label: "Plan 4 Farms", act: "preset-build", arg: "farm:4" }, { label: "Buy grain", act: "goto", arg: "kingdom:p-exchange" }] });
+    const idle = KOD.crews(S.k) - S.k.projects.length;
+    if (idle > 0 && out.length < 3) out.push({ sev: "info", sym: "◆", title: `${idle} ${plural(idle, "crew", "crews")} idle`, body: `${KOD.freeAcres(S.k)} free acres · gold ${sgn(nextBell().d.gold)} per bell.`, actions: [{ label: "Plan construction", act: "goto", arg: "kingdom:p-build" }] });
+  } else {
+    const w = KOD.staff(S.k), F = S.found;
+    if (!F.flags.workplace && w.idle > 10) out.push({ sev: "warning", sym: "▲", title: `${w.idle} people are idle`, body: "Each workplace employs 10. Idle people pay tithe but produce nothing else.", actions: [{ label: "Plan a workplace", act: "goto", arg: "kingdom:p-build" }] });
+    if (F.used === 0) out.push({ sev: "info", sym: "◆", title: "Ring your first founding bell", body: "See the forecast, then check it against what actually happened.", actions: [{ label: "Go to Founding", act: "goto", arg: "kingdom:p-founding" }] });
+    const free = KOD.housing(S.k) - S.k.commoners;
+    if (!F.flags.cottage && free <= 40) out.push({ sev: "info", sym: "◆", title: `Housing ${n(S.k.commoners)} of ${n(KOD.housing(S.k))}`, body: "New people arrive each bell while there is room and grain. A Cottage adds 15 places.", actions: [{ label: "Plan a Cottage", act: "preset-build", arg: "cottage:1" }] });
+    if (!F.flags.ashford && out.length < 3) out.push({ sev: "warning", sym: "⚔", title: "Outlaws hold Ashford", body: "Defense 30, 1 bell away. A safe first battle with loot.", actions: [{ label: "Plan the march", act: "preset-march", arg: "ashford:" }] });
+    if (!F.flags.banner && out.length < 3) out.push({ sev: "info", sym: "◆", title: "Choose your banner", body: "Coalitions hold the March together. Petition one, found one, or stand alone for now.", actions: [{ label: "See coalitions", act: "goto", arg: "coalition:p-coal" }] });
+    if (!F.flags.west && out.length < 3) out.push({ sev: "info", sym: "◆", title: "Look west", body: "Seven Holds await garrisons. The first tides probe from bell 25.", actions: [{ label: "Open the Frontier", act: "goto", arg: "frontier:p-holds" }] });
+  }
+  return out.slice(0, 3);
+}
+function renderAside() {
+  const nb = nextBell(), r = nb.r, k = S.k;
+  const why = {
+    gold: `tithe ${n(r.produced.tithe)} + merchants ${n(r.produced.merch)}${k.dread ? ` − Dread ${k.dread * 3}%` : ""} = ${n(r.produced.gold)}; wages −${n(r.consumed.wages)}`,
+    grain: `farms ${n(r.produced.grain)}${k.guild === "millers" ? " (Millers +10%" + (k.dread ? `, Dread −${k.dread * 3}%` : "") + ")" : ""}; eaten −${n(r.consumed.grain)} (people ${n(r.consumed.commonerGrain)}, troops ${n(r.consumed.troopGrain)})`,
+    iron: `mined ${n(r.produced.iron)}; forged −${n(r.produced.ironUsed)}`,
+    tools: `forge, ${100 - k.armsPct}% of smiths`,
+    arms: `forge, ${k.armsPct}% of smiths`
+  };
+  const g = grainOutlook(k);
+  const comps = r.completed.map((c) => B_ONE[c.target] + (c.kind === "building" ? "" : " level")).concat(Object.keys(r.trained).map((t) => `${r.trained[t]} ${T_MANY[t]} ready`));
+  const cs = counsel();
+  const inc = S.scenario === "mid" ? S.world.incoming[0] : null;
+  let incHtml = "";
+  if (inc) {
+    const ap = A_OF(inc.comp), at = homeDPof(homeTroopsAt(inc.arrive)).dp, holds = at >= ap;
+    incHtml = `<section class="panel"><h2>Incoming</h2><p style="margin-top:8px"><strong>Raid from ${esc(inc.from)}</strong> <span class="faint">(${esc(inc.coalition)})</span></p><p class="dim">${comp2text(inc.comp)} · attack ${n(ap)} · arrives ${bellAt(inc.arrive)}</p><p class="verdict ${holds ? "ok-t" : "danger-t"}" style="margin-top:6px">${holds ? "✓ Holds" : "✕ Breaks through"}: your defense then ${n(at)} vs ${n(ap)}</p><div class="actions"><a class="btn btn-sm" href="#muster" data-act="goto" data-arg="muster:p-defense">Open Muster</a></div></section>`;
+  } else if (S.scenario === "found") {
+    incHtml = `<section class="panel"><h2>Protection</h2><p class="dim" style="margin-top:8px">No kingdom can raid you until bell 72. Holds and your outlaw camps are open to you.</p></section>`;
+  }
+  const head = S.scenario === "mid" ? `Bell ${k.bell + 1} · ${bellTime(k.bell + 1)} · assuming no new orders` : `Next bell (founding or world) · assuming no new orders`;
+  const ring = S.scenario === "found" ? `<div class="actions"><button class="btn btn-primary" type="button" data-act="ring" data-n="1" ${S.found.left ? "" : "disabled"}>Ring founding bell</button><span class="faint">${S.found.left} left</span></div>` : "";
+  $("#aside").className = "aside" + (S.asideOpen ? " open" : "");
+  $("#aside").innerHTML = `
+    <button class="aside-toggle" type="button" data-act="toggle-aside" aria-expanded="${S.asideOpen}" aria-controls="aside-body"><span><strong>Next bell</strong> · gold ${sgn(nb.d.gold)} · grain ${sgn(nb.d.grain)} · ${cs.length} counsel</span><span class="chev" aria-hidden="true">▾</span></button>
+    <div class="aside-body" id="aside-body">
+      <section class="panel" aria-labelledby="nb-h">
+        <h2 id="nb-h">Next bell</h2>
+        <p class="fine" style="margin-top:4px">${head}</p>
+        <dl class="nb-lines">
+          ${STORES.map((s) => `<dt>${S_NAME[s]}</dt><dd class="${cls(nb.d[s])}">${sgn(nb.d[s])}</dd><dd class="why">${why[s]}</dd>`).join("")}
+        </dl>
+        <p style="margin-top:8px">People ${sgn(nb.people)} <span class="faint">(${n(k.commoners)} → ${n(nb.f.commoners)} of ${n(KOD.housing(nb.f.state || k))} housing)</span></p>
+        ${comps.length ? `<p class="dim">Completes: ${esc(comps.join(" · "))}</p>` : ""}
+        <p class="label" style="margin-top:10px">Grain, next 24 bells</p>
+        ${runwayBars(g.path, `Grain over the next 24 bells: from ${n(k.s.grain)} to ${n(g.end)}.`)}
+        <p class="fine ${g.emptyBell ? "danger-t" : ""}">${grainSentence(g)}</p>
+        ${ring}
+      </section>
+      <section class="panel" aria-labelledby="cn-h">
+        <h2 id="cn-h">Counsel</h2>
+        <ol class="counsel-list" style="margin-top:10px">
+          ${cs.map((c) => `<li class="cn ${c.sev}"><p class="cn-title"><span class="sym ${c.sev === "danger" ? "danger-t" : c.sev === "warning" ? "warn-t" : c.sev === "ok" ? "ok-t" : "info-t"}" aria-hidden="true">${c.sym}</span><span><span class="sr-only">${c.sev === "danger" ? "Danger: " : c.sev === "warning" ? "Warning: " : c.sev === "ok" ? "All right: " : ""}</span>${esc(c.title)}</span></p><p>${esc(c.body)}</p>${c.actions.length ? `<div class="actions">${c.actions.map((a) => `<button class="btn btn-sm" type="button" data-act="${a.act}" data-arg="${esc(a.arg)}">${esc(a.label)}</button>`).join("")}</div>` : ""}</li>`).join("") || `<li class="cn ok"><p class="cn-title">Nothing urgent.</p></li>`}
+        </ol>
+      </section>
+      ${incHtml}
+    </div>`;
+}
+
+/* ======================================================================
+   Generic preview → review → commit → receipt flow
+   ====================================================================== */
+const FLOWS = {};
+function flowShell(name) {
+  const F = FLOWS[name], st = S.f[name];
+  if (st.step === "review") {
+    const offline = S.sim.offline;
+    return `<div class="review" id="${name}-review" tabindex="-1"><h4>Review: ${esc(F.title())}</h4>${F.review()}
+      ${offline ? `<p class="msg warn">Connection lost: orders are paused. Your plan is kept, and Confirm comes back when you reconnect.</p>` : ""}
+      <div class="actions"><button class="btn btn-primary" type="button" data-act="confirm" data-flow="${name}" ${offline ? "disabled" : ""}>${esc(F.confirmLabel || "Confirm order")}</button><button class="btn btn-ghost" type="button" data-act="back" data-flow="${name}">Back to plan</button></div></div>`;
+  }
+  if (st.step === "pending") return `<div class="pending" role="status"><span class="spinner" aria-hidden="true"></span><span>${esc(F.pendingLabel || "Ordering…")} Other orders are paused until this one is answered.</span></div>`;
+  if (st.step === "unknown") return `<div class="pending" role="status"><span class="spinner" aria-hidden="true"></span><span>The connection dropped before the answer arrived. Checking with the server whether your order went through (idempotency key ${esc(st.key)}). Nothing will be sent twice.</span></div>`;
+  if (st.step === "receipt") return `<div class="receipt" id="${name}-result" tabindex="-1"><h4>✓ ${esc(st.receipt.title)}</h4>${st.receipt.html}${st.note ? `<p class="fine" style="margin-top:6px">${esc(st.note)}</p>` : ""}<p class="fine" style="margin-top:6px">Receipt ${esc(st.receipt.id)} is saved to the Chronicle.</p><div class="actions"><button class="btn" type="button" data-act="again" data-flow="${name}">${esc(F.againLabel || "Plan more")}</button></div></div>`;
+  if (st.step === "error") return `<div class="errorbox" id="${name}-result" tabindex="-1"><h4>Not ordered</h4><p>${esc(st.error)}</p><p class="fine" style="margin-top:6px">Nothing changed in your kingdom, and your plan is kept.</p><div class="actions"><button class="btn" type="button" data-act="back" data-flow="${name}">Back to plan</button></div></div>`;
+  if (st.step === "conflict") return `<div class="conflict" id="${name}-result" tabindex="-1"><h4>Your kingdom changed while you reviewed</h4><p>Bell ${S.k.bell} rang before your order arrived, so nothing was ordered. What changed:</p><ul class="list-dots" style="margin-top:6px">${st.conflict.map((c) => `<li>${esc(c)}</li>`).join("")}</ul><div class="actions"><button class="btn btn-primary" type="button" data-act="review" data-flow="${name}">Review the updated plan</button><button class="btn btn-ghost" type="button" data-act="back" data-flow="${name}">Edit plan</button></div></div>`;
+  const pv = F.preview();
+  return `<div class="preview">${pv.html}<div class="actions"><button class="btn btn-primary" type="button" data-act="review" data-flow="${name}" ${pv.ok ? "" : "disabled"}>${esc(F.reviewLabel || "Review order")}</button>${pv.clear ? `<button class="btn btn-ghost" type="button" data-act="clear" data-flow="${name}">Clear</button>` : ""}</div></div>`;
+}
+function refreshFlow(name, focusSel) {
+  const box = document.getElementById("flow-" + name);
+  if (box) box.innerHTML = flowShell(name);
+  if (focusSel) focus(focusSel);
+}
+function snapshot() { return { s: Object.assign({}, S.k.s), commoners: S.k.commoners, bell: S.k.bell, b: Object.assign({}, S.k.b), projects: S.k.projects.length, home: Object.assign({}, S.k.home) }; }
+function worldBell() {
+  const before = snapshot();
+  const r = KOD.bell(S.k);
+  if (S.scenario === "mid") { S.meta.nextIn = "60 min"; }
+  processExpeditions();
+  const ch = [];
+  STORES.forEach((s) => { if (S.k.s[s] !== before.s[s]) ch.push(`${S_NAME[s]} ${n(before.s[s])} → ${n(S.k.s[s])}`); });
+  if (S.k.commoners !== before.commoners) ch.push(`People ${n(before.commoners)} → ${n(S.k.commoners)}`);
+  r.completed.forEach((c) => ch.push(`${B_ONE[c.target]}${c.kind === "building" ? "" : " level"} completed; a crew is free`));
+  Object.keys(r.trained).forEach((t) => ch.push(`${r.trained[t]} ${T_MANY[t]} finished training`));
+  S.world.chronicle.unshift({ bell: S.k.bell, type: "kingdom", title: `Bell ${S.k.bell} rang`, body: ch.join(". ") + ".", unread: true });
+  return ch;
+}
+function confirmFlow(name) {
+  const F = FLOWS[name], st = S.f[name];
+  if (S.sim.offline) return;
+  if (S.sim.expired) { S.session = { flow: name }; renderMain(); focus("#session-h"); say("Your session has ended. Sign in to continue; your plan is kept.", true); return; }
+  const pv = F.preview();
+  if (!pv.ok) { st.step = "error"; st.error = pv.errorText || "This order is no longer valid."; refreshFlow(name, `#${name}-result`); return; }
+  st.key = "k-" + Math.random().toString(16).slice(2, 10);
+  st.step = "pending"; refreshFlow(name); say(F.pendingLabel || "Ordering…");
+  setTimeout(() => {
+    if (S.sim.conflict) {
+      S.sim.conflict = false;
+      st.conflict = worldBell(); st.step = "conflict";
+      renderAll(); focus(`#${name}-result`); say("Your kingdom changed while you reviewed. Nothing was ordered.", true); return;
+    }
+    const finish = (note) => {
+      const res = F.apply();
+      if (!res.ok) { st.step = "error"; st.error = res.error; }
+      else { st.step = "receipt"; st.receipt = res.receipt; st.note = note || ""; S.world.chronicle.unshift({ bell: S.k.bell, type: res.chronType || "kingdom", title: res.receipt.title, body: res.receipt.text, unread: false }); }
+      renderAll(); focus(`#${name}-result`); say(st.step === "receipt" ? `${res.receipt.title}. ${res.receipt.text}` : `Not ordered. ${st.error}`, st.step !== "receipt");
+    };
+    if (S.sim.unknown) {
+      S.sim.unknown = false; st.step = "unknown"; refreshFlow(name); say("Checking whether your order went through.");
+      setTimeout(() => finish("Confirmed after the connection recovered. The server matched your idempotency key, so the order was applied exactly once."), 1500);
+      return;
+    }
+    finish();
+  }, 650);
+}
+const receiptId = () => `KOD-${S.k.bell}-${String(S.receiptSeq++).padStart(3, "0")}`;
+
+/* ---------- construction ---------- */
+function planBuildState() {
+  const st = S.f.build, k2 = KOD.clone(S.k);
+  let cost = { gold: 0, tools: 0 }, err = null, count = 0;
+  for (const t of BUILD_TYPES) if (st.items[t] > 0) {
+    const r = KOD.orderBuilding(k2, t, st.items[t], "new");
+    if (!r.ok) { err = err || r; break; }
+    cost.gold += r.cost.gold; cost.tools += r.cost.tools; count += st.items[t];
+  }
+  if (!err) for (const w of ["keep", "walls", "guild"]) if (st.works[w]) {
+    if (w === "guild" && !k2.guild) k2.guild = st.guildPick;
+    const r = KOD.orderWorks(k2, w, "new");
+    if (!r.ok) { err = err || Object.assign({ works: w }, r); break; }
+    cost.gold += r.cost.gold; cost.tools += r.cost.tools; count += 1;
+  }
+  return { k2, cost, err, count };
+}
+function completionsOf(k2) {
+  const sim = KOD.clone(k2), out = [];
+  const want = sim.projects.concat(sim.queue).filter((p) => p.tag === "new").length;
+  for (let i = 1; i <= 60 && out.length < want; i++) { const r = KOD.bell(sim); r.completed.filter((c) => c.tag === "new").forEach((c) => out.push({ what: c.target, kind: c.kind, bell: S.k.bell + i })); }
+  return out;
+}
+function errText(e) {
+  if (!e) return "";
+  if (e.code === "NO_FREE_ACRES") return `Not enough free acres: need ${e.need}, have ${e.have}. Clear land below (next acre ${n(KOD.clearCost(S.k.acres, 1))} gold).`;
+  if (e.code === "INSUFFICIENT_STORES") { const short = e.need - e.have; const fix = e.res === "tools" ? ` Buy ${n(Math.ceil(short / 10) * 10)} tools for ${n(Math.ceil(short / 10) * 100)} gold, or wait for the forge.` : e.res === "gold" ? ` At ${sgn(nextBell().d.gold)} gold per bell, wait about ${Math.max(1, Math.ceil(short / Math.max(1, nextBell().d.gold)))} bells.` : ""; return `Not enough ${e.res}: need ${n(e.need)}, have ${n(e.have)}.${fix}`; }
+  if (e.code === "IN_PROGRESS") return `${B_ONE[e.works]} is already under construction; one level at a time.`;
+  if (e.code === "MAX_LEVEL") return `${B_ONE[e.works]} is at its highest level.`;
+  if (e.code === "TROOP_CAPACITY") return `Troop capacity: room for ${e.have} more. Build Barracks (+40) or upgrade the Keep (+40).`;
+  return "This order is not possible right now.";
+}
+FLOWS.build = {
+  title() { const st = S.f.build; const parts = BUILD_TYPES.filter((t) => st.items[t] > 0).map((t) => `${st.items[t]} ${st.items[t] === 1 ? B_ONE[t] : B_MANY[t]}`); ["keep", "walls", "guild"].forEach((w) => { if (st.works[w]) parts.push(`${B_ONE[w]} level ${KOD.worksLevel(S.k, w) + 1}`); }); return parts.join(", ") || "construction"; },
+  preview() {
+    const st = S.f.build, P = planBuildState();
+    if (!P.count && !P.err) return { ok: false, html: `<p class="dim">Choose buildings or works above to see the cost, timing and effect, worked out the same way the server would.</p>` };
+    if (P.err) return { ok: false, clear: true, errorText: errText(P.err), html: `<h4>Preview</h4><p class="msg error" role="alert">${esc(errText(P.err))}</p>` };
+    const comps = completionsOf(P.k2);
+    const busyAfter = Math.min(KOD.crews(P.k2), P.k2.projects.length);
+    const queued = P.k2.queue.length;
+    const before = grainOutlook(S.k), after = grainOutlook(P.k2);
+    const grouped = {}; comps.forEach((c) => { const key = c.what + "@" + c.bell; grouped[key] = grouped[key] || { what: c.what, kind: c.kind, bell: c.bell, n: 0 }; grouped[key].n++; });
+    const effects = [];
+    const add = (t, f) => { if (st.items[t]) effects.push(f(st.items[t])); };
+    add("farm", (q) => `+${n(Math.floor(q * 10 * 3 * KOD.guildMult(S.k, "millers") * KOD.dreadMult(S.k)))} grain per bell`);
+    add("mine", (q) => `+${n(q * 10)} iron per bell`);
+    add("market", (q) => `+${n(Math.floor(q * 10 * 4 * KOD.dreadMult(S.k)))} gold per bell, +${n(q * 150)} cargo`);
+    add("forge", (q) => `+${n(q * 10)} forge throughput (iron permitting)`);
+    add("cottage", (q) => `+${n(q * 15)} housing`);
+    add("barracks", (q) => `+${n(q * 40)} troop capacity`);
+    const showGrain = st.items.farm || st.items.cottage;
+    const html = `<h4>Preview</h4>
+      <dl class="kv">
+        <dt>Cost now</dt><dd><strong>${costText(P.cost)}</strong></dd>
+        <dt>Stores after</dt><dd>gold ${n(P.k2.s.gold)} · tools ${n(P.k2.s.tools)}</dd>
+        <dt>Acres</dt><dd>${KOD.freeAcres(P.k2)} free after this order</dd>
+        <dt>Crews</dt><dd>${busyAfter} of ${KOD.crews(P.k2)} busy${queued ? ` · ${queued} queued, starting as crews free up` : ""}</dd>
+        <dt>When complete</dt><dd>${effects.length ? esc(effects.join(" · ")) : "Works effects apply at completion"}</dd>
+      </dl>
+      <ul class="list-dots" style="margin-top:8px">${Object.values(grouped).map((g) => `<li>${g.n > 1 ? g.n + " × " : ""}${g.kind === "building" ? B_ONE[g.what] : B_ONE[g.what] + " level " + (KOD.worksLevel(S.k, g.what) + 1)}: ready at ${bellAt(g.bell)}</li>`).join("")}</ul>
+      ${showGrain ? `<div class="runway-pair"><div><p class="label">Grain, next 24 bells: now</p>${runwayBars(before.path, `Without this order: ${grainSentence(before)}`)}<p class="fine">${before.emptyBell ? `<span class="danger-t">Runs dry at bell ${before.emptyBell}</span>` : `${n(before.end)} in 24 bells`}</p></div><div><p class="label">With this order</p>${runwayBars(after.path, `With this order: ${grainSentence(after)}`)}<p class="fine">${after.emptyBell ? `<span class="danger-t">Runs dry at bell ${after.emptyBell}</span>` : `${n(after.end)} in 24 bells · ${sgn(after.net12)} per bell by the 12th bell`}</p></div></div>` : ""}`;
+    return { ok: true, clear: true, html };
+  },
+  review() {
+    const P = planBuildState(), comps = completionsOf(P.k2);
+    const first = comps.length ? comps[0].bell : null, last = comps.length ? comps[comps.length - 1].bell : null;
+    return `<p>You pay <strong>${costText(P.cost)}</strong> now. ${first ? `Completion runs from ${bellAt(first)}${last !== first ? ` to ${bellAt(last)}` : ""}.` : ""}</p>
+      <p style="margin-top:6px">Afterwards: gold ${n(P.k2.s.gold)} · tools ${n(P.k2.s.tools)} · ${KOD.freeAcres(P.k2)} free acres.</p>
+      <p class="fine" style="margin-top:6px">Cancelling before a project starts refunds 100%. After it starts, the refund is 50%.</p>`;
+  },
+  apply() {
+    const P = planBuildState(); if (P.err) return { ok: false, error: errText(P.err) };
+    const comps = completionsOf(P.k2);
+    const st = S.f.build;
+    const title = `Ordered ${FLOWS.build.title()}`;
+    if (st.works.guild && !S.k.guild) P.k2.guild = st.guildPick;
+    P.k2.projects.forEach((p) => { if (p.tag === "new") p.tag = "ordered"; }); P.k2.queue.forEach((p) => { if (p.tag === "new") p.tag = "ordered"; });
+    S.k = P.k2;
+    if (S.found) { if (["farm", "mine", "forge", "market"].some((t) => st.items[t] > 0)) S.found.flags.workplace = true; if (st.items.cottage > 0) S.found.flags.cottage = true; }
+    st.items = { cottage: 0, farm: 0, mine: 0, forge: 0, market: 0, barracks: 0 }; st.works = { keep: false, walls: false, guild: false };
+    const text = `Paid ${costText(P.cost)}. ` + comps.map((c) => `${B_ONE[c.what]}${c.kind === "building" ? "" : ` level ${KOD.worksLevel(P.k2, c.what) + 1}`} at bell ${c.bell}`).join(", ") + ".";
+    const groups = []; comps.forEach((c) => { const g = groups.find((x) => x.what === c.what && x.bell === c.bell); if (g) g.n++; else groups.push({ what: c.what, kind: c.kind, bell: c.bell, n: 1 }); });
+    return { ok: true, receipt: { id: receiptId(), title, text, html: `<p>Paid <strong>${costText(P.cost)}</strong>.</p><ul class="list-dots" style="margin-top:6px">${groups.map((g) => `<li>${g.n > 1 ? g.n + " × " : ""}${g.kind === "building" ? B_ONE[g.what] : B_ONE[g.what] + " level " + (KOD.worksLevel(S.k, g.what) + 1)}: ready at ${bellAt(g.bell)}</li>`).join("")}</ul>` } };
+  }
+};
+
+/* ---------- land ---------- */
+FLOWS.land = {
+  title() { return `clear ${S.f.land.n} ${plural(S.f.land.n, "acre", "acres")}`; },
+  reviewLabel: "Review clearing", confirmLabel: "Confirm clearing", againLabel: "Clear more",
+  preview() {
+    const q = S.f.land.n, cost = KOD.clearCost(S.k.acres, q);
+    if (!q) return { ok: false, html: `<p class="dim">Next acre: <strong>${n(KOD.clearCost(S.k.acres, 1))} gold</strong>. The price is round(acres² ÷ 40) + 20, so it climbs as your realm grows.</p>` };
+    const ok = cost <= S.k.s.gold;
+    return { ok, clear: true, errorText: ok ? "" : `Not enough gold: need ${n(cost)}, have ${n(S.k.s.gold)}.`, html: `<dl class="kv"><dt>Quote</dt><dd><strong>${n(cost)} gold</strong> for ${q} ${plural(q, "acre", "acres")} (${n(KOD.clearCost(S.k.acres, 1))} rising to ${n(KOD.clearCost(S.k.acres + q - 1, 1))})</dd><dt>After</dt><dd>${S.k.acres + q} acres · ${KOD.freeAcres(S.k) + q} free · gold ${n(S.k.s.gold - cost)}</dd></dl>${ok ? "" : `<p class="msg error">Not enough gold: need ${n(cost)}, have ${n(S.k.s.gold)}.</p>`}` };
+  },
+  review() { const q = S.f.land.n; return `<p>Clear <strong>${q} ${plural(q, "acre", "acres")}</strong> for <strong>${n(KOD.clearCost(S.k.acres, q))} gold</strong>. Clearing is instant and cannot be undone. Land is never lost to raids.</p>`; },
+  apply() { const q = S.f.land.n, cost = KOD.clearCost(S.k.acres, q); if (cost > S.k.s.gold) return { ok: false, error: `Not enough gold: need ${n(cost)}, have ${n(S.k.s.gold)}.` }; S.k.s.gold -= cost; S.k.acres += q; S.f.land.n = 0; return { ok: true, receipt: { id: receiptId(), title: `Cleared ${q} ${plural(q, "acre", "acres")}`, text: `Paid ${n(cost)} gold. You now hold ${S.k.acres} acres.`, html: `<p>Paid <strong>${n(cost)} gold</strong>. You now hold ${S.k.acres} acres, ${KOD.freeAcres(S.k)} free.</p>` } }; }
+};
+
+/* ---------- exchange ---------- */
+const PRICE = { grain: [20, 10], iron: [60, 30], tools: [100, 50], arms: [120, 60] };
+function exchQuote() {
+  const st = S.f.exch, units = st.n, done = (S.world.exchVol && S.world.exchVol[st.mode + st.good]) || 0;
+  const tier1 = Math.max(0, Math.min(units, 500 - done)), tier2 = units - tier1;
+  const [buy, sell] = PRICE[st.good];
+  const gold = st.mode === "buy" ? (tier1 / 10) * buy + Math.ceil((tier2 / 10) * buy * 1.5) : (tier1 / 10) * sell + Math.floor((tier2 / 10) * sell * 0.5);
+  return { units, tier1, tier2, gold: Math.round(gold) };
+}
+FLOWS.exch = {
+  title() { const st = S.f.exch; return `${st.mode} ${n(st.n)} ${st.good}`; },
+  reviewLabel: "Review trade", confirmLabel: "Confirm trade", againLabel: "Trade again",
+  preview() {
+    const st = S.f.exch, q = exchQuote();
+    if (!q.units) return { ok: false, html: `<p class="dim">Prices per 10: buy ${PRICE[st.good][0]} gold, sell ${PRICE[st.good][1]} gold. Past 500 units of one good in 24 bells, buying costs ×1.5 and selling pays ×0.5.</p>` };
+    let err = "";
+    if (st.mode === "buy" && q.gold > S.k.s.gold) err = `Not enough gold: need ${n(q.gold)}, have ${n(S.k.s.gold)}.`;
+    if (st.mode === "sell" && q.units > S.k.s[st.good]) err = `Not enough ${st.good}: selling ${n(q.units)}, have ${n(S.k.s[st.good])}.`;
+    let effect = "";
+    if (st.good === "grain") { const k2 = KOD.clone(S.k); k2.s.grain += st.mode === "buy" ? q.units : -q.units; const g0 = grainOutlook(S.k), g1 = grainOutlook(k2); effect = `<dt>Granary</dt><dd>${g0.emptyBell ? `runs dry at bell ${g0.emptyBell}` : "lasts beyond 24 bells"} → ${g1.emptyBell ? `runs dry at bell ${g1.emptyBell}` : "lasts beyond 24 bells"}</dd>`; }
+    return { ok: !err, clear: true, errorText: err, html: `<dl class="kv"><dt>Quote</dt><dd><strong>${n(q.units)} ${st.good} ${st.mode === "buy" ? "for" : "pays"} ${n(q.gold)} gold</strong>${q.tier2 ? ` (${n(q.tier2)} at the higher tier)` : ""}</dd><dt>Valid</dt><dd>until the next bell</dd>${effect}</dl>${err ? `<p class="msg error">${esc(err)}</p>` : ""}` };
+  },
+  review() { const st = S.f.exch, q = exchQuote(); return `<p>${st.mode === "buy" ? "Buy" : "Sell"} <strong>${n(q.units)} ${st.good}</strong> ${st.mode === "buy" ? "for" : "for"} <strong>${n(q.gold)} gold</strong> from the Exchange. The price is guaranteed until the next bell.</p>`; },
+  apply() {
+    const st = S.f.exch, q = exchQuote();
+    if (st.mode === "buy" ? q.gold > S.k.s.gold : q.units > S.k.s[st.good]) return { ok: false, error: "The quote is no longer affordable." };
+    S.k.s.gold += st.mode === "buy" ? -q.gold : q.gold; S.k.s[st.good] += st.mode === "buy" ? q.units : -q.units;
+    S.world.exchVol = S.world.exchVol || {}; S.world.exchVol[st.mode + st.good] = (S.world.exchVol[st.mode + st.good] || 0) + q.units;
+    const t = `${st.mode === "buy" ? "Bought" : "Sold"} ${n(q.units)} ${st.good}`; st.n = 0;
+    return { ok: true, receipt: { id: receiptId(), title: t, text: `${st.mode === "buy" ? "Paid" : "Received"} ${n(q.gold)} gold.`, html: `<p>${st.mode === "buy" ? "Paid" : "Received"} <strong>${n(q.gold)} gold</strong>. ${S_NAME[st.good]} now ${n(S.k.s[st.good])}.</p>` } };
+  }
+};
+
+/* ---------- recruitment ---------- */
+function planRecruit() {
+  const st = S.f.recruit, k2 = KOD.clone(S.k); let cost = { gold: 0, arms: 0 }, err = null, count = 0;
+  for (const t of KOD.C.TYPES) if (st.items[t] > 0) { const r = KOD.recruit(k2, t, st.items[t]); if (!r.ok) { err = r; break; } cost.gold += r.cost.gold; cost.arms += r.cost.arms; count += st.items[t]; }
+  return { k2, cost, err, count };
+}
+FLOWS.recruit = {
+  title() { return comp2text(S.f.recruit.items); }, reviewLabel: "Review recruits", confirmLabel: "Confirm recruits", againLabel: "Recruit more",
+  preview() {
+    const P = planRecruit(), st = S.f.recruit;
+    if (!P.count && !P.err) return { ok: false, html: `<p class="dim">Recruits leave the commoners at once, are paid from the moment you order them, and defend only after training.</p>` };
+    if (P.err) return { ok: false, clear: true, errorText: errText(P.err), html: `<p class="msg error" role="alert">${esc(errText(P.err))}</p>` };
+    const ready = KOD.C.TYPES.filter((t) => st.items[t] > 0).map((t) => `${st.items[t]} ${T_MANY[t]} at ${bellAt(S.k.bell + KOD.C.T[t].bells)}`);
+    const wageAdd = KOD.C.TYPES.reduce((a, t) => a + st.items[t] * KOD.C.T[t].wage, 0), grainAdd = KOD.C.TYPES.reduce((a, t) => a + st.items[t] * KOD.C.T[t].grain, 0);
+    return { ok: true, clear: true, html: `<dl class="kv"><dt>Cost now</dt><dd><strong>${costText(P.cost)}</strong></dd><dt>Ready</dt><dd>${esc(ready.join(" · "))}</dd><dt>Upkeep</dt><dd>+${n(wageAdd)} gold and +${n(grainAdd)} grain per bell, starting now</dd><dt>Capacity</dt><dd>${KOD.troopTotal(P.k2)} of ${KOD.troopCap(P.k2)} after</dd><dt>Commoners</dt><dd>${n(S.k.commoners)} → ${n(P.k2.commoners)}</dd></dl>` };
+  },
+  review() { const P = planRecruit(); return `<p>Recruit <strong>${esc(comp2text(S.f.recruit.items))}</strong> for <strong>${costText(P.cost)}</strong>. Disbanding later returns them to the commoners with no refund.</p>`; },
+  apply() {
+    const P = planRecruit(); if (P.err) return { ok: false, error: errText(P.err) };
+    const items = Object.assign({}, S.f.recruit.items); S.k = P.k2; S.f.recruit.items = { spearman: 0, archer: 0, knight: 0 };
+    if (S.found) S.found.flags.recruit = true;
+    return { ok: true, receipt: { id: receiptId(), title: `Recruiting ${comp2text(items)}`, text: `Paid ${costText(P.cost)}.`, html: `<p>Paid <strong>${costText(P.cost)}</strong>. ${KOD.C.TYPES.filter((t) => items[t]).map((t) => `${T_MANY[t]} ready at ${bellAt(S.k.bell + KOD.C.T[t].bells)}`).join(" · ")}.</p>` } };
+  }
+};
+
+/* ---------- marches ---------- */
+function destinations() {
+  if (S.scenario === "found") return S.world.camps.map((c) => ({ id: c.id, kind: "camp", name: c.name, travel: c.travel, note: `Your outlaw camp · defense ${c.dp} · ${c.travel} ${plural(c.travel, "bell", "bells")}` }));
+  const H = (id) => holdById(id);
+  return [
+    { id: "greywatch", kind: "garrison", name: "Greywatch", travel: 4, note: `Garrison · your Hold · tide at bell ${H("greywatch").tide.bell}` },
+    { id: "mirefold", kind: "reclaim", name: "Mirefold", travel: 5, note: `Reclaim · Fallen · entrenches at bell ${H("mirefold").entrench.bell}` },
+    { id: "vigil", kind: "claim", name: "Vigil of Aurewynd", travel: 6, note: `Claim · unclaimed · tide at bell ${H("vigil").tide.bell}` },
+    { id: "ironhold", kind: "raid", name: "Ironhold", travel: 8, note: `Raid · Crown of Valemire · scouted at bell ${S.world.scout.bell}` },
+    { id: "reaver", kind: "camp", name: "Reaver hall", travel: 3, note: "Clear · your outlaw camp · defense 400" }
+  ];
+}
+function setMarchDest(id) {
+  const st = S.f.march; st.dest = id; st.step = "plan";
+  const presets = { greywatch: [{ spearman: 30, archer: 0, knight: 0 }, 0], mirefold: [{ spearman: 0, archer: 60, knight: 24 }, 206], vigil: [{ spearman: 90, archer: 0, knight: 0 }, 0], ironhold: [{ spearman: 0, archer: 40, knight: 24 }, 0], reaver: [{ spearman: 0, archer: 0, knight: 0 }, 0], ashford: [{ spearman: 20, archer: 10, knight: 0 }, 0], holloway: [{ spearman: 20, archer: 10, knight: 0 }, 0] };
+  const p = presets[id] || [{ spearman: 0, archer: 0, knight: 0 }, 0];
+  st.comp = Object.assign({}, p[0]); st.depart = p[1] ? p[1] : S.k ? S.k.bell : 0;
+  if (S.k) KOD.C.TYPES.forEach((t) => (st.comp[t] = Math.min(st.comp[t], S.k.home[t])));
+}
+function marchModel() {
+  const st = S.f.march, d = destinations().find((x) => x.id === st.dest);
+  const now = S.k.bell, depart = Math.max(now, st.depart || now);
+  const allKnights = st.comp.knight > 0 && !st.comp.spearman && !st.comp.archer;
+  const travel = allKnights ? Math.ceil(d.travel * 0.75) : d.travel;
+  const arrive = depart + travel;
+  const planned = { comp: st.comp, depart, arrive };
+  const total = KOD.C.TYPES.reduce((a, t) => a + (st.comp[t] || 0), 0);
+  const avail = homeTroopsAt(depart);
+  const shortages = KOD.C.TYPES.filter((t) => (st.comp[t] || 0) > Math.max(0, S.k.home[t] + (depart > now ? avail[t] - S.k.home[t] : 0)));
+  return { st, d, now, depart, travel, arrive, planned, total, allKnights, shortages, avail };
+}
+function marchForecastHtml(M) {
+  const lines = [], st = M.st;
+  let objective = "", ok = true, err = "";
+  if (!M.total) return { ok: false, html: `<p class="dim">Choose troops to see arrival, outcome and what it means for your home defense.</p>` };
+  if (M.shortages.length) { err = M.shortages.map((t) => `Not enough ${T_MANY[t]}: you will have ${n(M.depart > M.now ? M.avail[t] : S.k.home[t])} at home at departure.`).join(" "); return { ok: false, err, html: `<p class="msg error" role="alert">${esc(err)}</p>` }; }
+  const ap = A_OF(st.comp);
+  if (M.d.kind === "garrison") {
+    const h = holdById(M.d.id), before = holdForecast(h), after = holdForecast(h, M.planned);
+    const inTime = M.arrive <= h.tide.bell;
+    const bt = KOD.battle({ attackers: [{ owner: "Hollow Host", type: "host", n: 1 }], defenders: after.list, ap: h.tide.tp, dp: after.dp });
+    const yourLoss = bt.defenderLosses.filter((c) => c.owner === "you").reduce((a, c) => a + c.lost, 0), allLoss = bt.defenderLosses.reduce((a, c) => a + c.lost, 0);
+    const shares = after.list.reduce((m, c) => { m[c.owner] = (m[c.owner] || 0) + c.n * KOD.C.T[c.type].def; return m; }, {});
+    const owners = Object.keys(shares); const split = KOD.apportion(40, owners.map((o, i) => ({ weight: shares[o], rank: i })));
+    const yourRenown = split[owners.indexOf("you")] || 0;
+    const margin = after.dp - h.tide.tp, top = Math.max(after.dp, h.tide.tp);
+    objective = `<p class="verdict ${after.stands && inTime ? "ok-t" : "danger-t"}">${after.stands && inTime ? `✓ Greywatch holds at the tide (bell ${h.tide.bell}), margin ${n(margin)}${margin < 30 ? " (very thin)" : ""}` : `✕ Greywatch falls at the tide (bell ${h.tide.bell}), short by ${n(-margin)}`}</p>
+      <div class="vs" aria-hidden="true"><div class="vsrow"><span>Garrison</span><div class="vsbar"><i class="d" style="width:${Math.min(100, (after.dp / top) * 100)}%"></i></div><b>${n(after.dp)}</b></div><div class="vsrow"><span>Hollow tide</span><div class="vsbar"><i class="h" style="width:${Math.min(100, (h.tide.tp / top) * 100)}%"></i></div><b>${n(h.tide.tp)}</b></div></div>
+      <dl class="kv"><dt>Defense at the tide</dt><dd>${n(before.dp)} → <strong>${n(after.dp)}</strong> vs tide <strong>${n(h.tide.tp)}</strong> (Hold ×1.5)</dd>
+      <dt>Arrival</dt><dd>${inTime ? `${bellAt(M.arrive)}, ${h.tide.bell - M.arrive} ${plural(h.tide.bell - M.arrive, "bell", "bells")} before the tide` : `<span class="danger-t">${bellAt(M.arrive)}, after the tide</span>`}</dd>
+      ${after.stands ? `<dt>If it holds</dt><dd>garrison loses about ${allLoss} (yours ${yourLoss}); +40 renown shared, about ${yourRenown} yours</dd>` : `<dt>If it falls</dt><dd>survivors are routed home; Dread rises for every kingdom</dd>`}</dl>`;
+    ok = true;
+  } else if (M.d.kind === "reclaim") {
+    const h = holdById("mirefold"), entrenched = M.arrive >= h.entrench.bell;
+    const gar = entrenched ? h.darkness + Math.round(0.25 * h.entrench.tp) : h.darkness, need = Math.round(gar * 1.5);
+    const pledged = S.world.orders.find((o) => o.id === "o2").pledges.reduce((a, p) => a + p.ap, 0);
+    const together = ap + pledged;
+    objective = `<p class="verdict ${together > need ? "ok-t" : "danger-t"}">${together > need ? "✓ Enough to reclaim, if every pledge marches" : "✕ Not enough to reclaim"}</p>
+      <dl class="kv"><dt>Needed</dt><dd>attack above <strong>${n(need)}</strong> (Darkness garrison ${n(gar)} × 1.5${entrenched ? `, already entrenched at bell ${h.entrench.bell}` : ""})</dd>
+      <dt>Your attack</dt><dd>${n(ap)}${M.arrive === 211 ? " · arrives on the muster bell 211" : ` · arrives at bell ${M.arrive}; the muster is bell 211`}</dd>
+      <dt>Pledged, not yet sent</dt><dd>${n(pledged)} (Aldric 160 · Wren 200 · Osric 240)</dd>
+      <dt>Combined</dt><dd><strong>${n(together)}</strong> vs ${n(need)}${M.arrive !== 211 ? ` · <span class="warn-t">it arrives alone unless the bells match</span>` : ""}</dd></dl>`;
+  } else if (M.d.kind === "claim") {
+    const h = holdById("vigil"), dp = Math.round(DEF_OF(st.comp) * 1.5), inTime = M.arrive < h.tide.bell;
+    objective = `<p class="verdict ${dp >= h.tide.tp && inTime ? "ok-t" : "danger-t"}">${dp >= h.tide.tp && inTime ? "✓ You can hold Vigil" : "✕ Claimed, then lost to the tide"}</p>
+      <dl class="kv"><dt>Arrival</dt><dd>${bellAt(M.arrive)} · claims it for The Ashen Oath</dd><dt>At the tide (bell ${h.tide.bell})</dt><dd>your defense ${n(dp)} vs ${n(h.tide.tp)}</dd><dt>Advice</dt><dd>${dp >= h.tide.tp ? "Holding a third Hold makes your coalition's tides 25% stronger." : "Too much for one kingdom. Post it on the War Table."}</dd></dl>`;
+  } else if (M.d.kind === "raid") {
+    const sc = S.world.scout, bt = KOD.battle({ attackers: KOD.C.TYPES.filter((t) => st.comp[t]).map((t, i) => ({ owner: "you", type: t, n: st.comp[t], rank: i })), ap, dp: sc.dp });
+    const lost = bt.attackerLosses.reduce((a, c) => a + c.lost, 0), ret = M.arrive + M.travel;
+    let pl = "";
+    if (bt.victory) { const surv = {}; bt.attackerLosses.forEach((c) => (surv[c.type] = c.n - c.lost)); const p = KOD.plunder({ R: bt.R, stocks: Object.fromEntries(Object.entries(sc.stores).map(([s, v]) => [s, v + 800])), vault: 800, carry: CARRY_OF(surv) }); pl = `<dt>Plunder</dt><dd>${costText(p.take)}</dd>`; }
+    objective = `<p class="verdict ${bt.victory ? "ok-t" : "danger-t"}">${bt.victory ? "✓ Victory if their defense is unchanged" : "✕ Repelled at their scouted strength"}</p>
+      <dl class="kv"><dt>Attack vs defense</dt><dd>${n(ap)} vs ${n(sc.dp)} <span class="faint">(scouted at bell ${sc.bell}, ${S.k.bell - sc.bell} bells old)</span></dd><dt>Expected losses</dt><dd>about ${lost} of yours (${Math.round((bt.victory ? bt.La : bt.La) * 100)}%)</dd>${pl}<dt>Timing</dt><dd>arrives ${bellAt(M.arrive)} · home ${bellAt(ret)}</dd><dt>Note</dt><dd>Ironhold sees this army for ${M.travel} bells and may reinforce.</dd></dl>`;
+  } else if (M.d.kind === "camp") {
+    const c = S.scenario === "found" ? S.world.camps.find((x) => x.id === M.d.id) : S.world.camps[0];
+    const bt = KOD.battle({ attackers: KOD.C.TYPES.filter((t) => st.comp[t]).map((t, i) => ({ owner: "you", type: t, n: st.comp[t], rank: i })), ap, dp: c.dp });
+    const surv = {}; bt.attackerLosses.forEach((x) => (surv[x.type] = x.n - x.lost));
+    const carry = CARRY_OF(surv), lootTotal = Object.values(c.loot).reduce((a, v) => a + v, 0);
+    const ret = M.arrive + M.travel;
+    objective = `<p class="verdict ${bt.victory ? "ok-t" : "danger-t"}">${bt.victory ? `✓ Victory (+${Math.round((bt.R - 1) * 100)}%)` : "✕ Repelled"}</p>
+      <dl class="kv"><dt>Attack vs defense</dt><dd>${n(ap)} vs ${n(c.dp)} (fully scouted)</dd><dt>Expected losses</dt><dd>${bt.attackerLosses.filter((x) => x.lost).map((x) => `${x.lost} ${x.lost === 1 ? T_ONE[x.type] : T_MANY[x.type]}`).join(", ") || "none"}</dd>
+      ${bt.victory ? `<dt>Loot</dt><dd>${costText(c.loot)} · your survivors carry ${n(carry)} of ${n(lootTotal)}${carry < lootTotal ? ` <span class="warn-t">(some is left behind)</span>` : " ✓"}</dd>` : ""}
+      <dt>Timing</dt><dd>arrives ${bellAt(M.arrive)} · home ${bellAt(ret)}${S.scenario === "found" ? " (founding bells move this march)" : ""}</dd></dl>`;
+  }
+  let home = "";
+  if (S.scenario === "mid") {
+    const inc = S.world.incoming[0], iap = A_OF(inc.comp), hNow = homeDPof(homeTroopsAt(inc.arrive)).dp, hAfter = homeDPof(homeTroopsAt(inc.arrive, M.planned)).dp;
+    home = `<div class="msg ${hAfter >= iap ? "ok" : "error"}" style="margin-top:10px"><strong>Home when Ironhold's raid lands (bell ${inc.arrive}):</strong> defense ${n(hNow)} → <strong>${n(hAfter)}</strong> vs attack ${n(iap)}. ${hAfter >= iap ? "✓ Still holds." : "✕ The raid would break through and plunder your stores."}</div>`;
+  } else home = `<p class="msg info" style="margin-top:10px">You are protected during Founding; home defense while away does not matter yet.</p>`;
+  const up = KOD.C.TYPES.reduce((a, t) => a + (st.comp[t] || 0) * KOD.C.T[t].wage, 0);
+  const departTxt = M.depart > M.now ? `departs at ${bellAt(M.depart)} (troops defend home until then)` : "departs now";
+  return { ok: ok && !err, err, html: `<h4>Forecast</h4><p class="dim" style="margin-bottom:6px">${esc(comp2text(st.comp))} · attack ${n(ap)} · ${departTxt} · ${M.travel} ${plural(M.travel, "bell", "bells")} on the road${M.allKnights ? " (all Knights: 25% faster)" : ""}</p>${objective}${home}<p class="fine" style="margin-top:8px">Troops away still draw ${n(up)} gold in wages per bell, plus grain. That is already in your forecast.</p>` };
+}
+FLOWS.march = {
+  title() { const M = marchModel(); return `${comp2text(M.st.comp)} to ${M.d.name}`; },
+  reviewLabel: "Review march", confirmLabel: "Dispatch", pendingLabel: "Dispatching…", againLabel: "Plan another march",
+  preview() { const M = marchModel(), f = marchForecastHtml(M); return { ok: f.ok, clear: false, errorText: f.err, html: f.html }; },
+  review() { const M = marchModel(); return `<p><strong>${esc(comp2text(M.st.comp))}</strong> ${M.depart > M.now ? `will depart at ${bellAt(M.depart)} and` : "depart now and"} arrive at <strong>${esc(M.d.name)}</strong> at ${bellAt(M.arrive)}. ${M.d.kind === "garrison" || M.d.kind === "claim" ? "They stay as garrison until recalled." : "Survivors return automatically."}</p><p class="fine" style="margin-top:6px">You can turn the march back at any time; the return takes as many bells as have passed. Arrival checks run again: if the target changes, the troops halt and come home with a report.</p>`; },
+  apply() {
+    const M = marchModel(); if (M.shortages.length) return { ok: false, error: "Troops are no longer available." };
+    const comp = Object.assign({}, M.st.comp), scheduled = M.depart > M.now;
+    const e = { id: "x" + S.receiptSeq, kind: M.d.kind, dest: M.d.id, comp, depart: M.depart, arrive: M.arrive, ret: M.arrive + M.travel, state: scheduled ? "scheduled" : "marching" };
+    if (!scheduled) KOD.C.TYPES.forEach((t) => { S.k.home[t] -= comp[t]; S.k.away[t] += comp[t]; });
+    S.world.exps.push(e);
+    if (M.d.kind === "garrison" && S.world.orders) { const o = S.world.orders.find((x) => x.hold === M.d.id); if (o) o.mine = (o.mine || 0) + Math.round(DEF_OF(comp) * 1.5); }
+    if (M.d.kind === "reclaim" && S.world.orders) { const o = S.world.orders.find((x) => x.id === "o2"); if (o) o.mineAp = (o.mineAp || 0) + A_OF(comp); }
+    const t = `${scheduled ? "Scheduled" : "Dispatched"}: ${comp2text(comp)} to ${M.d.name}`;
+    return { ok: true, chronType: "battles", receipt: { id: receiptId(), title: t, text: `${scheduled ? `Departs at bell ${M.depart}, arrives` : "Arrives"} at bell ${M.arrive}.`, html: `<p>${scheduled ? `Departs at ${bellAt(M.depart)}; arrives` : "Arrives"} at <strong>${bellAt(M.arrive)}</strong>.${M.d.kind === "camp" || M.d.kind === "raid" ? ` Survivors home at ${bellAt(M.arrive + M.travel)}.` : ""} You can follow it under Expeditions.</p>` } };
+  }
+};
+
+/* ---------- caravans ---------- */
+FLOWS.caravan = {
+  title() { return `${n(S.f.caravan.n)} grain to Brother Cael`; }, reviewLabel: "Review caravan", confirmLabel: "Send caravan", againLabel: "Send another",
+  preview() {
+    const q = S.f.caravan.n, cap = S.k.b.market * 150 - S.world.exps.filter((e) => e.kind === "caravan").reduce((a, e) => a + e.cargo, 0);
+    if (!q) return { ok: false, html: `<p class="dim">Caravans carry goods only, never gold. Cargo in transit is limited to 150 per Market (${n(S.k.b.market * 150)} for you).</p>` };
+    let err = q > S.k.s.grain ? `Not enough grain: sending ${n(q)}, have ${n(S.k.s.grain)}.` : q > cap ? `Cargo capacity: ${n(cap)} free in transit.` : "";
+    const k2 = KOD.clone(S.k); k2.s.grain -= q; const g0 = grainOutlook(S.k), g1 = grainOutlook(k2);
+    return { ok: !err, clear: false, errorText: err, html: `<dl class="kv"><dt>Arrives</dt><dd>${bellAt(S.k.bell + 4)} (4 bells)</dd><dt>For Cael</dt><dd>covers about ${Math.floor(q / 90)} bells of his deficit (−90 per bell)</dd><dt>Your granary</dt><dd>${g0.emptyBell ? `runs dry at bell ${g0.emptyBell}` : "lasts beyond 24 bells"} → <strong>${g1.emptyBell ? `runs dry at bell ${g1.emptyBell}` : "lasts beyond 24 bells"}</strong></dd><dt>Cargo</dt><dd>${n(q)} of ${n(cap)} free</dd></dl>${err ? `<p class="msg error">${esc(err)}</p>` : g1.emptyBell && g1.emptyBell < (g0.emptyBell || 999) ? `<p class="msg warn">Generosity has a cost: your own shortage arrives sooner. Farms or the Exchange can cover it.</p>` : ""}` };
+  },
+  review() { return `<p>Send <strong>${n(S.f.caravan.n)} grain</strong> to Brother Cael (Cael's Rest). It arrives at ${bellAt(S.k.bell + 4)}. Grain leaves your granary now.</p>`; },
+  apply() { const q = S.f.caravan.n; if (q > S.k.s.grain) return { ok: false, error: "Not enough grain." }; S.k.s.grain -= q; S.world.exps.push({ id: "c" + S.receiptSeq, kind: "caravan", dest: "Brother Cael", cargo: q, comp: { spearman: 0, archer: 0, knight: 0 }, arrive: S.k.bell + 4, state: "marching" }); const o = S.world.orders.find((x) => x.id === "o3"); o.sent = (o.sent || 0) + q; return { ok: true, chronType: "coalition", receipt: { id: receiptId(), title: `Caravan of ${n(q)} grain sent to Brother Cael`, text: `Arrives at bell ${S.k.bell + 4}.`, html: `<p>Arrives at <strong>${bellAt(S.k.bell + 4)}</strong>. The War Table order counts it as delivered on arrival.</p>` } }; }
+};
+
+/* ======================================================================
+   Views
+   ====================================================================== */
+function stepper(id, label, value, max, flow, field, step = 1, maxName) {
+  const core = `<div class="stepper"><button type="button" data-step="${flow}|${field}|-${step}" aria-label="Decrease ${esc(label)}">−</button><input id="${id}" type="number" inputmode="numeric" min="0" ${max != null ? `max="${max}"` : ""} step="${step}" value="${value}" data-bind="${flow}|${field}" aria-label="${esc(label)}"><button type="button" data-step="${flow}|${field}|${step}" aria-label="Increase ${esc(label)}">+</button></div>`;
+  return maxName ? `<div class="step-wrap">${core}<button type="button" class="max-btn" data-max="${flow}|${field}" aria-label="Set ${esc(maxName)} to the most you can order">Max</button></div>` : core;
+}
+// Executable maximum for one row, given everything else already in the plan, plus the limiting reason.
+function maxFor(flow, field) {
+  const why = (e) => !e ? "the per-order limit" : e.code === "NO_FREE_ACRES" ? "free acres" : e.code === "INSUFFICIENT_STORES" ? e.res : e.code === "TROOP_CAPACITY" ? "troop capacity" : e.code === "NO_COMMONERS" ? "commoners" : "current rules";
+  if (flow === "build" || flow === "recruit") {
+    const items = S.f[flow].items, keep = items[field], cap = flow === "build" ? 99 : 999;
+    let best = 0, err = null;
+    for (let v = 0; v <= cap; v++) { items[field] = v; const P = flow === "build" ? planBuildState() : planRecruit(); if (P.err) { err = P.err; break; } best = v; }
+    items[field] = keep;
+    return { value: best, reason: why(err) };
+  }
+  if (flow === "march") { const M = marchModel(); return { value: Math.max(0, M.depart > M.now ? M.avail[field] : S.k.home[field]), reason: "troops at home at departure" }; }
+  return { value: 0, reason: "" };
+}
+function viewHead(title, lede) {
+  const eye = S.scenario === "mid" ? `Day ${S.meta.day} · ${S.meta.phase} · bell ${S.k.bell}` : `Founding · bell ${S.k.bell} · ${S.found.left} founding bells left`;
+  return `<header class="view-head"><p class="eyebrow">${esc(eye)}</p><h1 id="view-h1" tabindex="-1">${esc(title)}</h1><p class="lede">${esc(lede)}</p></header>${banners()}`;
+}
+function banners() {
+  let h = "";
+  if (S.sim.offline) h += `<div class="banner offline" role="status"><strong>Connection lost.</strong> <span>You are seeing your kingdom as of the last refresh. Orders are paused until you reconnect, and your plans are kept.</span></div>`;
+  if (S.session) h += `<section class="banner session" aria-labelledby="session-h"><h2 id="session-h" tabindex="-1">Your session has ended</h2><p class="dim" style="margin-top:6px">Sign in to continue. Your plan is kept. After signing in you will review it again, because nothing is sent automatically.</p><div class="field"><label for="pw">Password for isolde@example.invalid</label><input id="pw" type="password" autocomplete="off" placeholder="Prototype: any text, or none"></div><p class="fine" style="margin-top:6px">In this prototype, Sign in accepts anything and checks nothing.</p><div class="actions"><button class="btn btn-primary" type="button" data-act="signin">Sign in</button></div></section>`;
+  return h;
+}
+function pFounding() {
+  const F = S.found, fl = F.flags;
+  const objs = [
+    ["workplace", "Put idle hands to work", "Order a Farm, Mine, Forge or Market. Each employs 10 people.", "kingdom:p-build"],
+    ["bell", "Ring a founding bell", "Compare the forecast with what actually happens.", "kingdom:p-founding"],
+    ["cottage", "Shelter newcomers", "A Cottage adds 15 places; people arrive while there is room and grain.", "kingdom:p-build"],
+    ["recruit", "Raise a levy", "Recruit Spearmen in the Muster; they are ready in 2 bells.", "muster:p-troops"],
+    ["ashford", "Clear the outlaws at Ashford", "Your first battle: check the forecast, dispatch, then ring bells.", "muster:p-march"],
+    ["banner", "Choose your banner", "Join, petition or found a coalition, or stand alone for now.", "coalition:p-coal"],
+    ["west", "Look west", "See the Holds and when the first tides come.", "frontier:p-holds"]
+  ];
+  const done = (key) => (key === "bell" ? F.used > 0 : !!fl[key]);
+  const current = objs.findIndex((o) => !done(o[0]));
+  return `<section class="panel" id="p-founding" aria-labelledby="h-found">
+    <div class="panel-head"><h2 id="h-found">Founding</h2><p class="meta">Protected until bell 72 · <strong>${F.left}</strong> founding ${plural(F.left, "bell", "bells")} left</p></div>
+    <p class="dim">A founding bell moves only your own lands: production, construction, training and marches to your outlaw camps. Other kingdoms and the Holds keep world time. Unused founding bells vanish when protection ends.</p>
+    <ol class="objectives">${objs.map((o, i) => `<li class="obj ${done(o[0]) ? "done" : i === current ? "current" : ""}"><span class="mark" aria-hidden="true">${done(o[0]) ? "✓" : i + 1}</span><span><strong>${esc(o[1])}</strong><span class="sr-only">${done(o[0]) ? " (done)" : i === current ? " (current)" : ""}</span><br><span class="why">${esc(o[2])}</span></span>${done(o[0]) ? "" : `<button class="btn btn-sm" type="button" data-act="goto" data-arg="${o[3]}">Go</button>`}</li>`).join("")}</ol>
+    <div class="actions"><button class="btn btn-primary" type="button" data-act="ring" data-n="1" ${F.left ? "" : "disabled"}>Ring founding bell ${F.used + 1}</button><button class="btn" type="button" data-act="ring" data-n="4" ${F.left >= 4 ? "" : "disabled"}>Ring 4 bells</button></div>
+    <div class="recon" id="recon" tabindex="-1">${reconHtml()}</div>
+  </section>`;
+}
+function reconHtml() {
+  const R = S.found && S.found.recon;
+  if (!R) return "";
+  const rows = STORES.map((s) => [S_NAME[s], R.fc.stocks[s], R.actual.s[s]]).concat([["People", R.fc.commoners, R.actual.commoners]]);
+  const allOk = rows.every((r) => r[1] === r[2]);
+  return `<h3 style="margin-top:4px">Bell ${R.bell}: forecast vs actual ${allOk ? `<span class="ok-t">✓ all matched</span>` : `<span class="danger-t">mismatch</span>`}</h3>
+    <div class="tablewrap"><table class="rtable"><thead><tr><th scope="col">Store</th><th scope="col" class="n">Forecast</th><th scope="col" class="n">Actual</th><th scope="col" class="n">Match</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row">${r[0]}</th><td class="n">${n(r[1])}</td><td class="n">${n(r[2])}</td><td class="n ${r[1] === r[2] ? "ok-t" : "danger-t"}">${r[1] === r[2] ? "✓" : "✕"}</td></tr>`).join("")}</tbody></table></div>
+    ${R.events.length ? `<ul class="list-dots" style="margin-top:8px">${R.events.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}`;
+}
+function pConstruction() {
+  const k = S.k, st = S.f.build, crews = KOD.crews(k);
+  const crewCards = []; for (let i = 0; i < crews; i++) {
+    const p = k.projects[i];
+    crewCards.push(p ? `<li class="crew"><span class="label">Crew ${i + 1}</span><span class="crew-what">${p.kind === "building" ? B_ONE[p.target] : `${B_ONE[p.target]} → level ${KOD.worksLevel(k, p.target) + 1}`}</span><div class="bar" aria-hidden="true"><i style="width:${Math.round(((p.total - p.left) / p.total) * 100)}%"></i></div><span class="fine">ready ${bellAt(k.bell + p.left)}</span></li>` : `<li class="crew idle"><span class="label">Crew ${i + 1}</span><span class="crew-what dim">Idle</span><span class="fine">ready for orders</span></li>`);
+  }
+  const worksCard = (w) => {
+    const lvl = KOD.worksLevel(k, w), max = w === "guild" ? 3 : 5, next = KOD.C.WORKS[w][lvl + 1];
+    const busy = k.projects.concat(k.queue).find((p) => p.kind === w);
+    const pips = `<span class="pips" aria-hidden="true">${Array.from({ length: max }, (_, i) => `<i class="${i < lvl ? "on" : ""}"></i>`).join("")}</span>`;
+    const name = w === "guild" ? (k.guild ? `Guild: ${k.guild[0].toUpperCase() + k.guild.slice(1)}` : "Guild") : B_ONE[w];
+    const effect = { keep: "+40 housing, +40 troop capacity, +1 crew, vault +400", walls: "+10% home defense", guild: k.guild ? GUILDS[k.guild] : "Choose a specialization; it lasts the whole season" }[w];
+    let status = "", action = "";
+    if (busy) status = `<p class="fine warn-t">Level ${lvl + 1} under construction · ready ${bellAt(k.bell + (busy.left || busy.bells))}</p>`;
+    else if (!next) status = `<p class="fine">Highest level</p>`;
+    else {
+      const short = Math.max(0, next.gold - k.s.gold);
+      const d = nextBell().d.gold;
+      status = `<p class="fine">Level ${lvl + 1}: ${n(next.gold)} gold · ${n(next.tools)} tools · ${next.bells} bells${short > 0 ? ` · <span class="warn-t">gold in about ${d > 0 ? Math.ceil(short / d) : "∞"} bells</span>` : ""}</p>`;
+      const picker = w === "guild" && !k.guild ? `<label class="sr-only" for="guild-pick">Guild specialization</label><select id="guild-pick" class="select" data-bind="build|guildPick" style="margin-top:6px;width:100%">${Object.keys(GUILDS).map((g) => `<option value="${g}" ${st.guildPick === g ? "selected" : ""}>${esc(GUILDS[g])}</option>`).join("")}</select>` : "";
+      action = `${picker}<div class="actions" style="margin-top:8px"><button class="btn btn-sm" type="button" data-act="toggle-works" data-arg="${w}" aria-pressed="${st.works[w]}">${st.works[w] ? "✓ In plan" : "Add to plan"}</button></div>`;
+    }
+    return `<div class="card"><p><strong>${esc(name)}</strong>${pips}<span class="sr-only"> level ${lvl} of ${max}</span></p><p class="fine">${esc(effect)}</p>${status}${action}</div>`;
+  };
+  return `<section class="panel" id="p-build" aria-labelledby="h-build">
+    <div class="panel-head"><h2 id="h-build">Construction</h2><p class="meta">Crews ${Math.min(crews, k.projects.length)} of ${crews} busy · ${KOD.freeAcres(k)} free acres</p></div>
+    <ol class="crews" aria-label="Construction crews">${crewCards.join("")}</ol>
+    ${k.queue.length ? `<p class="queue-line">Queued: ${k.queue.map((q) => q.kind === "building" ? B_ONE[q.target] : `${B_ONE[q.target]} level ${KOD.worksLevel(k, q.target) + 1}`).join(", ")}. ${k.queue.length === 1 ? "It starts" : "Each starts"} when a crew frees up; payment is already made.</p>` : ""}
+    <div class="sub"><h3>Plan construction</h3>
+      <ul class="rows">${BUILD_TYPES.map((t) => { const d = KOD.C.B[t]; return `<li class="row"><div><label class="row-name" for="b-${t}">${B_ONE[t]}<span class="row-have">${n(k.b[t])} built</span></label><p class="row-info">${esc(B_EFFECT[t])}</p><p class="row-cost">${n(d.gold)} gold · ${n(d.tools)} tools · ${d.bells} bells</p></div>${stepper("b-" + t, B_MANY[t] + " to build", st.items[t], 99, "build", t, 1, B_MANY[t])}</li>`; }).join("")}</ul>
+    </div>
+    <div class="sub"><h3>Works</h3><div class="works">${["keep", "walls", "guild"].map(worksCard).join("")}</div></div>
+    <div class="flow" id="flow-build">${flowShell("build")}</div>
+  </section>`;
+}
+function pPeople() {
+  const k = S.k, w = KOD.staff(k), H = KOD.housing(k), nb = nextBell();
+  const out = { farm: `${n(nb.r.produced.grain)} grain`, mine: `${n(nb.r.produced.iron)} iron`, forge: `${n(nb.r.produced.tools)} tools, ${n(nb.r.produced.arms)} arms`, market: `${n(Math.floor(w.market * 4 * KOD.dreadMult(k)))} gold` };
+  const jobsTotal = k.priority.reduce((a, p) => a + k.b[p] * 10, 0);
+  return `<section class="panel" id="p-people" aria-labelledby="h-people">
+    <div class="panel-head"><h2 id="h-people">People and work</h2><p class="meta">${n(k.commoners)} commoners · ${n(w.idle)} idle</p></div>
+    <p><span class="label">Housing</span> ${n(k.commoners)} of ${n(H)} <span class="faint">· ${nb.people > 0 ? `${sgn(nb.people)} next bell` : "no growth next bell"}</span></p>
+    <div class="bar" aria-hidden="true" style="height:8px"><i style="width:${Math.min(100, Math.round((k.commoners / H) * 100))}%"></i></div>
+    <div class="grid-2" style="margin-top:12px">
+      <div class="card"><h3>Staffing priority</h3><p class="fine" style="margin:4px 0 8px">${w.idle > 0 ? `All ${n(jobsTotal)} jobs are filled. Priority matters when hands are short, for example after hunger.` : "Hands are short: jobs fill in this order."}</p>
+        <ol>${k.priority.map((p, i) => `<li class="row" style="margin-top:6px"><div><strong>${i + 1}. ${JOB[p][0]}</strong><p class="row-info">${n(w[p])} of ${n(k.b[p] * 10)} ${JOB[p][1]} · ${out[p]} next bell</p></div><div class="actions" style="margin:0"><button class="btn btn-sm" type="button" data-act="prio" data-arg="${p}:-1" aria-label="Move ${JOB[p][0]} up" ${i === 0 ? "disabled" : ""}>↑</button><button class="btn btn-sm" type="button" data-act="prio" data-arg="${p}:1" aria-label="Move ${JOB[p][0]} down" ${i === k.priority.length - 1 ? "disabled" : ""}>↓</button></div></li>`).join("")}</ol>
+      </div>
+      <div class="card"><h3><label for="forge-split">Forge split</label></h3><p class="fine" style="margin:4px 0 8px">A standing order: the share of smiths making arms instead of tools.</p>
+        <input type="range" id="forge-split" min="0" max="100" step="10" value="${k.armsPct}" aria-valuetext="${k.armsPct}% arms, ${100 - k.armsPct}% tools" data-bind="forge|armsPct">
+        <p id="forge-out" style="margin-top:6px"><strong>${k.armsPct}% arms</strong> · next bell: ${n(nb.r.produced.tools)} tools, ${n(nb.r.produced.arms)} arms <span class="faint">(${n(w.forge)} smiths, ${n(nb.r.produced.ironUsed)} iron)</span></p>
+        <p class="fine" style="margin-top:6px">Tools build; arms recruit. Shift toward arms before a war and back afterwards.</p>
+      </div>
+    </div>
+  </section>`;
+}
+function pLand() {
+  const k = S.k;
+  return `<section class="panel" id="p-land" aria-labelledby="h-land">
+    <div class="panel-head"><h2 id="h-land">Land</h2><p class="meta">${n(k.acres)} acres · ${n(KOD.builtCount(k))} built · ${KOD.freeAcres(k)} free</p></div>
+    <div class="row"><div><label class="row-name" for="land-n">Clear acres</label><p class="row-info">Instant, paid in gold. Never taken in war.</p></div>${stepper("land-n", "Clear acres", S.f.land.n, 50, "land", "n")}</div>
+    <div class="flow" id="flow-land">${flowShell("land")}</div>
+  </section>`;
+}
+function pExchange() {
+  const st = S.f.exch;
+  return `<section class="panel" id="p-exchange" aria-labelledby="h-exch">
+    <div class="panel-head"><h2 id="h-exch">Exchange</h2><p class="meta">System market · fixed prices · no player can move wealth through it</p></div>
+    <div class="actions" style="margin-top:0">
+      <fieldset class="seg" style="border:0;padding:0;margin:0"><legend class="sr-only">Buy or sell</legend><label><input type="radio" name="exmode" value="buy" ${st.mode === "buy" ? "checked" : ""} data-bind="exch|mode"><span>Buy</span></label><label><input type="radio" name="exmode" value="sell" ${st.mode === "sell" ? "checked" : ""} data-bind="exch|mode"><span>Sell</span></label></fieldset>
+      <label class="sr-only" for="ex-good">Good</label><select id="ex-good" class="select" data-bind="exch|good">${["grain", "iron", "tools", "arms"].map((g) => `<option value="${g}" ${st.good === g ? "selected" : ""}>${S_NAME[g]}</option>`).join("")}</select>
+      ${stepper("ex-n", `Units to ${st.mode}`, st.n, 5000, "exch", "n", 10)}
+    </div>
+    <div class="flow" id="flow-exch">${flowShell("exch")}</div>
+  </section>`;
+}
+function vKingdom() {
+  return viewHead("Kingdom", S.scenario === "found" ? "Your first session. Build, ring a founding bell, and check the forecast against the result. Nobody can attack you yet." : "What to build and change before the next bell. Every preview is the result the server would produce.") +
+    (S.scenario === "found" ? pFounding() : "") + pConstruction() + pPeople() + pLand() + pExchange();
+}
+function vMuster() {
+  const k = S.k, h = homeDPof(k.home);
+  const inc = S.scenario === "mid" ? S.world.incoming[0] : null;
+  let threat = "";
+  if (inc) {
+    const ap = A_OF(inc.comp), at = homeDPof(homeTroopsAt(inc.arrive)), holds = at.dp >= ap;
+    const bt = KOD.battle({ attackers: KOD.C.TYPES.filter((t) => inc.comp[t]).map((t, i) => ({ owner: inc.from, type: t, n: inc.comp[t], rank: i })), defenders: KOD.C.TYPES.filter((t) => homeTroopsAt(inc.arrive)[t] > 0).map((t, i) => ({ owner: "you", type: t, n: homeTroopsAt(inc.arrive)[t], rank: i })), ap, dp: at.dp });
+    threat = `<article class="threat" aria-labelledby="threat-h"><div class="threat-head"><h3 id="threat-h">Raid from ${esc(inc.from)} <span class="faint" style="font-family:var(--sans);font-weight:400;font-size:.9rem">${esc(inc.coalition)}</span></h3><span class="chip">arrives ${bellAt(inc.arrive)}</span></div>
+      <p class="dim" style="margin-top:4px">${comp2text(inc.comp)} · attack <strong>${n(ap)}</strong> · sent at bell ${inc.sent}</p>
+      <p class="verdict ${holds ? "ok-t" : "danger-t"}" style="margin-top:8px">${holds ? "✓ Expected to hold" : "✕ Expected to break through"}: your defense at bell ${inc.arrive} is ${n(at.dp)}${k.training.length ? " (with recruits finishing)" : ""}</p>
+      <p class="fine" style="margin-top:4px">If it lands as forecast: ${esc(inc.from)} loses about ${bt.attackerLosses.reduce((a, c) => a + c.lost, 0)}, you lose about ${bt.defenderLosses.reduce((a, c) => a + c.lost, 0)}${holds ? "" : ", plus plunder above your vault"}.</p>
+      <div class="actions"><button class="btn btn-sm" type="button" data-act="goto" data-arg="muster:p-troops">Recruit Spearmen (ready in 2 bells)</button><button class="btn btn-sm" type="button" data-act="goto" data-arg="coalition:p-orders">Call for aid</button></div></article>`;
+  } else threat = `<p class="msg info" style="margin-top:12px">Founding protection: nobody can raid you until bell 72.</p>`;
+  const st = S.f.recruit;
+  const room = KOD.troopCap(k) - KOD.troopTotal(k);
+  const exps = S.world.exps.filter((e) => e.kind !== "caravan" && e.state !== "done");
+  const expRow = (e) => {
+    const dest = e.kind === "camp" && S.scenario === "found" ? S.world.camps.find((c) => c.id === e.dest).name : e.kind === "camp" ? "Reaver hall" : (holdById(e.dest) || { name: "Ironhold" }).name;
+    const what = { garrison: "Garrison", reclaim: "Reclaim", claim: "Claim", raid: "Raid", camp: "Clear" }[e.kind];
+    const status = e.state === "stationed" ? `stationed at ${dest}` : e.state === "scheduled" ? `departs at bell ${e.depart}, arrives ${e.arrive}` : e.state === "returning" ? `returning, home at bell ${e.ret}` : `marching, arrives ${bellAt(e.arrive)}`;
+    return `<li class="exp"><div><strong>${what} · ${esc(dest)}</strong><p class="row-info">${esc(comp2text(e.comp))} · ${status}</p>${e.result ? `<p class="fine ${e.result.victory ? "ok-t" : "danger-t"}">${esc(e.result.text)}</p>` : ""}</div>${e.state === "stationed" ? `<button class="btn btn-sm" type="button" data-act="noop" title="Prototype: recall is shown, not simulated">Recall</button>` : e.state === "marching" ? `<button class="btn btn-sm" type="button" data-act="noop" title="Prototype: turn back is shown, not simulated">Turn back</button>` : ""}</li>`;
+  };
+  const M = marchModel();
+  const departOpts = S.scenario === "mid" ? Array.from({ length: 10 }, (_, i) => S.k.bell + i) : [S.k.bell];
+  return viewHead("Muster", S.scenario === "found" ? "Your troops and their first march. Outlaw camps are private practice: no rival sees them." : "Are you safe, and where should your troops go? Every march is forecast before you commit.") + `
+  <section class="panel" id="p-defense" aria-labelledby="h-def">
+    <div class="panel-head"><h2 id="h-def">Home defense</h2><p class="meta">Might ${n(KOD.might(k))}</p></div>
+    <p class="formula"><span class="term">Spearmen ${n(k.home.spearman)} × 3</span><span class="op">+</span><span class="term">Archers ${n(k.home.archer)} × 2</span><span class="op">+</span><span class="term">Knights ${n(k.home.knight)} × 1</span><span class="op">+</span><span class="term">Levy ${n(KOD.levy(k))}</span><span class="op">=</span><span class="term">${n(h.base)}</span><span class="op">×</span><span class="term">Walls ${k.walls} (+${k.walls * 10}%)</span><span class="op">=</span><strong>${n(h.dp)}</strong></p>
+    ${threat}
+  </section>
+  <section class="panel" id="p-troops" aria-labelledby="h-troops">
+    <div class="panel-head"><h2 id="h-troops">Troops</h2><p class="meta">Capacity ${n(KOD.troopTotal(k))} of ${n(KOD.troopCap(k))} · room for ${n(room)}</p></div>
+    <div class="troops">${KOD.C.TYPES.map((t) => { const d = KOD.C.T[t]; const tr = k.training.filter((x) => x.type === t).reduce((a, x) => a + x.n, 0); return `<div class="card troop"><h3>${T_MANY[t]}</h3><p class="stats"><span>Attack ${d.atk}</span><span>Defense ${d.def}</span><span>${esc(T_ROLE[t])}</span></p><div class="counts"><span>Home<b>${n(k.home[t])}</b></span><span>Away<b>${n(k.away[t])}</b></span><span>Training<b>${n(tr)}</b></span></div><p class="fine">${n(d.gold)} gold · ${d.arms} arms · ${d.bells} bells · wage ${d.wage}</p><div style="margin-top:8px"><label class="sr-only" for="r-${t}">${T_MANY[t]} to recruit</label>${stepper("r-" + t, T_MANY[t] + " to recruit", st.items[t], 999, "recruit", t, 1, T_MANY[t] + " to recruit")}</div></div>`; }).join("")}</div>
+    <div class="flow" id="flow-recruit">${flowShell("recruit")}</div>
+  </section>
+  <section class="panel" id="p-exp" aria-labelledby="h-exp">
+    <div class="panel-head"><h2 id="h-exp">Expeditions</h2><p class="meta">${exps.length} active</p></div>
+    ${exps.length ? `<ul class="exp-list">${exps.map(expRow).join("")}</ul>` : `<p class="dim">No troops on the march. Plan one below.</p>`}
+  </section>
+  <section class="panel" id="p-march" aria-labelledby="h-march">
+    <div class="panel-head"><h2 id="h-march">Plan a march</h2><p class="meta">Pick a destination; the order follows from it</p></div>
+    <fieldset style="border:0;padding:0;margin:0"><legend class="label" style="margin-bottom:6px">Destination</legend>
+      <div class="dests">${destinations().map((d) => `<label class="dest"><input type="radio" name="dest" value="${d.id}" ${M.st.dest === d.id ? "checked" : ""} data-bind="march|dest"><span class="dname">${esc(d.name)}</span><span class="dnote">${esc(d.note)}</span></label>`).join("")}</div>
+    </fieldset>
+    <div class="comp">${KOD.C.TYPES.map((t) => `<div class="row"><div><label class="row-name" for="m-${t}">${T_MANY[t]}</label><p class="row-info">${n(k.home[t])} at home · attack ${KOD.C.T[t].atk}, defense ${KOD.C.T[t].def}</p></div>${stepper("m-" + t, T_MANY[t] + " to send", M.st.comp[t], 999, "march", t, 1, T_MANY[t] + " to send")}</div>`).join("")}
+      ${S.scenario === "mid" ? `<div class="row"><div><label class="row-name" for="m-depart">Departure</label><p class="row-info">Schedule it so you arrive with your coalition. Troops defend home until they leave.</p></div><select id="m-depart" class="select" data-bind="march|depart">${departOpts.map((b) => `<option value="${b}" ${M.depart === b ? "selected" : ""}>${b === S.k.bell ? `Now (bell ${b})` : `Bell ${b} (${bellTime(b)})`}</option>`).join("")}</select></div>` : ""}
+    </div>
+    <div class="flow" id="flow-march">${flowShell("march")}</div>
+  </section>`;
+}
+function holdCard(h) {
+  if (S.scenario === "found") return `<li class="hold"><div class="hold-head"><span class="hold-name">${esc(h.name)}</span><span class="chip unclaimed">Unclaimed</span></div><p class="fine" style="margin-top:4px">${h.travel} bells away · first tide at bell ${h.firstTide} (probing: Kindling tides cannot take a Hold)</p></li>`;
+  const co = S.world.coalitions;
+  let chip = "", lines = "", act = "";
+  if (h.status === "held") {
+    chip = `<span class="chip ${h.by}">${esc(co[h.by])}</span>`;
+    const dp = h.allies ? holdForecast(h).dp : h.dp, stands = dp >= h.tide.tp;
+    const yours = h.allies ? yourContingentsAt(h, h.tide.bell) : null;
+    lines = `<p class="fine" style="margin-top:4px">${h.travel} bells away · garrison defense <strong>${n(dp)}</strong></p><p style="margin-top:4px">Tide at ${bellAt(h.tide.bell)}: <strong>${n(h.tide.tp)}</strong> → <span class="verdict ${stands ? "ok-t" : "danger-t"}">${stands ? "✓ holds" : "✕ falls unless reinforced"}</span></p>${yours && (yours.spearman || yours.archer || yours.knight) ? `<p class="fine">Yours there: ${esc(comp2text(yours))}</p>` : ""}`;
+    if (h.by === "ashen") act = `<button class="btn btn-sm" type="button" data-act="preset-march" data-arg="${h.id}:">Reinforce</button>`;
+  } else if (h.status === "fallen") {
+    chip = `<span class="chip fallen">✕ Fallen</span>`;
+    const later = h.darkness + Math.round(0.25 * h.entrench.tp);
+    lines = `<p class="fine" style="margin-top:4px">${h.travel} bells away · Darkness garrison <strong>${n(h.darkness)}</strong>: attack above ${n(Math.round(h.darkness * 1.5))} reclaims it</p><p style="margin-top:4px" class="warn-t">Entrenches at bell ${h.entrench.bell}: ${n(h.darkness)} → ${n(later)} (attack above ${n(Math.round(later * 1.5))})</p>`;
+    act = `<button class="btn btn-sm" type="button" data-act="preset-march" data-arg="mirefold:">Plan reclaim</button>`;
+  } else {
+    chip = `<span class="chip unclaimed">Unclaimed</span>`;
+    lines = `<p class="fine" style="margin-top:4px">${h.travel} bells away · militia ${n(h.militia)}</p><p style="margin-top:4px">Tide at ${bellAt(h.tide.bell)}: <strong>${n(h.tide.tp)}</strong> → <span class="danger-t">✕ falls unless claimed and held</span></p>`;
+    act = `<button class="btn btn-sm" type="button" data-act="preset-march" data-arg="vigil:">Plan claim</button>`;
+  }
+  return `<li class="hold"><div class="hold-head"><span class="hold-name">${esc(h.name)}</span>${chip}</div>${lines}${act ? `<div class="actions">${act}</div>` : ""}</li>`;
+}
+function mapSvg() {
+  const col = { ashen: "#c06650", crown: "#5f84bf", thorn: "#6d9a5b" };
+  const holds = S.world.holds.map((h) => {
+    const fill = h.status === "held" ? col[h.by] : h.status === "fallen" ? "#3a2f48" : "none";
+    const stroke = h.status === "unclaimed" ? "#c2b59a" : h.status === "fallen" ? "#9d8fb0" : "#ece3cf";
+    const mark = h.status === "fallen" ? `<path d="M${h.x - 5} ${h.y - 5} l10 10 M${h.x + 5} ${h.y - 5} l-10 10" stroke="#ece3cf" stroke-width="1.6"/>` : "";
+    return `<g><rect x="${h.x - 9}" y="${h.y - 9}" width="18" height="18" transform="rotate(45 ${h.x} ${h.y})" fill="${fill}" stroke="${stroke}" stroke-width="1.6" ${h.status === "unclaimed" ? 'stroke-dasharray="3 2"' : ""}/>${mark}<text x="${h.x + 16}" y="${h.y + 4}" fill="#ece3cf" font-size="12" font-family="Georgia,serif">${esc(h.name)}</text></g>`;
+  }).join("");
+  return `<svg viewBox="0 0 640 330" aria-hidden="true" focusable="false"><defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#3b3245" stroke-width="2"/></pattern><linearGradient id="realm" x1="0" x2="1"><stop offset="0" stop-color="#1b171d"/><stop offset="1" stop-color="#231c1a"/></linearGradient></defs>
+    <rect x="0" y="0" width="640" height="330" fill="url(#realm)"/><path d="M0 0H118C96 60 140 110 104 170 76 220 120 270 92 330H0Z" fill="url(#hatch)"/><path d="M118 0C96 60 140 110 104 170 76 220 120 270 92 330" fill="none" stroke="#5d4f70" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="14" y="168" fill="#9d8fb0" font-size="13" font-family="Georgia,serif" font-style="italic">The Hollow West</text>
+    <text x="470" y="80" fill="#968a73" font-size="13" font-family="Georgia,serif" font-style="italic">Aurewynd</text><text x="470" y="250" fill="#968a73" font-size="13" font-family="Georgia,serif" font-style="italic">Valemire</text><text x="420" y="168" fill="#c2b59a" font-size="14" font-family="Georgia,serif" letter-spacing="2">THE REALM</text>
+    ${holds}</svg>`;
+}
+function vFrontier() {
+  if (S.found) S.found.flags.west = true;
+  const day = S.meta.day;
+  const phases = [["Kindling", 3, "days 1–3"], ["The Long Dusk", 18, "days 4–21"], ["Nightfall", 7, "days 22–28"]];
+  const dread = S.scenario === "mid" ? S.k.dread : 0;
+  const stands = S.world.holds.filter((h) => h.status !== "fallen").length;
+  return viewHead("Frontier", S.scenario === "found" ? "Kindling: the Holds await their first garrisons. Tides probe from day 2 but cannot take a Hold until day 4." : "The March: who holds what, when each tide comes, and what the Darkness costs the realm.") + `
+  <section class="panel" id="p-season" aria-labelledby="h-season">
+    <div class="panel-head"><h2 id="h-season">Season ${S.meta.season}</h2><p class="meta">Day ${day} of 28 · ${stands} of ${S.world.holds.length} Holds stand · Dawn needs ${Math.ceil(S.world.holds.length / 2)} at the end</p></div>
+    <div class="phases" role="list">${phases.map(([nm, d, txt]) => `<div class="ph ${S.meta.phase === nm || (nm === "Kindling" && S.meta.phase === "Kindling") ? "now" : ""}" role="listitem" style="flex:${d}">${esc(nm)} <span class="faint">${txt}</span></div>`).join("")}</div>
+    <div class="season-marker" aria-hidden="true"><span style="left:${((day - 0.5) / 28) * 100}%">▲ day ${day}</span></div>
+    <div class="dread" style="margin-top:10px"><span class="label">Dread</span><span class="dread-meter" aria-hidden="true">${Array.from({ length: 5 }, (_, i) => `<i class="${i < dread ? "on" : ""}"></i>`).join("")}</span><span>${dread ? `−${dread * 3}% grain and gold for every kingdom: ${dread} Fallen ${plural(dread, "Hold", "Holds")}` : "None: no Hold has fallen"}</span></div>
+  </section>
+  <section class="panel" id="p-holds" aria-labelledby="h-holds">
+    <div class="panel-head"><h2 id="h-holds">Holds of the March</h2><p class="meta">Tides arrive on a published schedule; strength is fixed when announced</p></div>
+    <figure class="mapwrap" style="margin:0">${mapSvg()}<figcaption class="mapcap">Schematic map. The list below carries the same information.</figcaption></figure>
+    <ul class="holds">${S.world.holds.map(holdCard).join("")}</ul>
+  </section>
+  ${S.scenario === "mid" ? `<section class="panel" id="p-stand" aria-labelledby="h-stand"><div class="panel-head"><h2 id="h-stand">Standings</h2><p class="meta">Renown · the highest at Reckoning become Wardens of the Realm</p></div><ol class="standings">${S.world.standings.map((c, i) => `<li class="stand ${c.mine ? "mine" : ""}"><span class="rank">${i + 1}</span><span><strong>${esc(c.name)}</strong>${c.mine ? ' <span class="chip you">yours</span>' : ""}<br><span class="fine">${c.holds} ${plural(c.holds, "Hold", "Holds")} · ${sgn(c.rate)} per bell</span></span><span><strong>${n(c.renown)}</strong></span></li>`).join("")}</ol></section>` : ""}`;
+}
+function vCoalition() {
+  if (S.scenario === "found") {
+    const F = S.found;
+    return viewHead("Coalition", "Coalitions hold the March together and share renown. Choose now or later; standing alone limits you to raids, camps and trade.") + `
+    <section class="panel" id="p-coal" aria-labelledby="h-coal"><div class="panel-head"><h2 id="h-coal">Choose your banner</h2><p class="meta">Up to 6 kingdoms per coalition</p></div>
+      ${F.choice ? `<div class="receipt" id="coal-result" tabindex="-1"><h4>✓ ${esc(F.choice)}</h4><p>${F.choice.startsWith("Petition") ? "Its officers decide within 48 bells. You will see the answer in the Chronicle." : F.choice.startsWith("Standing") ? "You can petition or found a coalition at any time." : "You are its Marshal. Invite kingdoms by name from the Realm directory."}</p></div>` : `
+      <ul class="co-browse">${S.world.open.map((c) => `<li class="card"><div class="order-head"><h3>${esc(c.name)}</h3><span class="chip">${c.members} of ${c.of}</span></div><p class="fine">“${esc(c.motto)}” · ${esc(c.policy)}</p><div class="actions">${c.policy === "Open to petitions" ? `<button class="btn btn-sm btn-primary" type="button" data-act="coal-choice" data-arg="Petition sent to ${esc(c.name)}">Petition to join</button>` : `<button class="btn btn-sm" type="button" disabled>${c.policy === "Full" ? "Full" : "By invitation"}</button>`}</div></li>`).join("")}</ul>
+      <div class="actions"><button class="btn" type="button" data-act="coal-choice" data-arg="Founded the Banner of Ashvale">Found a coalition</button><button class="btn btn-ghost" type="button" data-act="coal-choice" data-arg="Standing alone for now">Stand alone for now</button></div>`}
+    </section>`;
+  }
+  const W = S.world, o1 = W.orders[0], o2 = W.orders[1], o3 = W.orders[2];
+  const gw = holdById("greywatch"), gf = holdForecast(gw), short = Math.max(0, gw.tide.tp - gf.dp);
+  const pledgedAp = o2.pledges.reduce((a, p) => a + p.ap, 0) + (o2.mineAp || 0);
+  const need2 = Math.round(holdById("mirefold").darkness * 1.5) + 1;
+  const memberRow = (m) => { const might = m.you ? KOD.might(S.k) : m.might, home = m.you ? homeDPof(S.k.home).dp : m.home; return `<li class="member"><div class="mwho"><span class="mname">${esc(m.kingdom)}</span><br><span class="mrole">${esc(m.ruler)} · ${esc(m.role)}</span></div><div class="mnum"><b>${n(might)}</b><span>Might</span></div><div class="mnum"><b>${n(home)}</b><span>Home defense</span></div><div class="mstat ${m.tone}">${esc(m.status)}<br><span class="faint">active ${esc(m.seen)}</span></div></li>`; };
+  return viewHead("Coalition", "What your coalition needs from you. Progress counts only what is actually dispatched; pledges are promises.") + `
+  <section class="panel" id="p-coal" aria-labelledby="h-coal">
+    <div class="co-head"><span class="shield" aria-hidden="true" style="--t1:#8e2f25;--t2:#1d1a1f;--c:#d6ae5c;width:44px;height:52px"></span><div><h2 id="h-coal" class="plain-h" style="font-size:1.35rem">The Ashen Oath</h2><p class="dim">Rank 2 of 4 · <strong>${n(4410)}</strong> renown (+21 per bell) · 5 of 6 kingdoms · you are Sworn</p></div></div>
+    <blockquote class="word" style="margin-inline:0">“${esc(W.word)}”<cite>Marshal's word, Ser Aldric, bell 199</cite></blockquote>
+  </section>
+  <section class="panel" id="p-oath" aria-labelledby="h-oath">
+    <div class="panel-head"><h2 id="h-oath">Oath: ${esc(W.oath.name)}</h2><p class="meta">${esc(W.oath.goal)} by bell ${W.oath.deadline} · ${W.oath.deadline - S.k.bell} bells left · ${W.oath.reward} renown</p></div>
+    <div class="oath-prog" aria-hidden="true">${Array.from({ length: W.oath.of }, (_, i) => `<i class="${i < W.oath.progress ? "on" : ""}"></i>`).join("")}</div>
+    <p><strong>${W.oath.progress} of ${W.oath.of}</strong> tides repelled. Emberstead held at bell 194; <strong>Greywatch at bell 210 would complete it.</strong></p>
+    <div class="contrib" style="margin-top:8px">${W.oath.contributions.map((c) => `<div class="contrib-row"><span>${esc(c.who)}</span><div class="bar" aria-hidden="true"><i style="width:${c.pct}%"></i></div><span>${c.pct}%</span></div>`).join("")}</div>
+  </section>
+  <section class="panel" id="p-orders" aria-labelledby="h-orders">
+    <div class="panel-head"><h2 id="h-orders">War Table</h2><p class="meta">Orders from the Marshal and Captains · ${W.orders.length} open</p></div>
+    <ul class="orders">
+      <li class="order"><div class="order-head"><h4>${esc(o1.title)}</h4><span class="chip ${short ? "" : "you"}">${short ? `short by ${n(short)} defense` : "✓ need met"}</span></div><p class="fine">Posted by ${esc(o1.by)} at bell ${o1.posted} · Greywatch is ${gw.travel} bells away</p>
+        <p style="margin-top:6px">Garrison at the tide: <strong>${n(gf.dp)}</strong> vs <strong>${n(gw.tide.tp)}</strong>${o1.mine ? ` · <span class="ok-t">you dispatched +${n(o1.mine)} defense</span>` : ""}. ${short ? `Minimum still needed: ${minToHold(gw, "spearman")} Spearmen or ${minToHold(gw, "archer")} Archers.` : "Need met by dispatched troops; more margin still helps, since losses at the tide come out of the garrison."}</p>
+        <div class="actions">${short ? `<button class="btn btn-sm btn-primary" type="button" data-act="preset-march" data-arg="greywatch:spearman:${Math.max(minToHold(gw, "spearman") || 16, 16)}">Pledge and plan march</button>` : ""}</div></li>
+      <li class="order"><div class="order-head"><h4>${esc(o2.title)}</h4><span class="chip">${n(pledgedAp)} of ${n(need2)} attack pledged</span></div><p class="fine">Posted by ${esc(o2.by)} at bell ${o2.posted} · dispatch by bell 206 to arrive on 211</p>
+        <div class="pledges">${o2.pledges.map((p) => `<span class="chip">${esc(p.who)}: ${esc(p.what)} (${p.ap})</span>`).join("")}${o2.mineAp ? `<span class="chip you">You: ${n(o2.mineAp)} scheduled</span>` : ""}</div>
+        <p class="fine" style="margin-top:6px">Dispatched so far: ${o2.mineAp ? n(o2.mineAp) : 0} of ${n(need2)}. Pledges are promises; only dispatched marches count.</p>
+        <div class="actions"><button class="btn btn-sm" type="button" data-act="preset-march" data-arg="mirefold:">Plan my part</button></div></li>
+      <li class="order"><div class="order-head"><h4>${esc(o3.title)}</h4><span class="chip">${o3.sent ? `${n(o3.sent)} of ~${n(o3.need)} sent` : `needs ~${n(o3.need)} grain`}</span></div><p class="fine">${esc(o3.by)} · bell ${o3.posted} · caravans take 4 bells</p>
+        <div class="row" style="margin-top:8px"><div><label class="row-name" for="cv-n">Grain to send</label><p class="row-info">You have ${n(S.k.s.grain)}; your own granary is shrinking.</p></div>${stepper("cv-n", "Grain to send to Brother Cael", S.f.caravan.n, 5000, "caravan", "n", 100)}</div>
+        <div class="flow" id="flow-caravan">${flowShell("caravan")}</div></li>
+    </ul>
+  </section>
+  <section class="panel" id="p-members" aria-labelledby="h-members">
+    <div class="panel-head"><h2 id="h-members">Members</h2><p class="meta">Visible to members: home defense, threats, grain runway, activity</p></div>
+    <ul class="members">${W.members.map(memberRow).join("")}</ul>
+    <p class="fine" style="margin-top:10px">Officers see petitions and invitations here. Only the Marshal can propose a pact; none are active.</p>
+  </section>`;
+}
+function reportHtml(id) {
+  if (id === "greywatch186") {
+    const gar = [{ owner: "Ser Aldric", type: "spearman", n: 84 }, { owner: "you", type: "spearman", n: 127 }, { owner: "you", type: "archer", n: 32 }, { owner: "Brother Cael", type: "archer", n: 42 }];
+    const D = D_OF(gar), dp = Math.round(D * 1.5), tp = 1021, bt = KOD.battle({ attackers: [{ owner: "Hollow Host", type: "host", n: 1 }], defenders: gar, ap: tp, dp });
+    const sh = { "Ser Aldric": 252, you: 445, "Brother Cael": 84 }, owners = Object.keys(sh), split = KOD.apportion(40, owners.map((o, i) => ({ weight: sh[o], rank: i })));
+    return `<div class="report"><p><strong>The tide was repelled.</strong> The rule: the Hold stands while defense ≥ tide. ${n(dp)} ≥ ${n(tp)}.</p>
+      <div class="tablewrap"><table class="rtable"><caption class="sr-only">Garrison at Greywatch, bell 186</caption><thead><tr><th scope="col">Contingent</th><th scope="col" class="n">Troops</th><th scope="col" class="n">Defense</th><th scope="col" class="n">Lost</th></tr></thead><tbody>${bt.defenderLosses.map((c) => `<tr><th scope="row">${c.owner === "you" ? "You" : esc(c.owner)} · ${T_MANY[c.type]}</th><td class="n">${c.n}</td><td class="n">${n(c.n * KOD.C.T[c.type].def)}</td><td class="n">${c.lost}</td></tr>`).join("")}<tr><th scope="row">Total × 1.5 (Hold)</th><td class="n">${gar.reduce((a, c) => a + c.n, 0)}</td><td class="n">${n(D)} → ${n(dp)}</td><td class="n">${bt.defenderLosses.reduce((a, c) => a + c.lost, 0)}</td></tr></tbody></table></div>
+      <p class="fine">Losses: ${(bt.Ld * 100).toFixed(1)}% = 0.06 × tide ÷ defense, shared by count using largest remainder. Renown +40 by defense share: ${owners.map((o, i) => `${o === "you" ? "you" : o} ${split[i]}`).join(", ")}.</p>
+      <p class="msg ok">Reconciliation: forecast at bell 185 said ${n(dp)} vs ${n(tp)}, about 15 lost. The actual result matched.</p></div>`;
+  }
+  if (id === "emberstead194") {
+    const gar = [{ owner: "Dame Wren", type: "spearman", n: 200 }, { owner: "Lord Osric", type: "archer", n: 130 }];
+    const D = D_OF(gar), dp = Math.round(D * 1.5), tp = 1089, bt = KOD.battle({ attackers: [{ owner: "Hollow Host", type: "host", n: 1 }], defenders: gar, ap: tp, dp });
+    const split = KOD.apportion(40, [{ weight: 600, rank: 0 }, { weight: 260, rank: 1 }]);
+    return `<div class="report"><p>Tide ${n(tp)} against defense ${n(dp)} (${n(D)} × 1.5): <strong>held</strong>. Losses ${(bt.Ld * 100).toFixed(1)}%: Dame Wren ${bt.defenderLosses[0].lost}, Lord Osric ${bt.defenderLosses[1].lost}. Renown: Wren ${split[0]}, Osric ${split[1]}. This counts toward your Oath.</p></div>`;
+  }
+  return "";
+}
+function vChronicle() {
+  const all = S.world.chronicle;
+  const show = all.filter((e) => S.chronFilter === "all" || e.type === S.chronFilter);
+  const unread = all.filter((e) => e.unread);
+  const html = viewHead("Chronicle", "What happened, why, and what you can do about it.") + `
+  <section class="panel" aria-labelledby="h-digest"><div class="panel-head"><h2 id="h-digest">Since your last visit</h2><p class="meta">${unread.length} unread</p></div>
+    <div class="digest">${unread.length ? `<ul class="list-dots">${unread.slice(0, 5).map((e) => `<li><span class="faint">Bell ${e.bell}:</span> ${esc(e.title)}</li>`).join("")}</ul>` : `<p class="dim">Quiet so far. Your first report arrives when a bell rings${S.scenario === "found" ? "; ring a founding bell to see one now" : ""}.</p>`}</div>
+    <div class="actions"><button class="btn btn-sm" type="button" data-act="mark-read" ${unread.length ? "" : "disabled"}>Mark all read</button></div>
+  </section>
+  <section class="panel" aria-labelledby="h-feed"><div class="panel-head"><h2 id="h-feed">Events</h2><p class="meta">Newest first</p></div>
+    <div class="filters" role="group" aria-label="Filter events">${[["all", "All"], ["battles", "Battles"], ["kingdom", "Kingdom"], ["coalition", "Coalition"], ["frontier", "Frontier"]].map(([v, l]) => `<button type="button" data-act="filter" data-arg="${v}" aria-pressed="${S.chronFilter === v}">${l}</button>`).join("")}</div>
+    <ol class="feed">${show.map((e) => e.report ? `<li class="entry ${e.unread ? "unread" : ""}"><details><summary><span class="ebell">Bell ${e.bell}</span><span><span class="etitle">${esc(e.title)}</span><span class="etype">${esc(e.type)} · <span class="more">full report</span></span></span></summary>${reportHtml(e.report)}</details></li>` : `<li class="entry ${e.unread ? "unread" : ""}"><div class="entry-static"><span class="ebell">Bell ${e.bell}</span><span><span class="etitle">${esc(e.title)}</span>${e.body ? `<span class="etype">${esc(e.type)}</span><span class="dim" style="display:block;font-size:.92rem">${esc(e.body)}</span>` : ""}</span></div></li>`).join("") || `<li class="dim">No events of this kind yet.</li>`}</ol>
+  </section>`;
+  return html;
+}
+const VIEW_FN = { kingdom: vKingdom, muster: vMuster, frontier: vFrontier, coalition: vCoalition, chronicle: vChronicle };
+
+/* ======================================================================
+   Founding bells
+   ====================================================================== */
+function processExpeditions() {
+  for (const e of S.world.exps) {
+    if (e.state === "scheduled" && S.k.bell >= e.depart) { KOD.C.TYPES.forEach((t) => { S.k.home[t] -= e.comp[t]; S.k.away[t] += e.comp[t]; }); e.state = "marching"; }
+    if (e.kind === "camp" && e.state === "marching" && S.k.bell >= e.arrive) {
+      const c = S.scenario === "found" ? S.world.camps.find((x) => x.id === e.dest) : S.world.camps[0];
+      const ap = A_OF(e.comp), list = KOD.C.TYPES.filter((t) => e.comp[t]).map((t, i) => ({ owner: "you", type: t, n: e.comp[t], rank: i }));
+      const bt = KOD.battle({ attackers: list, ap, dp: c.dp });
+      const surv = {}; KOD.C.TYPES.forEach((t) => (surv[t] = e.comp[t] || 0)); bt.attackerLosses.forEach((x) => { surv[x.type] = x.n - x.lost; S.k.away[x.type] -= x.lost; });
+      let loot = {};
+      if (bt.victory) { const carry = CARRY_OF(surv), total = Object.values(c.loot).reduce((a, v) => a + v, 0); Object.keys(c.loot).forEach((s) => (loot[s] = carry >= total ? c.loot[s] : Math.floor((c.loot[s] * carry) / total))); }
+      e.survivors = surv; e.loot = loot; e.state = "returning";
+      const lostTxt = bt.attackerLosses.filter((x) => x.lost).map((x) => `${x.lost} ${x.lost === 1 ? T_ONE[x.type] : T_MANY[x.type]}`).join(", ") || "no losses";
+      e.result = { victory: bt.victory, text: bt.victory ? `Victory at bell ${e.arrive}: ${n(ap)} vs ${c.dp}; lost ${lostTxt}; carrying ${costText(loot)}.` : `Repelled at bell ${e.arrive}: ${n(ap)} vs ${c.dp}; lost ${lostTxt}.` };
+      if (S.found && bt.victory && c.id === "ashford") S.found.flags.ashford = true;
+      S.world.chronicle.unshift({ bell: S.k.bell, type: "battles", title: bt.victory ? `Victory at ${c.name}` : `Repelled at ${c.name}`, body: e.result.text, unread: true });
+    } else if (e.kind === "camp" && e.state === "returning" && S.k.bell >= e.ret) {
+      KOD.C.TYPES.forEach((t) => { S.k.away[t] -= e.survivors[t]; S.k.home[t] += e.survivors[t]; });
+      Object.keys(e.loot).forEach((s) => (S.k.s[s] += e.loot[s]));
+      e.state = "done";
+      S.world.chronicle.unshift({ bell: S.k.bell, type: "battles", title: "Troops home with loot", body: `${comp2text(e.survivors)} returned with ${costText(e.loot) || "nothing"}.`, unread: true });
+    }
+  }
+}
+function ringFounding(times) {
+  const F = S.found; if (!F) return;
+  for (let i = 0; i < times && F.left > 0; i++) {
+    const fc = KOD.forecast(S.k, 1)[0];
+    const r = KOD.bell(S.k);
+    const actual = { s: Object.assign({}, S.k.s), commoners: S.k.commoners };
+    F.left -= 1; F.used += 1;
+    const evBefore = S.world.chronicle.length;
+    processExpeditions();
+    const events = [];
+    r.completed.forEach((c) => events.push(`${B_ONE[c.target]} completed`));
+    Object.keys(r.trained).forEach((t) => events.push(`${r.trained[t]} ${T_MANY[t]} finished training`));
+    S.world.chronicle.slice(0, S.world.chronicle.length - evBefore).forEach((e) => events.push(e.title + ": " + (e.body || "")));
+    F.recon = { bell: S.k.bell, fc, actual, events };
+    S.world.chronicle.unshift({ bell: S.k.bell, type: "kingdom", title: `Founding bell ${F.used}: the forecast matched`, body: `Gold ${sgn(r.produced.gold - r.consumed.wages)}, grain ${sgn(r.produced.grain - r.consumed.grain)}, people ${sgn(r.growth - (r.left || 0))}.`, unread: true });
+  }
+  renderAll(); focus("#recon"); say(`Founding bell ${F.used} rang. Forecast and actual matched. ${F.left} founding bells left.`);
+}
+
+/* ======================================================================
+   Render orchestration, routing, events
+   ====================================================================== */
+function renderMain() { $("#main").innerHTML = VIEW_FN[S.nav](); }
+function renderAll() { renderMast(); renderRail(); renderAside(); renderMain(); }
+function focus(sel) { requestAnimationFrame(() => { const el = typeof sel === "string" ? document.querySelector(sel) : sel; if (el) { if (!el.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) el.setAttribute("tabindex", "-1"); el.focus({ preventScroll: false }); } }); }
+let sayTimer = null;
+function say(text, assertive) { const el = document.getElementById(assertive ? "alert" : "live"); el.textContent = ""; clearTimeout(sayTimer); sayTimer = setTimeout(() => { el.textContent = text; }, 60); }
+function route(scrollTo) {
+  const h = (location.hash || "#kingdom").slice(1).split("/")[0];
+  S.nav = VIEWS.includes(h) ? h : "kingdom";
+  if (S.nav === "frontier" && S.found) S.found.flags.west = true; // objective 7 completes on visit, before counsel renders
+  renderAll();
+  if (scrollTo) { const el = document.getElementById(scrollTo); if (el) { el.scrollIntoView({ block: "start" }); focus(el.querySelector("h2") || el); } }
+  else focus("#view-h1");
+}
+function goto(arg) {
+  const [view, panel] = arg.split(":");
+  if (S.nav === view && location.hash === "#" + view) { renderAll(); if (panel) { const el = document.getElementById(panel); if (el) { el.scrollIntoView({ block: "start" }); focus(el.querySelector("h2") || el); } } return; }
+  S.pendingScroll = panel || null;
+  location.hash = "#" + view;
+}
+window.addEventListener("hashchange", () => { const p = S.pendingScroll; S.pendingScroll = null; route(p); });
+function clampField(flow, field, v) {
+  if (flow === "build") return Math.max(0, Math.min(99, v));
+  if (flow === "recruit" || flow === "march") return Math.max(0, Math.min(999, v));
+  if (flow === "land") return Math.max(0, Math.min(50, v));
+  if (flow === "exch") return Math.max(0, Math.min(5000, Math.round(v / 10) * 10));
+  if (flow === "caravan") return Math.max(0, Math.min(5000, Math.round(v / 100) * 100));
+  return v;
+}
+function setField(flow, field, v) {
+  const st = S.f[flow];
+  if (flow === "build") st.items[field] = v;
+  else if (flow === "recruit") st.items[field] = v;
+  else if (flow === "march") st.comp[field] = v;
+  else st[field] = v;
+  if (st.step !== "plan") st.step = "plan";
+  refreshFlow(flow);
+  if (flow === "build") { const el = document.querySelector(`[data-bind="build|${field}"]`); if (el && document.activeElement !== el) el.value = v; }
+}
+document.addEventListener("click", (ev) => {
+  const stepBtn = ev.target.closest("[data-step]");
+  if (stepBtn) {
+    const [flow, field, d] = stepBtn.dataset.step.split("|");
+    const input = document.querySelector(`[data-bind="${flow}|${field}"]`);
+    const cur = parseInt(input.value, 10) || 0;
+    const v = clampField(flow, field, cur + parseInt(d, 10));
+    input.value = v; setField(flow, field, v);
+    return;
+  }
+  const maxBtn = ev.target.closest("[data-max]");
+  if (maxBtn) {
+    const [flow, field] = maxBtn.dataset.max.split("|");
+    const m = maxFor(flow, field), input = document.querySelector(`[data-bind="${flow}|${field}"]`);
+    input.value = m.value; setField(flow, field, m.value);
+    const name = flow === "build" ? B_MANY[field] : T_MANY[field];
+    say(`${name} set to ${m.value}: limited by ${m.reason}.`);
+    maxBtn.setAttribute("title", `Limited by ${m.reason}`);
+    return;
+  }
+  const a = ev.target.closest("[data-act]");
+  if (!a) return;
+  const act = a.dataset.act, arg = a.dataset.arg, flow = a.dataset.flow;
+  if (a.tagName === "A") ev.preventDefault();
+  switch (act) {
+    case "toggle-proto": S.protoOpen = !S.protoOpen; renderMast(); focus(".proto-chip"); break;
+    case "toggle-aside": S.asideOpen = !S.asideOpen; renderAside(); focus(".aside-toggle"); break;
+    case "reset": load(S.scenario); S.protoOpen = true; renderAll(); focus(".proto-chip"); say("Scenario reset."); break;
+    case "review": S.f[flow].step = "review"; refreshFlow(flow, `#${flow}-review`); break;
+    case "back": S.f[flow].step = "plan"; refreshFlow(flow); focus(`#flow-${flow} .btn-primary`); break;
+    case "again": S.f[flow].step = "plan"; refreshFlow(flow); focus(`#flow-${flow}`); break;
+    case "clear": if (flow === "build") { S.f.build.items = { cottage: 0, farm: 0, mine: 0, forge: 0, market: 0, barracks: 0 }; S.f.build.works = { keep: false, walls: false, guild: false }; } else if (flow === "recruit") S.f.recruit.items = { spearman: 0, archer: 0, knight: 0 }; else S.f[flow].n = 0; renderMain(); focus(`#flow-${flow}`); break;
+    case "confirm": confirmFlow(flow); break;
+    case "toggle-works": S.f.build.works[arg] = !S.f.build.works[arg]; S.f.build.step = "plan"; renderMain(); focus(`[data-act="toggle-works"][data-arg="${arg}"]`); break;
+    case "prio": { const [p, d] = arg.split(":"); const pr = S.k.priority, i = pr.indexOf(p), j = i + parseInt(d, 10); if (j >= 0 && j < pr.length) { [pr[i], pr[j]] = [pr[j], pr[i]]; renderAll(); focus(`[data-act="prio"][data-arg="${p}:${d}"]:not([disabled])`) || null; say(`${JOB[p][0]} moved to position ${j + 1}.`); } break; }
+    case "goto": goto(arg); break;
+    case "preset-build": { const [t, q] = arg.split(":"); S.f.build.items[t] = parseInt(q, 10); S.f.build.step = "plan"; goto("kingdom:p-build"); break; }
+    case "preset-march": { const [dest, type, q] = arg.split(":"); setMarchDest(dest); if (type) { S.f.march.comp = { spearman: 0, archer: 0, knight: 0 }; S.f.march.comp[type] = Math.min(parseInt(q, 10), S.k.home[type]); } goto("muster:p-march"); break; }
+    case "ring": ringFounding(parseInt(a.dataset.n, 10) || 1); break;
+    case "signin": S.session = null; S.sim.expired = false; for (const f of Object.keys(S.f)) if (S.f[f].step === "review") S.f[f].step = "review"; renderAll(); focus("#view-h1"); say("Signed in. Your plan was kept; review and confirm it again."); break;
+    case "coal-choice": S.found.choice = arg; S.found.flags.banner = true; renderAll(); focus("#coal-result"); break;
+    case "filter": S.chronFilter = arg; renderMain(); focus(`[data-act="filter"][data-arg="${arg}"]`); break;
+    case "mark-read": S.world.chronicle.forEach((e) => (e.unread = false)); renderAll(); focus("#view-h1"); break;
+    case "noop": say("In this prototype, recall and turn back are shown but not simulated."); break;
+  }
+});
+document.addEventListener("input", (ev) => {
+  const el = ev.target;
+  if (el.matches("[data-bind]")) {
+    const [flow, field] = el.dataset.bind.split("|");
+    if (flow === "forge") { S.k.armsPct = parseInt(el.value, 10); el.setAttribute("aria-valuetext", `${S.k.armsPct}% arms, ${100 - S.k.armsPct}% tools`); const nb = nextBell(); const w = KOD.staff(S.k); const out = document.getElementById("forge-out"); if (out) out.innerHTML = `<strong>${S.k.armsPct}% arms</strong> · next bell: ${n(nb.r.produced.tools)} tools, ${n(nb.r.produced.arms)} arms <span class="faint">(${n(w.forge)} smiths, ${n(nb.r.produced.ironUsed)} iron)</span>`; renderMast(); renderAside(); return; }
+    if (el.type === "number") { const v = clampField(flow, field, parseInt(el.value, 10) || 0); setField(flow, field, v); return; }
+  }
+});
+document.addEventListener("change", (ev) => {
+  const el = ev.target;
+  if (el.name === "scenario") { load(el.value); S.protoOpen = true; location.hash = "#kingdom"; renderAll(); focus(".proto-chip"); say(el.value === "found" ? "First-session scenario loaded." : "Mid-season scenario loaded."); return; }
+  if (el.dataset.sim) { S.sim[el.dataset.sim] = el.checked; if (el.dataset.sim === "offline") renderMain(); return; }
+  if (!el.matches("[data-bind]")) return;
+  const [flow, field] = el.dataset.bind.split("|");
+  if (el.type === "number") { const v = clampField(flow, field, parseInt(el.value, 10) || 0); el.value = v; setField(flow, field, v); return; }
+  if (flow === "march" && field === "dest") { setMarchDest(el.value); renderMain(); focus(`input[name="dest"][value="${el.value}"]`); return; }
+  if (flow === "march" && field === "depart") { S.f.march.depart = parseInt(el.value, 10); S.f.march.step = "plan"; refreshFlow("march"); return; }
+  if (flow === "exch") { S.f.exch[field] = el.value; S.f.exch.step = "plan"; renderMain(); focus(field === "mode" ? `input[name="exmode"][value="${el.value}"]` : "#ex-good"); return; }
+  if (flow === "build" && field === "guildPick") { S.f.build.guildPick = el.value; refreshFlow("build"); return; }
+});
+document.addEventListener("keydown", (ev) => {
+  if (ev.key === "Escape") { if (S.protoOpen) { S.protoOpen = false; renderMast(); focus(".proto-chip"); } return; }
+  const t = ev.target;
+  if (t.matches && t.matches('input[type="number"][data-bind]') && (ev.key === "ArrowUp" || ev.key === "ArrowDown") && ev.shiftKey) {
+    ev.preventDefault(); const [flow, field] = t.dataset.bind.split("|"); const step = parseInt(t.step || "1", 10) * 10; const v = clampField(flow, field, (parseInt(t.value, 10) || 0) + (ev.key === "ArrowUp" ? step : -step)); t.value = v; setField(flow, field, v); return;
+  }
+  if (/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+  const i = ["1", "2", "3", "4", "5"].indexOf(ev.key);
+  if (i >= 0) { location.hash = "#" + VIEWS[i]; }
+});
+
+load("mid");
+if (!VIEWS.includes((location.hash || "").slice(1))) history.replaceState(null, "", "#kingdom");
+route();
+})();
+</script>
+</body>
+</html>
