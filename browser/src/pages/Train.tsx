@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
 import type { Counts, GameConfig, UnitName } from "../api/types";
 import { unitNames } from "../api/types";
@@ -76,14 +77,19 @@ export const Train: React.FC = () => {
       : [];
 
   const submit = async (): Promise<void> => {
+    const lacking = short;
     const result = await act(
       () => (mode === "train" ? api.train(order) : api.dismiss(order)),
       outcome => {
         const total = Object.values(outcome.units).reduce((sum, count) => sum + count, 0);
+        const partly = total < ordered;
+        const reason = partly && lacking.length ? `, the rest lacked ${lacking.join(" and ")}` : "";
         return {
           text:
             mode === "train"
-              ? `Trained ${plural(total, "recruit", "recruits")}`
+              ? partly
+                ? `Trained ${formatNumber(total)} of ${formatNumber(ordered)} recruits${reason}`
+                : `Trained ${plural(total, "recruit", "recruits")}`
               : `Dismissed ${plural(total, "person", "people")}, they are idle now`,
           failure: total === 0,
         };
@@ -191,6 +197,12 @@ export const Train: React.FC = () => {
                 {spent.tools ? `, ${formatNumber(spent.tools)} tools` : ""}
                 {spent.weapons ? `, ${formatNumber(spent.weapons)} weapons` : ""}
                 {short.length ? <span className="warning"> Not enough {short.join(", ")}.</span> : null}
+                {short.includes("weapons") ? (
+                  <span className="muted">
+                    {" "}
+                    Blacksmiths forge weapons; set their share on the <Link to="/kingdom/overview">overview</Link>.
+                  </span>
+                ) : null}
               </>
             ) : (
               `Dismiss ${plural(ordered, "person", "people")}; they stay as idle people`

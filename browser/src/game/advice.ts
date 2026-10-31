@@ -12,11 +12,24 @@ export type Counsel = {
 
 const workers: UnitName[] = ["farmer", "goldMiner", "ironMiner", "blacksmith", "carrier"];
 
+/** how many acres a sum buys; the server prices the acre after `land` at (land + 1)² / 10 gold */
+const acresFor = (land: number, gold: number): number => {
+  let acres = 0;
+  let spent = 0;
+  while (acres < 100_000) {
+    const price = Math.round((land + acres + 1) ** 2 / 10);
+    if (spent + price > gold) break;
+    spent += price;
+    acres++;
+  }
+  return acres;
+};
+
 /**
  * what a steward would tell the ruler this turn, most pressing first; every line is read from the kingdom and the
  * server's forecast of the next turn
  */
-export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameConfig, limit = 4): Counsel[] => {
+export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameConfig, weaponsPercentage: number, limit = 4): Counsel[] => {
   const lines: Counsel[] = [];
   const resources = kingdom.resources;
   const forecast = details.forecast;
@@ -77,6 +90,14 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
       link: { to: "/kingdom/build", label: "Build houses" },
     });
   }
+  const affordable = acresFor(resources.land, resources.gold / 2);
+  if (affordable >= Math.max(10, resources.land / 10)) {
+    lines.push({
+      urgent: false,
+      text: `Half your treasury would buy ${formatNumber(affordable)} more acres. Land is what every realm grows on.`,
+      link: { to: "/kingdom/build", label: "Buy land" },
+    });
+  }
   if (freeLand <= 0) {
     lines.push({
       urgent: false,
@@ -96,7 +117,12 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
   if (resources.turns >= config.common.maxTurns) {
     lines.push({ urgent: false, text: `Your turn store is full at ${config.common.maxTurns}; new turns are lost until you pass one.` });
   }
-  if (soldiers === 0) {
+  if (soldiers === 0 && weaponsPercentage === 0 && resources.weapons < config.trainingCost.infantry.weapons * 10) {
+    lines.push({
+      urgent: false,
+      text: "Soldiers need weapons, and your blacksmiths forge none. Give weapons a share of their work below.",
+    });
+  } else if (soldiers === 0) {
     lines.push({
       urgent: false,
       text: "No soldiers stand in your realm. Raiders take land from kingdoms that cannot fight back.",

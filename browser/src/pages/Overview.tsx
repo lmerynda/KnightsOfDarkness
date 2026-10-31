@@ -277,8 +277,8 @@ const RecentChronicle: React.FC = () => {
 };
 
 const Counsel: React.FC = () => {
-  const { kingdom, details, config } = useGame();
-  const lines = counsel(kingdom, details, config);
+  const { kingdom, details, config, weaponsPercentage } = useGame();
+  const lines = counsel(kingdom, details, config, weaponsPercentage);
   if (!lines.length) return null;
   return (
     <Panel title="Your steward advises">

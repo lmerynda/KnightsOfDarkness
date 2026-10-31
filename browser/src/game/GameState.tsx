@@ -9,12 +9,16 @@ type Toast = { id: number; text: string; failure: boolean };
 
 const weaponsKey = "weaponsPercentage";
 
+// a new ruler's blacksmiths forge some weapons from the start, or the first soldiers cannot be armed
+const defaultWeaponsPercentage = 20;
+
 const readWeaponsPercentage = (): number => {
   try {
-    const stored = Number(localStorage.getItem(weaponsKey));
-    return Number.isFinite(stored) ? Math.min(100, Math.max(0, stored)) : 0;
+    const stored = localStorage.getItem(weaponsKey);
+    const value = Number(stored);
+    return stored !== null && Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : defaultWeaponsPercentage;
   } catch {
-    return 0;
+    return defaultWeaponsPercentage;
   }
 };
 
