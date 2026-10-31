@@ -5,6 +5,7 @@ import type { Notification, ResourceName, TurnReport, UnitName } from "../api/ty
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
 import { counsel } from "../game/advice";
+import { ChronicleEntry } from "../game/chronicle";
 import { art, marketResourceLabel, resourceLabel, unitLore } from "../game/lore";
 import type { IconName } from "../ui/Icon";
 import { Icon } from "../ui/Icon";
@@ -247,14 +248,11 @@ const RecentChronicle: React.FC = () => {
       {entries.length === 0 ? (
         <p className="muted">Battles, trades and alliance news will be written here.</p>
       ) : (
-        <ul className="plain-list">
+        <ol className="chronicle compact">
           {entries.map(entry => (
-            <li key={entry.id} className={entry.isRead ? "muted" : undefined}>
-              <span>{entry.message}</span>
-              <span className="muted">{ago(entry.date)}</span>
-            </li>
+            <ChronicleEntry key={entry.id} entry={entry} />
           ))}
-        </ul>
+        </ol>
       )}
       <p className="overview-note">
         <Link to="/kingdom/chronicle">Read the whole chronicle</Link>

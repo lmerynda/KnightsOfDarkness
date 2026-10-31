@@ -15,6 +15,7 @@ import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.common.market.MarketResource;
+import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.common.war.BattleReportDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
@@ -57,7 +58,7 @@ public class KingdomInteractor implements IKingdomInteractor
         toKingdom.get().receiveResourceTransfer(resource, amount);
         kingdomRepository.update(from);
         kingdomRepository.update(toKingdom.get());
-        notificationSystem.create(to, Utils.format("{} carriers delivered {} {}", from.getName(), amount, resource));
+        notificationSystem.create(to, NotificationKind.delivery, Utils.format("{} carriers delivered {} {}", from.getName(), amount, resource));
     }
 
     @Override
@@ -127,12 +128,12 @@ public class KingdomInteractor implements IKingdomInteractor
         var spoils = report.attackType() == AttackType.land ? Utils.format("{} land", report.landCaptured()) : Utils.format("{} gold and supplies", report.plunder().getOrDefault(ResourceName.gold, 0));
         if (report.attackerWon())
         {
-            notificationSystem.create(report.attacker(), Utils.format("Victory! Our army defeated {} and took {}", report.defender(), spoils));
-            notificationSystem.create(report.defender(), Utils.format("{} attacked us and won, we lost {}", report.attacker(), spoils));
+            notificationSystem.create(report.attacker(), NotificationKind.victory, Utils.format("Victory! Our army defeated {} and took {}", report.defender(), spoils));
+            notificationSystem.create(report.defender(), NotificationKind.breached, Utils.format("{} attacked us and won, we lost {}", report.attacker(), spoils));
         } else
         {
-            notificationSystem.create(report.attacker(), Utils.format("Defeat! Our army was repelled by {}", report.defender()));
-            notificationSystem.create(report.defender(), Utils.format("We repelled an attack from {}", report.attacker()));
+            notificationSystem.create(report.attacker(), NotificationKind.defeat, Utils.format("Defeat! Our army was repelled by {}", report.defender()));
+            notificationSystem.create(report.defender(), NotificationKind.repelled, Utils.format("We repelled an attack from {}", report.attacker()));
         }
     }
 

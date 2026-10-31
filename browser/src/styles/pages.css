@@ -414,16 +414,42 @@
 
 .chronicle li {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--space-4);
-  padding: var(--space-3) 0 var(--space-3) var(--space-4);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0 var(--space-3) var(--space-3);
   border-bottom: 1px solid var(--rule);
   border-left: 2px solid var(--ember);
+}
+
+.chronicle li:last-child {
+  border-bottom: 0;
+}
+
+.chronicle li.tone-gain {
+  border-left-color: var(--moss);
+}
+
+.chronicle li.tone-loss {
+  border-left-color: var(--blood);
 }
 
 .chronicle li.read {
   border-left-color: transparent;
   color: var(--pewter);
+}
+
+.chronicle.compact li {
+  padding: var(--space-2) 0 var(--space-2) var(--space-2);
+}
+
+.chronicle-entry a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.chronicle-entry a:hover {
+  text-decoration: underline;
 }
 
 /* ---------- landing ---------- */

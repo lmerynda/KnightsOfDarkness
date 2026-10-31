@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.common.war.BattleReportDto;
 import com.knightsofdarkness.web.common.war.SendSpiesDto;
 import com.knightsofdarkness.web.common.war.SendSpiesResult;
@@ -58,7 +59,7 @@ public class WarService {
             warReportRepository.addSpyReport(report);
             if (!report.success())
             {
-                notificationSystem.create(report.targetKingdomName(), Utils.format("Our guards caught {} spies sent by {}", report.spiesLost(), kingdomName));
+                notificationSystem.create(report.targetKingdomName(), NotificationKind.spies, Utils.format("Our guards caught {} spies sent by {}", report.spiesLost(), kingdomName));
             }
         });
         kingdomRepository.update(kingdom);

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
@@ -34,7 +35,7 @@ class NotificationsTest {
     @Test
     void testAddNotification()
     {
-        notificationSystem.create(kingdom.getName(), "Test notification");
+        notificationSystem.create(kingdom.getName(), NotificationKind.trade, "Test notification");
 
         assertEquals(1, notificationSystem.getNotifications(kingdom.getName()).size());
     }
@@ -42,7 +43,7 @@ class NotificationsTest {
     @Test
     void testMarkNotificationAsRead()
     {
-        notificationSystem.create(kingdom.getName(), "Test notification");
+        notificationSystem.create(kingdom.getName(), NotificationKind.trade, "Test notification");
         var notifications = notificationSystem.getNotifications(kingdom.getName()).getFirst();
         var notificationId = notifications.id();
 
@@ -55,8 +56,8 @@ class NotificationsTest {
     @Test
     void testCountKingdomUnreadNotifications()
     {
-        notificationSystem.create(kingdom.getName(), "Test notification 1");
-        notificationSystem.create(kingdom.getName(), "Test notification 2");
+        notificationSystem.create(kingdom.getName(), NotificationKind.trade, "Test notification 1");
+        notificationSystem.create(kingdom.getName(), NotificationKind.trade, "Test notification 2");
 
         assertEquals(2, notificationSystem.countKingdomUnreadNotifications(kingdom.getName()));
 
@@ -74,9 +75,9 @@ class NotificationsTest {
         try (var clock = mockStatic(Instant.class, CALLS_REAL_METHODS))
         {
             clock.when(Instant::now).thenReturn(firstTime);
-            notificationSystem.create(kingdom.getName(), "First notification");
+            notificationSystem.create(kingdom.getName(), NotificationKind.trade, "First notification");
             clock.when(Instant::now).thenReturn(secondTime);
-            notificationSystem.create(kingdom.getName(), "Second notification");
+            notificationSystem.create(kingdom.getName(), NotificationKind.trade, "Second notification");
         }
 
         var notifications = notificationSystem.getNotifications(kingdom.getName());
@@ -88,7 +89,7 @@ class NotificationsTest {
     @Test
     void testMarkNotificationAsReadInvalidKingdom()
     {
-        notificationSystem.create(kingdom.getName(), "Test notification");
+        notificationSystem.create(kingdom.getName(), NotificationKind.trade, "Test notification");
         var notifications = notificationSystem.getNotifications(kingdom.getName());
         var notificationId = notifications.get(0).id();
 
@@ -101,7 +102,7 @@ class NotificationsTest {
     @Test
     void testMarkNotificationAsReadInvalidId()
     {
-        notificationSystem.create(kingdom.getName(), "Test notification");
+        notificationSystem.create(kingdom.getName(), NotificationKind.trade, "Test notification");
 
         notificationSystem.markNotificationAsRead(kingdom.getName(), UUID.randomUUID());
 

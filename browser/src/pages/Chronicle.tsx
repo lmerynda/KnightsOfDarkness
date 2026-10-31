@@ -3,8 +3,8 @@ import { api } from "../api/endpoints";
 import type { Notification } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art } from "../game/lore";
+import { ChronicleEntry } from "../game/chronicle";
 import { Banner, Panel } from "../ui/parts";
-import { ago } from "../ui/format";
 
 export const Chronicle: React.FC = () => {
   const { refreshCounters, unreadNotifications } = useGame();
@@ -49,12 +49,7 @@ export const Chronicle: React.FC = () => {
         ) : (
           <ol className="chronicle">
             {entries.map(entry => (
-              <li key={entry.id} className={entry.isRead ? "read" : undefined}>
-                <span>{entry.message}</span>
-                <time className="muted" dateTime={entry.date}>
-                  {ago(entry.date)}
-                </time>
-              </li>
+              <ChronicleEntry key={entry.id} entry={entry} />
             ))}
           </ol>
         )}

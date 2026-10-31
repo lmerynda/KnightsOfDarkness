@@ -13,6 +13,7 @@ import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
 import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
 import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.common.market.RemoveMarketOfferResult;
+import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
@@ -153,8 +154,8 @@ public class Market implements IMarket {
         var transaction = new MarketTransactionEntity(Id.generate(), offer.getResource(), seller.getName(), buyer.getName(), offer.getPrice(), buyerAmount, Instant.now());
         offersRepository.registerMarketTransaction(transaction);
 
-        var message = Utils.format("Transaction: {} bought {} {} for {} gold", buyer.getName(), buyerAmount, offer.getResource(), buyerGold);
-        notificationSystem.create(seller.getName(), message);
+        var message = Utils.format("{} bought {} {} from us for {} gold", buyer.getName(), buyerAmount, offer.getResource(), buyerGold);
+        notificationSystem.create(seller.getName(), NotificationKind.trade, message);
 
         return result;
     }

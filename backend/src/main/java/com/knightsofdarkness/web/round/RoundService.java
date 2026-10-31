@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.knightsofdarkness.web.bots.IBotRepository;
 import com.knightsofdarkness.web.common.game.RankingsDto;
 import com.knightsofdarkness.web.common.game.RoundDto;
+import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.market.model.IMarketOfferRepository;
@@ -101,7 +102,7 @@ public class RoundService {
 
         var winner = rankings.kingdoms().isEmpty() ? "nobody" : rankings.kingdoms().get(0).kingdomName();
         var message = Utils.format("Round {} has ended, {} ruled the most land. Round {} begins, every kingdom starts anew", round.getNumber(), winner, nextRound.getNumber());
-        kingdoms.forEach(kingdom -> notificationSystem.create(kingdom.getName(), message));
+        kingdoms.forEach(kingdom -> notificationSystem.create(kingdom.getName(), NotificationKind.round, message));
     }
 
     private Set<String> botNames()

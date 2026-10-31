@@ -185,7 +185,8 @@ export type SpyReport = {
   units: Partial<Counts<UnitName>>;
 };
 
-export type Notification = { id: string; kingdomName: string; message: string; date: string; isRead: boolean };
+export type NotificationKind = "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round";
+export type Notification = { id: string; kingdomName: string; kind: NotificationKind; message: string; date: string; isRead: boolean };
 
 export type Letter = { id: string; sender: string; recipient: string; body: string; date: string; isRead: boolean; toAlliance: boolean };
 

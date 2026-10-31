@@ -18,6 +18,7 @@ import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.common.messaging.NotificationDto;
+import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
@@ -239,6 +240,8 @@ class WarTest {
         var defenderNotifications = game.getNotificationSystem().getNotifications(defender.getName());
         assertThat(defenderNotifications).extracting(NotificationDto::message).anyMatch(message -> message.contains(attacker.getName()));
         assertThat(game.getNotificationSystem().getNotifications(attacker.getName())).extracting(NotificationDto::message).anyMatch(message -> message.startsWith("Victory"));
+        assertThat(game.getNotificationSystem().getNotifications(attacker.getName())).extracting(NotificationDto::kind).contains(NotificationKind.victory);
+        assertThat(defenderNotifications).extracting(NotificationDto::kind).contains(NotificationKind.breached);
     }
 
     @Test

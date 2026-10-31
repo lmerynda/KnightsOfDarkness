@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.knightsofdarkness.web.common.messaging.NotificationDto;
+import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.utils.Id;
 
@@ -19,9 +20,9 @@ public class NotificationSystem implements INotificationSystem {
     }
 
     @Override
-    public void create(String kingdom, String message)
+    public void create(String kingdom, NotificationKind kind, String message)
     {
-        var notification = new NotificationDto(Id.generate(), kingdom, message, Instant.now(), false);
+        var notification = new NotificationDto(Id.generate(), kingdom, kind, message, Instant.now(), false);
         notificationRepository.create(notification);
     }
 
@@ -46,7 +47,7 @@ public class NotificationSystem implements INotificationSystem {
             return;
         }
 
-        var updatedNotification = new NotificationDto(notification.id(), notification.kingdomName(), notification.message(), notification.date(), true);
+        var updatedNotification = new NotificationDto(notification.id(), notification.kingdomName(), notification.kind(), notification.message(), notification.date(), true);
 
         notificationRepository.update(updatedNotification);
     }

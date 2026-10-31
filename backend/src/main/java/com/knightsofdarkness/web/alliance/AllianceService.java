@@ -23,6 +23,7 @@ import com.knightsofdarkness.web.common.alliance.InviteAllianceResult;
 import com.knightsofdarkness.web.common.alliance.LeaveAllianceResult;
 import com.knightsofdarkness.web.common.alliance.RejectAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.RemoveFromAllianceResult;
+import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
@@ -107,7 +108,7 @@ public class AllianceService {
         var allianceEntity = alliance.get();
         kingdom.removeAlliance();
         kingdomRepository.update(kingdom);
-        notificationSystem.create(allianceEntity.getEmperor(), kingdomName + " has left " + allianceEntity.getName());
+        notificationSystem.create(allianceEntity.getEmperor(), NotificationKind.alliance, kingdomName + " has left " + allianceEntity.getName());
         return LeaveAllianceResult.success("You've left the alliance");
     }
 
@@ -135,7 +136,7 @@ public class AllianceService {
         var allianceName = alliance.get().getName();
         kingdom.removeAlliance();
         kingdomRepository.update(kingdom);
-        notificationSystem.create(kingdomName, "You were removed from " + allianceName);
+        notificationSystem.create(kingdomName, NotificationKind.alliance, "You were removed from " + allianceName);
         return RemoveFromAllianceResult.success(String.format("Kingdom %s has been removed from the alliance", kingdomName));
     }
 
@@ -176,7 +177,7 @@ public class AllianceService {
 
         var invitation = new AllianceInvitationEntity(Id.generate(), Instant.now(), kingdom, alliance);
         invitation = allianceRepository.createInvitation(invitation);
-        notificationSystem.create(invitee, emperor + " invites you to join " + allianceName);
+        notificationSystem.create(invitee, NotificationKind.alliance, emperor + " invites you to join " + allianceName);
 
         return InviteAllianceResult.success("Invitation sent to " + invitee, invitation.toDto());
     }
@@ -217,7 +218,7 @@ public class AllianceService {
         kingdomRepository.update(kingdom);
         allianceRepository.update(alliance);
         allianceRepository.getInvitationsByKingdomName(kingdomName).forEach(allianceRepository::deleteInvitation);
-        notificationSystem.create(alliance.getEmperor(), kingdomName + " has joined " + alliance.getName());
+        notificationSystem.create(alliance.getEmperor(), NotificationKind.alliance, kingdomName + " has joined " + alliance.getName());
 
         return AcceptAllianceInvitationResult.success("You've joined the alliance");
     }
@@ -243,7 +244,7 @@ public class AllianceService {
         }
 
         allianceRepository.deleteInvitation(invitation);
-        notificationSystem.create(invitation.getAlliance().getEmperor(), kingdomName + " declined the invitation to " + invitation.getAlliance().getName());
+        notificationSystem.create(invitation.getAlliance().getEmperor(), NotificationKind.alliance, kingdomName + " declined the invitation to " + invitation.getAlliance().getName());
 
         return RejectAllianceInvitationResult.success("You've rejected the alliance invitation");
     }
