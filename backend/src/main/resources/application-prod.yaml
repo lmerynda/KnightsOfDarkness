@@ -31,3 +31,6 @@ logging:
 
 server:
   port: 8080
+
+game:
+  seed-dev-accounts: false

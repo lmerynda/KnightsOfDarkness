@@ -1,5 +1,8 @@
 package com.knightsofdarkness.web;
 
+import java.nio.file.Path;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,10 +11,12 @@ import com.knightsofdarkness.web.game.config.Initializer;
 
 @Configuration
 public class GameConfigService {
-    // Bean annotation will make this resource managed by spring, the instance will be cached
+    /**
+     * the bundled gameconfig.json, or the file named by game.config-path so simulations can try balance variants
+     */
     @Bean
-    public GameConfig gameConfig()
+    public GameConfig gameConfig(@Value("${game.config-path:}") String configPath)
     {
-        return Initializer.readGameConfig();
+        return configPath.isBlank() ? Initializer.readGameConfig() : Initializer.readGameConfig(Path.of(configPath));
     }
 }

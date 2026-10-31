@@ -27,3 +27,7 @@ logging:
 
 server:
   port: 8080
+
+game:
+  # local development seeds uprzejmy and Umbar with known passwords
+  seed-dev-accounts: true

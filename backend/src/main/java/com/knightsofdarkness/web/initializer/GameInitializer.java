@@ -4,6 +4,7 @@ import java.util.EnumMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -40,10 +41,13 @@ public class GameInitializer implements CommandLineRunner
     private final IAllianceRepository allianceRepository;
     private final KingdomService kingdomService;
     private final GameConfig gameConfig;
+    private final boolean seedDevAccounts;
     private final int numberOfSpecialBuildings = 5;
 
-    public GameInitializer(KingdomService kingdomService, IKingdomRepository kingdomRepository, IBotRepository botRepository, IAllianceRepository allianceRepository, GameConfig gameConfig)
+    public GameInitializer(KingdomService kingdomService, IKingdomRepository kingdomRepository, IBotRepository botRepository, IAllianceRepository allianceRepository, GameConfig gameConfig,
+            @Value("${game.seed-dev-accounts:false}") boolean seedDevAccounts)
     {
+        this.seedDevAccounts = seedDevAccounts;
         this.gameConfig = gameConfig;
         this.kingdomService = kingdomService;
         this.botRepository = botRepository;
@@ -55,15 +59,21 @@ public class GameInitializer implements CommandLineRunner
     public void run(String... args)
     {
 
-        createPlayerKingdom("uprzejmy");
-        createPlayerKingdom("Umbar");
+        if (seedDevAccounts)
+        {
+            createPlayerKingdom("uprzejmy");
+            createPlayerKingdom("Umbar");
+        }
         createBot("BlacksmithBot", SpecialBuildingType.forge);
         createBot("FarmerBot", SpecialBuildingType.granary);
         createBot("IronMinerBot", SpecialBuildingType.ironShaft);
         createBot("GoldMinerBot", SpecialBuildingType.goldShaft);
         log.info("Kingdoms initialized");
-        createAlliance("Legion", "Umbar", "uprzejmy");
-        log.info("Alliances initialized");
+        if (seedDevAccounts)
+        {
+            createAlliance("Legion", "Umbar", "uprzejmy");
+            log.info("Alliances initialized");
+        }
     }
 
     @Transactional

@@ -49,8 +49,8 @@ dependencies {
     testImplementation("com.h2database:h2")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core:3.27.7")
-    // local bootRun uses an in-memory H2 database, releases connect to PostgreSQL
-    developmentOnly("com.h2database:h2")
+    // in-memory H2 serves local runs and simulations of the shipped jar, the prod profile connects to PostgreSQL
+    runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql:42.7.14")
 }
 

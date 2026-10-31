@@ -1,0 +1,10 @@
+# Used by the simulation harness: the wall clock is off and time moves only through POST /simulation/advance.
+# Pass game.config-path to run a balance variant of gameconfig.json.
+game:
+  clock:
+    enabled: false
+  seed-dev-accounts: false
+
+logging:
+  level:
+    root: WARN

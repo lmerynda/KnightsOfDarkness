@@ -197,6 +197,12 @@ public class KingdomService
     }
 
     @Transactional(readOnly = true)
+    public List<KingdomDto> getAllKingdoms()
+    {
+        return kingdomRepository.getAllKingdoms().stream().map(KingdomEntity::toDto).toList();
+    }
+
+    @Transactional(readOnly = true)
     public Optional<KingdomDetailsDto> getKingdomDetails(String name, int weaponsProductionPercentage)
     {
         return kingdomRepository.getKingdomByName(name).map(kingdom -> new KingdomDetailsCalculator(gameConfig).calculate(kingdom, weaponsProductionPercentage));

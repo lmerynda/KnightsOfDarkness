@@ -2,6 +2,7 @@ package com.knightsofdarkness.web.scheduler;
 
 import java.time.Duration;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -12,6 +13,7 @@ import com.knightsofdarkness.web.game.config.GameConfig;
 
 @Configuration
 @EnableScheduling
+@ConditionalOnProperty(name = "game.clock.enabled", havingValue = "true", matchIfMissing = true)
 public class SchedulerConfig implements SchedulingConfigurer {
     private final GameConfig gameConfig;
     private final TurnAdd turnAdd;
