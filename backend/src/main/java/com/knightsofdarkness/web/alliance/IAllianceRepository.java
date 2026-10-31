@@ -22,4 +22,8 @@ public interface IAllianceRepository {
     Optional<AllianceInvitationEntity> getInvitationById(UUID id);
 
     void deleteInvitation(AllianceInvitationEntity invitation);
+
+    List<AllianceInvitationEntity> getInvitationsByKingdomName(String kingdomName);
+
+    void delete(AllianceEntity alliance);
 }

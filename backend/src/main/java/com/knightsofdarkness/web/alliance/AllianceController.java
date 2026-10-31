@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationDto;
+import com.knightsofdarkness.web.common.alliance.RejectAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.AddBotToAllianceDto;
 import com.knightsofdarkness.web.common.alliance.AddBotToAllianceResult;
@@ -49,7 +50,7 @@ public class AllianceController {
         }
 
         log.info("Creating alliance");
-        var result = allianceService.createAlliance(allianceDto, currentUser.getUsername());
+        var result = allianceService.createAlliance(allianceDto, currentUser.getKingdomName());
         return ResponseEntity.ok(result);
     }
 
@@ -63,7 +64,7 @@ public class AllianceController {
         }
 
         log.info("Leaving alliance");
-        var result = allianceService.leaveAlliance(currentUser.getUsername());
+        var result = allianceService.leaveAlliance(currentUser.getKingdomName());
         return ResponseEntity.ok(result);
     }
 
@@ -77,8 +78,32 @@ public class AllianceController {
         }
 
         log.info("Inviting to alliance");
-        var result = allianceService.inviteToAlliance(inviteDto.kingdomName(), currentUser.getUsername(), inviteDto.allianceName());
+        var result = allianceService.inviteToAlliance(inviteDto.kingdomName(), currentUser.getKingdomName(), inviteDto.allianceName());
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/invitations")
+    public ResponseEntity<List<AllianceInvitationDto>> getInvitations(@AuthenticationPrincipal UserData currentUser)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.ok(allianceService.getInvitations(currentUser.getKingdomName()));
+    }
+
+    @PostMapping("/reject")
+    public ResponseEntity<RejectAllianceInvitationResult> rejectAllianceInvitation(@AuthenticationPrincipal UserData currentUser, @RequestBody AcceptAllianceInvitationDto inviteDto)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.ok(allianceService.rejectAllianceInvitation(currentUser.getKingdomName(), inviteDto.invitationId()));
     }
 
     @PostMapping("/accept")
@@ -91,7 +116,7 @@ public class AllianceController {
         }
 
         log.info("Accepting alliance invitation");
-        var result = allianceService.acceptAllianceInvitation(currentUser.getUsername(), inviteDto.invitationId());
+        var result = allianceService.acceptAllianceInvitation(currentUser.getKingdomName(), inviteDto.invitationId());
         return ResponseEntity.ok(result);
     }
 
@@ -105,7 +130,7 @@ public class AllianceController {
         }
 
         log.info("Removing from alliance");
-        var result = allianceService.removeFromAlliance(removeDto.kingdomName(), currentUser.getUsername());
+        var result = allianceService.removeFromAlliance(removeDto.kingdomName(), currentUser.getKingdomName());
         return ResponseEntity.ok(result);
     }
 
@@ -119,7 +144,7 @@ public class AllianceController {
         }
 
         log.info("Adding bot to alliance");
-        var result = allianceService.createNewBotAndAddToAlliance(currentUser.getUsername(), addBotDto.botName());
+        var result = allianceService.createNewBotAndAddToAlliance(currentUser.getKingdomName(), addBotDto.botName());
         return ResponseEntity.ok(result);
     }
 
@@ -139,7 +164,7 @@ public class AllianceController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return allianceService.getKingdomAlliance(currentUser.getUsername())
+        return allianceService.getKingdomAlliance(currentUser.getKingdomName())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

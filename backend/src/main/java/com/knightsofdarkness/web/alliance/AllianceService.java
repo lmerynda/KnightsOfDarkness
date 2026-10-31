@@ -15,6 +15,7 @@ import com.knightsofdarkness.web.bots.model.BotEntity;
 import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.AddBotToAllianceResult;
 import com.knightsofdarkness.web.common.alliance.AllianceDto;
+import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceResult;
@@ -25,6 +26,7 @@ import com.knightsofdarkness.web.common.alliance.RemoveFromAllianceResult;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
+import com.knightsofdarkness.web.messaging.INotificationSystem;
 import com.knightsofdarkness.web.utils.Id;
 
 import jakarta.transaction.Transactional;
@@ -35,9 +37,11 @@ public class AllianceService {
     private final IKingdomRepository kingdomRepository;
     private final IBotRepository botRepository;
     private final GameConfig gameConfig;
+    private final INotificationSystem notificationSystem;
 
-    public AllianceService(IAllianceRepository allianceRepository, IKingdomRepository kingdomRepository, IBotRepository botRepository, GameConfig gameConfig)
+    public AllianceService(IAllianceRepository allianceRepository, IKingdomRepository kingdomRepository, IBotRepository botRepository, GameConfig gameConfig, INotificationSystem notificationSystem)
     {
+        this.notificationSystem = notificationSystem;
         this.allianceRepository = allianceRepository;
         this.kingdomRepository = kingdomRepository;
         this.botRepository = botRepository;
@@ -52,7 +56,20 @@ public class AllianceService {
         {
             return CreateAllianceResult.failure("Kingdom not found");
         }
-        var alliance = new AllianceEntity(createAllianceDto.name(), emperor);
+        if (kingdom.get().getAlliance().isPresent())
+        {
+            return CreateAllianceResult.failure("Leave your current alliance first");
+        }
+        var name = createAllianceDto.name() == null ? "" : createAllianceDto.name().strip();
+        if (name.length() < 3 || name.length() > 32)
+        {
+            return CreateAllianceResult.failure("Alliance name must be 3 to 32 characters long");
+        }
+        if (allianceRepository.getAlliances().stream().anyMatch(existing -> existing.getName().equalsIgnoreCase(name)))
+        {
+            return CreateAllianceResult.failure("An alliance with this name already exists");
+        }
+        var alliance = new AllianceEntity(name, emperor);
         alliance.addKingdom(kingdom.get());
         allianceRepository.create(alliance);
         return CreateAllianceResult.success("Alliance Created", alliance.toDto());
@@ -76,12 +93,21 @@ public class AllianceService {
 
         if (alliance.get().getEmperor().equals(kingdomName))
         {
-            // TODO fix to check if emperor is the last kingdom in the alliance
-            return LeaveAllianceResult.failure("Emperor cannot leave the alliance");
+            if (alliance.get().getMembersCount() > 1)
+            {
+                return LeaveAllianceResult.failure("The emperor can leave only after every other member is gone");
+            }
+
+            kingdom.removeAlliance();
+            kingdomRepository.update(kingdom);
+            allianceRepository.delete(alliance.get());
+            return LeaveAllianceResult.success("You've left and the alliance was disbanded");
         }
 
+        var allianceEntity = alliance.get();
         kingdom.removeAlliance();
         kingdomRepository.update(kingdom);
+        notificationSystem.create(allianceEntity.getEmperor(), kingdomName + " has left " + allianceEntity.getName());
         return LeaveAllianceResult.success("You've left the alliance");
     }
 
@@ -106,8 +132,10 @@ public class AllianceService {
             return RemoveFromAllianceResult.failure("Only the emperor can remove kingdoms from the alliance");
         }
 
+        var allianceName = alliance.get().getName();
         kingdom.removeAlliance();
         kingdomRepository.update(kingdom);
+        notificationSystem.create(kingdomName, "You were removed from " + allianceName);
         return RemoveFromAllianceResult.success(String.format("Kingdom %s has been removed from the alliance", kingdomName));
     }
 
@@ -133,9 +161,22 @@ public class AllianceService {
         {
             return InviteAllianceResult.failure("Only the emperor can invite other kingdoms to the alliance");
         }
+        if (kingdom.getAlliance().isPresent())
+        {
+            return InviteAllianceResult.failure(invitee + " is already in an alliance");
+        }
+        if (alliance.getMembersCount() >= gameConfig.common().allianceMaxMembers())
+        {
+            return InviteAllianceResult.failure("The alliance is full");
+        }
+        if (allianceRepository.getInvitationsByKingdomName(invitee).stream().anyMatch(existing -> existing.getAlliance().getName().equals(allianceName)))
+        {
+            return InviteAllianceResult.failure(invitee + " is already invited");
+        }
 
         var invitation = new AllianceInvitationEntity(Id.generate(), Instant.now(), kingdom, alliance);
         invitation = allianceRepository.createInvitation(invitation);
+        notificationSystem.create(invitee, emperor + " invites you to join " + allianceName);
 
         return InviteAllianceResult.success("Invitation sent to " + invitee, invitation.toDto());
     }
@@ -168,13 +209,22 @@ public class AllianceService {
         }
 
         var alliance = invitation.getAlliance();
+        if (alliance.getMembersCount() >= gameConfig.common().allianceMaxMembers())
+        {
+            return AcceptAllianceInvitationResult.failure("The alliance is full");
+        }
         alliance.addKingdom(kingdom);
         kingdomRepository.update(kingdom);
         allianceRepository.update(alliance);
-        allianceRepository.deleteInvitation(invitation);
-        // TODO notification
+        allianceRepository.getInvitationsByKingdomName(kingdomName).forEach(allianceRepository::deleteInvitation);
+        notificationSystem.create(alliance.getEmperor(), kingdomName + " has joined " + alliance.getName());
 
         return AcceptAllianceInvitationResult.success("You've joined the alliance");
+    }
+
+    public List<AllianceInvitationDto> getInvitations(String kingdomName)
+    {
+        return allianceRepository.getInvitationsByKingdomName(kingdomName).stream().map(AllianceInvitationEntity::toDto).toList();
     }
 
     @Transactional
@@ -193,7 +243,7 @@ public class AllianceService {
         }
 
         allianceRepository.deleteInvitation(invitation);
-        // TODO notification
+        notificationSystem.create(invitation.getAlliance().getEmperor(), kingdomName + " declined the invitation to " + invitation.getAlliance().getName());
 
         return RejectAllianceInvitationResult.success("You've rejected the alliance invitation");
     }

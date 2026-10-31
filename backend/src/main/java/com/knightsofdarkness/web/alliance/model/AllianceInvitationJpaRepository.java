@@ -7,5 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AllianceInvitationJpaRepository extends JpaRepository<AllianceInvitationEntity, UUID> {
+    java.util.List<AllianceInvitationEntity> findByKingdomName(String kingdomName);
+
+    void deleteByAllianceName(String allianceName);
 
 }

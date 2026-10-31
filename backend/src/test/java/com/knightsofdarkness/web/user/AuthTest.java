@@ -102,4 +102,20 @@ class AuthTest {
     {
         mockMvc.perform(post("/auth/refresh")).andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void registeredPlayer_shouldActAsTheirKingdomNotTheirEmail() throws Exception
+    {
+        register("herald@example.com", "Herald Keep", "long-enough-password").andExpect(status().isOk());
+        var response = login("herald@example.com", "long-enough-password").andReturn().getResponse().getContentAsString();
+        String token = JsonPath.read(response, "$.token");
+
+        mockMvc.perform(post("/alliance/create").header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"Heralds\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.alliance.emperor").value("Herald Keep"));
+        mockMvc.perform(get("/alliance").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.members[0]").value("Herald Keep"));
+    }
 }

@@ -44,6 +44,19 @@ public class AllianceRepository implements IAllianceRepository {
         return allianceJpaRepository.findAll();
     }
 
+    @Override
+    public List<AllianceInvitationEntity> getInvitationsByKingdomName(String kingdomName)
+    {
+        return allianceInvitationRepository.findByKingdomName(kingdomName);
+    }
+
+    @Override
+    public void delete(AllianceEntity alliance)
+    {
+        allianceInvitationRepository.deleteByAllianceName(alliance.getName());
+        allianceJpaRepository.delete(alliance);
+    }
+
     public AllianceInvitationEntity createInvitation(AllianceInvitationEntity invitation)
     {
         return allianceInvitationRepository.save(invitation);

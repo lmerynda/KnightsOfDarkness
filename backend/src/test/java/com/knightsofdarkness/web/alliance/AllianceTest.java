@@ -27,7 +27,7 @@ public class AllianceTest
         game = new TestGame().get();
         kingdom = new KingdomBuilder(game).build();
         game.addKingdom(kingdom);
-        allianceService = new AllianceService(game.getAllianceRepository(), game.getKingdomRepository(), game.getBotRepository(), game.getConfig());
+        allianceService = new AllianceService(game.getAllianceRepository(), game.getKingdomRepository(), game.getBotRepository(), game.getConfig(), game.getNotificationSystem());
     }
 
     @Test
@@ -42,10 +42,13 @@ public class AllianceTest
     }
 
     @Test
-    void whenKingdomIsAllianceEmperor_itCannotLeaveTheAlliance()
+    void whenEmperorHasOtherMembers_itCannotLeaveTheAlliance()
     {
         var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
         assertTrue(createResult.success());
+        var member = new KingdomBuilder(game).build();
+        game.addKingdom(member);
+        kingdom.getAlliance().get().addKingdom(member);
 
         var leaveResult = allianceService.leaveAlliance(kingdom.getName());
         assertFalse(leaveResult.success());
@@ -192,7 +195,7 @@ public class AllianceTest
     }
 
     @Test
-    void whenKingdomIsAlreadyInAlliance_itCannotAcceptInvitation()
+    void whenKingdomIsAlreadyInAlliance_itCannotBeInvited()
     {
         var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
         assertTrue(createResult.success());
@@ -208,10 +211,7 @@ public class AllianceTest
         assertTrue(createResult.success());
 
         InviteAllianceResult inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), secondEmperor.getName(), secondEmperor.getAlliance().get().getName());
-        assertTrue(inviteResult.success());
-
-        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), inviteResult.invitation().get().id());
-        assertFalse(acceptResult.success());
+        assertFalse(inviteResult.success());
         assertNotEquals(secondEmperor.getAlliance().get().getName(), inviteeKingdom.getAlliance().get().getName());
     }
 
@@ -248,5 +248,73 @@ public class AllianceTest
         var botName = "Bot-" + KingdomBuilder.generateName();
         var addResult = allianceService.createNewBotAndAddToAlliance(kingdom.getName(), botName);
         assertFalse(addResult.success());
+    }
+
+    @Test
+    void whenEmperorIsAlone_leavingShouldDisbandTheAlliance()
+    {
+        allianceService.createAlliance(new CreateAllianceDto("Lonely Crown"), kingdom.getName());
+
+        assertTrue(allianceService.leaveAlliance(kingdom.getName()).success());
+
+        assertTrue(kingdom.getAlliance().isEmpty());
+        assertTrue(game.getAllianceRepository().getAllianceByName("Lonely Crown").isEmpty());
+    }
+
+    @Test
+    void creatingSecondAllianceOrDuplicateName_shouldFail()
+    {
+        assertTrue(allianceService.createAlliance(new CreateAllianceDto("Iron Pact"), kingdom.getName()).success());
+        assertFalse(allianceService.createAlliance(new CreateAllianceDto("Second Pact"), kingdom.getName()).success());
+
+        var other = new KingdomBuilder(game).build();
+        game.addKingdom(other);
+        assertFalse(allianceService.createAlliance(new CreateAllianceDto("iron pact"), other.getName()).success());
+        assertFalse(allianceService.createAlliance(new CreateAllianceDto("  "), other.getName()).success());
+    }
+
+    @Test
+    void invitedKingdom_shouldSeeAndAcceptItsInvitation()
+    {
+        allianceService.createAlliance(new CreateAllianceDto("Iron Pact"), kingdom.getName());
+        var invitee = new KingdomBuilder(game).build();
+        game.addKingdom(invitee);
+
+        assertTrue(allianceService.inviteToAlliance(invitee.getName(), kingdom.getName(), "Iron Pact").success());
+        assertFalse(allianceService.inviteToAlliance(invitee.getName(), kingdom.getName(), "Iron Pact").success());
+
+        var invitations = allianceService.getInvitations(invitee.getName());
+        assertEquals(1, invitations.size());
+        assertEquals("Iron Pact", invitations.get(0).allianceName());
+        assertTrue(game.getNotificationSystem().getNotifications(invitee.getName()).stream().anyMatch(notification -> notification.message().contains("Iron Pact")));
+
+        assertTrue(allianceService.acceptAllianceInvitation(invitee.getName(), invitations.get(0).id()).success());
+        assertEquals("Iron Pact", invitee.getAlliance().get().getName());
+        assertTrue(allianceService.getInvitations(invitee.getName()).isEmpty());
+    }
+
+    @Test
+    void rejectedInvitation_shouldDisappear()
+    {
+        allianceService.createAlliance(new CreateAllianceDto("Iron Pact"), kingdom.getName());
+        var invitee = new KingdomBuilder(game).build();
+        game.addKingdom(invitee);
+        var invitation = allianceService.inviteToAlliance(invitee.getName(), kingdom.getName(), "Iron Pact").invitation().get();
+
+        assertTrue(allianceService.rejectAllianceInvitation(invitee.getName(), invitation.id()).success());
+
+        assertTrue(allianceService.getInvitations(invitee.getName()).isEmpty());
+        assertTrue(invitee.getAlliance().isEmpty());
+    }
+
+    @Test
+    void invitingKingdomAlreadyInAlliance_shouldFail()
+    {
+        allianceService.createAlliance(new CreateAllianceDto("Iron Pact"), kingdom.getName());
+        var other = new KingdomBuilder(game).build();
+        game.addKingdom(other);
+        allianceService.createAlliance(new CreateAllianceDto("Other Pact"), other.getName());
+
+        assertFalse(allianceService.inviteToAlliance(other.getName(), kingdom.getName(), "Iron Pact").success());
     }
 }

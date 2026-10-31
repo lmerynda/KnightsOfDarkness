@@ -44,6 +44,19 @@ public class AllianceRepository implements IAllianceRepository {
     }
 
     @Override
+    public List<AllianceInvitationEntity> getInvitationsByKingdomName(String kingdomName)
+    {
+        return invitations.stream().filter(invitation -> invitation.getKingdom().getName().equals(kingdomName)).toList();
+    }
+
+    @Override
+    public void delete(AllianceEntity alliance)
+    {
+        invitations.removeIf(invitation -> invitation.getAlliance().getName().equals(alliance.getName()));
+        alliances.remove(alliance);
+    }
+
+    @Override
     public List<AllianceEntity> getAlliances()
     {
         return alliances;
