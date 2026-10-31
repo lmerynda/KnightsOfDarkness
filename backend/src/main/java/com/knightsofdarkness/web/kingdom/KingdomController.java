@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomDetailsDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomPassTurnActionResult;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingBuildDto;
@@ -173,6 +175,40 @@ public class KingdomController
         }
 
         return kingdomService.passTurn(currentUser.getKingdomName(), weaponsProductionPercentage)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * derived numbers and a forecast of the next turn, weaponsProductionPercentage is the blacksmith split the player plans to use
+     */
+    @GetMapping("/details")
+    ResponseEntity<KingdomDetailsDto> getKingdomDetails(@AuthenticationPrincipal UserData currentUser, @RequestParam(defaultValue = "0") int weaponsProductionPercentage)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.getKingdomDetails(currentUser.getKingdomName(), Math.clamp(weaponsProductionPercentage, 0, 100))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * how much of the requested land the kingdom can afford right now and what it would cost
+     */
+    @GetMapping("/land-quote")
+    ResponseEntity<LandTransaction> getLandQuote(@AuthenticationPrincipal UserData currentUser, @RequestParam int count)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.quoteLand(currentUser.getKingdomName(), Math.max(0, count))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

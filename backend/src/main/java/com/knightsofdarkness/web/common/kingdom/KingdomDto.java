@@ -14,7 +14,6 @@ public class KingdomDto
     public EnumMap<ResourceName, Integer> resources;
     public EnumMap<BuildingName, Integer> buildings;
     public KingdomUnitsDto units;
-    public EnumMap<KingdomDetailName, Integer> details;
     public List<MarketOfferDto> marketOffers;
     public List<KingdomSpecialBuildingDto> specialBuildings;
     public KingdomTurnReport lastTurnReport;
@@ -28,14 +27,12 @@ public class KingdomDto
         this.resources = new EnumMap<>(ResourceName.class);
         this.buildings = new EnumMap<>(BuildingName.class);
         this.units = new KingdomUnitsDto();
-        this.details = new EnumMap<>(KingdomDetailName.class);
         this.marketOffers = new ArrayList<>();
         this.specialBuildings = new ArrayList<>();
         this.lastTurnReport = new KingdomTurnReport();
         this.carriersOnTheMove = new ArrayList<>();
         this.ongoingAttacks = new ArrayList<>();
         this.allianceName = Optional.empty();
-        initializeDetails();
     }
 
     public KingdomDto(String name, KingdomResourcesDto resources, KingdomBuildingsDto buildings, KingdomUnitsDto units, List<MarketOfferDto> marketOffers, List<KingdomSpecialBuildingDto> specialBuildings, KingdomTurnReport lastTurnReport,
@@ -44,7 +41,6 @@ public class KingdomDto
         this.name = name;
         this.resources = new EnumMap<>(resources.getResources());
         this.buildings = new EnumMap<>(buildings.getBuildings());
-        this.details = new EnumMap<>(KingdomDetailName.class);
         this.units = units;
         this.marketOffers = marketOffers;
         this.specialBuildings = specialBuildings;
@@ -52,16 +48,6 @@ public class KingdomDto
         this.carriersOnTheMove = carriersOnTheMove;
         this.ongoingAttacks = ongoingAttacks;
         this.allianceName = allianceName;
-        initializeDetails();
-    }
-
-    private void initializeDetails()
-    {
-        for (var detail : KingdomDetailName.values())
-        {
-            details.put(detail, 0);
-        }
-        details.put(KingdomDetailName.usedLand, buildings.values().stream().mapToInt(Integer::intValue).sum());
     }
 
     public String toString()
@@ -71,7 +57,6 @@ public class KingdomDto
                 ", resources=" + resources +
                 ", buildings=" + buildings +
                 ", units=" + units +
-                ", details=" + details +
                 ", marketOffers=" + marketOffers +
                 ", specialBuildings=" + specialBuildings +
                 ", lastTurnReport=" + lastTurnReport +

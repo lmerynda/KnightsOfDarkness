@@ -31,7 +31,7 @@ public class KingdomOtherAction {
         return transaction;
     }
 
-    static LandTransaction calculateCost(int initialLand, int count, int availableGold)
+    public static LandTransaction calculateCost(int initialLand, int count, int availableGold)
     {
         // TODO split this function to separately cover cost and how much can be bought
         // for a given amount of gold

@@ -19,6 +19,7 @@ import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.common.messaging.NotificationDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomInteractor;
 import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
@@ -208,15 +209,15 @@ class WarTest {
     @Test
     void towersAndCastles_shouldIncreaseDefense()
     {
-        var interactor = (KingdomInteractor) game.getKingdomInteractor();
+        var detailsProvider = new KingdomDetailsProvider(gameConfig);
         defender.getBuildings().setCount(BuildingName.tower, 0);
         defender.getBuildings().setCount(BuildingName.castle, 0);
-        var bareDefense = interactor.getDefensePower(defender);
+        var bareDefense = detailsProvider.getDefensePower(defender);
 
         defender.getBuildings().setCount(BuildingName.tower, 10);
         defender.getBuildings().setCount(BuildingName.castle, 1);
 
-        assertEquals(bareDefense * 1.3, interactor.getDefensePower(defender), 0.0001);
+        assertEquals(bareDefense * 1.3, detailsProvider.getDefensePower(defender), 0.0001);
     }
 
     @Test

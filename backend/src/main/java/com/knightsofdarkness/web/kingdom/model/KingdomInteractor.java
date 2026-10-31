@@ -32,6 +32,7 @@ public class KingdomInteractor implements IKingdomInteractor
     private final GameConfig gameConfig;
     private final INotificationSystem notificationSystem;
     private final IWarReportRepository warReportRepository;
+    private final KingdomDetailsProvider detailsProvider;
 
     public KingdomInteractor(IKingdomRepository kingdomRepository, GameConfig gameConfig, INotificationSystem notificationSystem, IWarReportRepository warReportRepository)
     {
@@ -39,6 +40,7 @@ public class KingdomInteractor implements IKingdomInteractor
         this.gameConfig = gameConfig;
         this.notificationSystem = notificationSystem;
         this.warReportRepository = warReportRepository;
+        this.detailsProvider = new KingdomDetailsProvider(gameConfig);
     }
 
     @Override
@@ -78,8 +80,8 @@ public class KingdomInteractor implements IKingdomInteractor
         processAttackSalvo(defendantKingdom, attack);
         processMelee(attackerKingdom, defendantKingdom, attack);
 
-        var attackPower = getAttackPower(attack.units);
-        var defensePower = getDefensePower(defendantKingdom);
+        var attackPower = detailsProvider.getAttackPower(attack.units);
+        var defensePower = detailsProvider.getDefensePower(defendantKingdom);
         var attackerWon = attackPower > defensePower;
         var landCaptured = 0;
         Map<ResourceName, Integer> plunder = new EnumMap<>(ResourceName.class);
@@ -137,26 +139,6 @@ public class KingdomInteractor implements IKingdomInteractor
             losses.setCount(unit, before.getCount(unit) - after.getCount(unit));
         }
         return losses;
-    }
-
-    public double getAttackPower(UnitsMapDto units)
-    {
-        var attackConfig = gameConfig.attack();
-        return UnitName.getMilitaryUnits().stream().mapToDouble(unit -> units.getCount(unit) * attackConfig.getAttackPower(unit)).sum();
-    }
-
-    public double getDefensePower(KingdomEntity kingdom)
-    {
-        var attackConfig = gameConfig.attack();
-        var units = kingdom.getUnits();
-        var basePower = UnitName.getMilitaryUnits().stream().mapToDouble(unit -> units.getAvailableCount(unit) * attackConfig.getDefensePower(unit)).sum();
-        basePower += units.getAvailableCount(UnitName.guard) * attackConfig.getDefensePower(UnitName.guard);
-
-        var buildings = kingdom.getBuildings();
-        var towerBonus = Math.min(attackConfig.maxTowerDefenseBonus(), buildings.getCount(BuildingName.tower) * attackConfig.towerDefenseBonusPerTower());
-        var castleBonus = buildings.getCount(BuildingName.castle) * attackConfig.castleDefenseBonusPerCastle();
-
-        return basePower * (1 + towerBonus + castleBonus);
     }
 
     /**

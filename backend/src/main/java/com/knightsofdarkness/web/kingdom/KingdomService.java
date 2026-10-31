@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsDto;
+import com.knightsofdarkness.web.common.kingdom.KingdomDetailsDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomDto;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.KingdomPassTurnActionResult;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingDemolishDto;
@@ -30,6 +32,7 @@ import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomBuildAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomCarriersAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
+import com.knightsofdarkness.web.kingdom.model.KingdomDetailsCalculator;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
@@ -191,6 +194,18 @@ public class KingdomService
         }
 
         return Optional.of(result);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<KingdomDetailsDto> getKingdomDetails(String name, int weaponsProductionPercentage)
+    {
+        return kingdomRepository.getKingdomByName(name).map(kingdom -> new KingdomDetailsCalculator(gameConfig).calculate(kingdom, weaponsProductionPercentage));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<LandTransaction> quoteLand(String name, int amount)
+    {
+        return kingdomRepository.getKingdomByName(name).map(kingdom -> KingdomOtherAction.calculateCost(kingdom.getResources().getCount(ResourceName.land), amount, kingdom.getResources().getCount(ResourceName.gold)));
     }
 
     @Transactional

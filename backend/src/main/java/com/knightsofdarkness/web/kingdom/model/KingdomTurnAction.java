@@ -285,10 +285,7 @@ public class KingdomTurnAction {
 
     private int getHousingCapacity()
     {
-
-        int kingdomBaseCapacity = config.common().kingdomBaseHousingCapacity();
-        int housesCapacity = kingdom.buildings.getCount(BuildingName.house) * config.buildingCapacity().getCapacity(BuildingName.house);
-        return kingdomBaseCapacity + housesCapacity;
+        return kingdomDetailsProvider.getHousingCapacity(kingdom);
     }
 
     double getKingdomSizeProductionBonus(int land)

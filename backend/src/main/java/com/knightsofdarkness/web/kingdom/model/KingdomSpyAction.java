@@ -44,7 +44,7 @@ public class KingdomSpyAction {
             return SendSpiesResult.failure(Utils.format("Not enough spies, available: {}, needed {}", availableSpies, spies));
         }
 
-        var success = spies > getCounterIntelligence(target);
+        var success = spies > new KingdomDetailsProvider(gameConfig).getCounterIntelligence(target);
         if (success)
         {
             var report = new SpyReportDto(Id.generate(), Instant.now(), kingdom.getName(), target.getName(), true, spies, 0,
@@ -57,13 +57,6 @@ public class KingdomSpyAction {
         var report = new SpyReportDto(Id.generate(), Instant.now(), kingdom.getName(), target.getName(), false, spies, spiesLost,
                 new EnumMap<>(ResourceName.class), new EnumMap<>(BuildingName.class), new EnumMap<>(UnitName.class));
         return SendSpiesResult.success(Utils.format("Our spies were caught in {}, {} did not return", target.getName(), spiesLost), report);
-    }
-
-    public double getCounterIntelligence(KingdomEntity target)
-    {
-        var espionage = gameConfig.espionage();
-        var units = target.getUnits();
-        return units.getAvailableCount(UnitName.spy) * espionage.counterIntelligencePerSpy() + units.getAvailableCount(UnitName.guard) * espionage.counterIntelligencePerGuard();
     }
 
     private static Map<BuildingName, Integer> copyBuildings(KingdomEntity target)
