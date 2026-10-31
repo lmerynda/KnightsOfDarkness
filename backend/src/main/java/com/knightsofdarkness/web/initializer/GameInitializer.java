@@ -25,8 +25,10 @@ import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.common.market.MarketOfferDto;
 import com.knightsofdarkness.web.common.market.MarketResource;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.KingdomService;
+import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.market.MarketService;
 import com.knightsofdarkness.web.utils.Id;
@@ -43,10 +45,12 @@ public class GameInitializer implements CommandLineRunner
     private final IAllianceRepository allianceRepository;
     private final KingdomService kingdomService;
     private final MarketService marketService;
+    private final GameConfig gameConfig;
     private final int numberOfSpecialBuildings = 5;
 
-    public GameInitializer(KingdomService kingdomService, MarketService marketService, IKingdomRepository kingdomRepository, IBotRepository botRepository, IAllianceRepository allianceRepository)
+    public GameInitializer(KingdomService kingdomService, MarketService marketService, IKingdomRepository kingdomRepository, IBotRepository botRepository, IAllianceRepository allianceRepository, GameConfig gameConfig)
     {
+        this.gameConfig = gameConfig;
         this.kingdomService = kingdomService;
         this.marketService = marketService;
         this.botRepository = botRepository;
@@ -96,14 +100,15 @@ public class GameInitializer implements CommandLineRunner
      */
     void createPlayerKingdom(String name)
     {
-        var kingdom = createKingdom(name);
+        log.info("Initializing kingdom {}", name);
+        var kingdom = new KingdomCreator(gameConfig).createKingdom(name);
         kingdom.getBuildings().addCount(BuildingName.barracks, 1);
         kingdom.getBuildings().addCount(BuildingName.spyGuild, 1);
         kingdom.getUnits().addAvailableCount(UnitName.infantry, 40);
         kingdom.getUnits().addAvailableCount(UnitName.bowman, 40);
         kingdom.getUnits().addAvailableCount(UnitName.cavalry, 20);
         kingdom.getUnits().addAvailableCount(UnitName.spy, 10);
-        kingdomRepository.update(kingdom);
+        kingdomRepository.add(kingdom);
     }
 
     @Transactional
