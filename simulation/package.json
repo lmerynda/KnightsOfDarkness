@@ -8,6 +8,7 @@
         "test": "node --test --test-concurrency=1 \"scenarios/*.test.ts\"",
         "sim": "node src/cli.ts",
         "stages": "node src/stages.ts",
+        "coalitions": "node src/coalitions.ts",
         "typecheck": "tsc --noEmit"
     },
     "devDependencies": {

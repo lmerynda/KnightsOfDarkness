@@ -147,10 +147,10 @@ export const turtle: Strategy = {
   },
 };
 
-const armyPower = (units: Partial<Counts<UnitName>>, config: GameConfig): number =>
+export const armyPower = (units: Partial<Counts<UnitName>>, config: GameConfig): number =>
   militaryUnits.reduce((sum, unit) => sum + (units[unit] ?? 0) * (config.attack.unitAttackPower[unit] ?? 0), 0);
 
-const estimatedDefense = (report: SpyReport, config: GameConfig): number => {
+export const estimatedDefense = (report: SpyReport, config: GameConfig): number => {
   const base =
     militaryUnits.reduce((sum, unit) => sum + (report.units[unit] ?? 0) * (config.attack.unitDefensePower[unit] ?? 0), 0) +
     (report.units.guard ?? 0) * (config.attack.unitDefensePower.guard ?? 0);
@@ -170,7 +170,7 @@ const fillBarracks = async ({ player, config }: TurnContext, mix: Partial<Counts
 };
 
 /** a smaller economy feeding barracks, a few spies for intel */
-const raiseArmy = async (context: TurnContext): Promise<void> => {
+export const raiseArmy = async (context: TurnContext): Promise<void> => {
   // a few spies first, they are cheap and without intel the army never marches
   const missingSpies = 12 - context.kingdom.units.availableUnits.spy;
   if (missingSpies > 0) await context.player.train({ spy: missingSpies });
@@ -179,14 +179,14 @@ const raiseArmy = async (context: TurnContext): Promise<void> => {
 };
 
 /** ranked kingdoms large enough to attack, outside the ruler's alliance and not protected, largest first */
-const attackableKingdoms = ({ kingdom, config, rankings }: TurnContext): Rankings["kingdoms"] =>
+export const attackableKingdoms = ({ kingdom, config, rankings }: TurnContext): Rankings["kingdoms"] =>
   rankings.kingdoms
     .filter(rank => rank.kingdomName !== kingdom.name && rank.land >= kingdom.resources.land * config.attack.minTargetLandRatio)
     .filter(rank => !kingdom.allianceName || rank.allianceName !== kingdom.allianceName)
     .filter(rank => rank.protectionTicks === 0)
     .sort((a, b) => b.land - a.land);
 
-const armyAtHome = (kingdom: Kingdom): Partial<Counts<UnitName>> =>
+export const armyAtHome = (kingdom: Kingdom): Partial<Counts<UnitName>> =>
   Object.fromEntries(militaryUnits.map(unit => [unit, kingdom.units.availableUnits[unit]])) as Partial<Counts<UnitName>>;
 
 /** scouts the largest kingdom it may attack and marches when its army is clearly stronger than the defense its spies saw */

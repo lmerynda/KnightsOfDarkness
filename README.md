@@ -69,6 +69,12 @@ cd simulation && npm run sim -- --players economist,warlord,turtle --turns 30 --
 
 It prints land, gold, food, buildings, people, army, defense and battles for every ruler, with the change against the base run in brackets; `--out run.json` keeps the full per-turn timelines.
 
+The game centres on coalitions of up to ten kingdoms competing with each other. To see how coalitions fare, play three groups of ten with the same make-up: a coalition whose warlords strike together through a war council, a coalition whose warlords each pick their own target, and ten kingdoms in no alliance (`--set` and `--compare` work as above):
+
+```bash
+cd simulation && npm run coalitions -- --turns 120
+```
+
 To see how the game looks as a world unfolds, play one and photograph the real browser UI along the way (needs `npm install` in `browser/` and an installed Chrome; the UI runs on port 3001):
 
 ```bash
