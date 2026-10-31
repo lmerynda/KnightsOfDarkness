@@ -144,8 +144,8 @@ class KingdomAttackTest {
         assertThat(initialPopulation).isGreaterThan(secondaryKingdom.getUnits().countAll());
         assertEquals(0, primaryKingdom.getOngoingAttacks().size());
 
-        assertEquals(665, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
-        assertEquals(777, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
-        assertEquals(832, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
+        assertEquals(758, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
+        assertEquals(837, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
+        assertEquals(877, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
     }
 }

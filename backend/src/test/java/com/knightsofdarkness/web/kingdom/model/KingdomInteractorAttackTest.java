@@ -149,6 +149,24 @@ class KingdomInteractorAttackTest
     }
 
     @Test
+    void attackerSalvo_shouldKillDefenderUnitsOnce()
+    {
+        var attackingUnits = new UnitsMapDto();
+        attackingUnits.setCount(UnitName.bowman, 100);
+        var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
+        var action = new KingdomMilitaryAction(primaryKingdom, gameConfig);
+        assertTrue(action.sendAttack(data).success());
+
+        var kingdomInteractor = new KingdomInteractor(game.getKingdomRepository());
+        kingdomInteractor.processAttackSalvo(secondaryKingdom, primaryKingdom.getOngoingAttacks().get(0));
+
+        // 100 bowmen split evenly over 3 defending unit types hit 34 each: 34/3, 34/5, 34/7
+        assertEquals(1000 - 11, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
+        assertEquals(1000 - 6, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
+        assertEquals(1000 - 4, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
+    }
+
+    @Test
     void attackerSalvo_whenDefenderSalvoKilledAllUnits_shouldNotKillDefenderUnits()
     {
         var attackingUnits = new UnitsMapDto();

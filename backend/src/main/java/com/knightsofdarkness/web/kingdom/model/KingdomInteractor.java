@@ -104,10 +104,6 @@ public class KingdomInteractor implements IKingdomInteractor
         defenderUnits.subtractAvailableCount(UnitName.infantry, killedDefendingInfantry);
         defenderUnits.subtractAvailableCount(UnitName.cavalry, killedDefendingCavalry);
 
-        defendantKingdom.getUnits().subtractAvailableCount(UnitName.bowman, killedDefendingBowmen);
-        defendantKingdom.getUnits().subtractAvailableCount(UnitName.infantry, killedDefendingInfantry);
-        defendantKingdom.getUnits().subtractAvailableCount(UnitName.cavalry, killedDefendingCavalry);
-
         log.info("[KingdomInteractor] Attacker bowmen salvo killed {} bowmen, {} infantry, {} cavalry from defending kingdom {}", killedDefendingBowmen, killedDefendingInfantry, killedDefendingCavalry, defendantKingdom.getName());
     }
 
