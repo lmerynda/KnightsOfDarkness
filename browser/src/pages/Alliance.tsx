@@ -234,6 +234,21 @@ const WarRoomPanel: React.FC = () => {
     <Panel title="War room" lede="What the alliance knows together. Armies that land on the same turn strike together.">
       <div className="two-columns">
         <section>
+          {warRoom.threats.length ? (
+            <>
+              <h3 className="section-title small">Enemies marching on us</h3>
+              <ul className="plain-list">
+                {warRoom.threats.map((threat, index) => (
+                  <li key={`${threat.from}-${threat.to}-${index}`}>
+                    <span className="warning">
+                      {threat.from} → <strong>{threat.to}</strong>, about {plural(threat.soldiers, "soldier", "soldiers")}
+                    </span>
+                    <span className="muted">in {plural(threat.turnsLeft, "turn", "turns")}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
           <h3 className="section-title small">Armies on the march</h3>
           {warRoom.marching.length === 0 ? (
             <p className="muted">No allied army is on the road.</p>

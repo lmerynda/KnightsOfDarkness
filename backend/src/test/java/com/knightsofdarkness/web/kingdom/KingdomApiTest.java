@@ -280,4 +280,25 @@ class KingdomApiTest {
                 .andExpect(jsonPath("$.units.mobileUnits.infantry").value(0));
         mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + hostToken)).andExpect(jsonPath("$.garrisons.length()").value(0));
     }
+
+    @Test
+    void anArmyOnTheMarch_shouldBeSeenComingByItsTarget() throws Exception
+    {
+        var targetName = "Target " + (System.nanoTime() % 1000000);
+        var targetToken = register(targetName);
+        var kingdom = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
+        kingdom.getUnits().addAvailableCount(UnitName.cavalry, 123);
+        kingdomRepository.update(kingdom);
+
+        postJson("/kingdom/send-attack", "{\"destinationKingdomName\":\"" + targetName + "\",\"attackType\":\"land\",\"units\":{\"cavalry\":123}}")
+                .andExpect(jsonPath("$.success").value(true));
+
+        mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + targetToken))
+                .andExpect(jsonPath("$.incoming[0].from").value(kingdomName))
+                .andExpect(jsonPath("$.incoming[0].turnsLeft").value(gameConfig.attack().turnsToArrive()))
+                .andExpect(jsonPath("$.incoming[0].soldiers").value(120));
+        mockMvc.perform(get("/kingdom/notifications").header("Authorization", "Bearer " + targetToken))
+                .andExpect(jsonPath("$[0].kind").value("threat"))
+                .andExpect(jsonPath("$[0].message").value(org.hamcrest.Matchers.containsString(kingdomName)));
+    }
 }

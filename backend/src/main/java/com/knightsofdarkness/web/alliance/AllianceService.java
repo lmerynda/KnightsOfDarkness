@@ -22,6 +22,7 @@ import com.knightsofdarkness.web.common.alliance.AllianceDto;
 import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
 import com.knightsofdarkness.web.common.alliance.AllianceMemberStrengthDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWarRoomDto;
+import com.knightsofdarkness.web.common.kingdom.IncomingArmyDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceResult;
@@ -361,6 +362,8 @@ public class AllianceService {
         var strength = new KingdomDetailsProvider(gameConfig);
         var standing = members.stream().map(member -> new AllianceMemberStrengthDto(member.getName(), member.getResources().getCount(ResourceName.land), strength.getDefensePower(member)))
                 .sorted(Comparator.comparingDouble(member -> member.defense() / Math.max(1, member.land()))).toList();
-        return Optional.of(new AllianceWarRoomDto(standing, marching, guards, intel, recentBattles));
+        var threats = names.stream().flatMap(member -> kingdomRepository.getAttacksOn(member).stream()).map(KingdomOngoingAttackEntity::toIncomingDto)
+                .sorted(Comparator.comparingInt(IncomingArmyDto::turnsLeft)).toList();
+        return Optional.of(new AllianceWarRoomDto(standing, threats, marching, guards, intel, recentBattles));
     }
 }

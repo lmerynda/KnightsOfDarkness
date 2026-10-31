@@ -52,6 +52,13 @@ export const counsel = (
   }, 0);
   const soldiers = militaryUnits.reduce((sum, unit) => sum + kingdom.units.availableUnits[unit] + kingdom.units.mobileUnits[unit], 0);
 
+  for (const army of kingdom.incoming) {
+    lines.push({
+      urgent: true,
+      text: `${army.from} marches on us with about ${formatNumber(army.soldiers)} soldiers, arriving in ${plural(army.turnsLeft, "of their turns", "of their turns")}. Our defense is ${formatNumber(details.defensePower)}.`,
+      link: { to: "/kingdom/war", label: "Prepare" },
+    });
+  }
   if (forecast.starvedPeople > 0) {
     lines.push({
       urgent: true,
@@ -89,6 +96,14 @@ export const counsel = (
   const soldiersHome = militaryUnits.reduce((sum, unit) => sum + kingdom.units.availableUnits[unit], 0);
   if (coalition && soldiersHome > 0) {
     const guarded = new Set(kingdom.reinforcements.map(sent => sent.to));
+    const threat = coalition.warRoom.threats.find(army => army.to !== kingdom.name);
+    if (threat) {
+      lines.push({
+        urgent: false,
+        text: `${threat.from} marches on ${threat.to} with about ${formatNumber(threat.soldiers)} soldiers, arriving in ${plural(threat.turnsLeft, "of their turns", "of their turns")}. Soldiers sent to stand guard arrive in two of ours.`,
+        link: { to: "/kingdom/war", label: "Stand guard" },
+      });
+    }
     const beaten = coalition.warRoom.battles.find(
       battle => battle.attackerWon && coalition.allies.includes(battle.defender) && !guarded.has(battle.defender),
     );

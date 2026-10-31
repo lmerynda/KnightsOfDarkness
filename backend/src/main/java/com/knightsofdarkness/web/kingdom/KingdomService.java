@@ -39,6 +39,7 @@ import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsCalculator;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomOngoingAttackEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomEvent;
 import com.knightsofdarkness.web.kingdom.model.KingdomEvents;
 import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
@@ -50,6 +51,7 @@ import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomTrainAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;
+import com.knightsofdarkness.web.utils.Utils;
 import com.knightsofdarkness.web.messaging.INotificationSystem;
 
 @Service
@@ -111,6 +113,7 @@ public class KingdomService
         var kingdom = maybeKingdom.get();
         var offers = marketOfferReadRepository.findByKingdomName(name);
         kingdom.marketOffers = offers;
+        kingdom.incoming = kingdomRepository.getAttacksOn(name).stream().map(KingdomOngoingAttackEntity::toIncomingDto).toList();
         return Optional.of(kingdom);
     }
 
@@ -387,6 +390,9 @@ public class KingdomService
         if (result.success())
         {
             kingdomRepository.update(kingdom);
+            var army = kingdom.getOngoingAttacks().get(kingdom.getOngoingAttacks().size() - 1).toIncomingDto();
+            notificationSystem.create(army.to(), NotificationKind.threat,
+                    Utils.format("Our scouts saw {} with about {} soldiers march on us, they arrive in {} of their turns", army.from(), army.soldiers(), army.turnsLeft()));
         }
 
         return Optional.of(result);

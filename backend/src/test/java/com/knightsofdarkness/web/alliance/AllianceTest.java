@@ -350,6 +350,11 @@ public class AllianceTest
         army.setCount(UnitName.cavalry, 20);
         assertTrue(new KingdomMilitaryAction(member, game.getConfig()).sendAttack(new SendAttackDto("enemy", AttackType.land, army), enemy).success());
         game.getWarReportRepository().addSpyReport(intel("member", "enemy"));
+        var raider = new KingdomBuilder(game).withName("raider").withUnit(UnitName.cavalry, 30).build();
+        game.addKingdom(raider);
+        var raid = new UnitsMapDto();
+        raid.setCount(UnitName.cavalry, 30);
+        assertTrue(new KingdomMilitaryAction(raider, game.getConfig()).sendAttack(new SendAttackDto("member", AttackType.land, raid), member).success());
         game.getWarReportRepository().addSpyReport(intel("stranger", "member"));
 
         var warRoom = allianceService.getWarRoom(kingdom.getName()).orElseThrow();
@@ -359,6 +364,11 @@ public class AllianceTest
             assertEquals("enemy", march.to);
         });
         assertThat(warRoom.intel()).extracting(SpyReportDto::targetKingdomName).containsExactly("enemy");
+        assertThat(warRoom.threats()).singleElement().satisfies(threat -> {
+            assertEquals("raider", threat.from());
+            assertEquals("member", threat.to());
+            assertEquals(30, threat.soldiers());
+        });
         assertThat(warRoom.members()).extracting(strength -> strength.kingdomName()).containsExactlyInAnyOrder(kingdom.getName(), "member");
     }
 

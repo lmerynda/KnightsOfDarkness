@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import com.knightsofdarkness.web.common.kingdom.AttackType;
+import com.knightsofdarkness.web.common.kingdom.IncomingArmyDto;
 import com.knightsofdarkness.web.common.kingdom.OngoingAttackDto;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 
@@ -59,6 +60,24 @@ public class KingdomOngoingAttackEntity {
         dto.attackType = attackType;
         dto.units = units;
         return dto;
+    }
+
+    /**
+     * the army as its target's scouts see it: the size only to two significant figures
+     */
+    public IncomingArmyDto toIncomingDto()
+    {
+        return new IncomingArmyDto(kingdom.getName(), targetKingdomName, attackType, turnsLeft, roughly(units.countMilitary()));
+    }
+
+    static int roughly(int count)
+    {
+        if (count < 100)
+        {
+            return count;
+        }
+        var scale = (int) Math.pow(10, (int) Math.log10(count) - 1);
+        return Math.round((float) count / scale) * scale;
     }
 
     public UUID getId()

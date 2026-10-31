@@ -99,8 +99,7 @@ test("an army marches, fights and leaves a battle report", async ({ page, browse
   // two fresh kingdoms, so a beaten kingdom's protection or a grown attacker from an earlier run cannot get in the way
   const other = await browser.newPage();
   const { kingdomName: target } = await foundKingdom(other, "Target");
-  await other.close();
-  await foundKingdom(page);
+  const { kingdomName: attacker } = await foundKingdom(page);
   const passed = page.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
   await page.getByRole("button", { name: "Pass 5 turns" }).click();
   await passed;
@@ -116,6 +115,13 @@ test("an army marches, fights and leaves a battle report", async ({ page, browse
   await page.getByRole("button", { name: "March" }).click();
   await expect(toast(page, `The army marches on ${target}`)).toBeVisible();
   await expect(page.getByRole("heading", { name: "Armies on the march" })).toBeVisible();
+
+  // the target's scouts see the army coming
+  await goTo(other, "Army");
+  await expect(other.locator("main")).toContainText(`${attacker} with about 10 soldiers`);
+  await goTo(other, "Overview");
+  await expect(other.locator(".counsel li.urgent")).toContainText(`${attacker} marches on us`);
+  await other.close();
 
   for (let turn = 0; turn < 4; turn++) {
     await passTurn(page);

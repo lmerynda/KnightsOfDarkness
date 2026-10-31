@@ -260,6 +260,30 @@ const StandGuard: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => 
   );
 };
 
+/** enemy armies on their way to us, as our scouts see them */
+const Threats: React.FC = () => {
+  const { kingdom, details } = useGame();
+  if (!kingdom.incoming.length) return null;
+  return (
+    <Panel
+      title="Armies marching on us"
+      lede={`Our defense at home is ${formatNumber(details.defensePower)}. Soldiers we train now defend at once; soldiers allies send arrive after two of their turns.`}
+    >
+      <ul className="plain-list threats">
+        {kingdom.incoming.map((army, index) => (
+          <li key={`${army.from}-${index}`}>
+            <span>
+              <Icon name="warning" size={16} /> <strong>{army.from}</strong> with about {plural(army.soldiers, "soldier", "soldiers")}, to{" "}
+              {army.attackType === "land" ? "take land" : "plunder"}
+            </span>
+            <span className="warning">in {plural(army.turnsLeft, "of their turns", "of their turns")}</span>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  );
+};
+
 const Marching: React.FC = () => {
   const { kingdom, act } = useGame();
   if (kingdom.ongoingAttacks.length === 0) {
@@ -468,6 +492,7 @@ export const War: React.FC = () => {
         sent away do not defend.
       </Banner>
       <div className="stack">
+        <Threats />
         <SendArmy spyReports={intel} target={target} setTarget={setTarget} onSent={load} />
         <AlliedMarches warRoom={warRoom} onJoin={join} />
         <Marching />

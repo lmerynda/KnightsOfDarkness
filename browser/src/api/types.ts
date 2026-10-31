@@ -106,7 +106,12 @@ export type Kingdom = {
   reinforcements: Reinforcement[];
   /** allied soldiers on the way to, or standing guard in, this kingdom */
   garrisons: Reinforcement[];
+  /** enemy armies marching on this kingdom, as its scouts see them */
+  incoming: IncomingArmy[];
 };
+
+/** an enemy army on the march: who sent it, how many of the sender's turns until it lands, about how many soldiers */
+export type IncomingArmy = { from: string; to: string; attackType: AttackType; turnsLeft: number; soldiers: number };
 
 /** soldiers sent to stand guard with an ally; they defend once turnsLeft reaches 0 */
 export type Reinforcement = { id: string; from: string; to: string; turnsLeft: number; units: Partial<Counts<UnitName>> };
@@ -200,6 +205,8 @@ export type SpyReport = {
 export type WarRoom = {
   /** every member's land and defense at home, the weakest defended for its size first */
   members: { kingdomName: string; land: number; defense: number }[];
+  /** enemy armies marching on members, soonest first */
+  threats: IncomingArmy[];
   marching: OngoingAttack[];
   guards: Reinforcement[];
   intel: SpyReport[];
@@ -207,7 +214,7 @@ export type WarRoom = {
 };
 
 export type NotificationKind =
-  "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round" | "event";
+  "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round" | "event" | "threat";
 export type Notification = { id: string; kingdomName: string; kind: NotificationKind; message: string; date: string; isRead: boolean };
 
 export type Letter = { id: string; sender: string; recipient: string; body: string; date: string; isRead: boolean; toAlliance: boolean };

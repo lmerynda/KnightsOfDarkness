@@ -215,6 +215,12 @@ const Realm: React.FC = () => {
 const Movements: React.FC = () => {
   const { kingdom } = useGame();
   const moves = [
+    ...kingdom.incoming.map((army, index) => ({
+      id: `incoming-${index}`,
+      text: `${army.from} marches on us with about ${formatNumber(army.soldiers)} soldiers`,
+      turns: army.turnsLeft,
+      link: "/kingdom/war",
+    })),
     ...kingdom.ongoingAttacks.map(attack => ({
       id: attack.id,
       text: `Army marching on ${attack.to} to ${attack.attackType === "land" ? "take land" : "plunder"}`,

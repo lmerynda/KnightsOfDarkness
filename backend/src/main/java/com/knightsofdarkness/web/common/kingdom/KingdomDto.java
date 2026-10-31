@@ -23,6 +23,7 @@ public class KingdomDto
     public int protectionTicks;
     public List<ReinforcementDto> reinforcements = new ArrayList<>();
     public List<ReinforcementDto> garrisons = new ArrayList<>();
+    public List<IncomingArmyDto> incoming = new ArrayList<>();
 
     public KingdomDto()
     {

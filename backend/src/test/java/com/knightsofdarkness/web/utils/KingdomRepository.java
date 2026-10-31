@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomOngoingAttackEntity;
 
 public class KingdomRepository implements IKingdomRepository {
 
@@ -48,5 +49,12 @@ public class KingdomRepository implements IKingdomRepository {
         kingdoms.add(kingdom);
 
         return kingdom;
+    }
+
+    @Override
+    public List<KingdomOngoingAttackEntity> getAttacksOn(String kingdomName)
+    {
+        return kingdoms.stream().flatMap(kingdom -> kingdom.getOngoingAttacks().stream())
+                .filter(attack -> attack.toIncomingDto().to().equals(kingdomName)).toList();
     }
 }

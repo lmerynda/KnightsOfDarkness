@@ -11,10 +11,18 @@ import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 @Repository
 public class KingdomRepository implements IKingdomRepository {
     private final KingdomJpaRepository jpaRepository;
+    private final KingdomOngoingAttackJpaRepository attackRepository;
 
-    public KingdomRepository(KingdomJpaRepository jpaRepository)
+    public KingdomRepository(KingdomJpaRepository jpaRepository, KingdomOngoingAttackJpaRepository attackRepository)
     {
         this.jpaRepository = jpaRepository;
+        this.attackRepository = attackRepository;
+    }
+
+    @Override
+    public List<KingdomOngoingAttackEntity> getAttacksOn(String kingdomName)
+    {
+        return attackRepository.findByTargetKingdomName(kingdomName);
     }
 
     public KingdomEntity add(KingdomEntity kingdom)

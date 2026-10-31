@@ -16,6 +16,7 @@ const kinds: Record<NotificationKind, { icon: IconName; tone: "gain" | "loss" | 
   alliance: { icon: "people", tone: "news", page: "/kingdom/alliance" },
   round: { icon: "turns", tone: "news", page: "/kingdom/rankings" },
   event: { icon: "scroll", tone: "news", page: "/kingdom/overview" },
+  threat: { icon: "warning", tone: "loss", page: "/kingdom/war" },
 };
 
 /** one line of the chronicle: what kind of news it is, the news itself leading to its page, and when it happened */
