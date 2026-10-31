@@ -8,6 +8,7 @@ import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.market.IMarket;
 import com.knightsofdarkness.web.messaging.INotificationSystem;
+import com.knightsofdarkness.web.war.IWarReportRepository;
 
 public class Game {
     GameConfig config;
@@ -17,8 +18,9 @@ public class Game {
     IBotRepository botRepository;
     INotificationSystem notificationSystem;
     IKingdomInteractor kingdomInteractor;
+    IWarReportRepository warReportRepository;
 
-    public Game(GameConfig config, IMarket market, IKingdomRepository kingdomRepository, IAllianceRepository allianceRepository, IBotRepository botRepository, INotificationSystem notificationSystem, IKingdomInteractor kingdomInteractor)
+    public Game(GameConfig config, IMarket market, IKingdomRepository kingdomRepository, IAllianceRepository allianceRepository, IBotRepository botRepository, INotificationSystem notificationSystem, IKingdomInteractor kingdomInteractor, IWarReportRepository warReportRepository)
     {
         this.config = config;
         this.market = market;
@@ -27,6 +29,7 @@ public class Game {
         this.botRepository = botRepository;
         this.notificationSystem = notificationSystem;
         this.kingdomInteractor = kingdomInteractor;
+        this.warReportRepository = warReportRepository;
     }
 
     public GameConfig getConfig()
@@ -47,6 +50,11 @@ public class Game {
     public IKingdomInteractor getKingdomInteractor()
     {
         return kingdomInteractor;
+    }
+
+    public IWarReportRepository getWarReportRepository()
+    {
+        return warReportRepository;
     }
 
     public IKingdomRepository getKingdomRepository()

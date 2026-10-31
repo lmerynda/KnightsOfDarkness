@@ -21,6 +21,7 @@ class KingdomMilitaryActionTest {
     private GameConfig gameConfig;
     private KingdomBuilder kingdomBuilder;
     private KingdomEntity kingdom;
+    private KingdomEntity target;
 
     @BeforeEach
     void setUp()
@@ -30,6 +31,8 @@ class KingdomMilitaryActionTest {
         kingdomBuilder = new KingdomBuilder(game);
         kingdom = kingdomBuilder.withRichConfiguration().build();
         game.addKingdom(kingdom);
+        target = new KingdomBuilder(game).withName("destination").withRichConfiguration().build();
+        game.addKingdom(target);
     }
 
     @Test
@@ -44,7 +47,7 @@ class KingdomMilitaryActionTest {
 
         var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
         var action = new KingdomMilitaryAction(kingdom, gameConfig);
-        var sendAttackResult = action.sendAttack(sendAttackDto);
+        var sendAttackResult = action.sendAttack(sendAttackDto, target);
 
         assertFalse(sendAttackResult.success());
     }
@@ -61,7 +64,7 @@ class KingdomMilitaryActionTest {
 
         var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
         var action = new KingdomMilitaryAction(kingdom, gameConfig);
-        var sendAttackResult = action.sendAttack(sendAttackDto);
+        var sendAttackResult = action.sendAttack(sendAttackDto, target);
 
         assertFalse(sendAttackResult.success());
     }
@@ -78,7 +81,7 @@ class KingdomMilitaryActionTest {
 
         var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
         var action = new KingdomMilitaryAction(kingdom, gameConfig);
-        var sendAttackResult = action.sendAttack(sendAttackDto);
+        var sendAttackResult = action.sendAttack(sendAttackDto, target);
 
         assertFalse(sendAttackResult.success());
     }
@@ -97,7 +100,7 @@ class KingdomMilitaryActionTest {
 
         var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
         var action = new KingdomMilitaryAction(kingdom, gameConfig);
-        var sendAttackResult = action.sendAttack(sendAttackDto);
+        var sendAttackResult = action.sendAttack(sendAttackDto, target);
 
         assertFalse(sendAttackResult.success());
     }
@@ -116,7 +119,7 @@ class KingdomMilitaryActionTest {
 
         var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
         var action = new KingdomMilitaryAction(kingdom, gameConfig);
-        var sendAttackResult = action.sendAttack(sendAttackDto);
+        var sendAttackResult = action.sendAttack(sendAttackDto, target);
 
         assertTrue(sendAttackResult.success());
     }
@@ -135,7 +138,7 @@ class KingdomMilitaryActionTest {
 
         var sendAttackDto = new SendAttackDto("destination", AttackType.economy, units);
         var action = new KingdomMilitaryAction(kingdom, gameConfig);
-        action.sendAttack(sendAttackDto);
+        action.sendAttack(sendAttackDto, target);
 
         assertEquals(90, kingdom.getUnits().getAvailableCount(UnitName.infantry));
         assertEquals(90, kingdom.getUnits().getAvailableCount(UnitName.bowman));

@@ -27,7 +27,7 @@ public class KingdomTrainAction {
         {
             var trainingCost = gameConfig.trainingCost().getTrainingCost(unitName);
             var maximumToAfford = calculateMaximumToAfford(kingdom.getResources(), trainingCost);
-            var howManyToTrain = Math.min(unitsToTrain.getCount(unitName), maximumToAfford);
+            var howManyToTrain = Math.min(Math.max(0, unitsToTrain.getCount(unitName)), maximumToAfford);
             var maybeBuildingType = BuildingName.getByUnit(unitName);
             if (maybeBuildingType.isPresent())
             {
@@ -56,9 +56,9 @@ public class KingdomTrainAction {
 
         for (var unitName : UnitName.values())
         {
-            var howManyToFire = Math.min(unitsToFire.getCount(unitName), kingdomUnits.getAvailableCount(unitName));
+            var howManyToFire = Math.max(0, Math.min(unitsToFire.getCount(unitName), kingdomUnits.getAvailableCount(unitName)));
 
-            kingdom.resources.subtractCount(ResourceName.unemployed, howManyToFire);
+            kingdom.resources.addCount(ResourceName.unemployed, howManyToFire);
             kingdomUnits.subtractAvailableCount(unitName, howManyToFire);
             firedUnits.setCount(unitName, howManyToFire);
         }

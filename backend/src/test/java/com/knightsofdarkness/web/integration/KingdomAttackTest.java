@@ -58,7 +58,7 @@ class KingdomAttackTest {
         attackingUnits.setCount(UnitName.cavalry, 100);
         var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
         var action = new KingdomMilitaryAction(primaryKingdom, gameConfig);
-        var result = action.sendAttack(data);
+        var result = action.sendAttack(data, secondaryKingdom);
         assertTrue(result.success());
         assertEquals(1, primaryKingdom.getOngoingAttacks().size());
 
@@ -83,7 +83,7 @@ class KingdomAttackTest {
         attackingUnits.setCount(UnitName.cavalry, 100);
         var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
         var action = new KingdomMilitaryAction(primaryKingdom, gameConfig);
-        var result = action.sendAttack(data);
+        var result = action.sendAttack(data, secondaryKingdom);
         assertTrue(result.success());
         assertEquals(initialPopulation, primaryKingdom.getUnits().countAll());
         assertEquals(900, primaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
@@ -106,7 +106,7 @@ class KingdomAttackTest {
         attackingUnits.setCount(UnitName.cavalry, 100);
         var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
         var action = new KingdomMilitaryAction(primaryKingdom, gameConfig);
-        var result = action.sendAttack(data);
+        var result = action.sendAttack(data, secondaryKingdom);
         assertTrue(result.success());
         var initialPopulation = primaryKingdom.getUnits().countAll();
         var numberOfTurns = gameConfig.attack().turnsToArrive();
@@ -133,7 +133,7 @@ class KingdomAttackTest {
         attackingUnits.setCount(UnitName.cavalry, 1000);
         var data = new SendAttackDto(secondaryKingdom.getName(), AttackType.economy, attackingUnits);
         var action = new KingdomMilitaryAction(primaryKingdom, gameConfig);
-        var result = action.sendAttack(data);
+        var result = action.sendAttack(data, secondaryKingdom);
         assertTrue(result.success());
         var initialPopulation = secondaryKingdom.getUnits().countAll();
         var numberOfTurns = gameConfig.attack().turnsToArrive();

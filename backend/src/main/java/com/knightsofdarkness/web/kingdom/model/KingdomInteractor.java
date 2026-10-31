@@ -1,21 +1,44 @@
 package com.knightsofdarkness.web.kingdom.model;
 
+import java.time.Instant;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knightsofdarkness.web.common.kingdom.AttackType;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
+import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.common.market.MarketResource;
+import com.knightsofdarkness.web.common.war.BattleReportDto;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
+import com.knightsofdarkness.web.messaging.INotificationSystem;
+import com.knightsofdarkness.web.utils.Id;
+import com.knightsofdarkness.web.utils.Utils;
+import com.knightsofdarkness.web.war.IWarReportRepository;
 
 public class KingdomInteractor implements IKingdomInteractor
 {
     private static final Logger log = LoggerFactory.getLogger(KingdomInteractor.class);
-    IKingdomRepository kingdomRepository;
+    private static final List<ResourceName> plunderableResources = List.of(ResourceName.gold, ResourceName.food, ResourceName.iron, ResourceName.tools, ResourceName.weapons);
+    private final IKingdomRepository kingdomRepository;
+    private final GameConfig gameConfig;
+    private final INotificationSystem notificationSystem;
+    private final IWarReportRepository warReportRepository;
 
-    public KingdomInteractor(IKingdomRepository kingdomRepository)
+    public KingdomInteractor(IKingdomRepository kingdomRepository, GameConfig gameConfig, INotificationSystem notificationSystem, IWarReportRepository warReportRepository)
     {
         this.kingdomRepository = kingdomRepository;
+        this.gameConfig = gameConfig;
+        this.notificationSystem = notificationSystem;
+        this.warReportRepository = warReportRepository;
     }
 
     @Override
@@ -31,6 +54,7 @@ public class KingdomInteractor implements IKingdomInteractor
         toKingdom.get().receiveResourceTransfer(resource, amount);
         kingdomRepository.update(from);
         kingdomRepository.update(toKingdom.get());
+        notificationSystem.create(to, Utils.format("{} carriers delivered {} {}", from.getName(), amount, resource));
     }
 
     @Override
@@ -42,22 +66,174 @@ public class KingdomInteractor implements IKingdomInteractor
         if (maybeDefendantKingdom.isEmpty())
         {
             log.warn("[KingdomInteractor] Kingdom with name {} not found", attack.targetKingdomName);
+            returnSurvivors(attackerKingdom, attack.units);
             return;
         }
 
         var defendantKingdom = maybeDefendantKingdom.get();
+        var unitsSent = new UnitsMapDto(attack.units);
+        var defenderUnitsBefore = new UnitsMapDto(defendantKingdom.getUnits().getAvailableUnits());
 
         processDefenseSalvo(attackerKingdom, defendantKingdom, attack);
         processAttackSalvo(defendantKingdom, attack);
         processMelee(attackerKingdom, defendantKingdom, attack);
 
-        for (UnitName unitName : UnitName.getMilitaryUnits())
+        var attackPower = getAttackPower(attack.units);
+        var defensePower = getDefensePower(defendantKingdom);
+        var attackerWon = attackPower > defensePower;
+        var landCaptured = 0;
+        Map<ResourceName, Integer> plunder = new EnumMap<>(ResourceName.class);
+        if (attackerWon)
         {
-            attackerKingdom.getUnits().moveMobileToAvailable(unitName, attack.units.getCount(unitName));
+            var dominance = getDominance(attackPower, defensePower);
+            if (attack.attackType == AttackType.land)
+            {
+                landCaptured = captureLand(attackerKingdom, defendantKingdom, dominance);
+            } else
+            {
+                plunder = plunder(attackerKingdom, defendantKingdom, dominance);
+            }
         }
+
+        returnSurvivors(attackerKingdom, attack.units);
+
+        var report = new BattleReportDto(Id.generate(), Instant.now(), attackerKingdom.getName(), defendantKingdom.getName(), attack.attackType,
+                unitsSent, difference(unitsSent, attack.units), difference(defenderUnitsBefore, new UnitsMapDto(defendantKingdom.getUnits().getAvailableUnits())),
+                attackPower, defensePower, attackerWon, landCaptured, plunder);
+        warReportRepository.addBattleReport(report);
+        notifyAboutBattle(report);
 
         kingdomRepository.update(attackerKingdom);
         kingdomRepository.update(defendantKingdom);
+    }
+
+    private void returnSurvivors(KingdomEntity attackerKingdom, UnitsMapDto survivors)
+    {
+        for (UnitName unitName : UnitName.getMilitaryUnits())
+        {
+            attackerKingdom.getUnits().moveMobileToAvailable(unitName, survivors.getCount(unitName));
+        }
+    }
+
+    private void notifyAboutBattle(BattleReportDto report)
+    {
+        var spoils = report.attackType() == AttackType.land ? Utils.format("{} land", report.landCaptured()) : Utils.format("{} gold and supplies", report.plunder().getOrDefault(ResourceName.gold, 0));
+        if (report.attackerWon())
+        {
+            notificationSystem.create(report.attacker(), Utils.format("Victory! Our army defeated {} and took {}", report.defender(), spoils));
+            notificationSystem.create(report.defender(), Utils.format("{} attacked us and won, we lost {}", report.attacker(), spoils));
+        } else
+        {
+            notificationSystem.create(report.attacker(), Utils.format("Defeat! Our army was repelled by {}", report.defender()));
+            notificationSystem.create(report.defender(), Utils.format("We repelled an attack from {}", report.attacker()));
+        }
+    }
+
+    private static UnitsMapDto difference(UnitsMapDto before, UnitsMapDto after)
+    {
+        var losses = new UnitsMapDto();
+        for (var unit : UnitName.getMilitaryUnits())
+        {
+            losses.setCount(unit, before.getCount(unit) - after.getCount(unit));
+        }
+        return losses;
+    }
+
+    public double getAttackPower(UnitsMapDto units)
+    {
+        var attackConfig = gameConfig.attack();
+        return UnitName.getMilitaryUnits().stream().mapToDouble(unit -> units.getCount(unit) * attackConfig.getAttackPower(unit)).sum();
+    }
+
+    public double getDefensePower(KingdomEntity kingdom)
+    {
+        var attackConfig = gameConfig.attack();
+        var units = kingdom.getUnits();
+        var basePower = UnitName.getMilitaryUnits().stream().mapToDouble(unit -> units.getAvailableCount(unit) * attackConfig.getDefensePower(unit)).sum();
+        basePower += units.getAvailableCount(UnitName.guard) * attackConfig.getDefensePower(UnitName.guard);
+
+        var buildings = kingdom.getBuildings();
+        var towerBonus = Math.min(attackConfig.maxTowerDefenseBonus(), buildings.getCount(BuildingName.tower) * attackConfig.towerDefenseBonusPerTower());
+        var castleBonus = buildings.getCount(BuildingName.castle) * attackConfig.castleDefenseBonusPerCastle();
+
+        return basePower * (1 + towerBonus + castleBonus);
+    }
+
+    /**
+     * How decisive the victory was, from 0 (barely won) to 1 (attack at least twice as strong as defense)
+     */
+    static double getDominance(double attackPower, double defensePower)
+    {
+        if (defensePower <= 0)
+        {
+            return 1.0;
+        }
+
+        return Math.clamp(attackPower / defensePower - 1, 0.0, 1.0);
+    }
+
+    int captureLand(KingdomEntity attacker, KingdomEntity defender, double dominance)
+    {
+        var defenderLand = defender.getResources().getCount(ResourceName.land);
+        var landCaptured = Math.max(1, (int) Math.floor(defenderLand * gameConfig.attack().maxLandCaptureRatio() * dominance));
+        landCaptured = Math.min(landCaptured, defenderLand);
+
+        var buildingsToRaze = landCaptured - Math.max(0, defender.getUnusedLand());
+        if (buildingsToRaze > 0)
+        {
+            razeBuildings(defender, buildingsToRaze);
+        }
+
+        defender.getResources().subtractCount(ResourceName.land, landCaptured);
+        attacker.getResources().addCount(ResourceName.land, landCaptured);
+        return landCaptured;
+    }
+
+    /**
+     * buildings on captured land are destroyed proportionally to how many of each the defender has
+     */
+    static void razeBuildings(KingdomEntity kingdom, int count)
+    {
+        var buildings = kingdom.getBuildings();
+        var total = buildings.countAll();
+        var toRaze = Math.min(count, total);
+        var razed = 0;
+        for (var building : BuildingName.values())
+        {
+            var share = (int) Math.floor((double) buildings.getCount(building) / total * toRaze);
+            buildings.subtractCount(building, share);
+            razed += share;
+        }
+
+        while (razed < toRaze)
+        {
+            for (var building : BuildingName.values())
+            {
+                if (razed < toRaze && buildings.getCount(building) > 0)
+                {
+                    buildings.subtractCount(building, 1);
+                    razed++;
+                }
+            }
+        }
+    }
+
+    Map<ResourceName, Integer> plunder(KingdomEntity attacker, KingdomEntity defender, double dominance)
+    {
+        var attackConfig = gameConfig.attack();
+        var warehouseLevels = defender.getSpecialBuildings().stream().filter(building -> building.buildingType == SpecialBuildingType.warehouse).mapToInt(building -> building.level).sum();
+        var protection = Math.min(attackConfig.maxWarehousePlunderProtection(), warehouseLevels * attackConfig.warehousePlunderProtectionPerLevel());
+        var plunderRatio = attackConfig.maxPlunderRatio() * dominance * (1 - protection);
+
+        Map<ResourceName, Integer> plunder = new EnumMap<>(ResourceName.class);
+        for (var resource : plunderableResources)
+        {
+            var amount = (int) Math.floor(defender.getResources().getCount(resource) * plunderRatio);
+            defender.getResources().subtractCount(resource, amount);
+            attacker.getResources().addCount(resource, amount);
+            plunder.put(resource, amount);
+        }
+        return plunder;
     }
 
     void processDefenseSalvo(KingdomEntity attackerKingdom, KingdomEntity defenderKingdom, KingdomOngoingAttackEntity attack)

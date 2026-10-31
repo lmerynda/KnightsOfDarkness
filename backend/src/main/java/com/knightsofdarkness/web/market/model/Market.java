@@ -61,7 +61,16 @@ public class Market implements IMarket {
             return CreateMarketOfferResult.failure(Utils.format("Price {} is lower than minimum {}", price, gameConfig.market().minPrice()), Optional.empty());
         }
         var action = new KingdomMarketAction(kingdom);
-        var countToOffer = action.postOffer(resource, count); // TODO, what if the kingdom doesn't have enough resources?
+        if (count <= 0)
+        {
+            return CreateMarketOfferResult.failure("Offer must contain at least one unit", Optional.empty());
+        }
+
+        var countToOffer = action.postOffer(resource, count);
+        if (countToOffer <= 0)
+        {
+            return CreateMarketOfferResult.failure(Utils.format("Not enough {} to post an offer", resource), Optional.empty());
+        }
         var offer = new MarketOfferEntity(Id.generate(), kingdom, resource, countToOffer, price);
         offersRepository.add(offer);
         kingdomRepository.update(kingdom);
@@ -111,7 +120,7 @@ public class Market implements IMarket {
     public BuyMarketOfferResult buyExistingOffer(MarketOfferEntity offer, KingdomEntity seller, KingdomEntity buyer, int amount)
     {
         log.info("Transaction request: buyer: {} seller: {} amount: {} offer: {}", buyer.getName(), seller.getName(), amount, offer.getId());
-        var maxToSell = Math.min(offer.count, amount);
+        var maxToSell = Math.max(0, Math.min(offer.count, amount));
         var action = new KingdomMarketAction(seller);
         var buyerGold = action.reserveGoldForOffer(buyer, offer.getPrice(), maxToSell);
         var buyerAmount = buyerGold / offer.getPrice();

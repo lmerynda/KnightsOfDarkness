@@ -160,4 +160,45 @@ class KingdomTrainTest {
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }
+
+    @Test
+    void trainingNegativeCount_shouldNotRefundResources()
+    {
+        var goldBefore = kingdom.getResources().getCount(ResourceName.gold);
+        var buildersBefore = kingdom.getUnits().getAvailableCount(UnitName.builder);
+        var toTrain = new UnitsMapDto();
+        toTrain.setCount(UnitName.builder, -100);
+
+        var trainedUnits = new KingdomTrainAction(kingdom, gameConfig).train(toTrain).units();
+
+        assertEquals(0, trainedUnits.getCount(UnitName.builder));
+        assertEquals(goldBefore, kingdom.getResources().getCount(ResourceName.gold));
+        assertEquals(buildersBefore, kingdom.getUnits().getAvailableCount(UnitName.builder));
+    }
+
+    @Test
+    void firingUnits_shouldMakeThemUnemployed()
+    {
+        var unemployedBefore = kingdom.getResources().getCount(ResourceName.unemployed);
+        var toFire = new UnitsMapDto();
+        toFire.setCount(UnitName.farmer, 10);
+
+        new KingdomTrainAction(kingdom, gameConfig).fireUnits(toFire);
+
+        assertEquals(990, kingdom.getUnits().getAvailableCount(UnitName.farmer));
+        assertEquals(unemployedBefore + 10, kingdom.getResources().getCount(ResourceName.unemployed));
+    }
+
+    @Test
+    void firingNegativeCount_shouldDoNothing()
+    {
+        var unemployedBefore = kingdom.getResources().getCount(ResourceName.unemployed);
+        var toFire = new UnitsMapDto();
+        toFire.setCount(UnitName.farmer, -10);
+
+        new KingdomTrainAction(kingdom, gameConfig).fireUnits(toFire);
+
+        assertEquals(1000, kingdom.getUnits().getAvailableCount(UnitName.farmer));
+        assertEquals(unemployedBefore, kingdom.getResources().getCount(ResourceName.unemployed));
+    }
 }

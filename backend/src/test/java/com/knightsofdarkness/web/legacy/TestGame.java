@@ -9,6 +9,7 @@ import com.knightsofdarkness.web.utils.BotRepository;
 import com.knightsofdarkness.web.utils.KingdomRepository;
 import com.knightsofdarkness.web.utils.MarketBuilder;
 import com.knightsofdarkness.web.utils.NotificationRepository;
+import com.knightsofdarkness.web.utils.WarReportRepository;
 
 public class TestGame {
     public Game get()
@@ -17,10 +18,11 @@ public class TestGame {
         var kingdomRepository = new KingdomRepository();
         var allianceRepository = new AllianceRepository();
         var botRepository = new BotRepository();
+        var warReportRepository = new WarReportRepository();
         var notificationSystem = new NotificationSystem(new NotificationRepository(), config);
         var market = new MarketBuilder(config, notificationSystem).withKingdomRepository(kingdomRepository).build();
-        var kingdomInteractor = new KingdomInteractor(kingdomRepository);
+        var kingdomInteractor = new KingdomInteractor(kingdomRepository, config, notificationSystem, warReportRepository);
 
-        return new Game(config, market, kingdomRepository, allianceRepository, botRepository, notificationSystem, kingdomInteractor);
+        return new Game(config, market, kingdomRepository, allianceRepository, botRepository, notificationSystem, kingdomInteractor, warReportRepository);
     }
 }

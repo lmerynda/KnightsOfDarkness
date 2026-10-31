@@ -17,7 +17,7 @@ public class KingdomMarketAction {
         var maxToPost = Math.min(count, kingdom.getResources().getCount(ResourceName.from(resource)));
         if (maxToPost > 0)
         {
-            kingdom.getResources().subtractCount(ResourceName.from(resource), count);
+            kingdom.getResources().subtractCount(ResourceName.from(resource), maxToPost);
         }
 
         return maxToPost;

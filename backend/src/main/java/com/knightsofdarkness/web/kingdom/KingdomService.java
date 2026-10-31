@@ -351,7 +351,7 @@ public class KingdomService
         }
 
         var action = new KingdomMilitaryAction(kingdom, gameConfig);
-        SendAttackResult result = action.sendAttack(sendAttackDto);
+        SendAttackResult result = action.sendAttack(sendAttackDto, maybeDestinationKingdom.get());
         if (result.success())
         {
             kingdomRepository.update(kingdom);

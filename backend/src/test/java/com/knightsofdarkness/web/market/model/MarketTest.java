@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.legacy.TestGame;
@@ -225,5 +226,57 @@ class MarketTest {
         var cheapestOffer = market.getCheapestOfferByResource(MarketResource.food);
 
         assertEquals(offer.id(), cheapestOffer.get().getId());
+    }
+
+    @Test
+    void createOffer_withMoreThanOwned_shouldOfferOnlyOwnedAmount()
+    {
+        kingdom.getResources().setCount(ResourceName.iron, 100);
+
+        var result = market.createOffer(kingdom.getName(), MarketResource.iron, 1000, 50);
+
+        assertTrue(result.success());
+        assertEquals(100, result.data().get().count());
+        assertEquals(0, kingdom.getResources().getCount(ResourceName.iron));
+    }
+
+    @Test
+    void createOffer_withoutResources_shouldFail()
+    {
+        kingdom.getResources().setCount(ResourceName.iron, 0);
+
+        var result = market.createOffer(kingdom.getName(), MarketResource.iron, 10, 50);
+
+        assertFalse(result.success());
+        assertEquals(0, market.getOffersByKingdomName(kingdom.getName()).size());
+    }
+
+    @Test
+    void createOffer_withNegativeCount_shouldFail()
+    {
+        var foodBefore = kingdom.getResources().getCount(ResourceName.food);
+
+        var result = market.createOffer(kingdom.getName(), MarketResource.food, -10, 50);
+
+        assertFalse(result.success());
+        assertEquals(foodBefore, kingdom.getResources().getCount(ResourceName.food));
+    }
+
+    @Test
+    void buyingNegativeAmount_shouldNotMoveAnything()
+    {
+        var buyer = new KingdomBuilder(game).build();
+        game.addKingdom(buyer);
+        var offerId = market.createOffer(kingdom.getName(), MarketResource.food, 100, 50).data().get().id();
+        var offer = market.findOfferById(offerId).get();
+        var sellerGold = kingdom.getResources().getCount(ResourceName.gold);
+        var buyerGold = buyer.getResources().getCount(ResourceName.gold);
+
+        var result = market.buyExistingOffer(offer, kingdom, buyer, -50);
+
+        assertEquals(0, result.count());
+        assertEquals(sellerGold, kingdom.getResources().getCount(ResourceName.gold));
+        assertEquals(buyerGold, buyer.getResources().getCount(ResourceName.gold));
+        assertEquals(100, offer.getCount());
     }
 }

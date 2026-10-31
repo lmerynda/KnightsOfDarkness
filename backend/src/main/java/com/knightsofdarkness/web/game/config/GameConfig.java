@@ -10,5 +10,6 @@ public record GameConfig(
         MarketConfig market,
         Common common,
         CarrierCapacity carrierCapacity,
-        Attack attack) {
+        Attack attack,
+        Espionage espionage) {
 }
