@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/authenticate").permitAll()
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/auth/validate-token").authenticated()
+                        .requestMatchers("/auth/refresh").authenticated()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/**").permitAll()

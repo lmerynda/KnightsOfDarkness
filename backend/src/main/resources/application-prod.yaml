@@ -20,7 +20,7 @@ app:
     # Signing key for HS512 algorithm
     secret: ${KOD_JWT_SECRET}
     expiration:
-      minutes: 10
+      minutes: 60
   cors:
     allowed-origins:
       - https://knightsofdarkness.com

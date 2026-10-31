@@ -9,7 +9,6 @@ import java.util.UUID;
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import com.knightsofdarkness.web.user.UserData;
@@ -63,9 +62,8 @@ public class TokenService {
         return Optional.empty();
     }
 
-    public String generateToken(Authentication authentication)
+    public String generateToken(UserData user)
     {
-        var user = (UserData) authentication.getPrincipal();
         return Jwts.builder()
                 .header().add("typ", "JWT")
                 .and()

@@ -15,7 +15,7 @@ app:
     # Signing key for HS512 algorithm
     secret: ou0UF8C86kabdLLwm1ULYajqziByn9EEWrqyUE8CKyYAlpNIkaWVQmiZPZgwRKs807wXuEe4xYUc7aUm4tacYZyfEaGDx1sVafq6MVZgPyTuVbuu7zZGTL0l55Nwzqf4ERseA9zIgke10tXF6PUyUwJ3rE1klcmycI/HNh6bO6FnKOpE+fembVwrR12JYJMhTwmjjMlreXMcQWtzZeLvEsQibC+ULNrZ0s9hFPTbJXBXPmyTCkuEeBBUZdOAlD/W955WS2+u2JsxOwBunDHfcoCskvzfGnLoYIL5nsOvMfBJZILlX1iZm7gfzbiwQkoulGy6UCnn+Hgvu1jIO6Uhsg==
     expiration:
-      minutes: 10
+      minutes: 60
   cors:
     allowed-origins:
       - http://localhost:3000

@@ -1,78 +1,62 @@
 package com.knightsofdarkness.web.user;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knightsofdarkness.web.kingdom.KingdomService;
 import com.knightsofdarkness.web.security.AuthRequestDto;
 import com.knightsofdarkness.web.security.AuthResponseDto;
 import com.knightsofdarkness.web.security.RegisterRequestDto;
 import com.knightsofdarkness.web.security.TokenService;
-import com.knightsofdarkness.web.user.model.UserEntity;
 
 @RestController
 public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
-    private final IUserService userService;
-    private final PasswordEncoder passwordEncoder;
-    private final KingdomService kingdomService;
+    private final RegistrationService registrationService;
 
-    public AuthController(AuthenticationManager authenticationManager, TokenService tokenService, IUserService userService, PasswordEncoder passwordEncoder, KingdomService kingdomService)
+    public AuthController(AuthenticationManager authenticationManager, TokenService tokenService, RegistrationService registrationService)
     {
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-        this.kingdomService = kingdomService;
+        this.registrationService = registrationService;
     }
 
     @PostMapping("/auth/authenticate")
-    public AuthResponseDto login(@RequestBody AuthRequestDto loginRequest)
+    public ResponseEntity<Object> login(@RequestBody AuthRequestDto loginRequest)
     {
-        log.info("login request received for user: {}", loginRequest.email);
-        var authToken = new UsernamePasswordAuthenticationToken(loginRequest.email, loginRequest.password);
+        var email = loginRequest.email == null ? "" : loginRequest.email.strip().toLowerCase();
+        log.info("login request received for user: {}", email);
+        var authToken = new UsernamePasswordAuthenticationToken(email, loginRequest.password);
         try
         {
-            Authentication authentication = authenticationManager.authenticate(authToken);
-            String token = tokenService.generateToken(authentication);
-            return new AuthResponseDto(token);
+            var authentication = authenticationManager.authenticate(authToken);
+            return ResponseEntity.ok(new AuthResponseDto(tokenService.generateToken((UserData) authentication.getPrincipal())));
         } catch (AuthenticationException e)
         {
-            log.warn("Authentication failed for user: {} with message: {}", loginRequest.email, e.getMessage());
-            throw e;
+            log.warn("Authentication failed for user: {} with message: {}", email, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Wrong email or password"));
         }
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequestDto registerRequest)
+    public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequestDto registerRequest)
     {
-        log.info("register request received for email: {} and kingdomName: {}", registerRequest.email, registerRequest.kingdomName);
-
-        if (userService.hasUserWithEmail(registerRequest.email))
-        {
-            throw new IllegalArgumentException("email already exists"); // TODO return a proper error response
-        }
-
-        UserData user = new UserData(registerRequest.email, registerRequest.kingdomName, registerRequest.password);
-        user.password = passwordEncoder.encode(user.getPassword());
-
-        UserEntity newUser = new UserEntity(user.email, user.getKingdomName(), user.getPassword());
-        userService.saveUser(newUser);
-        kingdomService.createKingdom(user.getKingdomName());
-
-        return ResponseEntity.ok("User registered successfully");
+        log.info("register request received for kingdomName: {}", registerRequest.kingdomName);
+        return registrationService.register(registerRequest)
+                .map(error -> ResponseEntity.badRequest().body(Map.of("message", error)))
+                .orElseGet(() -> ResponseEntity.ok(Map.of("message", "Kingdom founded")));
     }
 
     @PostMapping("/auth/validate-token")
@@ -81,5 +65,14 @@ public class AuthController {
         // since this url is protected by security, if we reach here, the token is valid
         log.info("Validate token request received for user: {}", currentUser.email);
         return true;
+    }
+
+    /**
+     * a valid token is exchanged for a fresh one, the client calls it while the player is active so the session doesn't expire mid-game
+     */
+    @PostMapping("/auth/refresh")
+    public AuthResponseDto refresh(@AuthenticationPrincipal UserData currentUser)
+    {
+        return new AuthResponseDto(tokenService.generateToken(currentUser));
     }
 }

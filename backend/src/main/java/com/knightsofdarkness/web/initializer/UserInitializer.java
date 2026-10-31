@@ -38,7 +38,7 @@ public class UserInitializer implements CommandLineRunner {
 
     private static final List<UserEntity> USERS = Arrays.asList(
             new UserEntity("uprzejmy", "uprzejmy", "uprzejmy_password"),
-            new UserEntity("umbar", "umbar", "umbar_password"),
+            new UserEntity("umbar", "Umbar", "umbar_password"),
             new UserEntity("BlacksmithBot", "BlacksmithBot", "1234"),
             new UserEntity("FarmerBot", "FarmerBot", "1234"),
             new UserEntity("IronMinerBot", "IronMinerBot", "1234"),
