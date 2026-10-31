@@ -231,7 +231,7 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
 
   return (
     <article className={`battle ${won ? "won" : "lost"}`}>
-      <div className="battle-art" style={{ backgroundImage: `url(${art(won ? "victory" : "aftermath")})` }} />
+      <div className="battle-art" style={{ backgroundImage: `url(${art(won ? "victory" : attacking ? "defeat" : "breached")})` }} />
       <div className="battle-body">
         <header className="battle-head">
           <Crest name={other} size={34} />

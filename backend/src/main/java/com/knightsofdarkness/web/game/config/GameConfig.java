@@ -13,5 +13,6 @@ public record GameConfig(
         Attack attack,
         Espionage espionage,
         Round round,
-        Bots bots) {
+        Bots bots,
+        Events events) {
 }

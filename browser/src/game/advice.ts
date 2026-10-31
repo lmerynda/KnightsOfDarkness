@@ -94,6 +94,14 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
       link: { to: "/kingdom/train", label: "Train soldiers" },
     });
   }
+  const bowmen = kingdom.units.availableUnits.bowman + kingdom.units.mobileUnits.bowman;
+  if (soldiers >= 20 && bowmen >= soldiers * 0.8) {
+    lines.push({
+      urgent: false,
+      text: "Nearly all your soldiers are bowmen, and bowmen strike nobody once the lines meet. Infantry holds them.",
+      link: { to: "/kingdom/train", label: "Train infantry" },
+    });
+  }
   if (kingdom.units.availableUnits.spy === 0) {
     lines.push({
       urgent: false,
@@ -123,5 +131,7 @@ export const turnSummary = (reports: TurnReport[]): string => {
     starved > 0 ? `${formatNumber(starved)} left hungry` : null,
     exiled > 0 ? `${formatNumber(exiled)} left for lack of houses` : null,
   ].filter(Boolean);
-  return `${reports.length === 1 ? "A turn has passed" : `${reports.length} turns have passed`}: ${parts.join(", ")}`;
+  const fortune = reports.flatMap(report => (report.event ? [report.event] : []));
+  const turns = reports.length === 1 ? "A turn has passed" : `${reports.length} turns have passed`;
+  return `${turns}: ${parts.join(", ")}${fortune.length ? `. ${fortune.join(". ")}` : ""}`;
 };

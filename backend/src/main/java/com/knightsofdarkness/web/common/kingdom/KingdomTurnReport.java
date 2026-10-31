@@ -15,6 +15,8 @@ public class KingdomTurnReport {
     public double nourishmentProductionFactor = 1.0;
     public Map<ResourceName, Double> specialBuildingBonus = new EnumMap<>(ResourceName.class);
     public Map<UnitName, Integer> professionalsLeaving = new EnumMap<>(UnitName.class);
+    /** what fortune brought after the turn, if anything */
+    public String event;
 
     public void addLeavingProfessionals(UnitName unit, int count)
     {
@@ -32,14 +34,14 @@ public class KingdomTurnReport {
         return foodConsumed == that.foodConsumed && arrivingPeople == that.arrivingPeople && exiledPeople == that.exiledPeople && starvedPeople == that.starvedPeople
                 && weaponsProductionPercentage == that.weaponsProductionPercentage && Double.compare(kingdomSizeProductionBonus, that.kingdomSizeProductionBonus) == 0
                 && Double.compare(nourishmentProductionFactor, that.nourishmentProductionFactor) == 0 && Objects.equals(resourcesProduced, that.resourcesProduced)
-                && Objects.equals(specialBuildingBonus, that.specialBuildingBonus) && Objects.equals(professionalsLeaving, that.professionalsLeaving);
+                && Objects.equals(specialBuildingBonus, that.specialBuildingBonus) && Objects.equals(professionalsLeaving, that.professionalsLeaving) && Objects.equals(event, that.event);
     }
 
     @Override
     public int hashCode()
     {
         return Objects.hash(foodConsumed, resourcesProduced, arrivingPeople, exiledPeople, starvedPeople, weaponsProductionPercentage, kingdomSizeProductionBonus, nourishmentProductionFactor,
-                specialBuildingBonus, professionalsLeaving);
+                specialBuildingBonus, professionalsLeaving, event);
     }
 
     @Override
@@ -56,6 +58,7 @@ public class KingdomTurnReport {
                 ", nourishmentProductionFactor=" + nourishmentProductionFactor +
                 ", specialBuildingBonus=" + specialBuildingBonus +
                 ", professionalsLeaving=" + professionalsLeaving +
+                ", event=" + event +
                 '}';
     }
 }

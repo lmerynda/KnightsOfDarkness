@@ -221,5 +221,11 @@
             "tools": 3000,
             "weapons": 3000
         }
+    },
+    "events": {
+        "chancePerTurn": 0.1,
+        "windfallShare": 0.5,
+        "lossShare": 0.1,
+        "guardsPerAcreAgainstBandits": 0.05
     }
 }

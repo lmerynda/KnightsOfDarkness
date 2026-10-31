@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.random.RandomGenerator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import com.knightsofdarkness.web.common.kingdom.SendAttackResult;
 import com.knightsofdarkness.web.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.web.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
+import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomBuildAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomCarriersAction;
@@ -35,6 +37,8 @@ import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsCalculator;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomEvent;
+import com.knightsofdarkness.web.kingdom.model.KingdomEvents;
 import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomOtherAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomReadRepository;
@@ -44,6 +48,7 @@ import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomTrainAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;
+import com.knightsofdarkness.web.messaging.INotificationSystem;
 
 @Service
 public class KingdomService
@@ -55,9 +60,12 @@ public class KingdomService
     private final GameConfig gameConfig;
     private final IKingdomInteractor kingdomInteractor;
     private final KingdomDetailsProvider kingdomDetailsProvider;
+    private final INotificationSystem notificationSystem;
+    private final KingdomEvents events;
+    private final RandomGenerator dice = RandomGenerator.getDefault();
 
     public KingdomService(KingdomRepository kingdomRepository, KingdomReadRepository kingdomReadRepository, MarketOfferReadRepository marketOfferReadRepository, GameConfig gameConfig, IKingdomInteractor kingdomInteractor,
-            KingdomDetailsProvider kingdomDetailsProvider)
+            KingdomDetailsProvider kingdomDetailsProvider, INotificationSystem notificationSystem)
     {
         this.kingdomRepository = kingdomRepository;
         this.kingdomReadRepository = kingdomReadRepository;
@@ -65,6 +73,8 @@ public class KingdomService
         this.gameConfig = gameConfig;
         this.kingdomInteractor = kingdomInteractor;
         this.kingdomDetailsProvider = kingdomDetailsProvider;
+        this.notificationSystem = notificationSystem;
+        this.events = new KingdomEvents(gameConfig);
     }
 
     @Transactional
@@ -190,6 +200,9 @@ public class KingdomService
 
         if (result.success())
         {
+            var kinds = KingdomEvent.values();
+            result.turnReport().flatMap(report -> events.happen(kingdom, report, dice.nextDouble(), kinds[dice.nextInt(kinds.length)]))
+                    .ifPresent(event -> notificationSystem.create(name, NotificationKind.event, event));
             kingdomRepository.update(kingdom);
         }
 

@@ -2,6 +2,16 @@ import type { BuildingName, MarketResource, ResourceName, SpecialBuildingType, U
 
 export const art = (name: string): string => `/art/${name}.webp`;
 
+/** what a realm looks like as it grows, from a frontier hamlet to the seat of a mighty realm */
+const realmStages = [
+  { below: 200, title: "hamlet", art: "realmHamlet" },
+  { below: 500, title: "town", art: "realmTown" },
+  { below: 1200, title: "city", art: "realmCity" },
+  { below: Infinity, title: "citadel", art: "realmCitadel" },
+];
+
+export const realmStage = (land: number): { title: string; art: string } => realmStages.find(stage => land < stage.below) ?? realmStages[0];
+
 export const resourceLabel: Record<ResourceName, string> = {
   land: "Land",
   buildingPoints: "Building points",

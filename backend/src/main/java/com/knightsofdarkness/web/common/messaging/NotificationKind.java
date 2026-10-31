@@ -5,5 +5,5 @@ package com.knightsofdarkness.web.common.messaging;
  */
 public enum NotificationKind
 {
-    victory, defeat, repelled, breached, spies, trade, delivery, alliance, round
+    victory, defeat, repelled, breached, spies, trade, delivery, alliance, round, event
 }

@@ -6,7 +6,7 @@ import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
 import { counsel } from "../game/advice";
 import { ChronicleEntry } from "../game/chronicle";
-import { art, marketResourceLabel, resourceLabel, unitLore } from "../game/lore";
+import { art, marketResourceLabel, realmStage, resourceLabel, unitLore } from "../game/lore";
 import type { IconName } from "../ui/Icon";
 import { Icon } from "../ui/Icon";
 import { Banner, Meter, Panel } from "../ui/parts";
@@ -301,11 +301,13 @@ const Counsel: React.FC = () => {
 
 export const Overview: React.FC = () => {
   const { kingdom } = useGame();
+  const stage = realmStage(kingdom.resources.land);
   return (
     <>
-      <Banner image={art("overview")} title={kingdom.name}>
-        {kingdom.allianceName ? `Sworn to ${kingdom.allianceName}.` : "A kingdom without allies."} Spend this turn's building points, then
-        pass the turn.
+      <Banner image={art(stage.art)} title={kingdom.name}>
+        A {stage.title} of {formatNumber(kingdom.resources.land)} acres,{" "}
+        {kingdom.allianceName ? `sworn to ${kingdom.allianceName}.` : "without allies."} Spend this turn&apos;s building points, then pass
+        the turn.
       </Banner>
       <div className="stack">
         <Counsel />

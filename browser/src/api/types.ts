@@ -55,6 +55,8 @@ export type TurnReport = {
   nourishmentProductionFactor: number;
   specialBuildingBonus: Partial<Counts<ResourceName>>;
   professionalsLeaving: Partial<Counts<UnitName>>;
+  /** what fortune brought after the turn, if anything */
+  event: string | null;
 };
 
 export type MarketOffer = { id: string; sellerName: string; resource: MarketResource; count: number; price: number };
@@ -185,7 +187,8 @@ export type SpyReport = {
   units: Partial<Counts<UnitName>>;
 };
 
-export type NotificationKind = "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round";
+export type NotificationKind =
+  "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round" | "event";
 export type Notification = { id: string; kingdomName: string; kind: NotificationKind; message: string; date: string; isRead: boolean };
 
 export type Letter = { id: string; sender: string; recipient: string; body: string; date: string; isRead: boolean; toAlliance: boolean };
