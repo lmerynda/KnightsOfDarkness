@@ -15,6 +15,8 @@ export type Council = {
   target: string | null;
   defense: number;
   committed: number;
+  /** kingdoms already named this attack turn, so each strike goes to a new enemy */
+  struck: string[];
 };
 
 export type Coalition = { name: string; rulers: Ruler[]; council: Council };
@@ -26,7 +28,7 @@ const shareAbove = 1.5;
 /**
  * a warlord who marches with the coalition: on an attack turn the first warlord to act scouts the largest enemy within
  * reach, and if the coalition's armies at home are together clearly stronger, warlords join the strike one after another
- * until enough strength marches; the rest stay home to defend
+ * until enough strength marches; the next warlord then names the next enemy, so every army can strike in the same turn
  */
 export const coalitionWarlord = (council: Council, attackEvery = 6): Strategy => ({
   name: "allied warlord",
@@ -40,8 +42,15 @@ export const coalitionWarlord = (council: Council, attackEvery = 6): Strategy =>
       council.turn = turn;
       council.target = null;
       council.committed = 0;
-      const candidate = attackableKingdoms(context)[0];
+      council.struck = [];
+    }
+    // once a strike has enough strength, the next warlord to act names a new enemy
+    if (council.target === null || council.committed > council.defense * strikeMargin) {
+      council.target = null;
+      council.committed = 0;
+      const candidate = attackableKingdoms(context).find(rank => !council.struck.includes(rank.kingdomName));
       if (!candidate || kingdom.units.availableUnits.spy <= 0) return;
+      council.struck.push(candidate.kingdomName);
       const { report } = await player.sendSpies(candidate.kingdomName, kingdom.units.availableUnits.spy);
       if (!report?.success) return;
       const defense = estimatedDefense(report, config);
@@ -54,7 +63,7 @@ export const coalitionWarlord = (council: Council, attackEvery = 6): Strategy =>
       council.defense = defense;
     }
 
-    if (!council.target || council.committed > council.defense * strikeMargin) return;
+    if (!council.target) return;
     if (!attackableKingdoms(context).some(rank => rank.kingdomName === council.target)) return;
     const army = armyAtHome(kingdom);
     const power = armyPower(army, config);
@@ -120,6 +129,7 @@ export const foundCoalition = async (world: World, name: string, roles: (council
     target: null,
     defense: Infinity,
     committed: 0,
+    struck: [],
   };
   const strategies = roles(council);
   const rulers = await foundRulers(world, strategies, name);
