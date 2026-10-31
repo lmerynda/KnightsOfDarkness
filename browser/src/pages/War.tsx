@@ -22,7 +22,7 @@ const estimatedDefense = (report: SpyReport, config: GameConfig): number => {
 };
 
 const unitList = (units: Partial<Counts<UnitName>>): string => {
-  const parts = militaryUnits
+  const parts = [...militaryUnits, "guard" as const]
     .filter(unit => (units[unit] ?? 0) > 0)
     .map(
       unit =>

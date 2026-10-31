@@ -207,6 +207,18 @@ class WarTest {
     }
 
     @Test
+    void guards_shouldFallInProportionToTheAttack()
+    {
+        // 100 cavalry (attack 300) against 5 guards behind towers and a castle (defense 5.9)
+        sendAndResolve(AttackType.land, cavalry(100));
+
+        var expectedLost = (int) Math.floor(5 * (300 / (300 + 5.9)) * gameConfig.attack().maxGuardLossRatio());
+        assertEquals(5 - expectedLost, defender.getUnits().getAvailableCount(UnitName.guard));
+        var report = game.getWarReportRepository().getBattleReports(defender.getName(), 1).get(0);
+        assertEquals(expectedLost, report.defenderLosses().getCount(UnitName.guard));
+    }
+
+    @Test
     void towersAndCastles_shouldIncreaseDefense()
     {
         var detailsProvider = new KingdomDetailsProvider(gameConfig);

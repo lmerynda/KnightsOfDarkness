@@ -14,6 +14,7 @@ public record Attack(
         double castleDefenseBonusPerCastle,
         double warehousePlunderProtectionPerLevel,
         double maxWarehousePlunderProtection,
+        double maxGuardLossRatio,
         Map<UnitName, Double> unitAttackPower,
         Map<UnitName, Double> unitDefensePower) {
 

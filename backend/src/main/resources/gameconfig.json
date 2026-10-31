@@ -180,6 +180,7 @@
         "castleDefenseBonusPerCastle": 0.1,
         "warehousePlunderProtectionPerLevel": 0.05,
         "maxWarehousePlunderProtection": 0.75,
+        "maxGuardLossRatio": 0.5,
         "unitAttackPower": {
             "bowman": 1,
             "infantry": 2,

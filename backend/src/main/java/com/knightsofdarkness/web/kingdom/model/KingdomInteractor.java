@@ -83,6 +83,7 @@ public class KingdomInteractor implements IKingdomInteractor
         var attackPower = detailsProvider.getAttackPower(attack.units);
         var defensePower = detailsProvider.getDefensePower(defendantKingdom);
         var attackerWon = attackPower > defensePower;
+        processGuardLosses(defendantKingdom, attackPower, defensePower);
         var landCaptured = 0;
         Map<ResourceName, Integer> plunder = new EnumMap<>(ResourceName.class);
         if (attackerWon)
@@ -138,7 +139,24 @@ public class KingdomInteractor implements IKingdomInteractor
         {
             losses.setCount(unit, before.getCount(unit) - after.getCount(unit));
         }
+        losses.setCount(UnitName.guard, before.getCount(UnitName.guard) - after.getCount(UnitName.guard));
         return losses;
+    }
+
+    /**
+     * guards hold the walls to the end, the stronger the attack compared to the defense the more of them fall
+     */
+    void processGuardLosses(KingdomEntity defendantKingdom, double attackPower, double defensePower)
+    {
+        var guards = defendantKingdom.getUnits().getAvailableCount(UnitName.guard);
+        if (guards <= 0 || attackPower <= 0)
+        {
+            return;
+        }
+
+        var share = attackPower / (attackPower + defensePower);
+        var guardsLost = (int) Math.floor(guards * share * gameConfig.attack().maxGuardLossRatio());
+        defendantKingdom.getUnits().subtractAvailableCount(UnitName.guard, guardsLost);
     }
 
     /**
