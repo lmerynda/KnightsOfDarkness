@@ -68,5 +68,11 @@ public class KingdomDetailsCalculator {
         {
             // a forecast does not touch other kingdoms
         }
+
+        @Override
+        public void reinforcementsArrived(KingdomReinforcementEntity reinforcement)
+        {
+            // a forecast does not touch other kingdoms
+        }
     }
 }

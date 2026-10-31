@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,12 +77,15 @@ public class KingdomInteractor implements IKingdomInteractor
 
         var defendantKingdom = maybeDefendantKingdom.get();
         var unitsSent = new UnitsMapDto(attack.units);
-        var defenderUnitsBefore = new UnitsMapDto(defendantKingdom.getUnits().getAvailableUnits());
+        var defenders = new DefendingForces(defendantKingdom);
+        var defenderUnitsBefore = defenders.snapshot();
+        var alliesBefore = defenders.alliedSnapshot();
+        var garrisonsBefore = defenders.garrisons().stream().collect(Collectors.toMap(garrison -> garrison, garrison -> garrison.getUnits().countMilitary()));
 
         processDefenseSalvo(attackerKingdom, defendantKingdom, attack);
         processAttackSalvo(defendantKingdom, attack);
         var attackerArrowLosses = difference(unitsSent, attack.units);
-        var defenderArrowLosses = difference(defenderUnitsBefore, new UnitsMapDto(defendantKingdom.getUnits().getAvailableUnits()));
+        var defenderArrowLosses = difference(defenderUnitsBefore, defenders.snapshot());
         processMelee(attackerKingdom, defendantKingdom, attack);
 
         var attackPower = detailsProvider.getAttackPower(attack.units);
@@ -106,10 +110,11 @@ public class KingdomInteractor implements IKingdomInteractor
         returnSurvivors(attackerKingdom, attack.units);
 
         var report = new BattleReportDto(Id.generate(), Instant.now(), attackerKingdom.getName(), defendantKingdom.getName(), attack.attackType,
-                unitsSent, difference(unitsSent, attack.units), difference(defenderUnitsBefore, new UnitsMapDto(defendantKingdom.getUnits().getAvailableUnits())),
-                attackerArrowLosses, defenderArrowLosses, attackPower, defensePower, attackerWon, landCaptured, plunder);
+                unitsSent, difference(unitsSent, attack.units), difference(defenderUnitsBefore, defenders.snapshot()), attackerArrowLosses, defenderArrowLosses,
+                difference(alliesBefore, defenders.alliedSnapshot()), attackPower, defensePower, attackerWon, landCaptured, plunder);
         warReportRepository.addBattleReport(report);
         notifyAboutBattle(report);
+        notifyGarrisons(report, garrisonsBefore);
 
         kingdomRepository.update(attackerKingdom);
         kingdomRepository.update(defendantKingdom);
@@ -135,6 +140,42 @@ public class KingdomInteractor implements IKingdomInteractor
             notificationSystem.create(report.attacker(), NotificationKind.defeat, Utils.format("Defeat! Our army was repelled by {}", report.defender()));
             notificationSystem.create(report.defender(), NotificationKind.repelled, Utils.format("We repelled an attack from {}", report.attacker()));
         }
+    }
+
+    /**
+     * every ally whose soldiers stood in the battle hears how it went and what it cost them; an emptied garrison is gone
+     */
+    private void notifyGarrisons(BattleReportDto report, Map<KingdomReinforcementEntity, Integer> garrisonsBefore)
+    {
+        garrisonsBefore.forEach((garrison, before) ->
+        {
+            var owner = garrison.getKingdom();
+            var fallen = before - garrison.getUnits().countMilitary();
+            if (report.attackerWon())
+            {
+                notificationSystem.create(owner.getName(), NotificationKind.breached,
+                        Utils.format("{} broke through at {}, where {} of our soldiers fell", report.attacker(), report.defender(), fallen));
+            } else
+            {
+                notificationSystem.create(owner.getName(), NotificationKind.repelled,
+                        Utils.format("Our soldiers at {} helped repel {}, {} of them fell", report.defender(), report.attacker(), fallen));
+            }
+            if (garrison.getUnits().countMilitary() == 0)
+            {
+                garrison.goHome();
+            }
+            kingdomRepository.update(owner);
+        });
+    }
+
+    /**
+     * a garrison sent by an ally has arrived and stands guard
+     */
+    @Override
+    public void reinforcementsArrived(KingdomReinforcementEntity reinforcement)
+    {
+        notificationSystem.create(reinforcement.getHost().getName(), NotificationKind.alliance,
+                Utils.format("{} soldiers from {} now stand guard with us", reinforcement.getUnits().countMilitary(), reinforcement.getKingdom().getName()));
     }
 
     private static UnitsMapDto difference(UnitsMapDto before, UnitsMapDto after)
@@ -243,7 +284,7 @@ public class KingdomInteractor implements IKingdomInteractor
 
     void processDefenseSalvo(KingdomEntity attackerKingdom, KingdomEntity defenderKingdom, KingdomOngoingAttackEntity attack)
     {
-        var defenderBowmenCount = defenderKingdom.getUnits().getAvailableCount(UnitName.bowman);
+        var defenderBowmenCount = new DefendingForces(defenderKingdom).count(UnitName.bowman);
         var attackerUnits = attack.units;
         var attackerUnitsRatios = attack.units.getMilitaryUnitsRatios();
 
@@ -270,20 +311,20 @@ public class KingdomInteractor implements IKingdomInteractor
     void processAttackSalvo(KingdomEntity defendantKingdom, KingdomOngoingAttackEntity attack)
     {
         var attackerBowmenCount = attack.units.getCount(UnitName.bowman);
-        var defenderUnits = defendantKingdom.units;
-        var defenderUnitsRatios = defenderUnits.getAvailableMilitaryUnitsRatios();
+        var defenders = new DefendingForces(defendantKingdom);
+        var defenderUnitsRatios = defenders.militaryRatios();
 
         var bowmenHittingBowmen = (int) Math.ceil(defenderUnitsRatios.get(UnitName.bowman) * attackerBowmenCount);
         var bowmenHittingInfantry = (int) Math.ceil(defenderUnitsRatios.get(UnitName.infantry) * attackerBowmenCount);
         var bowmenHittingCavarly = (int) Math.ceil(defenderUnitsRatios.get(UnitName.cavalry) * attackerBowmenCount);
 
-        var killedDefendingBowmen = Math.min(bowmenHittingBowmen / 3, defenderUnits.getAvailableCount(UnitName.bowman));
-        var killedDefendingInfantry = Math.min(bowmenHittingInfantry / 5, defenderUnits.getAvailableCount(UnitName.infantry));
-        var killedDefendingCavalry = Math.min(bowmenHittingCavarly / 7, defenderUnits.getAvailableCount(UnitName.cavalry));
+        var killedDefendingBowmen = Math.min(bowmenHittingBowmen / 3, defenders.count(UnitName.bowman));
+        var killedDefendingInfantry = Math.min(bowmenHittingInfantry / 5, defenders.count(UnitName.infantry));
+        var killedDefendingCavalry = Math.min(bowmenHittingCavarly / 7, defenders.count(UnitName.cavalry));
 
-        defenderUnits.subtractAvailableCount(UnitName.bowman, killedDefendingBowmen);
-        defenderUnits.subtractAvailableCount(UnitName.infantry, killedDefendingInfantry);
-        defenderUnits.subtractAvailableCount(UnitName.cavalry, killedDefendingCavalry);
+        defenders.lose(UnitName.bowman, killedDefendingBowmen);
+        defenders.lose(UnitName.infantry, killedDefendingInfantry);
+        defenders.lose(UnitName.cavalry, killedDefendingCavalry);
 
         log.info("[KingdomInteractor] Attacker bowmen salvo killed {} bowmen, {} infantry, {} cavalry from defending kingdom {}", killedDefendingBowmen, killedDefendingInfantry, killedDefendingCavalry, defendantKingdom.getName());
     }
@@ -295,21 +336,21 @@ public class KingdomInteractor implements IKingdomInteractor
     void processMelee(KingdomEntity attackerKingdom, KingdomEntity defendantKingdom, KingdomOngoingAttackEntity attack)
     {
         var attackingUnits = attack.units;
-        var defenderUnits = defendantKingdom.units;
+        var defenders = new DefendingForces(defendantKingdom);
         var attackerStrikers = attackingUnits.getCount(UnitName.infantry) + attackingUnits.getCount(UnitName.cavalry);
-        var defenderStrikers = defenderUnits.getAvailableCount(UnitName.infantry) + defenderUnits.getAvailableCount(UnitName.cavalry);
+        var defenderStrikers = defenders.count(UnitName.infantry) + defenders.count(UnitName.cavalry);
         var attackingUnitsRatios = attackingUnits.getMilitaryUnitsRatios();
-        var defenderUnitsRatios = defenderUnits.getAvailableMilitaryUnitsRatios();
+        var defenderUnitsRatios = defenders.militaryRatios();
 
         for (var unit : UnitName.getMilitaryUnits())
         {
             var blowsToFall = meleeBlowsToFall.get(unit);
             var killedAttacking = Math.min((int) Math.ceil(defenderStrikers * attackingUnitsRatios.get(unit)) / blowsToFall, attackingUnits.getCount(unit));
-            var killedDefending = Math.min((int) Math.ceil(attackerStrikers * defenderUnitsRatios.get(unit)) / blowsToFall, defenderUnits.getAvailableCount(unit));
+            var killedDefending = Math.min((int) Math.ceil(attackerStrikers * defenderUnitsRatios.get(unit)) / blowsToFall, defenders.count(unit));
 
             attackingUnits.subtractCount(unit, killedAttacking);
             attackerKingdom.getUnits().subtractMobileCount(unit, killedAttacking);
-            defenderUnits.subtractAvailableCount(unit, killedDefending);
+            defenders.lose(unit, killedDefending);
         }
     }
 }

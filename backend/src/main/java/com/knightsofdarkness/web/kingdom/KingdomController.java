@@ -31,6 +31,8 @@ import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.web.common.kingdom.SendAttackResult;
 import com.knightsofdarkness.web.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.web.common.kingdom.SendCarriersResult;
+import com.knightsofdarkness.web.common.kingdom.SendReinforcementsDto;
+import com.knightsofdarkness.web.common.kingdom.SendReinforcementsResult;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingEntity;
 import com.knightsofdarkness.web.user.UserData;
@@ -279,6 +281,34 @@ public class KingdomController
         }
 
         return kingdomService.withdrawAttack(currentUser.getKingdomName(), attackId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping(value = "/send-reinforcements")
+    ResponseEntity<SendReinforcementsResult> kingdomSendReinforcements(@AuthenticationPrincipal UserData currentUser, @RequestBody SendReinforcementsDto order)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.sendReinforcements(currentUser.getKingdomName(), order)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping(value = "/recall-reinforcements")
+    ResponseEntity<Boolean> kingdomRecallReinforcements(@AuthenticationPrincipal UserData currentUser, @RequestBody UUID reinforcementId)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return kingdomService.recallReinforcements(currentUser.getKingdomName(), reinforcementId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

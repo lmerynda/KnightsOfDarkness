@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.jayway.jsonpath.JsonPath;
 import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.round.RoundService;
@@ -229,5 +230,54 @@ class KingdomApiTest {
         mockMvc.perform(get("/kingdom/details").header("Authorization", "Bearer " + token)).andExpect(status().isOk());
 
         assertEquals(before, version());
+    }
+
+    private String register(String name) throws Exception
+    {
+        var email = "api-" + System.nanoTime() + "@example.com";
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"" + email + "\",\"kingdomName\":\"" + name + "\",\"password\":\"long-enough-password\"}"))
+                .andExpect(status().isOk());
+        var response = mockMvc.perform(post("/auth/authenticate").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"" + email + "\",\"password\":\"long-enough-password\"}")).andReturn().getResponse().getContentAsString();
+        return JsonPath.read(response, "$.token");
+    }
+
+    @Test
+    void reinforcements_shouldStandGuardWithAnAllyAndComeHomeOnRecall() throws Exception
+    {
+        var hostName = "Host " + (System.nanoTime() % 1000000);
+        var hostToken = register(hostName);
+        var allianceName = "Pact " + (System.nanoTime() % 1000000);
+        postJson("/alliance/create", "{\"name\":\"" + allianceName + "\"}").andExpect(jsonPath("$.success").value(true));
+        postJson("/alliance/invite", "{\"kingdomName\":\"" + hostName + "\",\"allianceName\":\"" + allianceName + "\"}").andExpect(jsonPath("$.success").value(true));
+        var invitations = mockMvc.perform(get("/alliance/invitations").header("Authorization", "Bearer " + hostToken)).andReturn().getResponse().getContentAsString();
+        String invitationId = JsonPath.read(invitations, "$[0].id");
+        mockMvc.perform(post("/alliance/accept").header("Authorization", "Bearer " + hostToken).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"invitationId\":\"" + invitationId + "\"}")).andExpect(jsonPath("$.success").value(true));
+        var kingdom = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
+        kingdom.getUnits().addAvailableCount(UnitName.infantry, 20);
+        kingdomRepository.update(kingdom);
+
+        postJson("/kingdom/send-reinforcements", "{\"hostKingdomName\":\"" + hostName + "\",\"units\":{\"infantry\":15}}").andExpect(jsonPath("$.success").value(true));
+        for (int turn = 0; turn < gameConfig.common().turnsToReinforce(); turn++)
+        {
+            postJson("/kingdom/pass-turn", "0").andExpect(jsonPath("$.success").value(true));
+        }
+
+        mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + hostToken))
+                .andExpect(jsonPath("$.garrisons[0].from").value(kingdomName))
+                .andExpect(jsonPath("$.garrisons[0].turnsLeft").value(0))
+                .andExpect(jsonPath("$.garrisons[0].units.infantry").value(15));
+        var sent = mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + token)).andReturn().getResponse().getContentAsString();
+        String reinforcementId = JsonPath.read(sent, "$.reinforcements[0].id");
+
+        postJson("/kingdom/recall-reinforcements", "\"" + reinforcementId + "\"").andExpect(status().isOk());
+
+        mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + token))
+                .andExpect(jsonPath("$.reinforcements.length()").value(0))
+                .andExpect(jsonPath("$.units.availableUnits.infantry").value(20))
+                .andExpect(jsonPath("$.units.mobileUnits.infantry").value(0));
+        mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + hostToken)).andExpect(jsonPath("$.garrisons.length()").value(0));
     }
 }

@@ -55,9 +55,28 @@ public class KingdomTurnAction {
         getNewPeople();
         processCarriersOnTheMove();
         processAttacks();
+        processReinforcements();
 
         kingdom.lastTurnReport = results;
         return KingdomPassTurnActionResult.success("Turn passed", results);
+    }
+
+    /**
+     * soldiers on their way to an ally come one step closer, and stand guard once there
+     */
+    private void processReinforcements()
+    {
+        for (var reinforcement : List.copyOf(kingdom.getReinforcements()))
+        {
+            if (reinforcement.turnsLeft > 0)
+            {
+                reinforcement.turnsLeft--;
+                if (reinforcement.isStanding())
+                {
+                    kingdomInteractor.reinforcementsArrived(reinforcement);
+                }
+            }
+        }
     }
 
     private void processAttacks()

@@ -166,7 +166,8 @@
         "maxNotificationsCount": 15,
         "turnsToDeliverResources": 2,
         "kingdomBaseHousingCapacity": 30,
-        "allianceMaxMembers": 10
+        "allianceMaxMembers": 10,
+        "turnsToReinforce": 2
     },
     "attack": {
         "turnsToArrive": 4,

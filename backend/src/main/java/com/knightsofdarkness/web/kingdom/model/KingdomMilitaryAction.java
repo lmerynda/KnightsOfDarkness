@@ -3,6 +3,8 @@ package com.knightsofdarkness.web.kingdom.model;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.web.common.kingdom.SendAttackResult;
+import com.knightsofdarkness.web.common.kingdom.SendReinforcementsDto;
+import com.knightsofdarkness.web.common.kingdom.SendReinforcementsResult;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
@@ -95,6 +97,59 @@ public class KingdomMilitaryAction {
         }
 
         return null;
+    }
+
+    /**
+     * soldiers leave home to stand guard in an ally's kingdom; they arrive after a few of our turns and stay ours
+     */
+    public SendReinforcementsResult sendReinforcements(SendReinforcementsDto order, KingdomEntity host)
+    {
+        if (host.getName().equals(kingdom.getName()))
+        {
+            return SendReinforcementsResult.failure("Your soldiers already stand guard at home");
+        }
+        var ownAlliance = kingdom.getAlliance();
+        var hostAlliance = host.getAlliance();
+        if (ownAlliance.isEmpty() || hostAlliance.isEmpty() || !ownAlliance.get().getName().equals(hostAlliance.get().getName()))
+        {
+            return SendReinforcementsResult.failure("Soldiers stand guard only with allies");
+        }
+
+        var army = new UnitsMapDto();
+        for (var unit : UnitName.getMilitaryUnits())
+        {
+            var count = order.units().getCount(unit);
+            if (count < 0)
+            {
+                return SendReinforcementsResult.failure(Utils.format("Cannot send a negative number of {}", unit));
+            }
+            if (count > kingdom.getUnits().getAvailableCount(unit))
+            {
+                return SendReinforcementsResult.failure(Utils.format("Not enough {} at home", unit));
+            }
+            army.setCount(unit, count);
+        }
+        if (army.countMilitary() <= 0)
+        {
+            return SendReinforcementsResult.failure("Send at least one soldier");
+        }
+
+        for (var unit : UnitName.getMilitaryUnits())
+        {
+            kingdom.getUnits().moveAvailableToMobile(unit, army.getCount(unit));
+        }
+        var reinforcement = new KingdomReinforcementEntity(Id.generate(), kingdom, host, gameConfig.common().turnsToReinforce(), army);
+        kingdom.getReinforcements().add(reinforcement);
+        host.getGarrisons().add(reinforcement);
+        return SendReinforcementsResult.success(Utils.format("{} soldiers march to stand guard in {}", army.countMilitary(), host.getName()));
+    }
+
+    /**
+     * the soldiers come home at once
+     */
+    public void recallReinforcements(KingdomReinforcementEntity reinforcement)
+    {
+        reinforcement.goHome();
     }
 
     public void withdrawAttack(KingdomOngoingAttackEntity ongoingAttack)

@@ -28,6 +28,8 @@ import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.web.common.kingdom.SendAttackResult;
 import com.knightsofdarkness.web.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.web.common.kingdom.SendCarriersResult;
+import com.knightsofdarkness.web.common.kingdom.SendReinforcementsDto;
+import com.knightsofdarkness.web.common.kingdom.SendReinforcementsResult;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.game.config.GameConfig;
@@ -388,6 +390,51 @@ public class KingdomService
         }
 
         return Optional.of(result);
+    }
+
+    @Transactional
+    public Optional<SendReinforcementsResult> sendReinforcements(String kingdomName, SendReinforcementsDto order)
+    {
+        log.info("[{}] sending reinforcements to {}", kingdomName, order.hostKingdomName());
+        var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            return Optional.empty();
+        }
+        var maybeHost = kingdomRepository.getKingdomByName(order.hostKingdomName());
+        if (maybeHost.isEmpty())
+        {
+            return Optional.of(SendReinforcementsResult.failure("No such kingdom"));
+        }
+
+        var kingdom = maybeKingdom.get();
+        var result = new KingdomMilitaryAction(kingdom, gameConfig).sendReinforcements(order, maybeHost.get());
+        if (result.success())
+        {
+            kingdomRepository.update(kingdom);
+        }
+        return Optional.of(result);
+    }
+
+    @Transactional
+    public Optional<Boolean> recallReinforcements(String kingdomName, UUID reinforcementId)
+    {
+        log.info("[{}] recalling reinforcements {}", kingdomName, reinforcementId);
+        var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        if (maybeKingdom.isEmpty())
+        {
+            return Optional.empty();
+        }
+        var kingdom = maybeKingdom.get();
+        var reinforcement = kingdom.getReinforcements().stream().filter(candidate -> candidate.getId().equals(reinforcementId)).findFirst();
+        if (reinforcement.isEmpty())
+        {
+            return Optional.empty();
+        }
+
+        new KingdomMilitaryAction(kingdom, gameConfig).recallReinforcements(reinforcement.get());
+        kingdomRepository.update(kingdom);
+        return Optional.of(true);
     }
 
     @Transactional

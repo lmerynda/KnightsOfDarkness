@@ -21,6 +21,8 @@ public class KingdomDto
     public List<OngoingAttackDto> ongoingAttacks;
     public Optional<String> allianceName;
     public int protectionTicks;
+    public List<ReinforcementDto> reinforcements = new ArrayList<>();
+    public List<ReinforcementDto> garrisons = new ArrayList<>();
 
     public KingdomDto()
     {

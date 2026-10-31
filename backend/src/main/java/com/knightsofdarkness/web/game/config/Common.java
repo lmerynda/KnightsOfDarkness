@@ -12,5 +12,6 @@ public record Common(
         int maxNotificationsCount,
         int turnsToDeliverResources,
         int kingdomBaseHousingCapacity,
-        int allianceMaxMembers) {
+        int allianceMaxMembers,
+        int turnsToReinforce) {
 }

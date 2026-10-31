@@ -52,6 +52,18 @@ public class KingdomEntity
     @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
     List<KingdomOngoingAttackEntity> ongoingAttacks;
 
+    /**
+     * our soldiers on the way to, or standing guard in, allied kingdoms
+     */
+    @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<KingdomReinforcementEntity> reinforcements = new ArrayList<>();
+
+    /**
+     * allied soldiers on the way to, or standing guard in, this kingdom
+     */
+    @OneToMany(mappedBy = "host")
+    List<KingdomReinforcementEntity> garrisons = new ArrayList<>();
+
     @Embedded
     KingdomUnitsEntity units;
 
@@ -99,6 +111,8 @@ public class KingdomEntity
         Optional<String> allianceName = alliance != null ? Optional.of(alliance.getName()) : Optional.empty();
         var dto = new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), new ArrayList<>(), specialBuildings, lastTurnReport, carriersOnTheMove, ongoingAttacks, allianceName);
         dto.protectionTicks = protectionTicks;
+        dto.reinforcements = reinforcements.stream().map(KingdomReinforcementEntity::toDto).toList();
+        dto.garrisons = garrisons.stream().map(KingdomReinforcementEntity::toDto).toList();
         return dto;
     }
 
@@ -144,6 +158,8 @@ public class KingdomEntity
         specialBuildings.clear();
         carriersOnTheMove.clear();
         ongoingAttacks.clear();
+        reinforcements.clear();
+        garrisons.clear();
         lastTurnReport = new KingdomTurnReport();
     }
 
@@ -214,8 +230,42 @@ public class KingdomEntity
     public void removeAlliance()
     {
         assert this.alliance != null;
+        sendGarrisonsHome();
         this.alliance.getKingdoms().remove(this);
         this.alliance = null;
+    }
+
+    /**
+     * soldiers stand guard only between allies: ours abroad and allies' here all go home
+     */
+    void sendGarrisonsHome()
+    {
+        for (var reinforcement : List.copyOf(reinforcements))
+        {
+            reinforcement.goHome();
+        }
+        for (var garrison : List.copyOf(garrisons))
+        {
+            garrison.goHome();
+        }
+    }
+
+    public List<KingdomReinforcementEntity> getReinforcements()
+    {
+        return reinforcements;
+    }
+
+    public List<KingdomReinforcementEntity> getGarrisons()
+    {
+        return garrisons;
+    }
+
+    /**
+     * allied soldiers that have arrived and fight beside this kingdom's own
+     */
+    public List<KingdomReinforcementEntity> getStandingGarrisons()
+    {
+        return garrisons.stream().filter(KingdomReinforcementEntity::isStanding).toList();
     }
 
     public Optional<AllianceEntity> getAlliance()

@@ -19,6 +19,8 @@ public record BattleReportDto(
         UnitsMapDto defenderLosses,
         UnitsMapDto attackerArrowLosses,
         UnitsMapDto defenderArrowLosses,
+        /** the part of the defender's losses that fell on allied garrisons */
+        UnitsMapDto alliedLosses,
         double attackPower,
         double defensePower,
         boolean attackerWon,

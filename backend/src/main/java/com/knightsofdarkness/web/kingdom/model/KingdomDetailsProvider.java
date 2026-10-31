@@ -42,13 +42,17 @@ public class KingdomDetailsProvider {
     }
 
     /**
-     * troops and guards at home, strengthened by towers (capped) and castles
+     * troops and guards at home and allied garrisons standing with them, strengthened by towers (capped) and castles
      */
     public double getDefensePower(KingdomEntity kingdom)
     {
         var attackConfig = config.attack();
         var units = kingdom.getUnits();
         var basePower = UnitName.getMilitaryUnits().stream().mapToDouble(unit -> units.getAvailableCount(unit) * attackConfig.getDefensePower(unit)).sum();
+        for (var garrison : kingdom.getStandingGarrisons())
+        {
+            basePower += UnitName.getMilitaryUnits().stream().mapToDouble(unit -> garrison.getUnits().getCount(unit) * attackConfig.getDefensePower(unit)).sum();
+        }
         basePower += units.getAvailableCount(UnitName.guard) * attackConfig.getDefensePower(UnitName.guard);
 
         var buildings = kingdom.getBuildings();
