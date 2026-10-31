@@ -161,7 +161,10 @@ test("letters reach the other kingdom", async ({ page }) => {
   await signIn(page, "umbar", "umbar_password");
   await expect(page.getByRole("link", { name: /Letters/ }).locator(".badge")).toBeVisible();
   await goTo(page, "Letters");
-  await page.getByRole("button", { name: new RegExp(sender.kingdomName) }).first().click();
+  await page
+    .getByRole("button", { name: new RegExp(sender.kingdomName) })
+    .first()
+    .click();
   await expect(page.locator(".letter-body")).toContainText(body);
 });
 
