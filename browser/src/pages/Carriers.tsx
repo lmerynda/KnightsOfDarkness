@@ -47,7 +47,7 @@ export const Carriers: React.FC = () => {
       <div className="stack">
         <Panel
           title="Send goods"
-          lede={`You have ${plural(carriers, "carrier", "carriers")} at home. Each carries ${config.carrierCapacity.food} food or ${config.carrierCapacity.iron} iron, tools or weapons.`}
+          lede={`You have ${plural(carriers, "carrier", "carriers")} at home. Each carries ${config.carrierCapacity.food} food or ${config.carrierCapacity.iron} iron, tools or weapons.${carriers === 0 ? " Carriers live in markets: raise a market, then train them." : ""}`}
         >
           <div className="row">
             <label className="field" style={{ minWidth: 240 }}>
