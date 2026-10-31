@@ -135,6 +135,11 @@ export const Train: React.FC = () => {
                       <h3>{unitLore[unit].label}</h3>
                       <div className="facts">
                         <span>{production ?? unitLore[unit].duty}</span>
+                        {config.attack.unitDefensePower[unit] !== undefined ? (
+                          <span>
+                            Attack {config.attack.unitAttackPower[unit] ?? 0}, defense {config.attack.unitDefensePower[unit]}
+                          </span>
+                        ) : null}
                         {away > 0 ? <span className="warning">{formatNumber(away)} away from home</span> : null}
                         {home ? (
                           <span>
