@@ -1,4 +1,4 @@
-import type { BuildingName, GameConfig, Kingdom, KingdomDetails, TurnReport, UnitName } from "../api/types";
+import type { BuildingName, GameConfig, Kingdom, KingdomDetails, TurnReport, UnitName, WarRoom } from "../api/types";
 import { militaryUnits } from "../api/types";
 import { formatNumber, plural, signed } from "../ui/format";
 import { unitHome } from "./rules";
@@ -29,7 +29,17 @@ const acresFor = (land: number, gold: number): number => {
  * what a steward would tell the ruler this turn, most pressing first; every line is read from the kingdom and the
  * server's forecast of the next turn
  */
-export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameConfig, weaponsPercentage: number, limit = 4): Counsel[] => {
+/** what a ruler in an alliance knows about the coalition: who the allies are and the war room */
+export type Coalition = { allies: string[]; warRoom: WarRoom };
+
+export const counsel = (
+  kingdom: Kingdom,
+  details: KingdomDetails,
+  config: GameConfig,
+  weaponsPercentage: number,
+  coalition?: Coalition,
+  limit = 4,
+): Counsel[] => {
   const lines: Counsel[] = [];
   const resources = kingdom.resources;
   const forecast = details.forecast;
@@ -75,6 +85,28 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
       text: `${plural(freeLand, "acre stands", "acres stand")} empty, and this turn's ${formatNumber(resources.buildingPoints)} building points are lost when it passes.`,
       link: { to: "/kingdom/build", label: "Build" },
     });
+  }
+  const soldiersHome = militaryUnits.reduce((sum, unit) => sum + kingdom.units.availableUnits[unit], 0);
+  if (coalition && soldiersHome > 0) {
+    const guarded = new Set(kingdom.reinforcements.map(sent => sent.to));
+    const beaten = coalition.warRoom.battles.find(
+      battle => battle.attackerWon && coalition.allies.includes(battle.defender) && !guarded.has(battle.defender),
+    );
+    if (beaten) {
+      lines.push({
+        urgent: false,
+        text: `${beaten.attacker} broke through at ${beaten.defender}. Soldiers standing guard there make the next attack cost more.`,
+        link: { to: "/kingdom/war", label: "Stand guard" },
+      });
+    }
+    const strike = coalition.warRoom.marching.find(march => march.from !== kingdom.name);
+    if (strike) {
+      lines.push({
+        urgent: false,
+        text: `${strike.from} marches on ${strike.to}, arriving in ${plural(strike.turnsLeft, "of their turns", "of their turns")}. Armies that land together strike together.`,
+        link: { to: "/kingdom/war", label: "Join the strike" },
+      });
+    }
   }
   if (resources.unemployed > 0 && freeWorkplaces > 0) {
     lines.push({

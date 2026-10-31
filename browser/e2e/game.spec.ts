@@ -273,7 +273,19 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await expect(toast(squirePage, `The army marches on ${target}`)).toBeVisible();
   await squirePage.close();
 
+  // the steward points an emperor with soldiers at home to the strike
   await goTo(emperorPage, "Overview");
+  const emperorPassed = emperorPage.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
+  await emperorPage.getByRole("button", { name: "Pass 5 turns" }).click();
+  await emperorPassed;
+  await expect(toast(emperorPage, /5 turns have passed/)).toBeVisible();
+  await goTo(emperorPage, "Train");
+  await emperorPage.getByLabel("Infantry to train", { exact: true }).fill("10");
+  await emperorPage.getByRole("button", { name: "Train them" }).click();
+  await expect(toast(emperorPage, "Trained 10 recruits")).toBeVisible();
+  await goTo(emperorPage, "Overview");
+  await expect(emperorPage.locator(".counsel")).toContainText(`${squire.kingdomName} marches on ${target}`);
+
   await goTo(emperorPage, "Alliance");
   await expect(emperorPage.getByRole("heading", { name: "War room" })).toBeVisible();
   await expect(emperorPage.locator("main")).toContainText(`${squire.kingdomName} → ${target}`);

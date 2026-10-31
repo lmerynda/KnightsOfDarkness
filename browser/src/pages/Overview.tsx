@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
-import type { Notification, ResourceName, TurnReport, UnitName } from "../api/types";
+import type { Notification, ResourceName, TurnReport, UnitName, WarRoom } from "../api/types";
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
 import { counsel } from "../game/advice";
@@ -285,8 +285,19 @@ const RecentChronicle: React.FC = () => {
 };
 
 const Counsel: React.FC = () => {
-  const { kingdom, details, config, weaponsPercentage } = useGame();
-  const lines = counsel(kingdom, details, config, weaponsPercentage);
+  const { kingdom, details, config, weaponsPercentage, rankings } = useGame();
+  const [warRoom, setWarRoom] = useState<WarRoom | undefined>(undefined);
+  useEffect(() => {
+    if (!kingdom.allianceName) return;
+    api
+      .warRoom()
+      .then(setWarRoom)
+      .catch(() => undefined);
+  }, [kingdom]);
+  const allies = (rankings?.kingdoms ?? [])
+    .filter(rank => kingdom.allianceName && rank.allianceName === kingdom.allianceName && rank.kingdomName !== kingdom.name)
+    .map(rank => rank.kingdomName);
+  const lines = counsel(kingdom, details, config, weaponsPercentage, warRoom && kingdom.allianceName ? { allies, warRoom } : undefined);
   if (!lines.length) return null;
   return (
     <Panel title="Your steward advises">
