@@ -1,5 +1,11 @@
 # What is left
 
+## Coalitions
+
+1. Coalitions of ten measured on 2026-10-31 (`npm run coalitions`, 150 turns, three groups of 5 economists, 3 warlords and 2 turtles, before garrisons existed): the coalition whose warlords strike together ended at 15,973 acres, an uncoordinated coalition at 14,473, ten unallied kingdoms at 13,929. Coordinated strikes win fewer but bigger battles (168 acres per victory against 93); being allied mostly helps by leaving fewer enemies. Both edges are real but modest.
+1. Decide whether allies may send gold. Carriers move food, iron, tools and weapons to anyone, but gold, which is what an army costs (15,000 a soldier), cannot travel, so a coalition's economists cannot fund its warlords except through the market. Sending gold between allies would make the roles inside a coalition real, at the cost of letting a second account feed a main one.
+1. Real players time strikes by passing turns: an army lands after four of its owner's turns, so allies landing together must pass turns together. The war room shows each army's turns left; nothing else helps them meet.
+
 ## Game
 
 1. Building points come in abundance (a new kingdom gets 100,000 a turn for 41 free acres); their lasting use is the great works. Measured on 2026-10-31: at the old prices every simulated ruler maxed all five great works within 120 turns of a 4,320-turn round, so the prices are now ten times higher and the works stay a goal for most of a round. Cutting builder output alone (to a tenth or a fifth) changed little.
@@ -17,4 +23,3 @@
 
 1. Trial play with only a kingdom name.
 1. Profession profiles that suggest what to build and train.
-1. Random events.
