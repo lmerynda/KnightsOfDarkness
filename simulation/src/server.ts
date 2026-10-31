@@ -47,17 +47,29 @@ const freePort = (): Promise<number> =>
     });
   });
 
-/** builds the server jar when it is missing, KOD_SERVER_JAR points at a prebuilt one */
+let jarBuilt = false;
+
+/**
+ * brings the server jar up to date with the backend sources once per process (Gradle skips the work when nothing
+ * changed), KOD_SERVER_JAR points at a prebuilt one instead
+ */
 const serverJar = (): string => {
-  const jar = process.env.KOD_SERVER_JAR ?? defaultJar;
-  if (!existsSync(jar)) {
+  const prebuilt = process.env.KOD_SERVER_JAR;
+  if (prebuilt) {
+    if (!existsSync(prebuilt)) {
+      throw new Error(`KOD_SERVER_JAR points at a missing file: ${prebuilt}`);
+    }
+    return prebuilt;
+  }
+  if (!jarBuilt) {
     const gradle = process.platform === "win32" ? ".\\gradlew.bat" : "./gradlew";
     const build = spawnSync(gradle, ["bootJar", "--console=plain", "-q"], { cwd: backend, stdio: "inherit", shell: process.platform === "win32" });
-    if (build.status !== 0 || !existsSync(jar)) {
-      throw new Error(`Could not build the server jar at ${jar}`);
+    if (build.status !== 0 || !existsSync(defaultJar)) {
+      throw new Error(`Could not build the server jar at ${defaultJar}`);
     }
+    jarBuilt = true;
   }
-  return jar;
+  return defaultJar;
 };
 
 const waitUntilReady = async (url: string, process: ChildProcess, output: () => string): Promise<void> => {

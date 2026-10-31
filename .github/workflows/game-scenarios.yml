@@ -33,13 +33,11 @@ jobs:
           node-version: "24.22.0"
           cache: "npm"
           cache-dependency-path: ./simulation/package-lock.json
-      - name: Build the server jar
-        run: ./gradlew --no-daemon bootJar
-        working-directory: backend
       - run: npm ci
         working-directory: simulation
       - run: npm run typecheck
         working-directory: simulation
+      # the harness builds the server jar itself
       - name: Simulate worlds
         run: npm test
         working-directory: simulation

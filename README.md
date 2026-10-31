@@ -53,7 +53,7 @@ cd browser && npm run test:e2e
 
 ## Simulate worlds
 
-`simulation/` drives the game through its HTTP edge only, so the server can be rebalanced or rewritten underneath it. It starts the shipped server jar (building it when missing) in the `simulation` profile, where the wall clock is off and time moves only through `POST /simulation/advance`. Kingdoms are founded through the public sign-up and played by scripted rulers: `economist`, `warlord`, `turtle` and `idle`.
+`simulation/` drives the game through its HTTP edge only, so the server can be rebalanced or rewritten underneath it. It brings the shipped server jar up to date with the backend sources and starts it in the `simulation` profile, where the wall clock is off and time moves only through `POST /simulation/advance`. Kingdoms are founded through the public sign-up and played by scripted rulers: `economist`, `warlord`, `turtle` and `idle`.
 
 ```bash
 cd simulation && npm install && npm test
