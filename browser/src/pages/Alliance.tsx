@@ -249,6 +249,23 @@ const WarRoomPanel: React.FC = () => {
               ))}
             </ul>
           )}
+          <h3 className="section-title small">Standing guard</h3>
+          {warRoom.guards.length === 0 ? (
+            <p className="muted">No ally keeps soldiers with another.</p>
+          ) : (
+            <ul className="plain-list">
+              {warRoom.guards.map(guard => (
+                <li key={guard.id}>
+                  <span>
+                    {guard.from} → <strong>{guard.to}</strong>, {plural(soldiers(guard.units), "soldier", "soldiers")}
+                  </span>
+                  <span className="muted">
+                    {guard.turnsLeft > 0 ? `arrive in ${plural(guard.turnsLeft, "turn", "turns")}` : "standing"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
           <h3 className="section-title small">Recent battles</h3>
           {warRoom.battles.length === 0 ? (
             <p className="muted">No battles yet.</p>

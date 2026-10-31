@@ -228,6 +228,8 @@ test("an ally's soldiers stand guard and go home when called", async ({ page, br
   await goTo(page, "Overview");
   await goTo(page, "Army");
   await expect(page.locator("main")).toContainText(`10 infantry from ${squire.kingdomName} stand guard with us`);
+  await goTo(page, "Alliance");
+  await expect(page.locator("main")).toContainText(`${squire.kingdomName} → ${emperor.kingdomName}, 10 soldiers`);
 
   await squirePage.getByRole("button", { name: "Call home" }).click();
   await expect(toast(squirePage, "Our soldiers are home again")).toBeVisible();

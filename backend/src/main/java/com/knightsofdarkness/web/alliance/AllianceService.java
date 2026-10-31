@@ -36,6 +36,7 @@ import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomOngoingAttackEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomReinforcementEntity;
 import com.knightsofdarkness.web.messaging.INotificationSystem;
 import com.knightsofdarkness.web.utils.Id;
 import com.knightsofdarkness.web.war.IWarReportRepository;
@@ -353,6 +354,7 @@ public class AllianceService {
         }
         var intel = freshest.values().stream().sorted(Comparator.comparing(SpyReportDto::date).reversed()).toList();
         var recentBattles = battles.values().stream().sorted(Comparator.comparing(BattleReportDto::date).reversed()).limit(warRoomReportsPerMember).toList();
-        return Optional.of(new AllianceWarRoomDto(marching, intel, recentBattles));
+        var guards = members.stream().flatMap(member -> member.getReinforcements().stream()).map(KingdomReinforcementEntity::toDto).toList();
+        return Optional.of(new AllianceWarRoomDto(marching, guards, intel, recentBattles));
     }
 }
