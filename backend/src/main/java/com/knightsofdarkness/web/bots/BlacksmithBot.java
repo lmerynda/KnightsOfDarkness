@@ -89,7 +89,7 @@ public class BlacksmithBot extends Bot
 
         if (toolsAmount > 0)
         {
-            market.createOffer(kingdom.getName(), MarketResource.tools, (int) (toolsAmount * percentage), runPricingAlgorithm());
+            botFunctions.postOffer(kingdom, market, MarketResource.tools, (int) (toolsAmount * percentage), runPricingAlgorithm());
         }
 
         return toolsAmount;

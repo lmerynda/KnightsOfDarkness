@@ -12,5 +12,6 @@ public record GameConfig(
         CarrierCapacity carrierCapacity,
         Attack attack,
         Espionage espionage,
-        Round round) {
+        Round round,
+        Bots bots) {
 }

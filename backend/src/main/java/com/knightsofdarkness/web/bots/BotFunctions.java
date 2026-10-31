@@ -101,13 +101,38 @@ public final class BotFunctions
     {
         var unusedLand = kingdom.getUnusedLand();
         assert unusedLand >= 0;
-        if (unusedLand < count)
+        var landBelowCap = gameConfig.bots().maxLand() - kingdom.getResources().getCount(ResourceName.land);
+        if (unusedLand < count && landBelowCap > 0)
         {
             var action = new KingdomOtherAction(kingdom);
-            return action.buyLand(count).amount();
+            return action.buyLand(Math.min(count, landBelowCap)).amount();
         }
 
         return 0;
+    }
+
+    public void postOffer(KingdomEntity kingdom, IMarket market, MarketResource resource, int amount, int price)
+    {
+        var amountToOffer = Math.min(amount, gameConfig.bots().getMaxOffer(resource));
+        if (amountToOffer > 0)
+        {
+            market.createOffer(kingdom.getName(), resource, amountToOffer, price);
+        }
+    }
+
+    /**
+     * stores above the cap are shipped to distant markets, so a bot is never a bottomless prize for plunder
+     */
+    public static void shipSurplusAway(KingdomEntity kingdom, GameConfig gameConfig)
+    {
+        for (var resource : ResourceName.values())
+        {
+            var cap = gameConfig.bots().getMaxStock(resource);
+            if (kingdom.getResources().getCount(resource) > cap)
+            {
+                kingdom.getResources().setCount(resource, cap);
+            }
+        }
     }
 
     public int buildSpecialistBuilding(KingdomEntity kingdom, BuildingName building, int count)

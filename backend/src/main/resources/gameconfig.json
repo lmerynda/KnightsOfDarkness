@@ -205,5 +205,21 @@
     },
     "round": {
         "lengthInTicks": 4320
+    },
+    "bots": {
+        "maxLand": 400,
+        "maxStock": {
+            "gold": 1000000,
+            "food": 150000,
+            "iron": 20000,
+            "tools": 20000,
+            "weapons": 20000
+        },
+        "maxOffer": {
+            "food": 50000,
+            "iron": 5000,
+            "tools": 3000,
+            "weapons": 3000
+        }
     }
 }

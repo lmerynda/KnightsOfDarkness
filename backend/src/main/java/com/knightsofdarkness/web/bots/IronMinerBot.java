@@ -70,7 +70,7 @@ public class IronMinerBot extends Bot
 
         if (ironAmount > 0)
         {
-            market.createOffer(kingdom.getName(), MarketResource.iron, ironAmount, 25);
+            botFunctions.postOffer(kingdom, market, MarketResource.iron, ironAmount, 25);
         }
 
         return ironAmount;

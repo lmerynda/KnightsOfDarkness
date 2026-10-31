@@ -38,6 +38,7 @@ public class BotsRunner {
 
         botToRun.doAllActions();
         botToRun.passTurn();
+        BotFunctions.shipSurplusAway(kingdom, gameConfig);
         kingdomRepository.update(kingdom);
     }
 }
