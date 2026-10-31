@@ -6,7 +6,24 @@ import { join, basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
-const scenes = ["hero", "overview", "war", "marketplace", "alliance", "rankings", "messages", "spies", "transfers", "login", "aftermath", "victory"];
+const scenes = [
+  "hero",
+  "realmHamlet",
+  "realmTown",
+  "realmCity",
+  "realmCitadel",
+  "war",
+  "marketplace",
+  "alliance",
+  "rankings",
+  "messages",
+  "spies",
+  "transfers",
+  "login",
+  "defeat",
+  "breached",
+  "victory",
+];
 const source = process.argv[2];
 if (!source) {
   console.error("Usage: node art/process.mjs <directory with generated pngs>");

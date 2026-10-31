@@ -19,7 +19,10 @@ Scene images (banners) add:
 | file | prompt |
 |---|---|
 | hero | A lone fortified castle on a craggy hill at dusk, torches burning on the walls, tattered banners in the wind, a winding road with a few riders approaching, distant dark storm clouds over the western horizon |
-| overview | A walled medieval town seen from a hill at twilight, thatched houses, fields and a keep, chimney smoke and warm windows |
+| realmHamlet | A small frontier hamlet in a forest clearing at twilight, a handful of thatched huts behind a wooden palisade, a single watch fire, freshly cleared tree stumps and muddy fields |
+| realmTown | A growing market town on a river at twilight, timber houses crowding inside a new stone wall, a stone church tower, a mill wheel and barges, fields stretching to the hills |
+| realmCity | A great walled city seen from a hill at twilight, double rings of towered walls, a cathedral and a strong keep, thousands of warm windows, roads with caravans leading to the gates |
+| realmCitadel | The seat of a mighty realm at twilight, a vast citadel of black stone crowning a mountain above a sprawling city, banners on every tower, beacon fires on distant hills marking its borders |
 | war | Two armies facing each other across a misty field at dawn, spears and banners, cavalry on the flank, archers on a ridge |
 | marketplace | A crowded medieval market square at evening under lanterns, stalls with grain sacks, iron bars, crates of tools |
 | alliance | A torchlit stone council hall with a long oak table, several lords standing around a map, banners of different houses on the walls |
@@ -28,7 +31,8 @@ Scene images (banners) add:
 | spies | A hooded figure on a rooftop at night watching a lit castle courtyard below, moonlight through clouds |
 | transfers | A train of laden carriers and a mule cart crossing a stone bridge in fog, carrying sacks and crates |
 | login | A massive iron-bound castle gate at night, two braziers burning on either side, mist on the ground |
-| aftermath | The aftermath of a battle at dusk, broken lances and torn banners in the mud, crows circling, a few survivors walking away |
+| defeat | A beaten army retreating in the rain at dusk, wounded soldiers carried on shields, a torn banner dragged through the mud, the enemy fortress still standing behind them with torches on its walls |
+| breached | A breached town wall at night, a gap in the stones with rubble and smoke, enemy banners pouring through, burning roofs behind, villagers fleeing with carts |
 | victory | A victorious lord raising a great banner atop castle walls at sunrise, soldiers cheering below, golden light breaking through clouds |
 
 ## Buildings (1024x1024, vignette)
