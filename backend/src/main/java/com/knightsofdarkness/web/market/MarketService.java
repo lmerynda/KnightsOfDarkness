@@ -38,15 +38,6 @@ public class MarketService
     }
 
     @Transactional
-    public void createOffers(List<MarketOfferDto> offers)
-    {
-        for (var offer : offers)
-        {
-            market.createOffer(offer.sellerName(), offer.resource(), offer.count(), offer.price());
-        }
-    }
-
-    @Transactional
     public CreateMarketOfferResult createOffer(MarketOfferDto offer, String sellerName)
     {
         log.info("Creating new offer {}", offer);

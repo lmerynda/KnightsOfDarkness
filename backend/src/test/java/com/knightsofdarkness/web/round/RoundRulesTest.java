@@ -39,7 +39,7 @@ class RoundRulesTest {
         alliance.addKingdom(small);
         alliance.addKingdom(middle);
 
-        var rankings = RankingCalculator.calculate(List.of(small, big, middle));
+        var rankings = RankingCalculator.calculate(List.of(small, big, middle), Set.of());
 
         assertEquals(List.of("Big", "Middle", "Small"), rankings.kingdoms().stream().map(rank -> rank.kingdomName()).toList());
         assertEquals(1, rankings.kingdoms().get(0).rank());
@@ -80,5 +80,25 @@ class RoundRulesTest {
 
         assertEquals(2, bot.getSpecialBuildings().size());
         assertTrue(bot.getSpecialBuildings().stream().allMatch(building -> building.getBuildingType() == SpecialBuildingType.granary && building.toDto().level() == 0));
+    }
+
+    @Test
+    void rankings_shouldListBotsUnrankedAfterPlayersAndLeaveThemOutOfAllianceLand()
+    {
+        var player = new KingdomBuilder(game).withName("Player").withLand(150).build();
+        var bot = new KingdomBuilder(game).withName("FarmerBot").withLand(5000).build();
+        var alliance = new AllianceEntity("Pact", "Player");
+        alliance.addKingdom(player);
+        alliance.addKingdom(bot);
+
+        var rankings = RankingCalculator.calculate(List.of(player, bot), Set.of("FarmerBot"));
+
+        assertEquals("Player", rankings.kingdoms().get(0).kingdomName());
+        assertEquals(1, rankings.kingdoms().get(0).rank());
+        assertEquals("FarmerBot", rankings.kingdoms().get(1).kingdomName());
+        assertEquals(0, rankings.kingdoms().get(1).rank());
+        assertTrue(rankings.kingdoms().get(1).bot());
+        assertEquals(150, rankings.alliances().get(0).land());
+        assertEquals(2, rankings.alliances().get(0).members());
     }
 }

@@ -1,8 +1,6 @@
 package com.knightsofdarkness.web.initializer;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +21,11 @@ import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
-import com.knightsofdarkness.web.common.market.MarketOfferDto;
-import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.KingdomService;
 import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
-import com.knightsofdarkness.web.market.MarketService;
 import com.knightsofdarkness.web.utils.Id;
 
 import jakarta.transaction.Transactional;
@@ -44,15 +39,13 @@ public class GameInitializer implements CommandLineRunner
     private final IKingdomRepository kingdomRepository;
     private final IAllianceRepository allianceRepository;
     private final KingdomService kingdomService;
-    private final MarketService marketService;
     private final GameConfig gameConfig;
     private final int numberOfSpecialBuildings = 5;
 
-    public GameInitializer(KingdomService kingdomService, MarketService marketService, IKingdomRepository kingdomRepository, IBotRepository botRepository, IAllianceRepository allianceRepository, GameConfig gameConfig)
+    public GameInitializer(KingdomService kingdomService, IKingdomRepository kingdomRepository, IBotRepository botRepository, IAllianceRepository allianceRepository, GameConfig gameConfig)
     {
         this.gameConfig = gameConfig;
         this.kingdomService = kingdomService;
-        this.marketService = marketService;
         this.botRepository = botRepository;
         this.kingdomRepository = kingdomRepository;
         this.allianceRepository = allianceRepository;
@@ -71,8 +64,6 @@ public class GameInitializer implements CommandLineRunner
         log.info("Kingdoms initialized");
         createAlliance("Legion", "Umbar", "uprzejmy");
         log.info("Alliances initialized");
-        marketService.createOffers(generateMarketOffers());
-        log.info("Market offers initialized");
     }
 
     @Transactional
@@ -122,15 +113,5 @@ public class GameInitializer implements CommandLineRunner
         }
     }
 
-    private List<MarketOfferDto> generateMarketOffers()
-    {
-        List<MarketOfferDto> marketOffers = new ArrayList<>();
-        marketOffers.add(new MarketOfferDto(Id.generate(), "uprzejmy", MarketResource.food, 10000, 10));
-        marketOffers.add(new MarketOfferDto(Id.generate(), "uprzejmy", MarketResource.food, 500, 30));
-        marketOffers.add(new MarketOfferDto(Id.generate(), "uprzejmy", MarketResource.iron, 100, 50));
-        marketOffers.add(new MarketOfferDto(Id.generate(), "uprzejmy", MarketResource.iron, 150, 70));
-        marketOffers.add(new MarketOfferDto(Id.generate(), "uprzejmy", MarketResource.food, 100, 30));
-        return marketOffers;
-    }
 
 }

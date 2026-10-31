@@ -2,6 +2,7 @@ package com.knightsofdarkness.web.round;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -59,7 +60,7 @@ public class RoundService {
     @Transactional
     public RankingsDto getRankings()
     {
-        return RankingCalculator.calculate(kingdomRepository.getAllKingdoms());
+        return RankingCalculator.calculate(kingdomRepository.getAllKingdoms(), botNames());
     }
 
     @Transactional
@@ -84,12 +85,12 @@ public class RoundService {
     private void endRound(GameRoundEntity round)
     {
         var kingdoms = kingdomRepository.getAllKingdoms();
-        var rankings = RankingCalculator.calculate(kingdoms);
+        var botNames = botNames();
+        var rankings = RankingCalculator.calculate(kingdoms, botNames);
         var now = Instant.now();
         round.end(now, rankings);
         log.info("Round {} ended", round.getNumber());
 
-        var botNames = botRepository.findAllWithKingdoms().stream().map(bot -> bot.getKingdom().getName()).collect(Collectors.toSet());
         marketOfferRepository.deleteAll();
         warReportRepository.deleteAll();
         RoundReset.reset(kingdoms, botNames, gameConfig);
@@ -101,6 +102,11 @@ public class RoundService {
         var winner = rankings.kingdoms().isEmpty() ? "nobody" : rankings.kingdoms().get(0).kingdomName();
         var message = Utils.format("Round {} has ended, {} ruled the most land. Round {} begins, every kingdom starts anew", round.getNumber(), winner, nextRound.getNumber());
         kingdoms.forEach(kingdom -> notificationSystem.create(kingdom.getName(), message));
+    }
+
+    private Set<String> botNames()
+    {
+        return botRepository.findAllWithKingdoms().stream().map(bot -> bot.getKingdom().getName()).collect(Collectors.toSet());
     }
 
     private GameRoundEntity currentRound()
