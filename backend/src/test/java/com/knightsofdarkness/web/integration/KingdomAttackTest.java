@@ -149,5 +149,15 @@ class KingdomAttackTest {
         assertEquals(901 - 304, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
         assertEquals(941 - 211, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
         assertEquals(958 - 161, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
+
+        // the report tells the arrows apart: 334 arrows on each attacking type, then 297 on each defending type
+        var report = game.getWarReportRepository().getBattleReports(secondaryKingdom.getName(), 1).get(0);
+        assertEquals(334 / 3, report.attackerArrowLosses().getCount(UnitName.bowman));
+        assertEquals(334 / 5, report.attackerArrowLosses().getCount(UnitName.infantry));
+        assertEquals(334 / 7, report.attackerArrowLosses().getCount(UnitName.cavalry));
+        assertEquals(99, report.defenderArrowLosses().getCount(UnitName.bowman));
+        assertEquals(59, report.defenderArrowLosses().getCount(UnitName.infantry));
+        assertEquals(42, report.defenderArrowLosses().getCount(UnitName.cavalry));
+        assertEquals(99 + 304, report.defenderLosses().getCount(UnitName.bowman));
     }
 }

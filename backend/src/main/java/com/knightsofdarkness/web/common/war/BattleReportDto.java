@@ -17,6 +17,8 @@ public record BattleReportDto(
         UnitsMapDto unitsSent,
         UnitsMapDto attackerLosses,
         UnitsMapDto defenderLosses,
+        UnitsMapDto attackerArrowLosses,
+        UnitsMapDto defenderArrowLosses,
         double attackPower,
         double defensePower,
         boolean attackerWon,

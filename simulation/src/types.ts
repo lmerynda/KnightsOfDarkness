@@ -82,6 +82,8 @@ export type BattleReport = {
   unitsSent: Partial<Counts<UnitName>>;
   attackerLosses: Partial<Counts<UnitName>>;
   defenderLosses: Partial<Counts<UnitName>>;
+  attackerArrowLosses: Partial<Counts<UnitName>>;
+  defenderArrowLosses: Partial<Counts<UnitName>>;
 };
 
 export type SpyReport = {

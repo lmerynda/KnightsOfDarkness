@@ -79,6 +79,8 @@ public class KingdomInteractor implements IKingdomInteractor
 
         processDefenseSalvo(attackerKingdom, defendantKingdom, attack);
         processAttackSalvo(defendantKingdom, attack);
+        var attackerArrowLosses = difference(unitsSent, attack.units);
+        var defenderArrowLosses = difference(defenderUnitsBefore, new UnitsMapDto(defendantKingdom.getUnits().getAvailableUnits()));
         processMelee(attackerKingdom, defendantKingdom, attack);
 
         var attackPower = detailsProvider.getAttackPower(attack.units);
@@ -103,7 +105,7 @@ public class KingdomInteractor implements IKingdomInteractor
 
         var report = new BattleReportDto(Id.generate(), Instant.now(), attackerKingdom.getName(), defendantKingdom.getName(), attack.attackType,
                 unitsSent, difference(unitsSent, attack.units), difference(defenderUnitsBefore, new UnitsMapDto(defendantKingdom.getUnits().getAvailableUnits())),
-                attackPower, defensePower, attackerWon, landCaptured, plunder);
+                attackerArrowLosses, defenderArrowLosses, attackPower, defensePower, attackerWon, landCaptured, plunder);
         warReportRepository.addBattleReport(report);
         notifyAboutBattle(report);
 

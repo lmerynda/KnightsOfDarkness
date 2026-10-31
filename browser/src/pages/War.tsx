@@ -31,6 +31,35 @@ const unitList = (units: Partial<Counts<UnitName>>): string => {
   return parts.length ? parts.join(", ") : "nobody";
 };
 
+/** how the fallen fell: soldiers to arrows or in melee, guards on the walls once the battle was decided */
+const howTheyFell = (losses: Partial<Counts<UnitName>>, arrowLosses: Partial<Counts<UnitName>>): string => {
+  const soldiers = militaryUnits.reduce((sum, unit) => sum + (losses[unit] ?? 0), 0);
+  const toArrows = militaryUnits.reduce((sum, unit) => sum + (arrowLosses[unit] ?? 0), 0);
+  const guards = losses.guard ?? 0;
+  return [
+    toArrows > 0 ? `${formatNumber(toArrows)} to arrows` : "",
+    soldiers - toArrows > 0 ? `${formatNumber(soldiers - toArrows)} in melee` : "",
+    guards > 0 ? `${formatNumber(guards)} on the walls` : "",
+  ]
+    .filter(Boolean)
+    .join(", ");
+};
+
+const Losses: React.FC<{ losses: Partial<Counts<UnitName>>; arrowLosses: Partial<Counts<UnitName>>; tone: "loss" | "gain" }> = ({
+  losses,
+  arrowLosses,
+  tone,
+}) => {
+  const fallen = unitList(losses);
+  if (fallen === "nobody") return <dd className="muted">nobody</dd>;
+  return (
+    <dd className={tone}>
+      {fallen}
+      <span className="muted block">{howTheyFell(losses, arrowLosses)}</span>
+    </dd>
+  );
+};
+
 const SendArmy: React.FC<{ spyReports: SpyReport[]; onSent: () => void }> = ({ spyReports, onSent }) => {
   const { kingdom, config, rankings, act } = useGame();
   const [target, setTarget] = useState("");
@@ -189,6 +218,8 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
   const other = attacking ? report.defender : report.attacker;
   const ourLosses = attacking ? report.attackerLosses : report.defenderLosses;
   const theirLosses = attacking ? report.defenderLosses : report.attackerLosses;
+  const ourArrowLosses = attacking ? report.attackerArrowLosses : report.defenderArrowLosses;
+  const theirArrowLosses = attacking ? report.defenderArrowLosses : report.attackerArrowLosses;
   const plunder = (Object.entries(report.plunder) as [ResourceName, number][]).filter(([, amount]) => amount > 0);
 
   return (
@@ -228,11 +259,11 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
           ) : null}
           <div>
             <dt>We lost</dt>
-            <dd className={unitList(ourLosses) === "nobody" ? "muted" : "loss"}>{unitList(ourLosses)}</dd>
+            <Losses losses={ourLosses} arrowLosses={ourArrowLosses} tone="loss" />
           </div>
           <div>
             <dt>They lost</dt>
-            <dd className={unitList(theirLosses) === "nobody" ? "muted" : "gain"}>{unitList(theirLosses)}</dd>
+            <Losses losses={theirLosses} arrowLosses={theirArrowLosses} tone="gain" />
           </div>
           {report.attackerWon && report.attackType === "land" ? (
             <div>
