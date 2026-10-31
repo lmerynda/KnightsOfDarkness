@@ -1,0 +1,16 @@
+{
+    "name": "knights-of-darkness-simulation",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "description": "Drives the game server over HTTP to simulate whole worlds: invariants, balance checks and A/B balance reports",
+    "scripts": {
+        "test": "node --test --test-concurrency=1 \"scenarios/*.test.ts\"",
+        "sim": "node src/cli.ts",
+        "typecheck": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "@types/node": "24.19.2",
+        "typescript": "5.9.3"
+    }
+}

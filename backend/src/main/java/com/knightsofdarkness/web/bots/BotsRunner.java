@@ -38,6 +38,13 @@ public class BotsRunner {
 
         botToRun.doAllActions();
         botToRun.passTurn();
+        kingdomRepository.update(kingdom);
+    }
+
+    @Transactional
+    void shipSurplusAway(String kingdomName)
+    {
+        var kingdom = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
         BotFunctions.shipSurplusAway(kingdom, gameConfig);
         kingdomRepository.update(kingdom);
     }

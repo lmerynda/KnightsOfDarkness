@@ -37,5 +37,7 @@ public class Scheduler
             botsRunner.runSingleBotActions(kingdomName);
             log.debug("[{}] actions done", kingdomName);
         }
+        // bots trade with each other while they run, so stores are trimmed only once every bot has acted
+        bots.forEach(bot -> botsRunner.shipSurplusAway(bot.getKingdom().getName()));
     }
 }
