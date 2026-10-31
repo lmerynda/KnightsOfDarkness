@@ -1,0 +1,3 @@
+# cmd needs CRLF in batch files, the shell wrapper needs LF
+*.bat text eol=crlf
+gradlew text eol=lf
