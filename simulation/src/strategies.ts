@@ -112,15 +112,16 @@ export const economist: Strategy = {
   play: context => developEconomy(context, economyPlan, economyWorkers),
 };
 
-/** walls, towers and guards on top of a smaller economy, bowmen behind the walls */
+/** walls, towers and guards on top of a smaller economy, bowmen behind the walls and infantry to hold them in melee */
 export const turtle: Strategy = {
   name: "turtle",
   weaponsPercentage: 50,
   play: async context => {
     const towersForFullBonus = Math.ceil(context.config.attack.maxTowerDefenseBonus / context.config.attack.towerDefenseBonusPerTower);
     const towerShare = Math.min(0.12, towersForFullBonus / Math.max(1, context.kingdom.resources.land));
-    // soldiers live in barracks, so recruiting them before the workers frees house space for newcomers
-    await fillBarracks(context, { bowman: 1 });
+    // soldiers live in barracks, so recruiting them before the workers frees house space for newcomers; half the
+    // treasury stays for land, or the garrison eats every coin and the realm never grows
+    await fillBarracks(context, { bowman: 1, infantry: 1 }, context.kingdom.resources.gold / 2);
     await developEconomy(context, { ...economyPlan, house: 0.3, goldMine: 0.18, tower: towerShare, guardHouse: 0.04, barracks: 0.04 }, [
       ...economyWorkers,
       "guard",
@@ -139,12 +140,13 @@ const estimatedDefense = (report: SpyReport, config: GameConfig): number => {
   return base * (1 + towers + (report.buildings.castle ?? 0) * config.attack.castleDefenseBonusPerCastle);
 };
 
-/** trains soldiers into free barracks places in the given proportions */
-const fillBarracks = async ({ player }: TurnContext, mix: Partial<Counts<UnitName>>): Promise<void> => {
+/** trains soldiers into free barracks places in the given proportions, spending at most the budget when one is given */
+const fillBarracks = async ({ player, config }: TurnContext, mix: Partial<Counts<UnitName>>, budget = Infinity): Promise<void> => {
   const details = await player.details();
-  const free = (details.buildingCapacity.barracks ?? 0) - (details.buildingOccupancy.barracks ?? 0);
-  if (free <= 0) return;
   const total = Object.values(mix).reduce((sum, share) => sum + (share ?? 0), 0);
+  const goldPerSoldier = Object.entries(mix).reduce((sum, [unit, share]) => sum + (config.trainingCost[unit as UnitName].gold * (share ?? 0)) / total, 0);
+  const free = Math.min((details.buildingCapacity.barracks ?? 0) - (details.buildingOccupancy.barracks ?? 0), Math.floor(budget / goldPerSoldier));
+  if (free <= 0) return;
   const order = Object.fromEntries(Object.entries(mix).map(([unit, share]) => [unit, Math.floor((free * (share ?? 0)) / total)]));
   await player.train(order);
 };

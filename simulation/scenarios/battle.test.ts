@@ -5,8 +5,8 @@ import { startServer } from "../src/server.ts";
 import { raider, turtle } from "../src/strategies.ts";
 import { foundRulers, runWorld } from "../src/world.ts";
 
-// A raider of infantry and cavalry charges a turtle that defends with bowmen: arrows first, then melee.
-test("a charge into a bowmen garrison bleeds both sides", async () => {
+// A raider of infantry and cavalry charges a turtle that defends with bowmen and infantry: arrows first, then melee.
+test("a charge into a garrison with bowmen bleeds both sides", async () => {
   const server = await startServer();
   try {
     const world = new World(server.url);
