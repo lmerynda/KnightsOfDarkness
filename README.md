@@ -39,6 +39,8 @@ Armies arrive after 4 of the attacker's turns. Archers on both sides loose first
 
 The game centres on alliances of up to ten kingdoms competing for the alliance ranking. Allies cannot attack each other and write to the whole alliance at once. Every alliance has a war room on its Alliance page: the members' armies on the march, the soldiers they keep standing guard with each other, the freshest intel any member's spies brought back on each enemy, and the members' recent battles. Armies that land on the same turn strike together, and a beaten kingdom is protected only from armies sent after its defeat, so a coalition that times its strikes can hit one enemy several times; the Army page lists allies on the march with a button to join their strike.
 
+A kingdom's scouts see every army marching on it, with its sender, its size to two figures and how many of the sender's turns it needs to land; the chronicle warns when one sets out, and the war room lists every enemy army marching on a member. An attack takes four turns and help two, so allies who watch can answer in time.
+
 Allies also defend each other. A member sends infantry, bowmen or cavalry to stand guard in an ally's kingdom; they arrive after two of the sender's turns (`common.turnsToReinforce`), count in the host's defense and fight beside its soldiers, sharing the losses by unit type. They stay the sender's: away from home, fed by the sender, called home at once, and sent home when either kingdom leaves the alliance. Battle reports name the allied losses, and the sender hears how every battle its soldiers stood in went.
 
 ## Test
