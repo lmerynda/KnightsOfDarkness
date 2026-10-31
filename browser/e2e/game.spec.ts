@@ -54,6 +54,15 @@ test("a ruler raises buildings, trains workers and passes the turn", async ({ pa
   await expect(toast(page, /A turn has passed: \+[\d,]+ gold/).first()).toBeVisible();
 });
 
+test("several turns pass with one order", async ({ page }) => {
+  await foundKingdom(page);
+  const passed = page.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
+  await page.getByRole("button", { name: "Pass 5 turns" }).click();
+  await passed;
+
+  await expect(toast(page, /5 turns have passed: \+[\d,]+ gold/)).toBeVisible();
+});
+
 test("the steward tells a newcomer what to do and leads there", async ({ page }) => {
   await foundKingdom(page);
 

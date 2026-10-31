@@ -105,15 +105,23 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
   return [...lines.filter(line => line.urgent), ...lines.filter(line => !line.urgent)].slice(0, limit);
 };
 
-/** one line on what the turn just passed brought, for the toast */
-export const turnSummary = (report: TurnReport): string => {
-  const food = (report.resourcesProduced.food ?? 0) - report.foodConsumed;
+/** one line on what the turns just passed brought, for the toast */
+export const turnSummary = (reports: TurnReport[]): string => {
+  const total = (pick: (report: TurnReport) => number): number => reports.reduce((sum, report) => sum + pick(report), 0);
+  const starved = total(report => report.starvedPeople);
+  const exiled = total(report => report.exiledPeople);
   const parts = [
-    `${signed(report.resourcesProduced.gold ?? 0)} gold`,
-    `${signed(food)} food`,
-    report.arrivingPeople > 0 ? plural(report.arrivingPeople, "newcomer", "newcomers") : null,
-    report.starvedPeople > 0 ? `${formatNumber(report.starvedPeople)} left hungry` : null,
-    report.exiledPeople > 0 ? `${formatNumber(report.exiledPeople)} left for lack of houses` : null,
+    `${signed(total(report => report.resourcesProduced.gold ?? 0))} gold`,
+    `${signed(total(report => (report.resourcesProduced.food ?? 0) - report.foodConsumed))} food`,
+    total(report => report.arrivingPeople) > 0
+      ? plural(
+          total(report => report.arrivingPeople),
+          "newcomer",
+          "newcomers",
+        )
+      : null,
+    starved > 0 ? `${formatNumber(starved)} left hungry` : null,
+    exiled > 0 ? `${formatNumber(exiled)} left for lack of houses` : null,
   ].filter(Boolean);
-  return `A turn has passed: ${parts.join(", ")}`;
+  return `${reports.length === 1 ? "A turn has passed" : `${reports.length} turns have passed`}: ${parts.join(", ")}`;
 };

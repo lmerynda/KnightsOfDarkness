@@ -14,7 +14,8 @@ export type GameState = {
   /** runs an action against the server, reports the outcome and refreshes the kingdom */
   act: <T>(action: () => Promise<T>, describe: (result: T) => { text: string; failure?: boolean }) => Promise<T | undefined>;
   notify: (text: string, failure?: boolean) => void;
-  passTurn: () => Promise<TurnReport | undefined>;
+  /** passes up to the given number of turns, stopping early when people start to leave */
+  passTurn: (count?: number) => Promise<TurnReport | undefined>;
   refreshCounters: () => void;
 };
 

@@ -75,8 +75,17 @@ const TurnLines: React.FC<{ report: TurnReport }> = ({ report }) => (
   </table>
 );
 
+const severalTurns = 5;
+
 const Forecast: React.FC = () => {
-  const { details, weaponsPercentage, setWeaponsPercentage, kingdom } = useGame();
+  const { details, weaponsPercentage, setWeaponsPercentage, kingdom, passTurn } = useGame();
+  const [passing, setPassing] = useState(false);
+  const several = Math.min(severalTurns, kingdom.resources.turns);
+  const passSeveral = async (): Promise<void> => {
+    setPassing(true);
+    await passTurn(several);
+    setPassing(false);
+  };
   const forecast = details.forecast;
   const warnings = departures(forecast);
   const foodBalance = (forecast.resourcesProduced.food ?? 0) - forecast.foodConsumed;
@@ -113,6 +122,12 @@ const Forecast: React.FC = () => {
           />
         </label>
       ) : null}
+      <div className="row overview-note">
+        <button className="button quiet" type="button" disabled={passing || several < 2} onClick={passSeveral}>
+          Pass {several < 2 ? severalTurns : several} turns
+        </button>
+        <span className="muted">One after another, stopping as soon as people leave hungry or homeless.</span>
+      </div>
     </Panel>
   );
 };

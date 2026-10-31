@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { errorText } from "../api/client";
 import { api } from "../api/endpoints";
-import type { GameConfig, Kingdom, KingdomDetails, Rankings } from "../api/types";
+import type { GameConfig, Kingdom, KingdomDetails, Rankings, TurnReport } from "../api/types";
 import { turnSummary } from "./advice";
 import { GameContext } from "./useGame";
 
@@ -121,16 +121,34 @@ export const GameProvider: React.FC<{ children: React.ReactNode; fallback: (erro
     [notify, reload],
   );
 
-  const passTurn = useCallback(async () => {
-    const result = await act(
-      () => api.passTurn(weaponsRef.current),
-      outcome => ({
-        text: outcome.success ? (outcome.turnReport ? turnSummary(outcome.turnReport) : "A turn has passed") : outcome.message,
-        failure: !outcome.success,
-      }),
-    );
-    return result?.turnReport ?? undefined;
-  }, [act]);
+  // turns pass one after another and stop early once people leave, so a ruler never loses a realm to one click
+  const passTurn = useCallback(
+    async (count = 1) => {
+      const reports: TurnReport[] = [];
+      let failure: string | null = null;
+      try {
+        while (reports.length < count) {
+          const outcome = await api.passTurn(weaponsRef.current);
+          if (!outcome.success || !outcome.turnReport) {
+            failure = outcome.message;
+            break;
+          }
+          reports.push(outcome.turnReport);
+          if (outcome.turnReport.starvedPeople > 0 || outcome.turnReport.exiledPeople > 0) break;
+        }
+      } catch (error) {
+        failure = errorText(error);
+      }
+      if (reports.length) {
+        const stoppedEarly = !failure && reports.length < count ? ". Stopped early, people are leaving" : "";
+        notify(turnSummary(reports) + stoppedEarly, false);
+      }
+      if (failure) notify(failure, true);
+      await reload();
+      return reports[reports.length - 1];
+    },
+    [notify, reload],
+  );
 
   const value = useMemo(
     () =>
