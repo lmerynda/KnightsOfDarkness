@@ -33,7 +33,7 @@ A new turn is handed to every kingdom every 10 seconds (up to 36 stored) and a r
 
 Passing a turn spends one stored turn: people who lack houses leave, farmers bring in the harvest, everyone eats and people who go hungry leave, the other workers produce (small kingdoms get a production bonus that fades by 1,000 land), new people arrive into empty houses, carriers deliver, and armies on the march move one step closer. Building points are only good for the current turn. The overview page shows an exact forecast of the next turn, computed by the server. Now and then fortune strikes after a turn (`events` in `gameconfig.json`, one turn in ten): a bountiful harvest or a rich gold vein, rats in the granary or a fire in the workshops, or bandits on the roads, who leave a realm alone when it keeps one guard for every 20 acres. The forecast never includes fortune.
 
-Armies arrive after 4 of the attacker's turns. Archers on both sides loose first, then infantry and cavalry meet in melee, their blows spread over the whole enemy army, bowmen included, though bowmen strike nobody there; the outcome compares the surviving attack power with the defender's power (soldiers and guards at home, plus towers and castles), and the stronger the attack, the more guards fall. A won land attack takes up to 10% of the defender's land, razing buildings if no land is free; a won plunder attack takes up to 20% of stores, less for every warehouse level. Both sides get a battle report. A kingdom whose defense was broken cannot be attacked for the next 24 turns (`attack.protectionTicksAfterDefeat`), unless it sends an army of its own; armies already on the road still arrive. Spies succeed when they outnumber the target's counter intelligence (its spies and guards) and bring back its stores, people and buildings.
+Armies arrive after 4 of the attacker's turns. Archers on both sides loose first, then infantry and cavalry meet in melee, their blows spread over the whole enemy army, bowmen included, though bowmen strike nobody there; the outcome compares the surviving attack power with the defender's power (soldiers and guards at home, plus towers and castles), and the stronger the attack, the more guards fall. A won land attack takes up to 15% of the defender's land, razing buildings if no land is free; a won plunder attack takes up to 20% of stores, less for every warehouse level. Both sides get a battle report. A kingdom whose defense was broken cannot be attacked for the next 24 turns (`attack.protectionTicksAfterDefeat`), unless it sends an army of its own; armies already on the road still arrive. Spies succeed when they outnumber the target's counter intelligence (its spies and guards) and bring back its stores, people and buildings.
 
 ## Test
 
@@ -64,7 +64,7 @@ The scenarios check rule invariants for every kingdom on every turn (no negative
 To see what a balance change does, compare the base `gameconfig.json` with overrides:
 
 ```bash
-cd simulation && npm run sim -- --players economist,warlord,turtle --turns 30 --set attack.maxLandCaptureRatio=0.2 --compare
+cd simulation && npm run sim -- --players economist,warlord,turtle --turns 30 --set attack.maxLandCaptureRatio=0.25 --compare
 ```
 
 It prints land, gold, food, buildings, people, army, defense and battles for every ruler, with the change against the base run in brackets; `--out run.json` keeps the full per-turn timelines.

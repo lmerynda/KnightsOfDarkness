@@ -156,8 +156,9 @@ class WarTest {
         // start kingdom has 100 land and 59 buildings, 5 guards behind 4 towers and a castle
         sendAndResolve(AttackType.land, cavalry(100));
 
-        assertEquals(110, attacker.getResources().getCount(ResourceName.land));
-        assertEquals(90, defender.getResources().getCount(ResourceName.land));
+        var captured = (int) Math.floor(100 * gameConfig.attack().maxLandCaptureRatio());
+        assertEquals(100 + captured, attacker.getResources().getCount(ResourceName.land));
+        assertEquals(100 - captured, defender.getResources().getCount(ResourceName.land));
         assertEquals(59, defender.getBuildings().countAll());
         assertEquals(100, attacker.getUnits().getAvailableCount(UnitName.cavalry));
         assertEquals(0, attacker.getUnits().getMobileCount(UnitName.cavalry));
@@ -170,9 +171,10 @@ class WarTest {
 
         sendAndResolve(AttackType.land, cavalry(100));
 
-        assertEquals(54, defender.getResources().getCount(ResourceName.land));
-        assertEquals(54, defender.getBuildings().countAll());
-        assertEquals(105, attacker.getResources().getCount(ResourceName.land));
+        var captured = (int) Math.floor(59 * gameConfig.attack().maxLandCaptureRatio());
+        assertEquals(59 - captured, defender.getResources().getCount(ResourceName.land));
+        assertEquals(59 - captured, defender.getBuildings().countAll());
+        assertEquals(100 + captured, attacker.getResources().getCount(ResourceName.land));
     }
 
     @Test
@@ -234,7 +236,8 @@ class WarTest {
         assertEquals(attackerReports, defenderReports);
         var report = attackerReports.get(0);
         assertTrue(report.attackerWon());
-        assertEquals(10, report.landCaptured());
+        // a crushing victory over 100 acres takes the full share
+        assertEquals((int) Math.floor(100 * gameConfig.attack().maxLandCaptureRatio()), report.landCaptured());
         assertEquals(100, report.unitsSent().getCount(UnitName.cavalry));
 
         var defenderNotifications = game.getNotificationSystem().getNotifications(defender.getName());

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { World } from "../src/client.ts";
-import { startServer, type ConfigOverrides } from "../src/server.ts";
+import { readBaseConfig, startServer, type ConfigOverrides } from "../src/server.ts";
 import { economist, warlord } from "../src/strategies.ts";
 import { foundRulers, runWorld, type WorldRun } from "../src/world.ts";
 
@@ -22,7 +22,8 @@ const capturedLand = ({ run, attacker }: { run: WorldRun; attacker: string }): n
 
 test("doubling the land capture ratio lets the same victories take more land", async () => {
   const base = await duel({});
-  const doubled = await duel({ "attack.maxLandCaptureRatio": 0.2 });
+  const baseRatio = (readBaseConfig().attack as { maxLandCaptureRatio: number }).maxLandCaptureRatio;
+  const doubled = await duel({ "attack.maxLandCaptureRatio": baseRatio * 2 });
   assert.deepEqual(base.run.violations, []);
   assert.deepEqual(doubled.run.violations, []);
   assert.ok(capturedLand(base) > 0, "no land captured in the base world");

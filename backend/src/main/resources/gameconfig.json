@@ -171,7 +171,7 @@
     "attack": {
         "turnsToArrive": 4,
         "minTargetLandRatio": 0.5,
-        "maxLandCaptureRatio": 0.1,
+        "maxLandCaptureRatio": 0.15,
         "maxPlunderRatio": 0.2,
         "towerDefenseBonusPerTower": 0.02,
         "maxTowerDefenseBonus": 0.5,
