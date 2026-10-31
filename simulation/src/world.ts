@@ -17,6 +17,8 @@ export type Snapshot = {
   defense: number;
   /** people who left for lack of food in the turn just played */
   starved: number;
+  /** turns left during which nobody may march on the kingdom */
+  protection: number;
 };
 
 export type WorldRun = {
@@ -64,6 +66,7 @@ const snapshot = (kingdom: Kingdom, turn: number, defense: number): Snapshot => 
   army: sum(militaryUnits.map(unit => kingdom.units.availableUnits[unit] + kingdom.units.mobileUnits[unit])),
   defense,
   starved: kingdom.lastTurnReport.starvedPeople,
+  protection: kingdom.protectionTicks,
 });
 
 /**

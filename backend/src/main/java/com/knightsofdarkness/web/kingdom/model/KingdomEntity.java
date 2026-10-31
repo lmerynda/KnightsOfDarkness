@@ -63,6 +63,11 @@ public class KingdomEntity
     AllianceEntity alliance;
 
     /**
+     * world ticks left during which nobody may send an army against this kingdom, granted when its defense was broken
+     */
+    int protectionTicks;
+
+    /**
      * two writers changing the same kingdom at once (a player, a battle, a bot) must not silently overwrite each other
      */
     @Version
@@ -92,7 +97,9 @@ public class KingdomEntity
         List<CarriersOnTheMoveDto> carriersOnTheMove = this.carriersOnTheMove.stream().map(KingdomCarriersOnTheMoveEntity::toDto).toList();
         List<OngoingAttackDto> ongoingAttacks = this.ongoingAttacks.stream().map(KingdomOngoingAttackEntity::toDto).toList();
         Optional<String> allianceName = alliance != null ? Optional.of(alliance.getName()) : Optional.empty();
-        return new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), new ArrayList<>(), specialBuildings, lastTurnReport, carriersOnTheMove, ongoingAttacks, allianceName);
+        var dto = new KingdomDto(name, resources.toDto(), buildings.toDto(), units.toDto(), new ArrayList<>(), specialBuildings, lastTurnReport, carriersOnTheMove, ongoingAttacks, allianceName);
+        dto.protectionTicks = protectionTicks;
+        return dto;
     }
 
     public static KingdomEntity fromDto(KingdomDto dto)
@@ -214,6 +221,16 @@ public class KingdomEntity
     public Optional<AllianceEntity> getAlliance()
     {
         return Optional.ofNullable(alliance);
+    }
+
+    public int getProtectionTicks()
+    {
+        return protectionTicks;
+    }
+
+    public void setProtectionTicks(int protectionTicks)
+    {
+        this.protectionTicks = protectionTicks;
     }
 
     // it's really hard to make this commit...

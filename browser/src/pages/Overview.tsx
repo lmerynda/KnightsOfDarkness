@@ -161,6 +161,12 @@ const Realm: React.FC = () => {
           </div>
         ))}
       </div>
+      {kingdom.protectionTicks > 0 ? (
+        <p className="notice">
+          <Icon name="shield" size={18} /> Your walls were breached, so no army may march on you for{" "}
+          {plural(kingdom.protectionTicks, "more turn", "more turns")}. Sending an army of your own ends this protection.
+        </p>
+      ) : null}
       <div className="realm-stats">
         <div>
           <Icon name="shield" size={22} />

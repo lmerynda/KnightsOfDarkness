@@ -236,6 +236,7 @@ public class KingdomService
     public void addTurnForEveryone()
     {
         var kingdoms = kingdomRepository.addTurnBelow(gameConfig.common().maxTurns());
+        kingdomRepository.countDownProtection();
         log.info("Added a turn to {} kingdoms", kingdoms);
     }
 

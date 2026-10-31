@@ -66,6 +66,6 @@ public final class RankingCalculator {
     private static KingdomRankDto toRank(int rank, KingdomEntity kingdom, boolean bot)
     {
         var allianceName = kingdom.getAlliance().map(alliance -> alliance.getName()).orElse(null);
-        return new KingdomRankDto(rank, kingdom.getName(), allianceName, kingdom.getResources().getCount(ResourceName.land), kingdom.getBuildings().countAll(), bot);
+        return new KingdomRankDto(rank, kingdom.getName(), allianceName, kingdom.getResources().getCount(ResourceName.land), kingdom.getBuildings().countAll(), bot, kingdom.getProtectionTicks());
     }
 }

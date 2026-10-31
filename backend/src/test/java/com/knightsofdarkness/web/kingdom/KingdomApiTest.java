@@ -187,6 +187,20 @@ class KingdomApiTest {
     }
 
     @Test
+    void periodicTurn_shouldCountProtectionDown()
+    {
+        var kingdom = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
+        kingdom.setProtectionTicks(2);
+        kingdomRepository.update(kingdom);
+
+        kingdomService.addTurnForEveryone();
+        assertEquals(1, kingdomRepository.getKingdomByName(kingdomName).orElseThrow().getProtectionTicks());
+        kingdomService.addTurnForEveryone();
+        kingdomService.addTurnForEveryone();
+        assertEquals(0, kingdomRepository.getKingdomByName(kingdomName).orElseThrow().getProtectionTicks());
+    }
+
+    @Test
     void periodicTurn_shouldRejectAChangeReadBeforeIt()
     {
         var readBeforeTheTick = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();

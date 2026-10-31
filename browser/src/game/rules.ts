@@ -27,6 +27,7 @@ export const targetProblem = (
   if (target.kingdomName === ownName) return "your own kingdom";
   if (ownAlliance && target.allianceName === ownAlliance) return "an ally";
   if (target.land < ownLand * config.attack.minTargetLandRatio) return "too small to attack";
+  if (target.protectionTicks > 0) return `protected for ${target.protectionTicks} more ${target.protectionTicks === 1 ? "turn" : "turns"}`;
   return null;
 };
 

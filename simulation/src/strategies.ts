@@ -160,11 +160,12 @@ const raiseArmy = async (context: TurnContext): Promise<void> => {
   await developEconomy(context, { ...economyPlan, house: 0.28, goldMine: 0.18, barracks: 0.12, spyGuild: 0.01 }, economyWorkers);
 };
 
-/** ranked kingdoms large enough to attack and outside the ruler's alliance, largest first */
+/** ranked kingdoms large enough to attack, outside the ruler's alliance and not protected, largest first */
 const attackableKingdoms = ({ kingdom, config, rankings }: TurnContext): Rankings["kingdoms"] =>
   rankings.kingdoms
     .filter(rank => rank.kingdomName !== kingdom.name && rank.land >= kingdom.resources.land * config.attack.minTargetLandRatio)
     .filter(rank => !kingdom.allianceName || rank.allianceName !== kingdom.allianceName)
+    .filter(rank => rank.protectionTicks === 0)
     .sort((a, b) => b.land - a.land);
 
 const armyAtHome = (kingdom: Kingdom): Partial<Counts<UnitName>> =>

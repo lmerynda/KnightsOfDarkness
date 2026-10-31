@@ -7,6 +7,7 @@ import { useGame } from "../game/useGame";
 import { art, resourceLabel, unitLore } from "../game/lore";
 import { targetProblem } from "../game/rules";
 import { Crest } from "../ui/Crest";
+import { Icon } from "../ui/Icon";
 import { AmountField, Banner, Choice, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
 
@@ -158,6 +159,12 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; onSent: () => void }> = ({ s
             {target && defense === null ? <Link to="/kingdom/spies">send spies first</Link> : null}
           </span>
         </div>
+        {kingdom.protectionTicks > 0 ? (
+          <p className="notice">
+            <Icon name="shield" size={18} /> You are protected for {plural(kingdom.protectionTicks, "more turn", "more turns")}. Marching
+            out ends your protection.
+          </p>
+        ) : null}
       </div>
     </Panel>
   );

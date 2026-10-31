@@ -60,6 +60,41 @@ class WarTest {
     }
 
     @Test
+    void brokenDefense_shouldProtectTheDefenderFromTheNextAttack()
+    {
+        sendAndResolve(AttackType.land, cavalry(50));
+        attacker.getOngoingAttacks().clear();
+
+        assertEquals(gameConfig.attack().protectionTicksAfterDefeat(), defender.getProtectionTicks());
+        var again = new KingdomMilitaryAction(attacker, gameConfig).sendAttack(new SendAttackDto(defender.getName(), AttackType.economy, cavalry(10)), defender);
+        assertFalse(again.success());
+        assertThat(again.message()).contains("protected");
+        assertEquals(100, attacker.getUnits().getAvailableCount(UnitName.cavalry));
+    }
+
+    @Test
+    void repelledAttack_shouldNotProtectTheDefender()
+    {
+        defender.getUnits().setCount(UnitName.cavalry, 1000);
+
+        sendAndResolve(AttackType.land, cavalry(10));
+
+        assertEquals(0, defender.getProtectionTicks());
+    }
+
+    @Test
+    void sendingAnArmy_shouldEndOwnProtection()
+    {
+        defender.getUnits().setCount(UnitName.cavalry, 10);
+        defender.setProtectionTicks(5);
+
+        var result = new KingdomMilitaryAction(defender, gameConfig).sendAttack(new SendAttackDto(attacker.getName(), AttackType.land, cavalry(10)), attacker);
+
+        assertTrue(result.success(), result.message());
+        assertEquals(0, defender.getProtectionTicks());
+    }
+
+    @Test
     void attackingOwnKingdom_shouldFail()
     {
         var result = new KingdomMilitaryAction(attacker, gameConfig).sendAttack(new SendAttackDto(attacker.getName(), AttackType.land, cavalry(10)), attacker);
@@ -175,7 +210,7 @@ class WarTest {
     @Test
     void lostAttack_shouldNotCaptureAnything()
     {
-        // melee is fought type against type, so defending cavalry is what kills attacking cavalry
+        // 1000 defending cavalry land 250 melee blows on cavalry that takes 4 each, more than the 10 that charge
         defender.getUnits().setCount(UnitName.cavalry, 1000);
 
         sendAndResolve(AttackType.land, cavalry(10));

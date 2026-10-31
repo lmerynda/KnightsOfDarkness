@@ -15,6 +15,7 @@ public record Attack(
         double warehousePlunderProtectionPerLevel,
         double maxWarehousePlunderProtection,
         double maxGuardLossRatio,
+        int protectionTicksAfterDefeat,
         Map<UnitName, Double> unitAttackPower,
         Map<UnitName, Double> unitDefensePower) {
 

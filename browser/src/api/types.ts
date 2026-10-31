@@ -98,6 +98,8 @@ export type Kingdom = {
   carriersOnTheMove: CarriersOnTheMove[];
   ongoingAttacks: OngoingAttack[];
   allianceName: string | null;
+  /** turns left during which nobody may march on this kingdom */
+  protectionTicks: number;
 };
 
 export type KingdomDetails = {
@@ -188,7 +190,15 @@ export type Notification = { id: string; kingdomName: string; message: string; d
 export type Letter = { id: string; sender: string; recipient: string; body: string; date: string; isRead: boolean; toAlliance: boolean };
 
 /** bots have rank 0, they trade and can be attacked but do not compete */
-export type KingdomRank = { rank: number; kingdomName: string; allianceName: string | null; land: number; buildings: number; bot: boolean };
+export type KingdomRank = {
+  rank: number;
+  kingdomName: string;
+  allianceName: string | null;
+  land: number;
+  buildings: number;
+  bot: boolean;
+  protectionTicks: number;
+};
 export type AllianceRank = { rank: number; allianceName: string; members: number; land: number };
 export type Rankings = { kingdoms: KingdomRank[]; alliances: AllianceRank[] };
 

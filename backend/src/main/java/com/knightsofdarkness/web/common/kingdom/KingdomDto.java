@@ -20,6 +20,7 @@ public class KingdomDto
     public List<CarriersOnTheMoveDto> carriersOnTheMove;
     public List<OngoingAttackDto> ongoingAttacks;
     public Optional<String> allianceName;
+    public int protectionTicks;
 
     public KingdomDto()
     {

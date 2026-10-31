@@ -179,6 +179,7 @@
         "warehousePlunderProtectionPerLevel": 0.05,
         "maxWarehousePlunderProtection": 0.75,
         "maxGuardLossRatio": 0.5,
+        "protectionTicksAfterDefeat": 24,
         "unitAttackPower": {
             "bowman": 1,
             "infantry": 2,

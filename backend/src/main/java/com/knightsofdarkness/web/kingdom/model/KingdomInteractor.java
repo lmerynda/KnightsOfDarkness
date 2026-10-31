@@ -91,6 +91,7 @@ public class KingdomInteractor implements IKingdomInteractor
         Map<ResourceName, Integer> plunder = new EnumMap<>(ResourceName.class);
         if (attackerWon)
         {
+            defendantKingdom.setProtectionTicks(gameConfig.attack().protectionTicksAfterDefeat());
             var dominance = getDominance(attackPower, defensePower);
             if (attack.attackType == AttackType.land)
             {

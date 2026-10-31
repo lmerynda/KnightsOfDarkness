@@ -5,7 +5,7 @@ import { useGame } from "../game/useGame";
 import { art } from "../game/lore";
 import { Crest } from "../ui/Crest";
 import { Banner, Meter, Panel } from "../ui/parts";
-import { formatNumber } from "../ui/format";
+import { formatNumber, plural } from "../ui/format";
 import { roundTimeLeft } from "../game/rules";
 
 export const RankingsPage: React.FC = () => {
@@ -61,6 +61,9 @@ export const RankingsPage: React.FC = () => {
                             {rank.kingdomName}
                             {rank.allianceName ? <span className="muted"> of {rank.allianceName}</span> : null}
                             {rank.bot ? <span className="muted">, a merchant realm, not ranked</span> : null}
+                            {rank.protectionTicks > 0 ? (
+                              <span className="muted block">protected for {plural(rank.protectionTicks, "more turn", "more turns")}</span>
+                            ) : null}
                           </span>
                         </span>
                       </td>

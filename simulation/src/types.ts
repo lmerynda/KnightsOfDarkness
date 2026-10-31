@@ -36,6 +36,7 @@ export type Kingdom = {
   ongoingAttacks: { id: string; to: string; turnsLeft: number; units: Partial<Counts<UnitName>> }[];
   carriersOnTheMove: { id: string; to: string; turnsLeft: number }[];
   allianceName: string | null;
+  protectionTicks: number;
 };
 
 export type KingdomDetails = {
@@ -94,7 +95,7 @@ export type SpyReport = {
   resources: Partial<Counts<ResourceName>>;
 };
 
-export type KingdomRank = { rank: number; kingdomName: string; allianceName: string | null; land: number; buildings: number; bot: boolean };
+export type KingdomRank = { rank: number; kingdomName: string; allianceName: string | null; land: number; buildings: number; bot: boolean; protectionTicks: number };
 export type Rankings = { kingdoms: KingdomRank[]; alliances: { rank: number; allianceName: string; members: number; land: number }[] };
 export type Round = { number: number; ticksElapsed: number; lengthInTicks: number; endedAt: string | null; finalRankings: Rankings | null };
 export type MarketOffer = { id: string; sellerName: string; resource: MarketResource; count: number; price: number };

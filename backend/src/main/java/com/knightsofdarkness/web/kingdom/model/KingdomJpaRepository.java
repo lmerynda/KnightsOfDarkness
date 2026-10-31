@@ -23,4 +23,8 @@ public interface KingdomJpaRepository extends JpaRepository<KingdomEntity, Strin
     @Query("UPDATE KingdomEntity k SET k.resources.turns = k.resources.turns + 1, k.version = k.version + 1 WHERE k.resources.turns < :maxTurns")
     int addTurnBelow(int maxTurns);
 
+    @Modifying
+    @Query("UPDATE KingdomEntity k SET k.protectionTicks = k.protectionTicks - 1, k.version = k.version + 1 WHERE k.protectionTicks > 0")
+    int countDownProtection();
+
 }

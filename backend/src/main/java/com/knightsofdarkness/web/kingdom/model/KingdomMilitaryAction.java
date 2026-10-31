@@ -62,6 +62,8 @@ public class KingdomMilitaryAction {
         var turnsLeft = gameConfig.attack().turnsToArrive();
         var newAttack = new KingdomOngoingAttackEntity(Id.generate(), kingdom, target.getName(), turnsLeft, sendAttackDto.attackType(), army);
         kingdom.getOngoingAttacks().add(newAttack);
+        // a kingdom that marches gives up its own protection, it cannot strike and hide
+        kingdom.setProtectionTicks(0);
 
         return SendAttackResult.success("Attack sent", sendAttackDto);
     }
@@ -71,6 +73,11 @@ public class KingdomMilitaryAction {
         if (target.getName().equals(kingdom.getName()))
         {
             return "You cannot attack your own kingdom";
+        }
+
+        if (target.getProtectionTicks() > 0)
+        {
+            return Utils.format("{} is protected after a recent defeat, for {} more turns", target.getName(), target.getProtectionTicks());
         }
 
         var ownAlliance = kingdom.getAlliance();
