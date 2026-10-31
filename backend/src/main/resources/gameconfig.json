@@ -13,11 +13,11 @@
         "tower": 1000
     },
     "specialBuildingCosts": {
-        "goldShaft": 10000,
-        "ironShaft": 10000,
-        "granary": 5000,
-        "forge": 5000,
-        "warehouse": 3000
+        "goldShaft": 100000,
+        "ironShaft": 100000,
+        "granary": 50000,
+        "forge": 50000,
+        "warehouse": 30000
     },
     "kingdomStartConfiguration": {
         "buildings": {
