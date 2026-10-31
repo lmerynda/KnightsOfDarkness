@@ -39,7 +39,13 @@ export type Kingdom = {
   carriersOnTheMove: { id: string; to: string; turnsLeft: number }[];
   allianceName: string | null;
   protectionTicks: number;
+  /** our soldiers on the way to, or standing guard in, allied kingdoms */
+  reinforcements: Reinforcement[];
+  /** allied soldiers on the way to, or standing guard in, this kingdom */
+  garrisons: Reinforcement[];
 };
+
+export type Reinforcement = { id: string; from: string; to: string; turnsLeft: number; units: Partial<Counts<UnitName>> };
 
 export type KingdomDetails = {
   usedLand: number;

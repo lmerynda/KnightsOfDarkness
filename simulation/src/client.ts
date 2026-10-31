@@ -128,6 +128,15 @@ export class Player {
     return this.post("/kingdom/train", units);
   }
 
+  /** sends soldiers to stand guard in an ally's kingdom */
+  public sendReinforcements(hostKingdomName: string, units: Partial<Counts<UnitName>>): Promise<ActionResult> {
+    return this.post("/kingdom/send-reinforcements", { hostKingdomName, units });
+  }
+
+  public recallReinforcements(id: string): Promise<boolean> {
+    return this.post("/kingdom/recall-reinforcements", id);
+  }
+
   public startGreatWork(type: SpecialBuildingType): Promise<unknown> {
     return this.post("/kingdom/start-special-building", { name: type });
   }

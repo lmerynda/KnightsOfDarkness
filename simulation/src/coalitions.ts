@@ -1,24 +1,26 @@
 import { writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { World } from "./client.ts";
-import { coalitionWarlord, foundCoalition, type Coalition } from "./coalition.ts";
+import { coalitionWarlord, foundCoalition, guardian, type Coalition } from "./coalition.ts";
 import { startServer, type ConfigOverrides } from "./server.ts";
 import { economist, turtle, warlord, type Strategy } from "./strategies.ts";
 import { finalSnapshot, foundRulers, runWorld, type Ruler, type WorldRun } from "./world.ts";
 
 const usage = `Play coalitions of ten against each other and report how each group fared.
 
-  node src/coalitions.ts [--turns 120] [--set path=value ...] [--compare] [--out run.json]
+  node src/coalitions.ts [--turns 120] [--set path=value ...] [--compare] [--guard] [--out run.json]
 
 Three groups of ten with the same make-up (5 economists, 3 warlords, 2 turtles): Order, a coalition whose warlords
 strike together through a war council; Horde, a coalition whose warlords each pick their own target; and Free, ten
-kingdoms in no alliance. The merchant bots play too.`;
+kingdoms in no alliance. The merchant bots play too. With --guard, Order's turtles become guardians who send soldiers to
+stand guard with their weakest allies.`;
 
 const { values } = parseArgs({
   options: {
     turns: { type: "string", default: "120" },
     set: { type: "string", multiple: true, default: [] },
     compare: { type: "boolean", default: false },
+    guard: { type: "boolean", default: false },
     out: { type: "string" },
     help: { type: "boolean", default: false },
   },
@@ -41,7 +43,7 @@ const overrides: ConfigOverrides = Object.fromEntries(
   }),
 );
 
-const makeUp = (warlords: () => Strategy): Strategy[] => [
+const makeUp = (warlords: () => Strategy, turtles: () => Strategy = () => turtle): Strategy[] => [
   economist,
   economist,
   economist,
@@ -50,8 +52,8 @@ const makeUp = (warlords: () => Strategy): Strategy[] => [
   warlords(),
   warlords(),
   warlords(),
-  turtle,
-  turtle,
+  turtles(),
+  turtles(),
 ];
 
 type Group = { name: string; rulers: Ruler[] };
@@ -61,7 +63,9 @@ const simulate = async (label: string, configOverrides: ConfigOverrides): Promis
   const server = await startServer(configOverrides);
   try {
     const world = new World(server.url);
-    const order: Coalition = await foundCoalition(world, "Order", council => makeUp(() => coalitionWarlord(council)));
+    const order: Coalition = await foundCoalition(world, "Order", council =>
+      makeUp(() => coalitionWarlord(council), values.guard ? () => guardian(council) : () => turtle),
+    );
     const horde: Coalition = await foundCoalition(world, "Horde", () => makeUp(() => warlord()));
     const free: Group = {
       name: "Free",

@@ -1,5 +1,6 @@
 import type { Player, World } from "./client.ts";
-import { armyAtHome, armyPower, attackableKingdoms, estimatedDefense, raiseArmy, type Strategy } from "./strategies.ts";
+import { armyAtHome, armyPower, attackableKingdoms, estimatedDefense, raiseArmy, turtle, type Strategy } from "./strategies.ts";
+import { militaryUnits, type Counts, type UnitName } from "./types.ts";
 import { foundRulers, type Ruler } from "./world.ts";
 
 /**
@@ -7,6 +8,8 @@ import { foundRulers, type Ruler } from "./world.ts";
  * its defense as the spies saw it, and how much strength has already marched on it
  */
 export type Council = {
+  /** every member, so allies can look out for each other */
+  members: Player[];
   warlords: Player[];
   turn: number;
   target: string | null;
@@ -60,11 +63,38 @@ export const coalitionWarlord = (council: Council, attackEvery = 6): Strategy =>
 });
 
 /**
+ * a turtle that guards the coalition: it builds walls and an army like a turtle, and every few turns sends half of the
+ * soldiers it has at home to stand guard with the ally whose defense is weakest for its size
+ */
+export const guardian = (council: Council, guardEvery = 6): Strategy => ({
+  name: "guardian",
+  weaponsPercentage: turtle.weaponsPercentage,
+  play: async context => {
+    await turtle.play(context);
+    const { player, kingdom, turn } = context;
+    if (turn % guardEvery !== 0) return;
+    const allies = await Promise.all(
+      council.members
+        .filter(member => member.name !== player.name)
+        .map(async member => ({ member, defense: (await member.details()).defensePower, land: (await member.kingdom()).resources.land })),
+    );
+    const weakest = allies.sort((one, other) => one.defense / one.land - other.defense / other.land)[0];
+    if (!weakest) return;
+    const half = Object.fromEntries(militaryUnits.map(unit => [unit, Math.floor(kingdom.units.availableUnits[unit] / 2)])) as Partial<
+      Counts<UnitName>
+    >;
+    if (militaryUnits.every(unit => (half[unit] ?? 0) === 0)) return;
+    await player.sendReinforcements(weakest.member.name, half);
+  },
+});
+
+/**
  * founds the rulers of one coalition: the first founds the alliance and invites the others, who accept; warlords made
  * with `coalitionWarlord(coalition.council)` march together
  */
 export const foundCoalition = async (world: World, name: string, roles: (council: Council) => Strategy[]): Promise<Coalition> => {
   const council: Council = {
+    members: [],
     warlords: [],
     turn: -1,
     target: null,
@@ -73,6 +103,7 @@ export const foundCoalition = async (world: World, name: string, roles: (council
   };
   const strategies = roles(council);
   const rulers = await foundRulers(world, strategies, name);
+  council.members = rulers.map(ruler => ruler.player);
   council.warlords = rulers.filter(ruler => ruler.strategy.name === "allied warlord").map(ruler => ruler.player);
   const [leader, ...members] = rulers;
   const created = await leader.player.createAlliance(name);

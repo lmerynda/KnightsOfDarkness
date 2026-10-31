@@ -48,9 +48,11 @@ export const invariantViolations = (kingdoms: Kingdom[], config: GameConfig, tur
     const used = sum(buildingNames.map(building => kingdom.buildings[building]));
     if (used > kingdom.resources.land) problems.push(`${where}: ${used} buildings on ${kingdom.resources.land} land`);
     if (kingdom.resources.turns > config.common.maxTurns) problems.push(`${where}: ${kingdom.resources.turns} turns stored`);
-    const marching = sum(kingdom.ongoingAttacks.flatMap(attack => militaryUnits.map(unit => attack.units[unit] ?? 0)));
+    const marching = sum(
+      [...kingdom.ongoingAttacks, ...kingdom.reinforcements].flatMap(group => militaryUnits.map(unit => group.units[unit] ?? 0)),
+    );
     const away = sum(militaryUnits.map(unit => kingdom.units.mobileUnits[unit]));
-    if (marching !== away) problems.push(`${where}: ${away} soldiers away but ${marching} in marching armies`);
+    if (marching !== away) problems.push(`${where}: ${away} soldiers away but ${marching} in marching armies and garrisons`);
   }
   return problems;
 };
