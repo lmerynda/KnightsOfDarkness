@@ -5,12 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.common.kingdom.AttackType;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.web.common.kingdom.SendReinforcementsDto;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
@@ -24,6 +28,7 @@ import com.knightsofdarkness.web.kingdom.model.KingdomInteractor;
 import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.legacy.TestGame;
+import com.knightsofdarkness.web.round.RoundReset;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class ReinforcementTest
@@ -63,7 +68,7 @@ class ReinforcementTest
     {
         for (int turn = 0; turn < turns; turn++)
         {
-            kingdom.getResources().addCount(com.knightsofdarkness.web.common.kingdom.ResourceName.turns, 1);
+            kingdom.getResources().addCount(ResourceName.turns, 1);
             new KingdomTurnAction(kingdom, game.getKingdomInteractor(), config, details).passTurn(0);
         }
     }
@@ -145,6 +150,18 @@ class ReinforcementTest
         assertEquals(0, guardian.getUnits().getMobileCount(UnitName.infantry));
         assertThat(farmer.getGarrisons()).isEmpty();
         assertThat(guardian.getReinforcements()).isEmpty();
+    }
+
+    @Test
+    void newRound_shouldClearGarrisonsOnBothSides()
+    {
+        standGuard(40);
+
+        RoundReset.reset(List.of(guardian, farmer, raider), Set.of(), config);
+
+        assertThat(guardian.getReinforcements()).isEmpty();
+        assertThat(farmer.getGarrisons()).isEmpty();
+        assertEquals(0, guardian.getUnits().getMobileCount(UnitName.infantry));
     }
 
     @Test
