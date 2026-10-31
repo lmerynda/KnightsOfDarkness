@@ -70,7 +70,12 @@ const snapshot = (kingdom: Kingdom, turn: number, defense: number): Snapshot => 
  * plays the given rulers for a number of turns: each turn the clock gives everyone a turn (bots act too), then every
  * ruler plays its strategy and passes the turn; the world is measured and checked after every turn
  */
-export const runWorld = async (world: World, rulers: Ruler[], turns: number, options: { bots?: boolean } = {}): Promise<WorldRun> => {
+export const runWorld = async (
+  world: World,
+  rulers: Ruler[],
+  turns: number,
+  options: { bots?: boolean; afterTurn?: (turn: number) => Promise<void> } = {},
+): Promise<WorldRun> => {
   const config = await world.config();
   const timeline: Snapshot[] = [];
   const violations: string[] = [];
@@ -91,6 +96,8 @@ export const runWorld = async (world: World, rulers: Ruler[], turns: number, opt
       const kingdom = kingdoms.find(candidate => candidate.name === ruler.player.name);
       if (kingdom) timeline.push(snapshot(kingdom, turn, (await ruler.player.details()).defensePower));
     }
+    // a pause for whoever watches the world, for example to look at it in the browser
+    await options.afterTurn?.(turn);
   }
 
   const battles = new Map<string, BattleReport>();

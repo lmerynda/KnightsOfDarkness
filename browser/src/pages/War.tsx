@@ -146,7 +146,6 @@ const Marching: React.FC = () => {
           <thead>
             <tr>
               <th>Target</th>
-              <th>Goal</th>
               <th>Army</th>
               <th className="number">Arrives in</th>
               <th />
@@ -155,8 +154,10 @@ const Marching: React.FC = () => {
           <tbody>
             {kingdom.ongoingAttacks.map(attack => (
               <tr key={attack.id}>
-                <td>{attack.to}</td>
-                <td>{attack.attackType === "land" ? "Take land" : "Plunder"}</td>
+                <td>
+                  {attack.to}
+                  <span className="muted block">{attack.attackType === "land" ? "to take land" : "to plunder"}</span>
+                </td>
                 <td>{unitList(attack.units)}</td>
                 <td className="number">{plural(attack.turnsLeft, "turn", "turns")}</td>
                 <td className="number">

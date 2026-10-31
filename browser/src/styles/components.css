@@ -205,6 +205,11 @@
   color: var(--pewter);
 }
 
+.muted.block {
+  display: block;
+  font-size: 0.85em;
+}
+
 .gain {
   color: var(--moss);
 }

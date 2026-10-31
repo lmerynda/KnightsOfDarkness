@@ -68,3 +68,11 @@ cd simulation && npm run sim -- --players economist,warlord,turtle --turns 30 --
 ```
 
 It prints land, gold, food, buildings, people, army, defense and battles for every ruler, with the change against the base run in brackets; `--out run.json` keeps the full per-turn timelines.
+
+To see how the game looks as a world unfolds, play one and photograph the real browser UI along the way (needs `npm install` in `browser/` and an installed Chrome; the UI runs on port 3001):
+
+```bash
+cd simulation && npm run stages -- --turns 12,30,60
+```
+
+Screenshots land in `simulation/stages`: a newcomer's first look, a warlord at every listed turn, and at the last turn the economist it raided, a turtle and a phone-sized view.
