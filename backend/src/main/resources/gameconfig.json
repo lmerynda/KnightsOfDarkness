@@ -162,6 +162,8 @@
         "foodUpkeepPerUnit": 10,
         "ironConsumptionPerProductionUnit": 1,
         "specialBuildingMaxCount": 5,
+        "specialBuildingMaxLevel": 5,
+        "starvationLeaveRatio": 0.1,
         "newTurnPeriodicity": 10000,
         "maxNotificationsCount": 15,
         "turnsToDeliverResources": 2,

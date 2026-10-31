@@ -131,6 +131,14 @@ public class KingdomEntity
         return units.countAll() + resources.getCount(ResourceName.unemployed);
     }
 
+    /**
+     * soldiers live in barracks, everyone else needs a house
+     */
+    public int getHousedPeopleCount()
+    {
+        return getTotalPeopleCount() - units.countAllMilitary();
+    }
+
     public int getUnusedLand()
     {
         return resources.getCount(ResourceName.land) - buildings.countAll();

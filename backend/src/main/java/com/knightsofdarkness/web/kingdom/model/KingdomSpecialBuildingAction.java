@@ -1,9 +1,8 @@
 package com.knightsofdarkness.web.kingdom.model;
 
-import java.util.Optional;
-
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
@@ -23,12 +22,18 @@ public class KingdomSpecialBuildingAction {
 
     public Optional<KingdomSpecialBuildingEntity> startSpecialBuilding(SpecialBuildingType buildingType)
     {
+        if (buildingType == null || buildingType == SpecialBuildingType.emptyBuilding)
+        {
+            return Optional.empty();
+        }
+
         if (kingdom.getSpecialBuildings().size() >= gameConfig.common().specialBuildingMaxCount())
         {
             return Optional.empty();
         }
 
-        var specialBuilding = new KingdomSpecialBuildingEntity(Id.generate(), kingdom, buildingType, 0, 0, 10000, false);
+        var firstLevelCost = gameConfig.specialBuildingCosts().getCost(buildingType);
+        var specialBuilding = new KingdomSpecialBuildingEntity(Id.generate(), kingdom, buildingType, 0, 0, firstLevelCost, false);
         kingdom.getSpecialBuildings().add(specialBuilding);
 
         return Optional.of(specialBuilding);
@@ -44,36 +49,37 @@ public class KingdomSpecialBuildingAction {
         return Optional.of(Collections.min(kingdom.getSpecialBuildings(), Comparator.comparingInt(specialBuilding -> specialBuilding.level)));
     }
 
+    /**
+     * puts building points into the building, completing at most one level, every level costs twice as much as the previous one
+     *
+     * @return building points spent
+     */
     public int buildSpecialBuilding(KingdomSpecialBuildingEntity specialBuilding, int buildingPoints)
     {
         if (specialBuilding.isMaxLevel())
         {
-            // log.info("[{}] special building {} is at max level", name, specialBuilding.getBuildingType());
             return 0;
         }
-        // TODO encapsulate this functionality
+
+        var spendable = Math.max(0, Math.min(buildingPoints, kingdom.getResources().getCount(ResourceName.buildingPoints)));
         var buildingPointsRemaining = specialBuilding.buildingPointsRequired - specialBuilding.buildingPointsPut;
-        var kingdomBuildingPoints = kingdom.getResources().getCount(ResourceName.buildingPoints);
-        if (buildingPoints >= buildingPointsRemaining)
+        if (spendable < buildingPointsRemaining)
         {
-            var buildingPointsToSpend = Math.min(kingdomBuildingPoints, buildingPointsRemaining);
-            kingdom.getResources().subtractCount(ResourceName.buildingPoints, buildingPointsToSpend);
-            specialBuilding.buildingPointsPut = 0;
-            specialBuilding.level++;
-            specialBuilding.buildingPointsRequired *= 2;
-            if (specialBuilding.level >= 5)
-            {
-                specialBuilding.isMaxLevel = true;
-                specialBuilding.buildingPointsRequired = 0;
-            }
-            return buildingPointsToSpend;
-        } else
-        {
-            var buildingPointsToSpend = Math.min(kingdomBuildingPoints, buildingPoints);
-            kingdom.getResources().subtractCount(ResourceName.buildingPoints, buildingPointsToSpend);
-            specialBuilding.buildingPointsPut += buildingPointsToSpend;
-            return buildingPointsToSpend;
+            kingdom.getResources().subtractCount(ResourceName.buildingPoints, spendable);
+            specialBuilding.buildingPointsPut += spendable;
+            return spendable;
         }
+
+        kingdom.getResources().subtractCount(ResourceName.buildingPoints, buildingPointsRemaining);
+        specialBuilding.buildingPointsPut = 0;
+        specialBuilding.level++;
+        specialBuilding.buildingPointsRequired *= 2;
+        if (specialBuilding.level >= gameConfig.common().specialBuildingMaxLevel())
+        {
+            specialBuilding.isMaxLevel = true;
+            specialBuilding.buildingPointsRequired = 0;
+        }
+        return buildingPointsRemaining;
     }
 
     public boolean demolishSpecialBuilding(UUID id)

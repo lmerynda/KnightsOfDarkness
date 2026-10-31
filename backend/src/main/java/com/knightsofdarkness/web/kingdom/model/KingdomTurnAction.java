@@ -1,5 +1,9 @@
 package com.knightsofdarkness.web.kingdom.model;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +45,7 @@ public class KingdomTurnAction {
         proffesionalsLeavingDueToInsufficientBuildings();
         peopleLeavingDueToInsuficientHousing();
         double nourishmentProductionFactor = eatFood();
+        peopleLeavingDueToHunger(nourishmentProductionFactor);
         results.nourishmentProductionFactor = nourishmentProductionFactor;
         results.weaponsProductionPercentage = weaponsProductionPercentage;
         doProduction(nourishmentProductionFactor, weaponsProductionPercentage);
@@ -83,100 +88,105 @@ public class KingdomTurnAction {
     private void peopleLeavingDueToInsuficientHousing()
     {
         var housingCapacity = getHousingCapacity();
-        var peopleCount = kingdom.getTotalPeopleCount();
+        var peopleCount = kingdom.getHousedPeopleCount();
         if (housingCapacity >= peopleCount)
         {
             return;
         }
 
-        int peopleToExile = peopleCount - housingCapacity;
-        int unemployed = kingdom.getResources().getCount(ResourceName.unemployed);
-        if (unemployed >= peopleToExile)
+        results.exiledPeople = removeCivilians(peopleCount - housingCapacity);
+    }
+
+    private void peopleLeavingDueToHunger(double nourishmentProductionFactor)
+    {
+        if (nourishmentProductionFactor >= 1.0)
         {
-            kingdom.getResources().subtractCount(ResourceName.unemployed, peopleToExile);
-            results.exiledPeople = peopleToExile;
             return;
         }
 
-        fireProfessionalsToMaintainUnemployedCount(peopleToExile);
-
-        kingdom.getResources().subtractCount(ResourceName.unemployed, peopleToExile);
-        results.exiledPeople = peopleToExile;
+        var hungryPeople = (int) Math.ceil((1 - nourishmentProductionFactor) * kingdom.getHousedPeopleCount() * config.common().starvationLeaveRatio());
+        results.starvedPeople = removeCivilians(hungryPeople);
     }
 
-    private void fireProfessionalsToMaintainUnemployedCount(int peopleToExile)
+    /**
+     * the unemployed leave first, when there are not enough of them, workers are fired to leave as well
+     *
+     * @return number of people who left the kingdom
+     */
+    private int removeCivilians(int count)
     {
-        int professionalsToFire = peopleToExile - kingdom.getResources().getCount(ResourceName.unemployed);
-        fireProfessionalsBasedOnRatios(professionalsToFire);
-        professionalsToFire = peopleToExile - kingdom.getResources().getCount(ResourceName.unemployed);
-        fireProfessionalsBasedOnCount(professionalsToFire);
-    }
-
-    private void fireProfessionalsBasedOnRatios(int professionalsToFire)
-    {
-        var unitsRatios = kingdom.getUnits().getUnitsRatios();
-        for (var unit : UnitName.values())
+        var unemployed = kingdom.getResources().getCount(ResourceName.unemployed);
+        if (unemployed < count)
         {
-            // we don't want to fire more that we absolutaly have to, we'll take care of the remainder later on
-            var toFire = (int) Math.floor(unitsRatios.get(unit) * professionalsToFire);
-            kingdom.units.subtractAvailableCount(unit, toFire);
-            kingdom.getResources().addCount(ResourceName.unemployed, toFire);
-            results.addLeavingProfessionals(unit, toFire);
+            var civilians = Arrays.stream(UnitName.values()).filter(unit -> !unit.isMilitary()).toList();
+            dismissProportionally(civilians, count - unemployed);
+        }
+
+        var leaving = Math.min(count, kingdom.getResources().getCount(ResourceName.unemployed));
+        kingdom.getResources().subtractCount(ResourceName.unemployed, leaving);
+        return leaving;
+    }
+
+    /**
+     * dismisses units that are at home, proportionally to how many of each there are, dismissed units become unemployed
+     */
+    private void dismissProportionally(List<UnitName> candidates, int count)
+    {
+        var units = kingdom.getUnits();
+        var available = candidates.stream().mapToInt(units::getAvailableCount).sum();
+        var toDismiss = Math.min(count, available);
+        if (toDismiss <= 0)
+        {
+            return;
+        }
+
+        var dismissed = 0;
+        for (var unit : candidates)
+        {
+            // we don't want to dismiss more than we have to, the remainder is handled one by one below
+            var share = (int) Math.floor((double) units.getAvailableCount(unit) / available * toDismiss);
+            dismissAvailable(unit, share);
+            dismissed += share;
+        }
+
+        while (dismissed < toDismiss)
+        {
+            for (var unit : candidates)
+            {
+                if (dismissed < toDismiss && units.getAvailableCount(unit) > 0)
+                {
+                    dismissAvailable(unit, 1);
+                    dismissed++;
+                }
+            }
         }
     }
 
-    private void fireProfessionalsBasedOnCount(int professionalsToFire)
+    private void dismissAvailable(UnitName unit, int count)
     {
-        int loopCount = 0;
-        while (professionalsToFire > 0)
-        {
-            for (var unit : UnitName.values())
-            {
-                if (professionalsToFire <= 0)
-                {
-                    return;
-                }
-
-                // TODO how about firing while unit is mobile?
-                var count = kingdom.getUnits().getTotalCount(unit);
-                if (count > 0)
-                {
-                    kingdom.units.subtractAvailableCount(unit, 1);
-                    kingdom.getResources().addCount(ResourceName.unemployed, 1);
-                    results.addLeavingProfessionals(unit, 1);
-                    professionalsToFire--;
-                }
-            }
-
-            if (loopCount++ > 5)
-            {
-                log.error("Firing professionals based on count exceeded 5 iterations, something is wrong");
-                return;
-            }
-
-            loopCount++;
-        }
+        kingdom.getUnits().subtractAvailableCount(unit, count);
+        kingdom.getResources().addCount(ResourceName.unemployed, count);
+        results.addLeavingProfessionals(unit, count);
     }
 
+    /**
+     * every building houses a limited number of its workers, all military units share the barracks
+     */
     private void proffesionalsLeavingDueToInsufficientBuildings()
     {
-        for (var unit : UnitName.values())
+        for (var building : BuildingName.values())
         {
-            var maybeBuildingType = BuildingName.getByUnit(unit);
-            if (maybeBuildingType.isEmpty())
+            var housedUnits = Arrays.stream(UnitName.values()).filter(unit -> BuildingName.getByUnit(unit).equals(Optional.of(building))).toList();
+            if (housedUnits.isEmpty())
             {
                 continue;
             }
-            var building = maybeBuildingType.get();
+
             var capacity = kingdom.getBuildingCapacity(building, config);
-            // TODO how about firing while unit is mobile?
-            var count = kingdom.getUnits().getTotalCount(unit);
-            if (count > capacity)
+            var occupancy = housedUnits.stream().mapToInt(kingdom.getUnits()::getTotalCount).sum();
+            if (occupancy > capacity)
             {
-                var leaving = count - capacity;
-                kingdom.units.subtractAvailableCount(unit, leaving);
-                kingdom.getResources().addCount(ResourceName.unemployed, leaving);
-                results.addLeavingProfessionals(unit, leaving);
+                dismissProportionally(housedUnits, occupancy - capacity);
             }
         }
     }
@@ -193,7 +203,6 @@ public class KingdomTurnAction {
      */
     private double eatFood()
     {
-        // TODO consequences of not having enough food
         int foodAvailable = kingdom.getResources().getCount(ResourceName.food);
         int foodUpkeep = kingdomDetailsProvider.getFoodUpkeep(kingdom);
 
@@ -265,7 +274,7 @@ public class KingdomTurnAction {
     private void getNewPeople()
     {
         var housingCapacity = getHousingCapacity();
-        var peopleCount = kingdom.getTotalPeopleCount();
+        var peopleCount = kingdom.getHousedPeopleCount();
         if (housingCapacity > peopleCount)
         {
             int arrivingPeople = housingCapacity - peopleCount;

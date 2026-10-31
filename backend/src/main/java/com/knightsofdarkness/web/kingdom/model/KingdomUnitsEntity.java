@@ -180,6 +180,11 @@ public class KingdomUnitsEntity
         return UnitName.getMilitaryUnits().stream().mapToInt(availableUnits::get).sum();
     }
 
+    public int countAllMilitary()
+    {
+        return UnitName.getMilitaryUnits().stream().mapToInt(this::getTotalCount).sum();
+    }
+
     public Map<UnitName, Double> getAvailableMilitaryUnitsRatios()
     {
         var totalMilitaryCount = countAvailableMilitary();

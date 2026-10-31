@@ -1,5 +1,8 @@
 package com.knightsofdarkness.web.kingdom.model;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
@@ -33,7 +36,7 @@ public class KingdomTrainAction {
             {
                 var buildingType = maybeBuildingType.get();
                 var buildingCapacity = gameConfig.buildingCapacity().getCapacity(buildingType);
-                var buildingOccupancy = kingdom.units.getTotalCount(unitName);
+                var buildingOccupancy = Arrays.stream(UnitName.values()).filter(unit -> BuildingName.getByUnit(unit).equals(Optional.of(buildingType))).mapToInt(kingdom.units::getTotalCount).sum();
                 var freeCapacity = kingdom.buildings.getCount(buildingType) * buildingCapacity - buildingOccupancy;
                 howManyToTrain = Math.max(0, Math.min(howManyToTrain, freeCapacity));
             }

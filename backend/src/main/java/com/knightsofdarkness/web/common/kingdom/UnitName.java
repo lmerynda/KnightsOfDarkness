@@ -25,6 +25,11 @@ public enum UnitName
         };
     }
 
+    public boolean isMilitary()
+    {
+        return this == infantry || this == bowman || this == cavalry;
+    }
+
     public static List<UnitName> getMilitaryUnits()
     {
         return List.of(infantry, bowman, cavalry);

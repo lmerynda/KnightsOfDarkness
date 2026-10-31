@@ -6,6 +6,8 @@ public record Common(
         int foodUpkeepPerUnit,
         int ironConsumptionPerProductionUnit,
         int specialBuildingMaxCount,
+        int specialBuildingMaxLevel,
+        double starvationLeaveRatio,
         int newTurnPeriodicity,
         int maxNotificationsCount,
         int turnsToDeliverResources,
