@@ -57,12 +57,25 @@ class KingdomPopulationTest {
     @Test
     void hunger_shouldMakePeopleLeave()
     {
-        var kingdom = new KingdomBuilder(game).withResource(ResourceName.food, 0).build();
+        var kingdom = new KingdomBuilder(game).withResource(ResourceName.food, 0).withUnit(UnitName.farmer, 0).build();
         var housedPeople = kingdom.getHousedPeopleCount();
 
         var report = turnAction(kingdom).passTurn(0).turnReport().get();
 
         assertEquals((int) Math.ceil(housedPeople * gameConfig.common().starvationLeaveRatio()), report.starvedPeople);
+    }
+
+    @Test
+    void harvest_shouldFeedPeopleEvenFromAnEmptyGranary()
+    {
+        // the starting ten farmers grow more than the kingdom eats
+        var kingdom = new KingdomBuilder(game).withResource(ResourceName.food, 0).build();
+
+        var report = turnAction(kingdom).passTurn(0).turnReport().get();
+
+        assertEquals(1.0, report.nourishmentProductionFactor);
+        assertEquals(0, report.starvedPeople);
+        assertEquals(report.resourcesProduced.get(ResourceName.food) - report.foodConsumed, kingdom.getResources().getCount(ResourceName.food));
     }
 
     @Test

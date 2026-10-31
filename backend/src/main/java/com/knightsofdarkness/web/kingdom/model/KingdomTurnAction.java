@@ -44,12 +44,14 @@ public class KingdomTurnAction {
         resetBuildingPoints();
         proffesionalsLeavingDueToInsufficientBuildings();
         peopleLeavingDueToInsuficientHousing();
+        // farmers eat from their fields, so the harvest comes in before the kingdom eats
+        results.weaponsProductionPercentage = weaponsProductionPercentage;
+        doProduction(List.of(ResourceName.food), 1.0, weaponsProductionPercentage);
         double nourishmentProductionFactor = eatFood();
         peopleLeavingDueToHunger(nourishmentProductionFactor);
         results.nourishmentProductionFactor = nourishmentProductionFactor;
-        results.weaponsProductionPercentage = weaponsProductionPercentage;
-        doProduction(nourishmentProductionFactor, weaponsProductionPercentage);
-        // TODO food production should happen before consumption
+        var otherResources = ResourceName.productionResourceNames().stream().filter(resource -> resource != ResourceName.food).toList();
+        doProduction(otherResources, nourishmentProductionFactor, weaponsProductionPercentage);
         getNewPeople();
         processCarriersOnTheMove();
         processAttacks();
@@ -224,12 +226,12 @@ public class KingdomTurnAction {
         return fedPeopleRatio;
     }
 
-    private void doProduction(double nourishmentProductionFactor, int weaponsProductionPercentage)
+    private void doProduction(List<ResourceName> resources, double nourishmentProductionFactor, int weaponsProductionPercentage)
     {
         var productionConfig = config.production();
         var sizeProductionBonus = getKingdomSizeProductionBonus(kingdom.getOccupiedLand());
 
-        for (var resourceType : ResourceName.productionResourceNames())
+        for (var resourceType : resources)
         {
             var unitName = UnitName.getByProductionResourceType(resourceType);
             var resourceProduction = kingdom.getUnits().getAvailableCount(unitName) * nourishmentProductionFactor * productionConfig.getProductionRate(unitName);
