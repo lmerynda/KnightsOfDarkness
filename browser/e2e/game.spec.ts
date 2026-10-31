@@ -191,6 +191,49 @@ test("an alliance is founded and a second kingdom joins it", async ({ page }) =>
   await expect(page.locator("tbody")).toContainText(emperor.kingdomName);
 });
 
+test("an ally's soldiers stand guard and go home when called", async ({ page, browser }) => {
+  const squire = await foundKingdom(page, "Squire");
+  await signOut(page);
+  const emperor = await foundKingdom(page, "Emperor");
+  await goTo(page, "Alliance");
+  await page.getByLabel("Alliance name").fill(`Shield ${Date.now() % 100000}`);
+  await page.getByRole("button", { name: "Found it" }).click();
+  await page.getByRole("combobox", { name: /^Kingdom/ }).selectOption(squire.kingdomName);
+  await page.getByRole("button", { name: "Send invitation" }).click();
+  await expect(toast(page, `Invitation sent to ${squire.kingdomName}`)).toBeVisible();
+
+  const squirePage = await browser.newPage();
+  await signIn(squirePage, squire.email, password);
+  await goTo(squirePage, "Alliance");
+  await squirePage.getByRole("button", { name: "Join" }).click();
+  await goTo(squirePage, "Overview");
+  const passed = squirePage.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
+  await squirePage.getByRole("button", { name: "Pass 5 turns" }).click();
+  await passed;
+  await expect(toast(squirePage, /5 turns have passed/)).toBeVisible();
+  await goTo(squirePage, "Train");
+  await squirePage.getByLabel("Infantry to train", { exact: true }).fill("10");
+  await squirePage.getByRole("button", { name: "Train them" }).click();
+  await expect(toast(squirePage, "Trained 10 recruits")).toBeVisible();
+  await goTo(squirePage, "Army");
+  await squirePage.getByRole("combobox", { name: "Ally" }).selectOption(emperor.kingdomName);
+  await squirePage.getByLabel(/^Infantry to send, \d+ at home/).fill("10");
+  await squirePage.getByRole("button", { name: "Send to stand guard" }).click();
+  await expect(toast(squirePage, `10 soldiers march to stand guard in ${emperor.kingdomName}`)).toBeVisible();
+  for (let turn = 0; turn < 2; turn++) {
+    await passTurn(squirePage);
+  }
+  await expect(squirePage.locator("main")).toContainText(`10 infantry stand guard in ${emperor.kingdomName}`);
+
+  await goTo(page, "Overview");
+  await goTo(page, "Army");
+  await expect(page.locator("main")).toContainText(`10 infantry from ${squire.kingdomName} stand guard with us`);
+
+  await squirePage.getByRole("button", { name: "Call home" }).click();
+  await expect(toast(squirePage, "Our soldiers are home again")).toBeVisible();
+  await squirePage.close();
+});
+
 test("allies see each other's armies and join the strike", async ({ page, browser }) => {
   const other = await browser.newPage();
   const { kingdomName: target } = await foundKingdom(other, "Target");

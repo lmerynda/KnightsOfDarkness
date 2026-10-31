@@ -62,6 +62,9 @@ export const api = {
   sendAttack: (destinationKingdomName: string, attackType: AttackType, units: Partial<Counts<UnitName>>): Promise<ActionResult> =>
     post("/kingdom/send-attack", { destinationKingdomName, attackType, units }),
   recallAttack: (id: string): Promise<boolean> => post("/kingdom/withdraw-attack", id),
+  sendReinforcements: (hostKingdomName: string, units: Partial<Counts<UnitName>>): Promise<ActionResult> =>
+    post("/kingdom/send-reinforcements", { hostKingdomName, units }),
+  recallReinforcements: (id: string): Promise<boolean> => post("/kingdom/recall-reinforcements", id),
 
   sendSpies: (targetKingdomName: string, spies: number): Promise<ActionResult & { report: SpyReport | null }> =>
     post("/war/send-spies", { targetKingdomName, spies }),

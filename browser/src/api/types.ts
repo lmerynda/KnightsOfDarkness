@@ -102,7 +102,14 @@ export type Kingdom = {
   allianceName: string | null;
   /** turns left during which nobody may march on this kingdom */
   protectionTicks: number;
+  /** our soldiers on the way to, or standing guard in, allied kingdoms */
+  reinforcements: Reinforcement[];
+  /** allied soldiers on the way to, or standing guard in, this kingdom */
+  garrisons: Reinforcement[];
 };
+
+/** soldiers sent to stand guard with an ally; they defend once turnsLeft reaches 0 */
+export type Reinforcement = { id: string; from: string; to: string; turnsLeft: number; units: Partial<Counts<UnitName>> };
 
 export type KingdomDetails = {
   usedLand: number;
@@ -167,6 +174,8 @@ export type BattleReport = {
   defenderLosses: Partial<Counts<UnitName>>;
   attackerArrowLosses: Partial<Counts<UnitName>>;
   defenderArrowLosses: Partial<Counts<UnitName>>;
+  /** the part of the defender's losses that fell on allied garrisons */
+  alliedLosses: Partial<Counts<UnitName>>;
   attackPower: number;
   defensePower: number;
   attackerWon: boolean;

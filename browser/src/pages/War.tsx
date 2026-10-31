@@ -163,6 +163,99 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (
   );
 };
 
+const soldiersIn = (units: Partial<Counts<UnitName>>): number => militaryUnits.reduce((sum, unit) => sum + (units[unit] ?? 0), 0);
+
+/** allies stand guard in each other's kingdoms: send soldiers, see who stands where, and call them home */
+const StandGuard: React.FC = () => {
+  const { kingdom, rankings, act } = useGame();
+  const [host, setHost] = useState("");
+  const [guard, setGuard] = useState<Partial<Counts<MilitaryUnit>>>({});
+  if (!kingdom.allianceName) return null;
+  const allies = (rankings?.kingdoms ?? []).filter(rank => rank.allianceName === kingdom.allianceName && rank.kingdomName !== kingdom.name);
+  const sending = soldiersIn(guard);
+
+  const send = async (): Promise<void> => {
+    const result = await act(
+      () => api.sendReinforcements(host, guard),
+      outcome => ({ text: outcome.message, failure: !outcome.success }),
+    );
+    if (result?.success) setGuard({});
+  };
+  const recall = (id: string): void =>
+    void act(
+      () => api.recallReinforcements(id),
+      () => ({ text: "Our soldiers are home again" }),
+    );
+
+  return (
+    <Panel
+      title="Stand guard with allies"
+      lede="Soldiers sent to an ally reach it after two of your turns and defend it beside its own, sharing its losses. They stay yours: you feed them and can call them home at once."
+    >
+      <div className="stack">
+        <label className="field">
+          <span>Ally</span>
+          <select className="select" value={host} onChange={event => setHost(event.target.value)}>
+            <option value="">Choose an ally</option>
+            {allies.map(ally => (
+              <option key={ally.kingdomName} value={ally.kingdomName}>
+                {ally.kingdomName}, {formatNumber(ally.land)} land
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="army-picker">
+          {militaryUnits.map(unit => (
+            <AmountField
+              key={unit}
+              label={`${unitLore[unit].plural} to send, ${formatNumber(kingdom.units.availableUnits[unit])} at home`}
+              value={guard[unit] ?? 0}
+              onChange={count => setGuard(current => ({ ...current, [unit]: count }))}
+              max={kingdom.units.availableUnits[unit]}
+            />
+          ))}
+        </div>
+        <div className="row">
+          <button className="button" type="button" disabled={!host || sending === 0} onClick={send}>
+            Send to stand guard
+          </button>
+        </div>
+        {kingdom.reinforcements.length ? (
+          <ul className="plain-list">
+            {kingdom.reinforcements.map(sent => (
+              <li key={sent.id}>
+                <span>
+                  {unitList(sent.units)}{" "}
+                  {sent.turnsLeft > 0
+                    ? `on the way to ${sent.to}, ${plural(sent.turnsLeft, "turn", "turns")} left`
+                    : `stand guard in ${sent.to}`}
+                </span>
+                <button className="button quiet small" type="button" onClick={() => recall(sent.id)}>
+                  Call home
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {kingdom.garrisons.length ? (
+          <ul className="plain-list">
+            {kingdom.garrisons.map(garrison => (
+              <li key={garrison.id}>
+                <span>
+                  {unitList(garrison.units)} from {garrison.from}{" "}
+                  {garrison.turnsLeft > 0
+                    ? `arrive in ${plural(garrison.turnsLeft, "of their turns", "of their turns")}`
+                    : "stand guard with us"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </Panel>
+  );
+};
+
 const Marching: React.FC = () => {
   const { kingdom, act } = useGame();
   if (kingdom.ongoingAttacks.length === 0) {
@@ -216,7 +309,12 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
   const attacking = report.attacker === own;
   const won = attacking === report.attackerWon;
   const other = attacking ? report.defender : report.attacker;
-  const ourLosses = attacking ? report.attackerLosses : report.defenderLosses;
+  // a defender's losses include the allied garrisons that stood with it; those are told apart
+  const alliedLosses = report.alliedLosses ?? {};
+  const ownDefenderLosses = Object.fromEntries(
+    Object.entries(report.defenderLosses).map(([unit, count]) => [unit, (count ?? 0) - (alliedLosses[unit as UnitName] ?? 0)]),
+  ) as Partial<Counts<UnitName>>;
+  const ourLosses = attacking ? report.attackerLosses : ownDefenderLosses;
   const theirLosses = attacking ? report.defenderLosses : report.attackerLosses;
   const ourArrowLosses = attacking ? report.attackerArrowLosses : report.defenderArrowLosses;
   const theirArrowLosses = attacking ? report.defenderArrowLosses : report.attackerArrowLosses;
@@ -265,6 +363,12 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
             <dt>They lost</dt>
             <Losses losses={theirLosses} arrowLosses={theirArrowLosses} tone="gain" />
           </div>
+          {soldiersIn(alliedLosses) > 0 ? (
+            <div>
+              <dt>{attacking ? "Of them, allies" : "Allies lost"}</dt>
+              <dd className={attacking ? "gain" : "loss"}>{unitList(alliedLosses)}</dd>
+            </div>
+          ) : null}
           {report.attackerWon && report.attackType === "land" ? (
             <div>
               <dt>Land</dt>
@@ -356,13 +460,14 @@ export const War: React.FC = () => {
   return (
     <>
       <Banner image={art("war")} title="Army">
-        Your defense at home is {formatNumber(details.defensePower)}: soldiers, guards, towers and castles. Soldiers sent away do not
-        defend.
+        Your defense at home is {formatNumber(details.defensePower)}: soldiers, guards, allies standing guard, towers and castles. Soldiers
+        sent away do not defend.
       </Banner>
       <div className="stack">
         <SendArmy spyReports={intel} target={target} setTarget={setTarget} onSent={load} />
         <AlliedMarches warRoom={warRoom} onJoin={join} />
         <Marching />
+        <StandGuard />
         <Panel title="Battle reports">
           {reports === null ? (
             <p className="muted">Reading the reports</p>

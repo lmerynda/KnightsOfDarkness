@@ -219,10 +219,13 @@ const Ledger: React.FC<{ onMenu: () => void }> = ({ onMenu }) => {
 export const GameShell: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const { reload } = useGame();
 
+  // allies and enemies change the kingdom between our own actions, so every page opens on fresh state
   useEffect(() => {
     window.scrollTo({ top: 0 });
-  }, [location.pathname]);
+    void reload();
+  }, [location.pathname, reload]);
 
   return (
     <div className="shell">

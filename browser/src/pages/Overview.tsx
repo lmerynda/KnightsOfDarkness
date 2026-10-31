@@ -221,6 +221,14 @@ const Movements: React.FC = () => {
       turns: attack.turnsLeft,
       link: "/kingdom/war",
     })),
+    ...kingdom.reinforcements
+      .filter(sent => sent.turnsLeft > 0)
+      .map(sent => ({
+        id: sent.id,
+        text: `Soldiers on the way to stand guard in ${sent.to}`,
+        turns: sent.turnsLeft,
+        link: "/kingdom/war",
+      })),
     ...kingdom.carriersOnTheMove.map(carriers => ({
       id: carriers.id,
       text: `${formatNumber(carriers.amount)} ${marketResourceLabel[carriers.resource].toLowerCase()} on the road to ${carriers.to}`,
