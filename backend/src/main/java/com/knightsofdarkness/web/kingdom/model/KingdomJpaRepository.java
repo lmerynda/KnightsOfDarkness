@@ -16,10 +16,11 @@ public interface KingdomJpaRepository extends JpaRepository<KingdomEntity, Strin
     Optional<KingdomEntity> findById(Long id);
 
     /**
-     * a single update so the periodic turn never overwrites what players changed in the meantime
+     * a single update so the periodic turn never overwrites what players changed in the meantime, and a new version so
+     * a player change read before the tick is rejected instead of overwriting the turn
      */
     @Modifying
-    @Query("UPDATE KingdomEntity k SET k.resources.turns = k.resources.turns + 1 WHERE k.resources.turns < :maxTurns")
+    @Query("UPDATE KingdomEntity k SET k.resources.turns = k.resources.turns + 1, k.version = k.version + 1 WHERE k.resources.turns < :maxTurns")
     int addTurnBelow(int maxTurns);
 
 }

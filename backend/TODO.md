@@ -11,7 +11,6 @@
 
 1. Controllers and services mix responsibilities: some services return DTOs and some controllers build them; result types differ per action.
 1. Amount and count are used interchangeably for the same thing.
-1. The periodic turn is a bulk update outside optimistic locking, so a player action that read the kingdom before the tick can still overwrite that tick's extra turn.
 1. The Game scenarios CI workflow (simulation and browser jobs) has not run on GitHub yet.
 
 ## Ideas

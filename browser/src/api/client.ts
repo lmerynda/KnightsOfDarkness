@@ -46,14 +46,20 @@ const readMessage = async (response: Response): Promise<string> => {
 
 export const request = async <T>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> => {
   const token = getToken();
-  const response = await fetch(`${apiBase}${path}`, {
-    method: init.method ?? "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: init.body === undefined ? undefined : JSON.stringify(init.body),
-  });
+  const send = (): Promise<Response> =>
+    fetch(`${apiBase}${path}`, {
+      method: init.method ?? "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: init.body === undefined ? undefined : JSON.stringify(init.body),
+    });
+  let response = await send();
+  // the kingdom changed at the same moment (the turn tick, an attack), the server applied nothing, so try once more
+  if (response.status === 409) {
+    response = await send();
+  }
 
   if (response.status === 401 && token) {
     setToken(null);

@@ -186,6 +186,19 @@ class KingdomApiTest {
         assertEquals(1, kingdomRepository.getKingdomByName(kingdomName).orElseThrow().getResources().getCount(ResourceName.gold));
     }
 
+    @Test
+    void periodicTurn_shouldRejectAChangeReadBeforeIt()
+    {
+        var readBeforeTheTick = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
+        var turnsBefore = readBeforeTheTick.getResources().getCount(ResourceName.turns);
+
+        kingdomService.addTurnForEveryone();
+        readBeforeTheTick.getResources().setCount(ResourceName.gold, 1);
+
+        assertThrows(ObjectOptimisticLockingFailureException.class, () -> kingdomRepository.update(readBeforeTheTick));
+        assertEquals(turnsBefore + 1, kingdomRepository.getKingdomByName(kingdomName).orElseThrow().getResources().getCount(ResourceName.turns));
+    }
+
     private long version()
     {
         return jdbcTemplate.queryForObject("SELECT version FROM kingdom_entity WHERE name = ?", Long.class, kingdomName);
