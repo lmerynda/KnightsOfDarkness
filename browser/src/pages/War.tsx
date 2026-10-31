@@ -166,13 +166,17 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (
 const soldiersIn = (units: Partial<Counts<UnitName>>): number => militaryUnits.reduce((sum, unit) => sum + (units[unit] ?? 0), 0);
 
 /** allies stand guard in each other's kingdoms: send soldiers, see who stands where, and call them home */
-const StandGuard: React.FC = () => {
+const StandGuard: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => {
   const { kingdom, rankings, act } = useGame();
   const [host, setHost] = useState("");
   const [guard, setGuard] = useState<Partial<Counts<MilitaryUnit>>>({});
   if (!kingdom.allianceName) return null;
   const allies = (rankings?.kingdoms ?? []).filter(rank => rank.allianceName === kingdom.allianceName && rank.kingdomName !== kingdom.name);
   const sending = soldiersIn(guard);
+  const strengthOf = (name: string): string => {
+    const member = warRoom?.members.find(candidate => candidate.kingdomName === name);
+    return member ? `, defense ${formatNumber(member.defense)}` : "";
+  };
 
   const send = async (): Promise<void> => {
     const result = await act(
@@ -199,7 +203,7 @@ const StandGuard: React.FC = () => {
             <option value="">Choose an ally</option>
             {allies.map(ally => (
               <option key={ally.kingdomName} value={ally.kingdomName}>
-                {ally.kingdomName}, {formatNumber(ally.land)} land
+                {ally.kingdomName}, {formatNumber(ally.land)} land{strengthOf(ally.kingdomName)}
               </option>
             ))}
           </select>
@@ -467,7 +471,7 @@ export const War: React.FC = () => {
         <SendArmy spyReports={intel} target={target} setTarget={setTarget} onSent={load} />
         <AlliedMarches warRoom={warRoom} onJoin={join} />
         <Marching />
-        <StandGuard />
+        <StandGuard warRoom={warRoom} />
         <Panel title="Battle reports">
           {reports === null ? (
             <p className="muted">Reading the reports</p>

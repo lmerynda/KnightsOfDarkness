@@ -20,6 +20,7 @@ import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.AddBotToAllianceResult;
 import com.knightsofdarkness.web.common.alliance.AllianceDto;
 import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
+import com.knightsofdarkness.web.common.alliance.AllianceMemberStrengthDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWarRoomDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
@@ -28,12 +29,14 @@ import com.knightsofdarkness.web.common.alliance.InviteAllianceResult;
 import com.knightsofdarkness.web.common.alliance.LeaveAllianceResult;
 import com.knightsofdarkness.web.common.alliance.RejectAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.RemoveFromAllianceResult;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.common.war.BattleReportDto;
 import com.knightsofdarkness.web.common.war.SpyReportDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
+import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomOngoingAttackEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomReinforcementEntity;
@@ -355,6 +358,9 @@ public class AllianceService {
         var intel = freshest.values().stream().sorted(Comparator.comparing(SpyReportDto::date).reversed()).toList();
         var recentBattles = battles.values().stream().sorted(Comparator.comparing(BattleReportDto::date).reversed()).limit(warRoomReportsPerMember).toList();
         var guards = members.stream().flatMap(member -> member.getReinforcements().stream()).map(KingdomReinforcementEntity::toDto).toList();
-        return Optional.of(new AllianceWarRoomDto(marching, guards, intel, recentBattles));
+        var strength = new KingdomDetailsProvider(gameConfig);
+        var standing = members.stream().map(member -> new AllianceMemberStrengthDto(member.getName(), member.getResources().getCount(ResourceName.land), strength.getDefensePower(member)))
+                .sorted(Comparator.comparingDouble(member -> member.defense() / Math.max(1, member.land()))).toList();
+        return Optional.of(new AllianceWarRoomDto(standing, marching, guards, intel, recentBattles));
     }
 }

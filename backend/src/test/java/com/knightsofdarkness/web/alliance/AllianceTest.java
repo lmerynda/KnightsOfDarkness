@@ -359,6 +359,7 @@ public class AllianceTest
             assertEquals("enemy", march.to);
         });
         assertThat(warRoom.intel()).extracting(SpyReportDto::targetKingdomName).containsExactly("enemy");
+        assertThat(warRoom.members()).extracting(strength -> strength.kingdomName()).containsExactlyInAnyOrder(kingdom.getName(), "member");
     }
 
     @Test

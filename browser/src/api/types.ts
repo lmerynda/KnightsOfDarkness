@@ -197,7 +197,14 @@ export type SpyReport = {
 };
 
 /** what an alliance knows together: its armies on the march, the freshest intel on each enemy, recent battles */
-export type WarRoom = { marching: OngoingAttack[]; guards: Reinforcement[]; intel: SpyReport[]; battles: BattleReport[] };
+export type WarRoom = {
+  /** every member's land and defense at home, the weakest defended for its size first */
+  members: { kingdomName: string; land: number; defense: number }[];
+  marching: OngoingAttack[];
+  guards: Reinforcement[];
+  intel: SpyReport[];
+  battles: BattleReport[];
+};
 
 export type NotificationKind =
   "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round" | "event";

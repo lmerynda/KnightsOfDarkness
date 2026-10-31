@@ -286,6 +286,17 @@ const WarRoomPanel: React.FC = () => {
           )}
         </section>
         <section>
+          <h3 className="section-title small">Members, weakest defended first</h3>
+          <ul className="plain-list">
+            {warRoom.members.map(member => (
+              <li key={member.kingdomName}>
+                <span>{member.kingdomName}</span>
+                <span className="muted">
+                  defense {formatNumber(member.defense)} on {formatNumber(member.land)} acres
+                </span>
+              </li>
+            ))}
+          </ul>
           <h3 className="section-title small">What our spies saw</h3>
           {warRoom.intel.length === 0 ? (
             <p className="muted">No ally has spied on anyone yet.</p>
