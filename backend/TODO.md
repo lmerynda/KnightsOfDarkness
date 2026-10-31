@@ -3,7 +3,6 @@
 ## Game
 
 1. Melee is fought type against type (infantry only meets infantry), so a pure cavalry army is never hurt by defending infantry. Decide whether that is the intended rock-paper-scissors; the simulation can compare variants.
-1. The castle's housing capacity and the tower's capacity in `gameconfig.json` are unused; towers and castles only add defense.
 1. Game messages (notifications) are plain text built in the services; a typed event with data would let the client render them richer.
 1. The turtle strategy in the simulation stalls at about 140 acres: recruiting bowmen and guards costs the gold it would spend on land. Worth a look as a balance question once real players exist.
 

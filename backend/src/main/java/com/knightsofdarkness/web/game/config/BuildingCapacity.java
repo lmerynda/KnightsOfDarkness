@@ -2,7 +2,7 @@ package com.knightsofdarkness.web.game.config;
 
 import com.knightsofdarkness.web.common.kingdom.BuildingName;
 
-public record BuildingCapacity(int house, int goldMine, int ironMine, int workshop, int farm, int market, int barracks, int guardHouse, int spyGuild, int tower, int castle) {
+public record BuildingCapacity(int house, int goldMine, int ironMine, int workshop, int farm, int market, int barracks, int guardHouse, int spyGuild) {
     public int getCapacity(BuildingName name)
     {
         return switch (name)
@@ -16,8 +16,8 @@ public record BuildingCapacity(int house, int goldMine, int ironMine, int worksh
             case barracks -> barracks;
             case guardHouse -> guardHouse;
             case spyGuild -> spyGuild;
-            case tower -> tower;
-            case castle -> castle;
+            // towers and castles house nobody, they only add defense
+            case tower, castle -> 0;
         };
     }
 }

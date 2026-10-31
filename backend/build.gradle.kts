@@ -41,7 +41,6 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-impl:0.13.0")
     implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("com.github.victools:jsonschema-generator:4.38.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")

@@ -115,7 +115,7 @@ export type KingdomDetails = {
 
 export type GameConfig = {
   buildingPointCosts: Counts<BuildingName>;
-  buildingCapacity: Counts<BuildingName>;
+  buildingCapacity: Counts<Exclude<BuildingName, "tower" | "castle">>;
   trainingCost: Record<UnitName, { gold: number; tools: number; weapons: number }>;
   production: Partial<Record<UnitName, { rate: number; resource: ResourceName }>>;
   specialBuildingCosts: Counts<SpecialBuildingType>;

@@ -67,9 +67,7 @@
         "market": 50,
         "barracks": 100,
         "guardHouse": 10,
-        "spyGuild": 50,
-        "castle": 0,
-        "tower": 10
+        "spyGuild": 50
     },
     "trainingCost": {
         "goldMiner": {
