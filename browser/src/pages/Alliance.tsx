@@ -1,0 +1,250 @@
+import React, { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { api } from "../api/endpoints";
+import type { Alliance, AllianceInvitation, AllianceSummary } from "../api/types";
+import { useGame } from "../game/useGame";
+import { art } from "../game/lore";
+import { Crest } from "../ui/Crest";
+import { Banner, Panel } from "../ui/parts";
+import { formatNumber } from "../ui/format";
+
+const Members: React.FC<{ alliance: Alliance; onChange: () => void }> = ({ alliance, onChange }) => {
+  const { kingdom, config, rankings, act } = useGame();
+  const [invitee, setInvitee] = useState("");
+  const [botName, setBotName] = useState("");
+  const emperor = alliance.emperor === kingdom.name;
+  const land = (name: string): number => rankings?.kingdoms.find(rank => rank.kingdomName === name)?.land ?? 0;
+  const members = [...alliance.members].sort((a, b) => land(b) - land(a));
+  const candidates = (rankings?.kingdoms ?? []).filter(rank => !rank.allianceName);
+  const full = alliance.members.length >= config.common.allianceMaxMembers;
+
+  const run = async (action: () => Promise<{ message: string; success: boolean }>): Promise<void> => {
+    await act(action, outcome => ({ text: outcome.message, failure: !outcome.success }));
+    onChange();
+  };
+
+  return (
+    <>
+      <Panel
+        title={alliance.name}
+        lede={`${alliance.members.length} of ${config.common.allianceMaxMembers} members, led by ${alliance.emperor}. Write to everyone at once from the letters page.`}
+      >
+        <div className="table-scroll">
+          <table className="ledger">
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th className="number">Land</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {members.map(member => (
+                <tr key={member} className={member === kingdom.name ? "mine" : undefined}>
+                  <td>
+                    <span className="figure">
+                      <Crest name={member} size={26} /> {member}
+                      {member === alliance.emperor ? <span className="muted">emperor</span> : null}
+                    </span>
+                  </td>
+                  <td className="number">{formatNumber(land(member))}</td>
+                  <td className="number">
+                    {emperor && member !== kingdom.name ? (
+                      <button
+                        className="button danger small"
+                        type="button"
+                        onClick={() => window.confirm(`Remove ${member} from ${alliance.name}?`) && run(() => api.removeMember(member))}
+                      >
+                        Remove
+                      </button>
+                    ) : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="row overview-note">
+          <Link className="button quiet" to="/kingdom/letters">
+            Write to the alliance
+          </Link>
+          <button
+            className="button danger"
+            type="button"
+            disabled={emperor && alliance.members.length > 1}
+            title={emperor && alliance.members.length > 1 ? "The emperor leaves last" : undefined}
+            onClick={() =>
+              window.confirm(emperor ? "Leave and disband the alliance?" : `Leave ${alliance.name}?`) && run(() => api.leaveAlliance())
+            }
+          >
+            {emperor ? "Leave and disband" : "Leave the alliance"}
+          </button>
+        </div>
+      </Panel>
+      {emperor ? (
+        <div className="two-columns">
+          <Panel title="Invite a kingdom" lede="Only kingdoms without an alliance can be invited.">
+            <div className="row">
+              <label className="field" style={{ minWidth: 220 }}>
+                <span>Kingdom</span>
+                <select className="select" value={invitee} onChange={event => setInvitee(event.target.value)}>
+                  <option value="">Choose a kingdom</option>
+                  {candidates.map(rank => (
+                    <option key={rank.kingdomName} value={rank.kingdomName}>
+                      {rank.kingdomName}, {formatNumber(rank.land)} land
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                className="button"
+                type="button"
+                disabled={!invitee || full}
+                onClick={() => run(() => api.invite(invitee, alliance.name))}
+              >
+                Send invitation
+              </button>
+            </div>
+          </Panel>
+          <Panel
+            title="Raise a vassal"
+            lede="A vassal is a kingdom run by the game that trades on the market and fills a place in your alliance."
+          >
+            <div className="row">
+              <label className="field" style={{ minWidth: 200 }}>
+                <span>Vassal name</span>
+                <input className="input" value={botName} onChange={event => setBotName(event.target.value)} />
+              </label>
+              <button
+                className="button quiet"
+                type="button"
+                disabled={!botName.trim() || full}
+                onClick={() => run(() => api.addBot(botName.trim()))}
+              >
+                Raise vassal
+              </button>
+            </div>
+          </Panel>
+        </div>
+      ) : null}
+    </>
+  );
+};
+
+const NoAlliance: React.FC<{ onChange: () => void }> = ({ onChange }) => {
+  const { act } = useGame();
+  const [name, setName] = useState("");
+  const [invitations, setInvitations] = useState<AllianceInvitation[]>([]);
+  const [alliances, setAlliances] = useState<AllianceSummary[]>([]);
+
+  useEffect(() => {
+    api
+      .invitations()
+      .then(setInvitations)
+      .catch(() => undefined);
+    api
+      .alliances()
+      .then(setAlliances)
+      .catch(() => undefined);
+  }, []);
+
+  const run = async (action: () => Promise<{ message: string; success: boolean }>): Promise<void> => {
+    await act(action, outcome => ({ text: outcome.message, failure: !outcome.success }));
+    onChange();
+  };
+
+  return (
+    <div className="stack">
+      {invitations.length > 0 ? (
+        <Panel title="Invitations">
+          <ul className="plain-list">
+            {invitations.map(invitation => (
+              <li key={invitation.id}>
+                <span className="figure">
+                  <Crest name={invitation.allianceName} size={26} /> {invitation.allianceName} wants you among them
+                </span>
+                <span className="row">
+                  <button className="button small" type="button" onClick={() => run(() => api.acceptInvitation(invitation.id))}>
+                    Join
+                  </button>
+                  <button className="button quiet small" type="button" onClick={() => run(() => api.rejectInvitation(invitation.id))}>
+                    Decline
+                  </button>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      ) : null}
+      <div className="two-columns">
+        <Panel title="Found an alliance" lede="You become its emperor: you invite members, and you leave last.">
+          <div className="row">
+            <label className="field" style={{ minWidth: 220 }}>
+              <span>Alliance name</span>
+              <input className="input" value={name} onChange={event => setName(event.target.value)} maxLength={32} />
+            </label>
+            <button
+              className="button"
+              type="button"
+              disabled={name.trim().length < 3}
+              onClick={() => run(() => api.createAlliance(name.trim()))}
+            >
+              Found it
+            </button>
+          </div>
+        </Panel>
+        <Panel title="Alliances of this round" lede="Write to an emperor to ask for an invitation.">
+          {alliances.length === 0 ? (
+            <p className="muted">No alliances yet. Be the first.</p>
+          ) : (
+            <ul className="plain-list">
+              {alliances.map(alliance => (
+                <li key={alliance.name}>
+                  <span className="figure">
+                    <Crest name={alliance.name} size={26} /> {alliance.name}
+                  </span>
+                  <span className="muted">led by {alliance.emperor}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+      </div>
+    </div>
+  );
+};
+
+export const AlliancePage: React.FC = () => {
+  const { kingdom, reload } = useGame();
+  const [alliance, setAlliance] = useState<Alliance | undefined | null>(null);
+
+  const load = useCallback(() => {
+    api
+      .alliance()
+      .then(setAlliance)
+      .catch(() => setAlliance(undefined));
+  }, []);
+  useEffect(load, [load, kingdom.allianceName]);
+
+  const onChange = (): void => {
+    load();
+    void reload();
+  };
+
+  return (
+    <>
+      <Banner image={art("alliance")} title="Alliance">
+        Allies cannot attack each other, share a council of letters, and rise together in the alliance rankings.
+      </Banner>
+      {alliance === null ? (
+        <p className="muted">Calling the council</p>
+      ) : alliance ? (
+        <div className="stack">
+          <Members alliance={alliance} onChange={onChange} />
+        </div>
+      ) : (
+        <NoAlliance onChange={onChange} />
+      )}
+    </>
+  );
+};

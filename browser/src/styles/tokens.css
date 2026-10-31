@@ -1,0 +1,51 @@
+:root {
+  /* stone and night, taken from the skies of the paintings */
+  --night: #1a2129;
+  --night-deep: #151b21;
+  --panel: #232c36;
+  --panel-raised: #2b3540;
+  --inset: #121820;
+
+  /* ink */
+  --bone: #e6dcc8;
+  --pewter: #8e9aa6;
+  --pewter-dim: #66717c;
+
+  /* metals and fire, each with one job */
+  --gold: #b89a5a; /* structure, rank, primary actions */
+  --gold-bright: #d4b878;
+  --ember: #e08a2e; /* the turn, and anything that needs attention now */
+  --ember-deep: #a85a17;
+  --moss: #7c9a62; /* gains */
+  --blood: #b24e44; /* losses and destructive actions */
+
+  --rule: rgba(142, 154, 166, 0.18);
+  --rule-strong: rgba(184, 154, 90, 0.42);
+
+  --font-display: "Grenze Gotisch Variable", "Grenze Gotisch", Georgia, serif;
+  --font-text: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+
+  /* type scale, a perfect fourth from 16px */
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.333rem;
+  --step-2: 1.777rem;
+  --step-3: 2.369rem;
+  --step-4: 3.157rem;
+  --step-5: 4.209rem;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+
+  --radius-small: 3px;
+  --radius: 6px;
+
+  --rail-width: 252px;
+  --content-width: 1180px;
+}

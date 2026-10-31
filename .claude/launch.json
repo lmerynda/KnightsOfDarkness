@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "browser",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "browser", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}
