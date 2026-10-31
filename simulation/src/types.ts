@@ -43,6 +43,8 @@ export type Kingdom = {
   reinforcements: Reinforcement[];
   /** allied soldiers on the way to, or standing guard in, this kingdom */
   garrisons: Reinforcement[];
+  /** enemy armies marching on this kingdom, as its scouts see them */
+  incoming: { from: string; to: string; turnsLeft: number; soldiers: number }[];
 };
 
 export type Reinforcement = { id: string; from: string; to: string; turnsLeft: number; units: Partial<Counts<UnitName>> };
@@ -63,7 +65,7 @@ export type KingdomDetails = {
 export type GameConfig = {
   buildingPointCosts: Counts<BuildingName>;
   trainingCost: Record<UnitName, { gold: number; tools: number; weapons: number }>;
-  common: { maxTurns: number; foodUpkeepPerUnit: number; specialBuildingMaxCount: number };
+  common: { maxTurns: number; foodUpkeepPerUnit: number; specialBuildingMaxCount: number; turnsToReinforce: number };
   attack: {
     turnsToArrive: number;
     minTargetLandRatio: number;

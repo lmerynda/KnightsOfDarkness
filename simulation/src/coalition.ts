@@ -65,28 +65,45 @@ export const coalitionWarlord = (council: Council, attackEvery = 6): Strategy =>
 });
 
 /**
- * a turtle that guards the coalition: it builds walls and an army like a turtle, and every few turns, while its own defense
- * per acre is clearly above the weakest ally's, sends a third of the soldiers it has at home to stand guard there
+ * a turtle that guards the coalition: it builds walls and an army like a turtle. When an enemy army marches on an ally and
+ * help can still arrive in time, it sends a third of the soldiers it has at home there; otherwise every few turns, while
+ * its own defense per acre is clearly above the weakest ally's, it sends a third to stand guard with that ally
  */
 export const guardian = (council: Council, guardEvery = 6): Strategy => ({
   name: "guardian",
   weaponsPercentage: turtle.weaponsPercentage,
   play: async context => {
     await turtle.play(context);
-    const { player, kingdom, turn } = context;
-    if (turn % guardEvery !== 0) return;
-    const allies = await Promise.all(
-      council.members
-        .filter(member => member.name !== player.name)
-        .map(async member => ({ member, defense: (await member.details()).defensePower, land: (await member.kingdom()).resources.land })),
-    );
-    const weakest = allies.sort((one, other) => one.defense / one.land - other.defense / other.land)[0];
-    const ownCover = (await player.details()).defensePower / Math.max(1, kingdom.resources.land);
-    if (!weakest || (weakest.defense / Math.max(1, weakest.land)) * shareAbove >= ownCover) return;
+    const { player, kingdom, turn, config } = context;
     const third = Object.fromEntries(militaryUnits.map(unit => [unit, Math.floor(kingdom.units.availableUnits[unit] / 3)])) as Partial<
       Counts<UnitName>
     >;
     if (militaryUnits.every(unit => (third[unit] ?? 0) === 0)) return;
+    const allies = await Promise.all(
+      council.members
+        .filter(member => member.name !== player.name)
+        .map(async member => ({ member, defense: (await member.details()).defensePower, home: await member.kingdom() })),
+    );
+    const guarded = new Set(kingdom.reinforcements.map(sent => sent.to));
+    const threatened = allies
+      .filter(ally => !guarded.has(ally.member.name))
+      .map(ally => ({ ...ally, threat: ally.home.incoming.filter(army => army.turnsLeft >= config.common.turnsToReinforce) }))
+      .filter(ally => ally.threat.length > 0)
+      .sort(
+        (one, other) =>
+          other.threat.reduce((sum, army) => sum + army.soldiers, 0) - one.threat.reduce((sum, army) => sum + army.soldiers, 0),
+      )[0];
+    if (threatened) {
+      await player.sendReinforcements(threatened.member.name, third);
+      return;
+    }
+    if (turn % guardEvery !== 0) return;
+    const cover = (defense: number, land: number): number => defense / Math.max(1, land);
+    const weakest = allies.sort(
+      (one, other) => cover(one.defense, one.home.resources.land) - cover(other.defense, other.home.resources.land),
+    )[0];
+    const ownCover = cover((await player.details()).defensePower, kingdom.resources.land);
+    if (!weakest || cover(weakest.defense, weakest.home.resources.land) * shareAbove >= ownCover) return;
     await player.sendReinforcements(weakest.member.name, third);
   },
 });
