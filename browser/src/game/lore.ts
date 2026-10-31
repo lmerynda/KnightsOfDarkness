@@ -49,7 +49,7 @@ export const unitLore: Record<UnitName, UnitLore> = {
   guard: { label: "Guard", plural: "Guards", duty: "Defends at home and catches spies" },
   spy: { label: "Spy", plural: "Spies", duty: "Scouts other kingdoms" },
   infantry: { label: "Infantry", plural: "Infantry", duty: "Steady in melee" },
-  bowman: { label: "Bowman", plural: "Bowmen", duty: "Strikes first with arrows, strong on walls" },
+  bowman: { label: "Bowman", plural: "Bowmen", duty: "Strikes first with arrows, strong on walls, helpless in melee" },
   cavalry: { label: "Cavalry", plural: "Cavalry", duty: "Hits hardest when attacking" },
 };
 

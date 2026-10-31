@@ -64,7 +64,7 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; onSent: () => void }> = ({ s
   return (
     <Panel
       title="Send an army"
-      lede={`Armies arrive after ${plural(config.attack.turnsToArrive, "turn", "turns")} of your own. Archers on both sides loose first, then the lines meet. Win and you take up to ${Math.round(config.attack.maxLandCaptureRatio * 100)}% of their land, or plunder up to ${Math.round(config.attack.maxPlunderRatio * 100)}% of their stores; crushing victories take the most.`}
+      lede={`Armies arrive after ${plural(config.attack.turnsToArrive, "turn", "turns")} of your own. Archers on both sides loose first, then infantry and cavalry cut into the whole enemy army; bowmen strike nobody in melee but still fall. Win and you take up to ${Math.round(config.attack.maxLandCaptureRatio * 100)}% of their land, or plunder up to ${Math.round(config.attack.maxPlunderRatio * 100)}% of their stores; crushing victories take the most.`}
     >
       <div className="stack">
         <div className="two-columns compact">

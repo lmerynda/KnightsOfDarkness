@@ -63,7 +63,7 @@ const serverJar = (): string => {
   }
   if (!jarBuilt) {
     const gradle = process.platform === "win32" ? ".\\gradlew.bat" : "./gradlew";
-    const build = spawnSync(gradle, ["bootJar", "--console=plain", "-q"], { cwd: backend, stdio: "inherit", shell: process.platform === "win32" });
+    const build = spawnSync(`${gradle} bootJar --console=plain -q`, { cwd: backend, stdio: "inherit", shell: true });
     if (build.status !== 0 || !existsSync(defaultJar)) {
       throw new Error(`Could not build the server jar at ${defaultJar}`);
     }

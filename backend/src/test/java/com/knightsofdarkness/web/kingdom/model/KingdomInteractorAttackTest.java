@@ -166,6 +166,68 @@ class KingdomInteractorAttackTest
         assertEquals(1000 - 4, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
     }
 
+    private KingdomOngoingAttackEntity attackWith(KingdomEntity attacker, KingdomEntity defender, UnitsMapDto units)
+    {
+        var action = new KingdomMilitaryAction(attacker, gameConfig);
+        assertTrue(action.sendAttack(new SendAttackDto(defender.getName(), AttackType.economy, units), defender).success());
+        return attacker.getOngoingAttacks().get(0);
+    }
+
+    private KingdomEntity kingdomWith(String name, UnitName unit, int count)
+    {
+        var kingdom = new KingdomBuilder(game).withName(name).withUnit(unit, count).build();
+        game.addKingdom(kingdom);
+        return kingdom;
+    }
+
+    @Test
+    void melee_shouldLetInfantryAndCavalryStrikeEveryEnemyType()
+    {
+        var riders = kingdomWith("riders", UnitName.cavalry, 150);
+        var footmen = kingdomWith("footmen", UnitName.infantry, 300);
+        var charge = new UnitsMapDto();
+        charge.setCount(UnitName.cavalry, 150);
+        var attack = attackWith(riders, footmen, charge);
+
+        ((KingdomInteractor) game.getKingdomInteractor()).processMelee(riders, footmen, attack);
+
+        // 300 infantry blows on cavalry that takes 4 each, 150 cavalry blows on infantry that takes 3 each
+        assertEquals(150 - 75, attack.units.getCount(UnitName.cavalry));
+        assertEquals(300 - 50, footmen.getUnits().getAvailableCount(UnitName.infantry));
+    }
+
+    @Test
+    void melee_shouldLetBowmenFallWithoutStriking()
+    {
+        var archers = kingdomWith("archers", UnitName.bowman, 100);
+        var footmen = kingdomWith("footmen", UnitName.infantry, 100);
+        var volley = new UnitsMapDto();
+        volley.setCount(UnitName.bowman, 100);
+        var attack = attackWith(archers, footmen, volley);
+
+        ((KingdomInteractor) game.getKingdomInteractor()).processMelee(archers, footmen, attack);
+
+        // bowmen land no melee blows, 100 infantry blows on bowmen that take 2 each
+        assertEquals(100, footmen.getUnits().getAvailableCount(UnitName.infantry));
+        assertEquals(100 - 50, attack.units.getCount(UnitName.bowman));
+    }
+
+    @Test
+    void melee_shouldSpreadBlowsOverBowmenToo()
+    {
+        var footmen = kingdomWith("footmen", UnitName.infantry, 120);
+        var charge = new UnitsMapDto();
+        charge.setCount(UnitName.infantry, 120);
+        var attack = attackWith(footmen, secondaryKingdom, charge);
+
+        ((KingdomInteractor) game.getKingdomInteractor()).processMelee(footmen, secondaryKingdom, attack);
+
+        // 120 blows split over the defender's three equal unit types, 40 each: 40/2, 40/3, 40/4
+        assertEquals(1000 - 20, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
+        assertEquals(1000 - 13, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
+        assertEquals(1000 - 10, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
+    }
+
     @Test
     void attackerSalvo_whenDefenderSalvoKilledAllUnits_shouldNotKillDefenderUnits()
     {

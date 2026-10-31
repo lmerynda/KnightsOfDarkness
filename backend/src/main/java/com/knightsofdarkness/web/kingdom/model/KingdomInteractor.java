@@ -27,6 +27,7 @@ import com.knightsofdarkness.web.war.IWarReportRepository;
 public class KingdomInteractor implements IKingdomInteractor
 {
     private static final Logger log = LoggerFactory.getLogger(KingdomInteractor.class);
+    private static final Map<UnitName, Integer> meleeBlowsToFall = Map.of(UnitName.bowman, 2, UnitName.infantry, 3, UnitName.cavalry, 4);
     private static final List<ResourceName> plunderableResources = List.of(ResourceName.gold, ResourceName.food, ResourceName.iron, ResourceName.tools, ResourceName.weapons);
     private final IKingdomRepository kingdomRepository;
     private final GameConfig gameConfig;
@@ -283,39 +284,28 @@ public class KingdomInteractor implements IKingdomInteractor
         log.info("[KingdomInteractor] Attacker bowmen salvo killed {} bowmen, {} infantry, {} cavalry from defending kingdom {}", killedDefendingBowmen, killedDefendingInfantry, killedDefendingCavalry, defendantKingdom.getName());
     }
 
+    /**
+     * infantry and cavalry strike, their blows spread over the enemy army by its make-up; bowmen strike nobody in melee
+     * but are among those struck, and every type takes its own number of blows to fall
+     */
     void processMelee(KingdomEntity attackerKingdom, KingdomEntity defendantKingdom, KingdomOngoingAttackEntity attack)
     {
         var attackingUnits = attack.units;
-        var attackingUnitsRatios = attackingUnits.getMilitaryUnitsRatios();
         var defenderUnits = defendantKingdom.units;
+        var attackerStrikers = attackingUnits.getCount(UnitName.infantry) + attackingUnits.getCount(UnitName.cavalry);
+        var defenderStrikers = defenderUnits.getAvailableCount(UnitName.infantry) + defenderUnits.getAvailableCount(UnitName.cavalry);
+        var attackingUnitsRatios = attackingUnits.getMilitaryUnitsRatios();
         var defenderUnitsRatios = defenderUnits.getAvailableMilitaryUnitsRatios();
 
-        var defenderInfantryHittingBowman = (int) Math.ceil(defenderUnits.getAvailableCount(UnitName.bowman) * attackingUnitsRatios.get(UnitName.bowman));
-        var defenderInfantryHittingInfantry = (int) Math.ceil(defenderUnits.getAvailableCount(UnitName.infantry) * attackingUnitsRatios.get(UnitName.infantry));
-        var defenderInfantryHittingCavalry = (int) Math.ceil(defenderUnits.getAvailableCount(UnitName.cavalry) * attackingUnitsRatios.get(UnitName.cavalry));
+        for (var unit : UnitName.getMilitaryUnits())
+        {
+            var blowsToFall = meleeBlowsToFall.get(unit);
+            var killedAttacking = Math.min((int) Math.ceil(defenderStrikers * attackingUnitsRatios.get(unit)) / blowsToFall, attackingUnits.getCount(unit));
+            var killedDefending = Math.min((int) Math.ceil(attackerStrikers * defenderUnitsRatios.get(unit)) / blowsToFall, defenderUnits.getAvailableCount(unit));
 
-        var attackerInfantryHittingBowman = (int) Math.ceil(attackingUnits.getCount(UnitName.bowman) * defenderUnitsRatios.get(UnitName.bowman));
-        var attackerInfantryHittingInfantry = (int) Math.ceil(attackingUnits.getCount(UnitName.infantry) * defenderUnitsRatios.get(UnitName.infantry));
-        var attackerInfantryHittingCavalry = (int) Math.ceil(attackingUnits.getCount(UnitName.cavalry) * defenderUnitsRatios.get(UnitName.cavalry));
-
-        var killedAttackingBowmen = Math.min(defenderInfantryHittingBowman / 2, attackingUnits.getCount(UnitName.bowman));
-        var killedAttackingInfantry = Math.min(defenderInfantryHittingInfantry / 3, attackingUnits.getCount(UnitName.infantry));
-        var killedAttackingCavalry = Math.min(defenderInfantryHittingCavalry / 4, attackingUnits.getCount(UnitName.cavalry));
-
-        var killedDefendingBowmen = Math.min(attackerInfantryHittingBowman / 2, defenderUnits.getAvailableCount(UnitName.bowman));
-        var killedDefendingInfantry = Math.min(attackerInfantryHittingInfantry / 3, defenderUnits.getAvailableCount(UnitName.infantry));
-        var killedDefendingCavalry = Math.min(attackerInfantryHittingCavalry / 4, defenderUnits.getAvailableCount(UnitName.cavalry));
-
-        attackingUnits.subtractCount(UnitName.bowman, killedAttackingBowmen);
-        attackingUnits.subtractCount(UnitName.infantry, killedAttackingInfantry);
-        attackingUnits.subtractCount(UnitName.cavalry, killedAttackingCavalry);
-
-        attackerKingdom.getUnits().subtractMobileCount(UnitName.bowman, killedAttackingBowmen);
-        attackerKingdom.getUnits().subtractMobileCount(UnitName.infantry, killedAttackingInfantry);
-        attackerKingdom.getUnits().subtractMobileCount(UnitName.cavalry, killedAttackingCavalry);
-
-        defenderUnits.subtractAvailableCount(UnitName.bowman, killedDefendingBowmen);
-        defenderUnits.subtractAvailableCount(UnitName.infantry, killedDefendingInfantry);
-        defenderUnits.subtractAvailableCount(UnitName.cavalry, killedDefendingCavalry);
+            attackingUnits.subtractCount(unit, killedAttacking);
+            attackerKingdom.getUnits().subtractMobileCount(unit, killedAttacking);
+            defenderUnits.subtractAvailableCount(unit, killedDefending);
+        }
     }
 }

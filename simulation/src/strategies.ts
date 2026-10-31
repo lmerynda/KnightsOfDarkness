@@ -149,30 +149,38 @@ const fillBarracks = async ({ player }: TurnContext, mix: Partial<Counts<UnitNam
   await player.train(order);
 };
 
-/**
- * a smaller economy feeding barracks; scouts the largest kingdom it may attack and marches when its army is
- * clearly stronger than the defense its spies saw
- */
+/** a smaller economy feeding barracks, a few spies for intel */
+const raiseArmy = async (context: TurnContext): Promise<void> => {
+  // a few spies first, they are cheap and without intel the army never marches
+  const missingSpies = 12 - context.kingdom.units.availableUnits.spy;
+  if (missingSpies > 0) await context.player.train({ spy: missingSpies });
+  await fillBarracks(context, { infantry: 2, cavalry: 1 });
+  await developEconomy(context, { ...economyPlan, house: 0.28, goldMine: 0.18, barracks: 0.12, spyGuild: 0.01 }, economyWorkers);
+};
+
+/** ranked kingdoms large enough to attack and outside the ruler's alliance, largest first */
+const attackableKingdoms = ({ kingdom, config, rankings }: TurnContext): Rankings["kingdoms"] =>
+  rankings.kingdoms
+    .filter(rank => rank.kingdomName !== kingdom.name && rank.land >= kingdom.resources.land * config.attack.minTargetLandRatio)
+    .filter(rank => !kingdom.allianceName || rank.allianceName !== kingdom.allianceName)
+    .sort((a, b) => b.land - a.land);
+
+const armyAtHome = (kingdom: Kingdom): Partial<Counts<UnitName>> =>
+  Object.fromEntries(militaryUnits.map(unit => [unit, kingdom.units.availableUnits[unit]])) as Partial<Counts<UnitName>>;
+
+/** scouts the largest kingdom it may attack and marches when its army is clearly stronger than the defense its spies saw */
 export const warlord = (options: { attackEvery?: number; margin?: number } = {}): Strategy => ({
   name: "warlord",
   weaponsPercentage: 70,
   play: async context => {
-    const { player, kingdom, config, rankings, turn } = context;
-    // a few spies first, they are cheap and without intel the army never marches
-    const missingSpies = 12 - context.kingdom.units.availableUnits.spy;
-    if (missingSpies > 0) await player.train({ spy: missingSpies });
-    await fillBarracks(context, { infantry: 2, cavalry: 1 });
-    await developEconomy(context, { ...economyPlan, house: 0.28, goldMine: 0.18, barracks: 0.12, spyGuild: 0.01 }, economyWorkers);
+    const { player, kingdom, config, turn } = context;
+    await raiseArmy(context);
 
     if (kingdom.ongoingAttacks.length > 0 || turn % (options.attackEvery ?? 6) !== 0) return;
-    const ownLand = kingdom.resources.land;
-    const target = rankings.kingdoms
-      .filter(rank => rank.kingdomName !== kingdom.name && rank.land >= ownLand * config.attack.minTargetLandRatio)
-      .filter(rank => !kingdom.allianceName || rank.allianceName !== kingdom.allianceName)
-      .sort((a, b) => b.land - a.land)[0];
+    const target = attackableKingdoms(context)[0];
     if (!target) return;
 
-    const army = Object.fromEntries(militaryUnits.map(unit => [unit, kingdom.units.availableUnits[unit]])) as Partial<Counts<UnitName>>;
+    const army = armyAtHome(kingdom);
     const power = armyPower(army, config);
     if (power <= 0) return;
 
@@ -187,9 +195,37 @@ export const warlord = (options: { attackEvery?: number; margin?: number } = {})
   },
 });
 
+/** the warlord's army, but it seeks out the kingdom with the most soldiers it may attack and charges whatever the odds */
+export const raider: Strategy = {
+  name: "raider",
+  weaponsPercentage: 70,
+  play: async context => {
+    const { player, kingdom, config, turn } = context;
+    await raiseArmy(context);
+
+    if (kingdom.ongoingAttacks.length > 0 || turn < 12 || turn % 6 !== 0) return;
+    const army = armyAtHome(kingdom);
+    if (armyPower(army, config) <= 0) return;
+
+    let target: { name: string; soldiers: number } | undefined;
+    for (const candidate of attackableKingdoms(context)) {
+      const spies = (await player.kingdom()).units.availableUnits.spy;
+      if (spies <= 0) break;
+      const { report } = await player.sendSpies(candidate.kingdomName, spies);
+      if (!report?.success) continue;
+      const soldiers = militaryUnits.reduce((sum, unit) => sum + (report.units[unit] ?? 0), 0);
+      if (!target || soldiers > target.soldiers) target = { name: candidate.kingdomName, soldiers };
+    }
+    if (target && target.soldiers > 0) {
+      await player.sendAttack(target.name, "land", army);
+    }
+  },
+};
+
 export const strategies: Record<string, () => Strategy> = {
   idle: () => idle,
   economist: () => economist,
   turtle: () => turtle,
   warlord: () => warlord(),
+  raider: () => raider,
 };

@@ -79,6 +79,7 @@ export type BattleReport = {
   attackerWon: boolean;
   landCaptured: number;
   plunder: Partial<Counts<ResourceName>>;
+  unitsSent: Partial<Counts<UnitName>>;
   attackerLosses: Partial<Counts<UnitName>>;
   defenderLosses: Partial<Counts<UnitName>>;
 };

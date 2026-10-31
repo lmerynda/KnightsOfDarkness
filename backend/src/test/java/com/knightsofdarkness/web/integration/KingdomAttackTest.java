@@ -144,8 +144,10 @@ class KingdomAttackTest {
         assertThat(initialPopulation).isGreaterThan(secondaryKingdom.getUnits().countAll());
         assertEquals(0, primaryKingdom.getOngoingAttacks().size());
 
-        assertEquals(758, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
-        assertEquals(837, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
-        assertEquals(877, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
+        // after both salvos the defender keeps 901 bowmen, 941 infantry and 958 cavalry; then 934 infantry and 953
+        // cavalry land 1887 melee blows spread by those shares: ceil(607.2)/2, ceil(634.2)/3 and ceil(645.6)/4 fall
+        assertEquals(901 - 304, secondaryKingdom.getUnits().getAvailableCount(UnitName.bowman));
+        assertEquals(941 - 211, secondaryKingdom.getUnits().getAvailableCount(UnitName.infantry));
+        assertEquals(958 - 161, secondaryKingdom.getUnits().getAvailableCount(UnitName.cavalry));
     }
 }
