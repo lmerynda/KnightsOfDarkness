@@ -229,12 +229,8 @@ public class KingdomService
     @Transactional
     public void addTurnForEveryone()
     {
-        log.info("Adding turn for everyone");
-        kingdomRepository.getAllKingdoms().stream().filter(kingdom -> !kingdomDetailsProvider.hasMaxTurns(kingdom)).forEach(kingdom ->
-        {
-            kingdom.addTurn();
-            kingdomRepository.update(kingdom);
-        });
+        var kingdoms = kingdomRepository.addTurnBelow(gameConfig.common().maxTurns());
+        log.info("Added a turn to {} kingdoms", kingdoms);
     }
 
     @Transactional

@@ -35,6 +35,11 @@ public class KingdomRepository implements IKingdomRepository {
         return jpaRepository.findAll();
     }
 
+    public int addTurnBelow(int maxTurns)
+    {
+        return jpaRepository.addTurnBelow(maxTurns);
+    }
+
     public KingdomEntity update(KingdomEntity kingdom)
     {
         kingdom.resources.syncResources();

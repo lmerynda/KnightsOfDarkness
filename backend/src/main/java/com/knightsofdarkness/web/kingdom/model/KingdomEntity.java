@@ -133,11 +133,6 @@ public class KingdomEntity
         lastTurnReport = new KingdomTurnReport();
     }
 
-    public void addTurn()
-    {
-        resources.addCount(ResourceName.turns, 1);
-    }
-
     public int getTotalPeopleCount()
     {
         return units.countAll() + resources.getCount(ResourceName.unemployed);

@@ -9,7 +9,6 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.web.Game;
@@ -290,30 +289,6 @@ class KingdomTurnTest {
 
         // then we try to pass turn which is not available
         assertFalse(action.passTurn(weaponsProductionPercentage).success());
-    }
-
-    @Disabled("Currently KingdomService holds the addTurn check, revisit this test once the logic is moved away")
-    @Test
-    void whenTurnCountBelowMaximum_addingTurn_shouldResultInMoreTurnsAvailable()
-    {
-        var kingdom = kingdomBuilder.build();
-        var numberOfTurns = kingdom.getResources().getCount(ResourceName.turns);
-
-        kingdom.addTurn();
-
-        assertEquals(numberOfTurns + 1, kingdom.getResources().getCount(ResourceName.turns));
-    }
-
-    @Disabled("Currently KingdomService holds the addTurn check, revisit this test once the logic is moved away")
-    @Test
-    void whenTurnCountReachesMaximum_addingTurn_shouldNotChangeTurnCount()
-    {
-        var kingdom = kingdomBuilder.withResource(ResourceName.turns, gameConfig.common().maxTurns()).build();
-        var numberOfTurns = kingdom.getResources().getCount(ResourceName.turns);
-
-        kingdom.addTurn();
-
-        assertEquals(numberOfTurns, kingdom.getResources().getCount(ResourceName.turns));
     }
 
     @Test

@@ -4,6 +4,7 @@ import java.util.Optional;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +14,12 @@ public interface KingdomJpaRepository extends JpaRepository<KingdomEntity, Strin
 
     @Query("SELECT k FROM KingdomEntity k JOIN FETCH k.specialBuildings WHERE k.id = :id")
     Optional<KingdomEntity> findById(Long id);
+
+    /**
+     * a single update so the periodic turn never overwrites what players changed in the meantime
+     */
+    @Modifying
+    @Query("UPDATE KingdomEntity k SET k.resources.turns = k.resources.turns + 1 WHERE k.resources.turns < :maxTurns")
+    int addTurnBelow(int maxTurns);
 
 }

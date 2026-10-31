@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.kingdom;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -18,6 +19,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.jayway.jsonpath.JsonPath;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
+import com.knightsofdarkness.web.common.kingdom.ResourceName;
+import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 
 /**
  * Requests as the browser sends them: unit, building and resource maps are flat objects keyed by name.
@@ -38,13 +43,24 @@ class KingdomApiTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private KingdomService kingdomService;
+
+    @Autowired
+    private KingdomRepository kingdomRepository;
+
+    @Autowired
+    private GameConfig gameConfig;
+
+    private String kingdomName;
+
     private String token;
 
     @BeforeEach
     void logIn() throws Exception
     {
         var email = "api-" + System.nanoTime() + "@example.com";
-        var kingdomName = "Api " + (System.nanoTime() % 1000000);
+        kingdomName = "Api " + (System.nanoTime() % 1000000);
         mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"" + email + "\",\"kingdomName\":\"" + kingdomName + "\",\"password\":\"long-enough-password\"}"))
                 .andExpect(status().isOk());
@@ -86,5 +102,23 @@ class KingdomApiTest {
                 .andExpect(jsonPath("$.ongoingAttacks[0].to").value("GoldMinerBot"))
                 .andExpect(jsonPath("$.ongoingAttacks[0].units.infantry").value(1))
                 .andExpect(jsonPath("$.units.mobileUnits.infantry").value(1));
+    }
+
+    @Test
+    void periodicTurn_shouldStopAtMaxTurnsAndKeepPlayerChanges() throws Exception
+    {
+        var maxTurns = gameConfig.common().maxTurns();
+        var kingdom = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
+        kingdom.getResources().setCount(ResourceName.turns, maxTurns - 1);
+        kingdomRepository.update(kingdom);
+        postJson("/kingdom/build", "{\"house\":1}").andExpect(jsonPath("$.buildings.house").value(1));
+        var housesAfterBuilding = kingdomRepository.getKingdomByName(kingdomName).orElseThrow().getBuildings().getCount(BuildingName.house);
+
+        kingdomService.addTurnForEveryone();
+        kingdomService.addTurnForEveryone();
+
+        var updated = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
+        assertEquals(maxTurns, updated.getResources().getCount(ResourceName.turns));
+        assertEquals(housesAfterBuilding, updated.getBuildings().getCount(BuildingName.house));
     }
 }
