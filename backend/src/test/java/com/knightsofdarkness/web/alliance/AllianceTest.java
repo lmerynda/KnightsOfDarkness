@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.alliance;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -8,10 +9,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.util.Map;
+
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.web.common.alliance.InviteAllianceResult;
+import com.knightsofdarkness.web.common.kingdom.AttackType;
+import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
+import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
+import com.knightsofdarkness.web.common.war.SpyReportDto;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
+import com.knightsofdarkness.web.utils.Id;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
@@ -27,7 +38,7 @@ public class AllianceTest
         game = new TestGame().get();
         kingdom = new KingdomBuilder(game).build();
         game.addKingdom(kingdom);
-        allianceService = new AllianceService(game.getAllianceRepository(), game.getKingdomRepository(), game.getBotRepository(), game.getConfig(), game.getNotificationSystem());
+        allianceService = new AllianceService(game.getAllianceRepository(), game.getKingdomRepository(), game.getBotRepository(), game.getConfig(), game.getNotificationSystem(), game.getWarReportRepository());
     }
 
     @Test
@@ -316,5 +327,43 @@ public class AllianceTest
         allianceService.createAlliance(new CreateAllianceDto("Other Pact"), other.getName());
 
         assertFalse(allianceService.inviteToAlliance(other.getName(), kingdom.getName(), "Iron Pact").success());
+    }
+
+    private SpyReportDto intel(String spy, String target)
+    {
+        return new SpyReportDto(Id.generate(), Instant.now(), spy, target, true, 5, 0, Map.of(), Map.of(), Map.of(UnitName.infantry, 7));
+    }
+
+    @Test
+    void warRoom_shouldShareTheMembersArmiesAndIntel()
+    {
+        allianceService.createAlliance(new CreateAllianceDto("Iron Pact"), kingdom.getName());
+        var member = new KingdomBuilder(game).withName("member").withUnit(UnitName.cavalry, 20).build();
+        game.addKingdom(member);
+        kingdom.getAlliance().get().addKingdom(member);
+        var enemy = new KingdomBuilder(game).withName("enemy").build();
+        game.addKingdom(enemy);
+        var stranger = new KingdomBuilder(game).withName("stranger").build();
+        game.addKingdom(stranger);
+
+        var army = new UnitsMapDto();
+        army.setCount(UnitName.cavalry, 20);
+        assertTrue(new KingdomMilitaryAction(member, game.getConfig()).sendAttack(new SendAttackDto("enemy", AttackType.land, army), enemy).success());
+        game.getWarReportRepository().addSpyReport(intel("member", "enemy"));
+        game.getWarReportRepository().addSpyReport(intel("stranger", "member"));
+
+        var warRoom = allianceService.getWarRoom(kingdom.getName()).orElseThrow();
+
+        assertThat(warRoom.marching()).singleElement().satisfies(march -> {
+            assertEquals("member", march.from);
+            assertEquals("enemy", march.to);
+        });
+        assertThat(warRoom.intel()).extracting(SpyReportDto::targetKingdomName).containsExactly("enemy");
+    }
+
+    @Test
+    void warRoom_shouldBeEmptyWithoutAnAlliance()
+    {
+        assertTrue(allianceService.getWarRoom(kingdom.getName()).isEmpty());
     }
 }

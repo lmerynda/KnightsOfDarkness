@@ -187,6 +187,9 @@ export type SpyReport = {
   units: Partial<Counts<UnitName>>;
 };
 
+/** what an alliance knows together: its armies on the march, the freshest intel on each enemy, recent battles */
+export type WarRoom = { marching: OngoingAttack[]; intel: SpyReport[]; battles: BattleReport[] };
+
 export type NotificationKind =
   "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round" | "event";
 export type Notification = { id: string; kingdomName: string; kind: NotificationKind; message: string; date: string; isRead: boolean };

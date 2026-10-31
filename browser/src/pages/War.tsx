@@ -1,26 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
-import type { AttackType, BattleReport, Counts, GameConfig, MilitaryUnit, ResourceName, SpyReport, UnitName } from "../api/types";
+import type { AttackType, BattleReport, Counts, MilitaryUnit, ResourceName, SpyReport, UnitName, WarRoom } from "../api/types";
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, resourceLabel, unitLore } from "../game/lore";
-import { targetProblem } from "../game/rules";
+import { estimatedDefense, targetProblem } from "../game/rules";
 import { Crest } from "../ui/Crest";
 import { Icon } from "../ui/Icon";
 import { AmountField, Banner, Choice, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
-
-/** defense estimated from a spy report, using the same rules the battle uses */
-const estimatedDefense = (report: SpyReport, config: GameConfig): number => {
-  const units = report.units;
-  const base =
-    militaryUnits.reduce((sum, unit) => sum + (units[unit] ?? 0) * (config.attack.unitDefensePower[unit] ?? 0), 0) +
-    (units.guard ?? 0) * (config.attack.unitDefensePower.guard ?? 0);
-  const towers = Math.min(config.attack.maxTowerDefenseBonus, (report.buildings.tower ?? 0) * config.attack.towerDefenseBonusPerTower);
-  const castles = (report.buildings.castle ?? 0) * config.attack.castleDefenseBonusPerCastle;
-  return base * (1 + towers + castles);
-};
 
 const unitList = (units: Partial<Counts<UnitName>>): string => {
   const parts = [...militaryUnits, "guard" as const]
@@ -61,9 +50,13 @@ const Losses: React.FC<{ losses: Partial<Counts<UnitName>>; arrowLosses: Partial
   );
 };
 
-const SendArmy: React.FC<{ spyReports: SpyReport[]; onSent: () => void }> = ({ spyReports, onSent }) => {
+const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (target: string) => void; onSent: () => void }> = ({
+  spyReports,
+  target,
+  setTarget,
+  onSent,
+}) => {
   const { kingdom, config, rankings, act } = useGame();
-  const [target, setTarget] = useState("");
   const [attackType, setAttackType] = useState<AttackType>("land");
   const [army, setArmy] = useState<Partial<Counts<MilitaryUnit>>>({});
 
@@ -153,7 +146,7 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; onSent: () => void }> = ({ s
             Attack strength {formatNumber(attackPower)}
             {target
               ? defense !== null
-                ? `, ${target} defended with about ${formatNumber(defense)} when your spies last looked (${ago(intel?.date ?? "")})`
+                ? `, ${target} defended with about ${formatNumber(defense)} when ${intel?.kingdomName === kingdom.name ? "your" : `${intel?.kingdomName}'s`} spies last looked (${ago(intel?.date ?? "")})`
                 : `, ${target}'s defense is unknown; `
               : ""}
             {target && defense === null ? <Link to="/kingdom/spies">send spies first</Link> : null}
@@ -294,10 +287,40 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
   );
 };
 
+/** allies' armies on the march, so a ruler can send theirs to land in the same strike */
+const AlliedMarches: React.FC<{ warRoom: WarRoom | undefined; onJoin: (target: string) => void }> = ({ warRoom, onJoin }) => {
+  const { kingdom } = useGame();
+  const marches = (warRoom?.marching ?? []).filter(march => march.from !== kingdom.name);
+  if (!marches.length) return null;
+  return (
+    <Panel
+      title="Allies on the march"
+      lede="Armies that land on the same turn strike together, and a beaten kingdom is protected only from armies sent after its defeat."
+    >
+      <ul className="plain-list">
+        {marches.map(march => (
+          <li key={march.id}>
+            <span>
+              {march.from} marches {unitList(march.units)} on <strong>{march.to}</strong> to{" "}
+              {march.attackType === "land" ? "take land" : "plunder"}, arriving in{" "}
+              {plural(march.turnsLeft, "of their turns", "of their turns")}
+            </span>
+            <button className="button quiet small" type="button" onClick={() => onJoin(march.to)}>
+              Join the strike
+            </button>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  );
+};
+
 export const War: React.FC = () => {
   const { kingdom, details } = useGame();
   const [reports, setReports] = useState<BattleReport[] | null>(null);
   const [spyReports, setSpyReports] = useState<SpyReport[]>([]);
+  const [warRoom, setWarRoom] = useState<WarRoom | undefined>(undefined);
+  const [target, setTarget] = useState("");
 
   const load = useCallback(() => {
     api
@@ -308,7 +331,20 @@ export const War: React.FC = () => {
       .spyReports()
       .then(setSpyReports)
       .catch(() => undefined);
+    api
+      .warRoom()
+      .then(setWarRoom)
+      .catch(() => undefined);
   }, []);
+  // the freshest intel first, whether our spies or an ally's brought it back
+  const intel = useMemo(
+    () => [...spyReports, ...(warRoom?.intel ?? [])].sort((one, other) => other.date.localeCompare(one.date)),
+    [spyReports, warRoom],
+  );
+  const join = (to: string): void => {
+    setTarget(to);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // battles resolve when turns pass, so reload whenever the kingdom changes
   const turnsKey = useMemo(
@@ -324,7 +360,8 @@ export const War: React.FC = () => {
         defend.
       </Banner>
       <div className="stack">
-        <SendArmy spyReports={spyReports} onSent={load} />
+        <SendArmy spyReports={intel} target={target} setTarget={setTarget} onSent={load} />
+        <AlliedMarches warRoom={warRoom} onJoin={join} />
         <Marching />
         <Panel title="Battle reports">
           {reports === null ? (

@@ -1,6 +1,10 @@
 package com.knightsofdarkness.web.alliance;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import java.time.Instant;
 import java.util.List;
@@ -16,6 +20,7 @@ import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.AddBotToAllianceResult;
 import com.knightsofdarkness.web.common.alliance.AllianceDto;
 import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
+import com.knightsofdarkness.web.common.alliance.AllianceWarRoomDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceResult;
@@ -24,11 +29,16 @@ import com.knightsofdarkness.web.common.alliance.LeaveAllianceResult;
 import com.knightsofdarkness.web.common.alliance.RejectAllianceInvitationResult;
 import com.knightsofdarkness.web.common.alliance.RemoveFromAllianceResult;
 import com.knightsofdarkness.web.common.messaging.NotificationKind;
+import com.knightsofdarkness.web.common.war.BattleReportDto;
+import com.knightsofdarkness.web.common.war.SpyReportDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
 import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomOngoingAttackEntity;
 import com.knightsofdarkness.web.messaging.INotificationSystem;
 import com.knightsofdarkness.web.utils.Id;
+import com.knightsofdarkness.web.war.IWarReportRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -39,9 +49,13 @@ public class AllianceService {
     private final IBotRepository botRepository;
     private final GameConfig gameConfig;
     private final INotificationSystem notificationSystem;
+    private final IWarReportRepository warReportRepository;
+    private static final int warRoomReportsPerMember = 10;
 
-    public AllianceService(IAllianceRepository allianceRepository, IKingdomRepository kingdomRepository, IBotRepository botRepository, GameConfig gameConfig, INotificationSystem notificationSystem)
+    public AllianceService(IAllianceRepository allianceRepository, IKingdomRepository kingdomRepository, IBotRepository botRepository, GameConfig gameConfig, INotificationSystem notificationSystem,
+            IWarReportRepository warReportRepository)
     {
+        this.warReportRepository = warReportRepository;
         this.notificationSystem = notificationSystem;
         this.allianceRepository = allianceRepository;
         this.kingdomRepository = kingdomRepository;
@@ -308,5 +322,37 @@ public class AllianceService {
         }
 
         return Optional.of(alliance.get().toWithMembersDto());
+    }
+
+    /**
+     * the members' armies on the march, soonest first; the freshest successful intel on each kingdom outside the alliance
+     * from any member; and the members' recent battles
+     */
+    @Transactional
+    public Optional<AllianceWarRoomDto> getWarRoom(String kingdomName)
+    {
+        var alliance = kingdomRepository.getKingdomByName(kingdomName).flatMap(KingdomEntity::getAlliance);
+        if (alliance.isEmpty())
+        {
+            return Optional.empty();
+        }
+
+        var members = alliance.get().getKingdoms();
+        var names = members.stream().map(KingdomEntity::getName).collect(Collectors.toSet());
+        var marching = members.stream().flatMap(member -> member.getOngoingAttacks().stream()).map(KingdomOngoingAttackEntity::toDto)
+                .sorted(Comparator.comparingInt(march -> march.turnsLeft)).toList();
+
+        Map<String, SpyReportDto> freshest = new HashMap<>();
+        Map<UUID, BattleReportDto> battles = new HashMap<>();
+        for (var member : names)
+        {
+            warReportRepository.getSpyReports(member, warRoomReportsPerMember).stream()
+                    .filter(report -> report.success() && names.contains(report.kingdomName()) && !names.contains(report.targetKingdomName()))
+                    .forEach(report -> freshest.merge(report.targetKingdomName(), report, (one, other) -> one.date().isAfter(other.date()) ? one : other));
+            warReportRepository.getBattleReports(member, warRoomReportsPerMember).forEach(report -> battles.put(report.id(), report));
+        }
+        var intel = freshest.values().stream().sorted(Comparator.comparing(SpyReportDto::date).reversed()).toList();
+        var recentBattles = battles.values().stream().sorted(Comparator.comparing(BattleReportDto::date).reversed()).limit(warRoomReportsPerMember).toList();
+        return Optional.of(new AllianceWarRoomDto(marching, intel, recentBattles));
     }
 }

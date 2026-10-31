@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
-import type { Alliance, AllianceInvitation, AllianceSummary } from "../api/types";
+import type { Alliance, AllianceInvitation, AllianceSummary, WarRoom } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art } from "../game/lore";
+import { estimatedDefense } from "../game/rules";
 import { Crest } from "../ui/Crest";
 import { Banner, Panel } from "../ui/parts";
-import { formatNumber } from "../ui/format";
+import { ago, formatNumber, plural } from "../ui/format";
 
 const Members: React.FC<{ alliance: Alliance; onChange: () => void }> = ({ alliance, onChange }) => {
   const { kingdom, config, rankings, act } = useGame();
@@ -214,6 +215,82 @@ const NoAlliance: React.FC<{ onChange: () => void }> = ({ onChange }) => {
   );
 };
 
+/** what the alliance knows together: armies on the march, the freshest intel on each enemy, recent battles */
+const WarRoomPanel: React.FC = () => {
+  const { config, kingdom } = useGame();
+  const [warRoom, setWarRoom] = useState<WarRoom | undefined>(undefined);
+  useEffect(() => {
+    api
+      .warRoom()
+      .then(setWarRoom)
+      .catch(() => undefined);
+    // the kingdom reloads every turn and every half minute, and allies act meanwhile
+  }, [kingdom]);
+  if (!warRoom) return null;
+  const soldiers = (units: Partial<Record<string, number>>): number =>
+    Object.values(units).reduce<number>((sum, count) => sum + (count ?? 0), 0);
+
+  return (
+    <Panel title="War room" lede="What the alliance knows together. Armies that land on the same turn strike together.">
+      <div className="two-columns">
+        <section>
+          <h3 className="section-title small">Armies on the march</h3>
+          {warRoom.marching.length === 0 ? (
+            <p className="muted">No allied army is on the road.</p>
+          ) : (
+            <ul className="plain-list">
+              {warRoom.marching.map(march => (
+                <li key={march.id}>
+                  <span>
+                    {march.from} → <strong>{march.to}</strong>, {plural(soldiers(march.units), "soldier", "soldiers")}
+                  </span>
+                  <span className="muted">in {plural(march.turnsLeft, "turn", "turns")}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <h3 className="section-title small">Recent battles</h3>
+          {warRoom.battles.length === 0 ? (
+            <p className="muted">No battles yet.</p>
+          ) : (
+            <ul className="plain-list">
+              {warRoom.battles.map(battle => (
+                <li key={battle.id}>
+                  <span>
+                    {battle.attackerWon
+                      ? `${battle.attacker} beat ${battle.defender}`
+                      : `${battle.defender} held against ${battle.attacker}`}
+                    {battle.landCaptured > 0 ? `, ${plural(battle.landCaptured, "acre", "acres")} changed hands` : ""}
+                  </span>
+                  <span className="muted">{ago(battle.date)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+        <section>
+          <h3 className="section-title small">What our spies saw</h3>
+          {warRoom.intel.length === 0 ? (
+            <p className="muted">No ally has spied on anyone yet.</p>
+          ) : (
+            <ul className="plain-list">
+              {warRoom.intel.map(report => (
+                <li key={report.id}>
+                  <span>
+                    <strong>{report.targetKingdomName}</strong> defends with about {formatNumber(estimatedDefense(report, config))}
+                    <span className="muted"> by {report.kingdomName}&apos;s spies</span>
+                  </span>
+                  <span className="muted">{ago(report.date)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+    </Panel>
+  );
+};
+
 export const AlliancePage: React.FC = () => {
   const { kingdom, reload } = useGame();
   const [alliance, setAlliance] = useState<Alliance | undefined | null>(null);
@@ -224,7 +301,8 @@ export const AlliancePage: React.FC = () => {
       .then(setAlliance)
       .catch(() => setAlliance(undefined));
   }, []);
-  useEffect(load, [load, kingdom.allianceName]);
+  // members join and leave while the page is open, so it refreshes whenever the kingdom does
+  useEffect(load, [load, kingdom]);
 
   const onChange = (): void => {
     load();
@@ -240,6 +318,7 @@ export const AlliancePage: React.FC = () => {
         <p className="muted">Calling the council</p>
       ) : alliance ? (
         <div className="stack">
+          <WarRoomPanel />
           <Members alliance={alliance} onChange={onChange} />
         </div>
       ) : (

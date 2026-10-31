@@ -22,6 +22,7 @@ import type {
   SpecialBuildingType,
   SpyReport,
   UnitName,
+  WarRoom,
 } from "./types";
 
 type UnitsResult = { message: string; units: Counts<UnitName> };
@@ -88,6 +89,16 @@ export const api = {
   alliance: async (): Promise<Alliance | undefined> => {
     try {
       return await get<Alliance>("/alliance");
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return undefined;
+      }
+      throw error;
+    }
+  },
+  warRoom: async (): Promise<WarRoom | undefined> => {
+    try {
+      return await get<WarRoom>("/alliance/war-room");
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
         return undefined;

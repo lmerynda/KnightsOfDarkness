@@ -20,6 +20,7 @@ import com.knightsofdarkness.web.common.alliance.AddBotToAllianceDto;
 import com.knightsofdarkness.web.common.alliance.AddBotToAllianceResult;
 import com.knightsofdarkness.web.common.alliance.AllianceDto;
 import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
+import com.knightsofdarkness.web.common.alliance.AllianceWarRoomDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceResult;
@@ -167,6 +168,18 @@ public class AllianceController {
         return allianceService.getKingdomAlliance(currentUser.getKingdomName())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/war-room")
+    public ResponseEntity<AllianceWarRoomDto> getWarRoom(@AuthenticationPrincipal UserData currentUser)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return allianceService.getWarRoom(currentUser.getKingdomName()).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     private void logUserUnauthenticated()

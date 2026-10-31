@@ -4,6 +4,15 @@
   color: var(--gold-bright);
 }
 
+.section-title.small {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: 1.05rem;
+}
+
+.section-title.small:first-child {
+  margin-top: 0;
+}
+
 .build-mode {
   align-items: center;
   justify-content: space-between;

@@ -1,4 +1,16 @@
-import type { BuildingName, GameConfig, KingdomRank, Round, UnitName } from "../api/types";
+import type { BuildingName, GameConfig, KingdomRank, Round, SpyReport, UnitName } from "../api/types";
+import { militaryUnits } from "../api/types";
+
+/** defense estimated from a spy report, using the same rules the battle uses */
+export const estimatedDefense = (report: SpyReport, config: GameConfig): number => {
+  const units = report.units;
+  const base =
+    militaryUnits.reduce((sum, unit) => sum + (units[unit] ?? 0) * (config.attack.unitDefensePower[unit] ?? 0), 0) +
+    (units.guard ?? 0) * (config.attack.unitDefensePower.guard ?? 0);
+  const towers = Math.min(config.attack.maxTowerDefenseBonus, (report.buildings.tower ?? 0) * config.attack.towerDefenseBonusPerTower);
+  const castles = (report.buildings.castle ?? 0) * config.attack.castleDefenseBonusPerCastle;
+  return base * (1 + towers + castles);
+};
 
 /** the building that houses each kind of unit, builders live in houses */
 export const unitHome: Partial<Record<UnitName, BuildingName>> = {
