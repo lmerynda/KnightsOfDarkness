@@ -35,6 +35,8 @@ dependencies {
     implementation("org.springframework:spring-context")
     implementation("jakarta.persistence:jakarta.persistence-api")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    // hibernate stores battle and spy reports as JSON with its own Jackson mapper, which needs java.time support
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("io.jsonwebtoken:jjwt-api:0.13.0")
     implementation("io.jsonwebtoken:jjwt-impl:0.13.0")
     implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")

@@ -121,4 +121,40 @@ class KingdomApiTest {
         assertEquals(maxTurns, updated.getResources().getCount(ResourceName.turns));
         assertEquals(housesAfterBuilding, updated.getBuildings().getCount(BuildingName.house));
     }
+
+    @Test
+    void battleReport_shouldBeStoredAndServedAfterTheArmyArrives() throws Exception
+    {
+        postJson("/kingdom/build", "{\"barracks\":1}").andExpect(status().isOk());
+        postJson("/kingdom/train", "{\"infantry\":1}").andExpect(jsonPath("$.units.infantry").value(1));
+        postJson("/kingdom/send-attack", "{\"destinationKingdomName\":\"IronMinerBot\",\"attackType\":\"economy\",\"units\":{\"infantry\":1}}")
+                .andExpect(jsonPath("$.success").value(true));
+
+        for (int turn = 0; turn < gameConfig.attack().turnsToArrive(); turn++)
+        {
+            postJson("/kingdom/pass-turn", "0").andExpect(jsonPath("$.success").value(true));
+        }
+
+        mockMvc.perform(get("/war/battle-reports").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].attacker").value(kingdomName))
+                .andExpect(jsonPath("$[0].defender").value("IronMinerBot"))
+                .andExpect(jsonPath("$[0].unitsSent.infantry").value(1));
+    }
+
+    @Test
+    void spyReport_shouldBeStoredAndServed() throws Exception
+    {
+        postJson("/kingdom/build", "{\"spyGuild\":1}").andExpect(status().isOk());
+        postJson("/kingdom/train", "{\"spy\":1}").andExpect(jsonPath("$.units.spy").value(1));
+
+        postJson("/war/send-spies", "{\"targetKingdomName\":\"Umbar\",\"spies\":1}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        mockMvc.perform(get("/war/spy-reports").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].targetKingdomName").value("Umbar"))
+                .andExpect(jsonPath("$[0].spiesSent").value(1));
+    }
 }
