@@ -19,7 +19,9 @@ import com.knightsofdarkness.web.common.kingdom.KingdomResourcesDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.web.common.kingdom.KingdomUnitsDto;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
+import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.common.market.MarketOfferDto;
 import com.knightsofdarkness.web.common.market.MarketResource;
@@ -56,8 +58,8 @@ public class GameInitializer implements CommandLineRunner
     public void run(String... args)
     {
 
-        createKingdom("uprzejmy");
-        createKingdom("Umbar");
+        createPlayerKingdom("uprzejmy");
+        createPlayerKingdom("Umbar");
         createBot("BlacksmithBot", SpecialBuildingType.forge);
         createBot("FarmerBot", SpecialBuildingType.granary);
         createBot("IronMinerBot", SpecialBuildingType.ironShaft);
@@ -85,11 +87,23 @@ public class GameInitializer implements CommandLineRunner
     @Transactional
     KingdomEntity createKingdom(String name)
     {
-        log.info("Initializing kingdom " + name);
-        KingdomDto kingdomDto = generateKingdom(name);
-        kingdomDto.lastTurnReport = new KingdomTurnReport();
-        kingdomDto.specialBuildings = new ArrayList<>();
-        return kingdomRepository.add(KingdomEntity.fromDto(kingdomDto));
+        log.info("Initializing kingdom {}", name);
+        return kingdomService.createKingdom(name);
+    }
+
+    /**
+     * development kingdoms get a small garrison so war and espionage can be tried right away
+     */
+    void createPlayerKingdom(String name)
+    {
+        var kingdom = createKingdom(name);
+        kingdom.getBuildings().addCount(BuildingName.barracks, 1);
+        kingdom.getBuildings().addCount(BuildingName.spyGuild, 1);
+        kingdom.getUnits().addAvailableCount(UnitName.infantry, 40);
+        kingdom.getUnits().addAvailableCount(UnitName.bowman, 40);
+        kingdom.getUnits().addAvailableCount(UnitName.cavalry, 20);
+        kingdom.getUnits().addAvailableCount(UnitName.spy, 10);
+        kingdomRepository.update(kingdom);
     }
 
     @Transactional
@@ -103,13 +117,6 @@ public class GameInitializer implements CommandLineRunner
         }
     }
 
-    private KingdomDto generateKingdom(String name)
-    {
-        var kingdom = generateDefaultKingdomDto();
-        kingdom.name = name;
-        return kingdom;
-    }
-
     private List<MarketOfferDto> generateMarketOffers()
     {
         List<MarketOfferDto> marketOffers = new ArrayList<>();
@@ -121,24 +128,4 @@ public class GameInitializer implements CommandLineRunner
         return marketOffers;
     }
 
-    private static final KingdomDto generateDefaultKingdomDto()
-    {
-        var kingdom = new KingdomDto();
-        kingdom.name = "default_kingdom_name";
-        kingdom.resources = new EnumMap<>(new KingdomResourcesDto(100, 10000, 20, 1000, 1000, 20000, 100, 100, 20).getResources());
-        kingdom.buildings = new EnumMap<>(new KingdomBuildingsDto(10, 5, 5, 5, 5, 1, 1, 1, 0, 1, 0).getBuildings());
-        kingdom.units = new KingdomUnitsDto(generateDefaultAvailableUnits().getUnits(), new UnitsMapDto().getUnits());
-        return kingdom;
-    }
-
-    private static final UnitsMapDto generateDefaultAvailableUnits()
-    {
-        var units = new UnitsMapDto();
-        units.setUnit("goldMiner", 5);
-        units.setUnit("ironMiner", 5);
-        units.setUnit("builder", 5);
-        units.setUnit("blacksmith", 5);
-        units.setUnit("farmer", 5);
-        return units;
-    }
 }
