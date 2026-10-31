@@ -1,41 +1,24 @@
-# Dump list for what needs to be fixed
+# What is left
 
-## Missing major game features
+## Game
 
-1. Attacks
-1. Resource transfers using carriers
-1. Spies
-1. Rankings and statistics
-1. Messages
-1. Notifications
-1. Coalitions
-1. Game log separation
-1. Game related messages should be coming from game module, we probably need to create type with message and data for every possible action to take
+1. Bot balance: the merchant bots grow to thousands of acres and offer millions of food within hours. They are unranked, but they flood the market and make easy plunder targets.
+1. Combat is fought type against type in melee (infantry only meets infantry), so a pure cavalry army is never hurt by defending infantry. Decide whether that is the intended rock-paper-scissors.
+1. Guards defend and catch spies but never die in battle.
+1. Food is eaten before the harvest is counted, so a kingdom with exactly enough farmers still goes hungry on an empty granary.
+1. The castle's housing capacity and the tower's capacity in `gameconfig.json` are unused; towers and castles only add defense.
+1. Game messages (notifications) are plain text built in the services; a typed event with data would let the client render them richer.
 
-## Problems
+## Code
 
-1. Player registration, we should rebrand from username to kingdomName, we should check if repeated password match, we should ask for email, we should make sure no kingdomNames are repeated, move players storage to database
-1. There should be some separation between civilians and military units (archers, infantry, cavarly, spies). They should eat the same, but shouldn't be counted into all units, for example they should return as unemployed on the next turn, and shouldn't be exiled if there is not enough houses
-1. We do a lot of calculations for small kingdom bonus, maybe we should have a table of consts for each land value?
-1. There is a mix of layer responsibility between controller and service, DTOs should be translated in controller but often are in service, as well as ResponseEntity
-1. More validations?
-1. Make up mind about amount vs count, it's all mixed up
-1. Show the cost of buying land near the transaction form
-1. Market offer should show total value
-1. Buy report has price per unit two times (no it doesn't, double check)
-1. Token doesn't autoextend with use, just hard expires after 15 minutes
-1. validate login and take error to user
-1. validate during registration, kingdom name must be unique
-1. Verify login errors
-1. Verify registration errors
-1. Verify flow around expired tokens
-1. Unemployed are not taken into account for max button in training
-1. Check if max button for buildings and others can offer partial numbers as it seem to do it
+1. Controllers and services mix responsibilities: some services return DTOs and some controllers build them; result types differ per action.
+1. Amount and count are used interchangeably for the same thing.
+1. The periodic turn is a bulk update outside optimistic locking, so a player action that read the kingdom before the tick can still overwrite that tick's extra turn.
+1. Production serves the client with nginx without a fallback to `index.html`, so reloading a deep link such as `/kingdom/build` depends on whatever proxy sits in front.
+1. The e2e scenarios run locally only; CI does not start the backend for them yet.
 
 ## Ideas
 
-1. Allow for trial play with just providing kingdomName
-1. Profession profile, it should inform building and training UI
-1. Random Game Events? Might not be the best idea
-1. Warning on passing turn with negative implications
-1. Move read actions into game module, create separate readData module? there we should not build complicated domain types with dependency hierarchy, just dtos
+1. Trial play with only a kingdom name.
+1. Profession profiles that suggest what to build and train.
+1. Random events.
