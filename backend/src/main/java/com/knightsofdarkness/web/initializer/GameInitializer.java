@@ -74,9 +74,8 @@ public class GameInitializer implements CommandLineRunner
         var alliance = new AllianceEntity(allianceName, kingdomEntity.getName());
         alliance.addKingdom(emperorEntity);
         alliance.addKingdom(kingdomEntity);
+        // saving the alliance cascades to its member kingdoms
         allianceRepository.create(alliance);
-        kingdomRepository.update(kingdomEntity);
-        kingdomRepository.update(emperorEntity);
     }
 
     @Transactional

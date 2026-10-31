@@ -57,7 +57,7 @@ public class RoundService {
         return roundRepository.findByEndedAtIsNotNullOrderByNumberDesc().stream().map(round -> round.toDto(gameConfig.common().newTurnPeriodicity())).toList();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public RankingsDto getRankings()
     {
         return RankingCalculator.calculate(kingdomRepository.getAllKingdoms(), botNames());

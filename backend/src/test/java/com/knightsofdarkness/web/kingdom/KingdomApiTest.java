@@ -1,6 +1,7 @@
 package com.knightsofdarkness.web.kingdom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -15,6 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -23,6 +27,7 @@ import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
+import com.knightsofdarkness.web.round.RoundService;
 
 /**
  * Requests as the browser sends them: unit, building and resource maps are flat objects keyed by name.
@@ -51,6 +56,15 @@ class KingdomApiTest {
 
     @Autowired
     private GameConfig gameConfig;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private RoundService roundService;
 
     private String kingdomName;
 
@@ -156,5 +170,37 @@ class KingdomApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].targetKingdomName").value("Umbar"))
                 .andExpect(jsonPath("$[0].spiesSent").value(1));
+    }
+
+    @Test
+    void concurrentChanges_shouldBeRejectedInsteadOfOverwritten()
+    {
+        var first = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
+        var second = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
+        first.getResources().setCount(ResourceName.gold, 1);
+        kingdomRepository.update(first);
+
+        second.getResources().setCount(ResourceName.gold, 2);
+
+        assertThrows(ObjectOptimisticLockingFailureException.class, () -> kingdomRepository.update(second));
+        assertEquals(1, kingdomRepository.getKingdomByName(kingdomName).orElseThrow().getResources().getCount(ResourceName.gold));
+    }
+
+    private long version()
+    {
+        return jdbcTemplate.queryForObject("SELECT version FROM kingdom_entity WHERE name = ?", Long.class, kingdomName);
+    }
+
+    @Test
+    void readingKingdoms_shouldNotWriteThemBack() throws Exception
+    {
+        postJson("/kingdom/pass-turn", "0").andExpect(jsonPath("$.success").value(true));
+        var before = version();
+
+        transactionTemplate.executeWithoutResult(status -> kingdomRepository.getAllKingdoms().forEach(kingdom -> kingdom.getName()));
+        roundService.getRankings();
+        mockMvc.perform(get("/kingdom/details").header("Authorization", "Bearer " + token)).andExpect(status().isOk());
+
+        assertEquals(before, version());
     }
 }

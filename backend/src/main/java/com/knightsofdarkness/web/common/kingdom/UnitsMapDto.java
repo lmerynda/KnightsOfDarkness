@@ -82,6 +82,19 @@ public class UnitsMapDto {
         units.put(UnitName.from(key), value);
     }
 
+    // stored as JSON, hibernate compares by value to decide whether the entity changed
+    @Override
+    public boolean equals(Object other)
+    {
+        return other instanceof UnitsMapDto that && units.equals(that.units);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return units.hashCode();
+    }
+
     @Override
     public String toString()
     {

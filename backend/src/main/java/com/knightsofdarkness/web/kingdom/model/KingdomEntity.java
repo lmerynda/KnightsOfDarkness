@@ -28,6 +28,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Version;
 
 @Entity
 public class KingdomEntity
@@ -60,6 +61,12 @@ public class KingdomEntity
     @ManyToOne
     @JoinColumn(name = "alliance_name", nullable = true)
     AllianceEntity alliance;
+
+    /**
+     * two writers changing the same kingdom at once (a player, a battle, a bot) must not silently overwrite each other
+     */
+    @Version
+    Long version;
 
     public KingdomEntity()
     {
