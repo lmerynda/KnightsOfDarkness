@@ -60,6 +60,13 @@ public class MarketOfferRepository implements IMarketOfferRepository {
         return jpaRepository.findById(marketOfferId);
     }
 
+    @Override
+    public void deleteAll()
+    {
+        jpaRepository.deleteAll();
+    }
+
+    @Override
     public void update(MarketOfferEntity marketOffer)
     {
         jpaRepository.save(marketOffer);

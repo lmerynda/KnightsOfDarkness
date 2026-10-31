@@ -63,6 +63,11 @@ public class KingdomSpecialBuildingEntity {
         return level >= 5;
     }
 
+    public SpecialBuildingType getBuildingType()
+    {
+        return buildingType;
+    }
+
     public UUID getId()
     {
         return id;

@@ -58,6 +58,12 @@ public class MarketRepository implements IMarketOfferRepository {
     }
 
     @Override
+    public void deleteAll()
+    {
+        offers.clear();
+    }
+
+    @Override
     public void update(MarketOfferEntity marketOffer)
     {
         var existingOffer = offers.stream().filter(offer -> offer.getId() == marketOffer.getId()).findFirst();

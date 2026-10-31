@@ -202,5 +202,8 @@
         "counterIntelligencePerSpy": 2,
         "counterIntelligencePerGuard": 0.2,
         "failedMissionLossRatio": 0.5
+    },
+    "round": {
+        "lengthInTicks": 4320
     }
 }

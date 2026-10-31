@@ -11,5 +11,6 @@ public record GameConfig(
         Common common,
         CarrierCapacity carrierCapacity,
         Attack attack,
-        Espionage espionage) {
+        Espionage espionage,
+        Round round) {
 }

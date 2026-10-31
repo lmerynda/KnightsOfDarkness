@@ -100,8 +100,7 @@ public class KingdomEntity
                 new KingdomUnitsEntity(dto.units.getAvailableUnits(), dto.units.getMobileUnits()),
                 dto.lastTurnReport);
 
-        var specialBuildings = dto.specialBuildings.stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDto(specialBuilding, kingdomEntity)).toList();
-        kingdomEntity.specialBuildings = specialBuildings;
+        kingdomEntity.specialBuildings.addAll(dto.specialBuildings.stream().map(specialBuilding -> KingdomSpecialBuildingEntity.fromDto(specialBuilding, kingdomEntity)).toList());
 
         return kingdomEntity;
     }
@@ -119,6 +118,19 @@ public class KingdomEntity
     public int getBuildingCapacity(BuildingName name, GameConfig config)
     {
         return buildings.getCapacity(name, config.buildingCapacity().getCapacity(name));
+    }
+
+    public void resetToStart(GameConfig config)
+    {
+        var start = config.kingdomStartConfiguration();
+        var startingUnits = start.units().toDto();
+        resources = new KingdomResourcesEntity(start.resources().toMap());
+        buildings = new KingdomBuildingsEntity(start.buildings().toMap());
+        units = new KingdomUnitsEntity(startingUnits.getAvailableUnits(), startingUnits.getMobileUnits());
+        specialBuildings.clear();
+        carriersOnTheMove.clear();
+        ongoingAttacks.clear();
+        lastTurnReport = new KingdomTurnReport();
     }
 
     public void addTurn()

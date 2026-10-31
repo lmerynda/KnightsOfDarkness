@@ -25,6 +25,8 @@ public interface IMarketOfferRepository {
 
     void update(MarketOfferEntity marketOffer);
 
+    void deleteAll();
+
     void registerMarketTransaction(MarketTransactionEntity transaction);
 
     List<MarketTransactionEntity> getTransactionsByResourceAndTimeRange(MarketResource resource, Instant hourAgo, Instant now);

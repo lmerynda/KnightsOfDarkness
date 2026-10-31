@@ -21,13 +21,15 @@ Scene images (banners) add:
 | hero | A lone fortified castle on a craggy hill at dusk, torches burning on the walls, tattered banners in the wind, a winding road with a few riders approaching, distant dark storm clouds over the western horizon |
 | overview | A walled medieval town seen from a hill at twilight, thatched houses, fields and a keep, chimney smoke and warm windows |
 | war | Two armies facing each other across a misty field at dawn, spears and banners, cavalry on the flank, archers on a ridge |
-| market | A crowded medieval market square at evening under lanterns, stalls with grain sacks, iron bars, crates of tools |
+| marketplace | A crowded medieval market square at evening under lanterns, stalls with grain sacks, iron bars, crates of tools |
 | alliance | A torchlit stone council hall with a long oak table, several lords standing around a map, banners of different houses on the walls |
 | rankings | A dark throne hall with tall pillars, a single shaft of cold light falling on an empty iron throne |
 | messages | A scribe's desk by candlelight with parchment letters, wax seals, a quill and an hourglass, rain on a leaded window |
 | spies | A hooded figure on a rooftop at night watching a lit castle courtyard below, moonlight through clouds |
 | transfers | A train of laden carriers and a mule cart crossing a stone bridge in fog, carrying sacks and crates |
 | login | A massive iron-bound castle gate at night, two braziers burning on either side, mist on the ground |
+| aftermath | The aftermath of a battle at dusk, broken lances and torn banners in the mud, crows circling, a few survivors walking away |
+| victory | A victorious lord raising a great banner atop castle walls at sunrise, soldiers cheering below, golden light breaking through clouds |
 
 ## Buildings (1024x1024, vignette)
 
