@@ -2,7 +2,8 @@
 
 ## Game
 
-1. Melee is fought type against type (infantry only meets infantry), so a pure cavalry army is never hurt by defending infantry. Decide whether that is the intended rock-paper-scissors; the simulation can compare variants.
+1. Melee is fought type against type (infantry only meets infantry), so battles between different unit types are bloodless in melee: 100 infantry against 50 cavalry lose nobody on either side. Measured on 16 equal-gold matchups (2026-10-31), letting every soldier fight, spread over the enemy by its make-up like the arrow salvos, picks the same winner in all 16 and roughly doubles losses in mixed battles. Decide which one the game wants.
+1. The simulation never fights an armed defender: the warlord only attacks kingdoms its spies show to be weak, so melee is untested end to end. A raider strategy that attacks armed kingdoms would cover it.
 1. Game messages (notifications) are plain text built in the services; a typed event with data would let the client render them richer.
 1. The turtle strategy in the simulation stalls at about 140 acres: recruiting bowmen and guards costs the gold it would spend on land. Worth a look as a balance question once real players exist.
 
