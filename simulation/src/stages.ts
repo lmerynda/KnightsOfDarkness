@@ -6,8 +6,9 @@ import { parseArgs } from "node:util";
 import { chromium } from "playwright-core";
 import { World } from "./client.ts";
 import { startServer } from "./server.ts";
+import { coalitionWarlord, foundCoalition, guardian } from "./coalition.ts";
 import { economist, raider, turtle, warlord } from "./strategies.ts";
-import { foundRulers, runWorld } from "./world.ts";
+import { runWorld } from "./world.ts";
 
 const usage = `Play one world and photograph the real browser UI at several turns, to see how the game looks as it unfolds.
 
@@ -85,8 +86,11 @@ try {
     await new Promise(wait => setTimeout(wait, 500));
   }
   const world = new World(server.url);
-  const rulers = await foundRulers(world, [warlord(), economist, turtle, raider], "Stage");
-  const [warlordName, economistName, turtleName] = rulers.map(ruler => ruler.player.name);
+  // two rival coalitions: Order strikes together and guards its own, Horde plays every kingdom for itself
+  const order = await foundCoalition(world, "Order", council => [coalitionWarlord(council), economist, guardian(council), coalitionWarlord(council)]);
+  const horde = await foundCoalition(world, "Horde", () => [warlord(), economist, turtle, raider]);
+  const rulers = [...order.rulers, ...horde.rulers];
+  const [warlordName, economistName, turtleName] = order.rulers.map(ruler => ruler.player.name);
 
   console.log("photographing the gates and a newcomer");
   const visitor = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
@@ -105,8 +109,8 @@ try {
       const stage = `t${String(turn).padStart(2, "0")}`;
       await photograph(warlordName, `${stage}-warlord`, turn === lastTurn ? pages : ["overview", "build", "train", "war", "spies", "rankings"]);
       if (turn !== lastTurn) return;
-      await photograph(economistName, `${stage}-economist`, ["overview", "war", "chronicle"]);
-      await photograph(turtleName, `${stage}-turtle`, ["overview", "war"]);
+      await photograph(economistName, `${stage}-economist`, ["overview", "war", "alliance", "chronicle"]);
+      await photograph(turtleName, `${stage}-guardian`, ["overview", "war"]);
       await photograph(warlordName, `${stage}-phone`, ["overview", "war"], { width: 390, height: 844 });
     },
   });

@@ -81,4 +81,4 @@ To see how the game looks as a world unfolds, play one and photograph the real b
 cd simulation && npm run stages -- --turns 12,30,60
 ```
 
-Screenshots land in `simulation/stages`: a newcomer's first look, a warlord at every listed turn, and at the last turn the economist it raided, a turtle and a phone-sized view.
+The world holds two rival coalitions of four, Order (warlords who strike together, an economist and a guardian) and Horde (a warlord, an economist, a turtle and a raider). Screenshots land in `simulation/stages`: the landing, sign-in and register pages, a newcomer's first look, an Order warlord at every listed turn, and at the last turn Order's economist with its war room, its guardian and a phone-sized view.

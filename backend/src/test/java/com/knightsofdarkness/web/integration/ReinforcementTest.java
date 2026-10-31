@@ -94,6 +94,17 @@ class ReinforcementTest
     }
 
     @Test
+    void reinforcements_shouldJoinTheGarrisonAlreadyStandingThere()
+    {
+        standGuard(30);
+        standGuard(20);
+
+        assertThat(farmer.getGarrisons()).singleElement().satisfies(garrison -> assertEquals(50, garrison.getUnits().getCount(UnitName.infantry)));
+        assertThat(guardian.getReinforcements()).hasSize(1);
+        assertEquals(50, guardian.getUnits().getMobileCount(UnitName.infantry));
+    }
+
+    @Test
     void reinforcements_shouldOnlyGoToAllies()
     {
         var sent = new KingdomMilitaryAction(guardian, config).sendReinforcements(new SendReinforcementsDto("raider", units(UnitName.infantry, 10)), raider);

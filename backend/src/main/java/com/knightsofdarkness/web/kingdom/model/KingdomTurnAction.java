@@ -74,9 +74,29 @@ public class KingdomTurnAction {
                 if (reinforcement.isStanding())
                 {
                     kingdomInteractor.reinforcementsArrived(reinforcement);
+                    joinStandingGarrison(reinforcement);
                 }
             }
         }
+    }
+
+    /**
+     * soldiers who arrive where ours already stand guard join that garrison, so each ally holds one garrison of ours
+     */
+    private void joinStandingGarrison(KingdomReinforcementEntity arrived)
+    {
+        kingdom.getReinforcements().stream()
+                .filter(other -> other != arrived && other.isStanding() && other.getHost() == arrived.getHost())
+                .findFirst()
+                .ifPresent(garrison ->
+                {
+                    for (var unit : UnitName.getMilitaryUnits())
+                    {
+                        garrison.getUnits().setCount(unit, garrison.getUnits().getCount(unit) + arrived.getUnits().getCount(unit));
+                    }
+                    kingdom.getReinforcements().remove(arrived);
+                    arrived.getHost().getGarrisons().remove(arrived);
+                });
     }
 
     private void processAttacks()
