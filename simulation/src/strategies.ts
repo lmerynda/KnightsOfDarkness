@@ -1,5 +1,5 @@
 import type { Player, World } from "./client.ts";
-import type { BuildingName, Counts, GameConfig, Kingdom, KingdomDetails, Rankings, SpyReport, UnitName } from "./types.ts";
+import type { BuildingName, Counts, GameConfig, Kingdom, KingdomDetails, Rankings, SpecialBuildingType, SpyReport, UnitName } from "./types.ts";
 import { militaryUnits } from "./types.ts";
 
 /** everything a ruler can know at the start of their turn, gathered through the public API */
@@ -94,9 +94,27 @@ const developEconomy = async (start: TurnContext, plan: Plan, workers: UnitName[
   const refreshed = { ...context, details: await context.player.details(), kingdom: await context.player.kingdom() };
   await staffBuildings(refreshed, workers);
   await keepBuilders(refreshed);
+  await raiseGreatWorks(refreshed);
 };
 
 const economyWorkers: UnitName[] = ["farmer", "goldMiner", "ironMiner", "blacksmith"];
+
+/** the great works a ruler raises, in order, with the building points left once the land is built on */
+const greatWorks: SpecialBuildingType[] = ["goldShaft", "warehouse", "granary", "goldShaft", "forge"];
+
+/** building points are lost when the turn passes, so whatever the land could not take goes into a great work */
+const raiseGreatWorks = async ({ player, config }: TurnContext): Promise<void> => {
+  let kingdom = await player.kingdom();
+  let unfinished = kingdom.specialBuildings.find(work => !work.isMaxLevel);
+  if (!unfinished && kingdom.specialBuildings.length < config.common.specialBuildingMaxCount) {
+    await player.startGreatWork(greatWorks[kingdom.specialBuildings.length] ?? "goldShaft");
+    kingdom = await player.kingdom();
+    unfinished = kingdom.specialBuildings.find(work => !work.isMaxLevel);
+  }
+  if (unfinished && kingdom.resources.buildingPoints > 0) {
+    await player.investInGreatWork(unfinished.id, kingdom.resources.buildingPoints);
+  }
+};
 
 /** passes every turn without doing anything, the baseline every other strategy should beat */
 export const idle: Strategy = {

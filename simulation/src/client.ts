@@ -11,6 +11,7 @@ import type {
   MarketResource,
   Rankings,
   Round,
+  SpecialBuildingType,
   SpyReport,
   UnitName,
 } from "./types.ts";
@@ -125,6 +126,15 @@ export class Player {
 
   public train(units: Partial<Counts<UnitName>>): Promise<{ units: Counts<UnitName> }> {
     return this.post("/kingdom/train", units);
+  }
+
+  public startGreatWork(type: SpecialBuildingType): Promise<unknown> {
+    return this.post("/kingdom/start-special-building", { name: type });
+  }
+
+  /** puts building points into a great work, answers how many it took */
+  public investInGreatWork(id: string, buildingPoints: number): Promise<number> {
+    return this.post("/kingdom/build-special-building", { id, buildingPoints });
   }
 
   public dismiss(units: Partial<Counts<UnitName>>): Promise<{ units: Counts<UnitName> }> {

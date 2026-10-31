@@ -6,6 +6,8 @@ export type BuildingName = (typeof buildingNames)[number];
 export const unitNames = ["goldMiner", "ironMiner", "farmer", "blacksmith", "builder", "carrier", "guard", "spy", "infantry", "bowman", "cavalry"] as const;
 export type UnitName = (typeof unitNames)[number];
 
+export type SpecialBuildingType = "goldShaft" | "ironShaft" | "granary" | "forge" | "warehouse";
+
 export const militaryUnits = ["infantry", "bowman", "cavalry"] as const;
 
 export const resourceNames = ["land", "buildingPoints", "unemployed", "gold", "iron", "food", "tools", "weapons", "turns"] as const;
@@ -31,7 +33,7 @@ export type Kingdom = {
   buildings: Counts<BuildingName>;
   units: { availableUnits: Counts<UnitName>; mobileUnits: Counts<UnitName> };
   marketOffers: { id: string; resource: MarketResource; count: number; price: number }[];
-  specialBuildings: { id: string; buildingType: string; level: number }[];
+  specialBuildings: { id: string; buildingType: SpecialBuildingType; level: number; isMaxLevel: boolean }[];
   lastTurnReport: TurnReport;
   ongoingAttacks: { id: string; to: string; turnsLeft: number; units: Partial<Counts<UnitName>> }[];
   carriersOnTheMove: { id: string; to: string; turnsLeft: number }[];
@@ -55,7 +57,7 @@ export type KingdomDetails = {
 export type GameConfig = {
   buildingPointCosts: Counts<BuildingName>;
   trainingCost: Record<UnitName, { gold: number; tools: number; weapons: number }>;
-  common: { maxTurns: number; foodUpkeepPerUnit: number };
+  common: { maxTurns: number; foodUpkeepPerUnit: number; specialBuildingMaxCount: number };
   attack: {
     turnsToArrive: number;
     minTargetLandRatio: number;

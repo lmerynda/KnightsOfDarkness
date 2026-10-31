@@ -83,6 +83,15 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
       text: `Every acre is built on. The next acre costs ${formatNumber(details.nextLandPrice)} gold.`,
       link: { to: "/kingdom/build", label: "Buy land" },
     });
+    const roomForWork =
+      kingdom.specialBuildings.some(work => !work.isMaxLevel) || kingdom.specialBuildings.length < config.common.specialBuildingMaxCount;
+    if (resources.buildingPoints > 0 && roomForWork) {
+      lines.push({
+        urgent: false,
+        text: `This turn's ${formatNumber(resources.buildingPoints)} building points have no acre to go to. A great work keeps them.`,
+        link: { to: "/kingdom/build", label: "Raise a great work" },
+      });
+    }
   }
   if (resources.turns >= config.common.maxTurns) {
     lines.push({ urgent: false, text: `Your turn store is full at ${config.common.maxTurns}; new turns are lost until you pass one.` });
