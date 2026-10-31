@@ -81,6 +81,43 @@
   margin-bottom: 6px;
 }
 
+/* ---------- the steward's counsel ---------- */
+.counsel {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.counsel li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.counsel li:last-child {
+  border-bottom: none;
+}
+
+.counsel li.urgent {
+  color: var(--ember);
+}
+
+@media (max-width: 600px) {
+  .counsel li {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .counsel li .button {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
 .realm-stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -4,6 +4,7 @@ import { api } from "../api/endpoints";
 import type { Notification, ResourceName, TurnReport, UnitName } from "../api/types";
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
+import { counsel } from "../game/advice";
 import { art, marketResourceLabel, resourceLabel, unitLore } from "../game/lore";
 import type { IconName } from "../ui/Icon";
 import { Icon } from "../ui/Icon";
@@ -262,6 +263,29 @@ const RecentChronicle: React.FC = () => {
   );
 };
 
+const Counsel: React.FC = () => {
+  const { kingdom, details, config } = useGame();
+  const lines = counsel(kingdom, details, config);
+  if (!lines.length) return null;
+  return (
+    <Panel title="Your steward advises">
+      <ul className="counsel">
+        {lines.map(line => (
+          <li key={line.text} className={line.urgent ? "urgent" : undefined}>
+            <Icon name={line.urgent ? "warning" : "scroll"} size={18} />
+            <span>{line.text}</span>
+            {line.link ? (
+              <Link className="button quiet small" to={line.link.to}>
+                {line.link.label}
+              </Link>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  );
+};
+
 export const Overview: React.FC = () => {
   const { kingdom } = useGame();
   return (
@@ -270,12 +294,15 @@ export const Overview: React.FC = () => {
         {kingdom.allianceName ? `Sworn to ${kingdom.allianceName}.` : "A kingdom without allies."} Spend this turn's building points, then
         pass the turn.
       </Banner>
-      <div className="two-columns">
-        <Forecast />
-        <div className="stack">
-          <Realm />
-          <Movements />
-          <RecentChronicle />
+      <div className="stack">
+        <Counsel />
+        <div className="two-columns">
+          <Forecast />
+          <div className="stack">
+            <Realm />
+            <Movements />
+            <RecentChronicle />
+          </div>
         </div>
       </div>
     </>

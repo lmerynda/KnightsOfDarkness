@@ -1,7 +1,20 @@
 import React from "react";
 
 export type IconName =
-  "gold" | "food" | "iron" | "tools" | "weapons" | "land" | "buildingPoints" | "people" | "turns" | "shield" | "eye" | "sword";
+  | "gold"
+  | "food"
+  | "iron"
+  | "tools"
+  | "weapons"
+  | "land"
+  | "buildingPoints"
+  | "people"
+  | "turns"
+  | "shield"
+  | "eye"
+  | "sword"
+  | "warning"
+  | "scroll";
 
 const tint: Record<IconName, string> = {
   gold: "#d4b878",
@@ -16,6 +29,8 @@ const tint: Record<IconName, string> = {
   shield: "#b89a5a",
   eye: "#9fb0bf",
   sword: "#c7ccd2",
+  warning: "#e08a2e",
+  scroll: "#d4b878",
 };
 
 const paths: Record<IconName, React.ReactNode> = {
@@ -89,6 +104,18 @@ const paths: Record<IconName, React.ReactNode> = {
     <>
       <path d="M19 3 9 13l2 2L21 5V3z" />
       <path d="m7 13 4 4M5.5 18.5 8 16M4 20l1.5-1.5" />
+    </>
+  ),
+  warning: (
+    <>
+      <path d="M12 3.5 2.5 20h19z" />
+      <path d="M12 10v4.5M12 17.2v.3" />
+    </>
+  ),
+  scroll: (
+    <>
+      <path d="M7 4h11a2 2 0 0 1 0 4h-1v10a2 2 0 0 1-2 2H6a2 2 0 0 1 0-4h1z" />
+      <path d="M7 16V4a2 2 0 0 0-2 2v1h2M10 9h4M10 12h4" />
     </>
   ),
 };

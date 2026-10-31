@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { errorText } from "../api/client";
 import { api } from "../api/endpoints";
 import type { GameConfig, Kingdom, KingdomDetails, Rankings } from "../api/types";
+import { turnSummary } from "./advice";
 import { GameContext } from "./useGame";
 
 type Toast = { id: number; text: string; failure: boolean };
@@ -123,7 +124,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode; fallback: (erro
   const passTurn = useCallback(async () => {
     const result = await act(
       () => api.passTurn(weaponsRef.current),
-      outcome => ({ text: outcome.success ? "A turn has passed" : outcome.message, failure: !outcome.success }),
+      outcome => ({
+        text: outcome.success ? (outcome.turnReport ? turnSummary(outcome.turnReport) : "A turn has passed") : outcome.message,
+        failure: !outcome.success,
+      }),
     );
     return result?.turnReport ?? undefined;
   }, [act]);

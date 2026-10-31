@@ -51,7 +51,16 @@ test("a ruler raises buildings, trains workers and passes the turn", async ({ pa
   await expect(toast(page, "Trained 2 recruits")).toBeVisible();
 
   await passTurn(page);
-  await expect(toast(page, "A turn has passed").first()).toBeVisible();
+  await expect(toast(page, /A turn has passed: \+[\d,]+ gold/).first()).toBeVisible();
+});
+
+test("the steward tells a newcomer what to do and leads there", async ({ page }) => {
+  await foundKingdom(page);
+
+  const advice = page.locator(".counsel li").filter({ hasText: "acres stand empty" });
+  await expect(advice).toBeVisible();
+  await advice.getByRole("link", { name: "Build" }).click();
+  await expect(page).toHaveURL(/\/kingdom\/build$/);
 });
 
 test("land can be priced and bought", async ({ page }) => {
