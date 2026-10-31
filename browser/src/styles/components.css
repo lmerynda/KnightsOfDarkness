@@ -179,7 +179,12 @@
 
 .stack {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-5);
+}
+
+.field > .choice {
+  justify-self: start;
 }
 
 .row {

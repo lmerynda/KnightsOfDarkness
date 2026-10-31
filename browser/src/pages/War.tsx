@@ -227,11 +227,11 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
           ) : null}
           <div>
             <dt>We lost</dt>
-            <dd className="loss">{unitList(ourLosses)}</dd>
+            <dd className={unitList(ourLosses) === "nobody" ? "muted" : "loss"}>{unitList(ourLosses)}</dd>
           </div>
           <div>
             <dt>They lost</dt>
-            <dd className="gain">{unitList(theirLosses)}</dd>
+            <dd className={unitList(theirLosses) === "nobody" ? "muted" : "gain"}>{unitList(theirLosses)}</dd>
           </div>
           {report.attackerWon && report.attackType === "land" ? (
             <div>

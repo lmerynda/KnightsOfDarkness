@@ -590,6 +590,10 @@
 }
 
 @media (max-width: 520px) {
+  .narrow-hidden {
+    display: none;
+  }
+
   .realm-stats {
     grid-template-columns: minmax(0, 1fr);
   }

@@ -19,7 +19,7 @@ const OfferRow: React.FC<{ offer: MarketOffer; own: boolean; onDone: () => void 
       <td>{own ? `${offer.sellerName} (you)` : offer.sellerName}</td>
       <td className="number">{formatNumber(offer.count)}</td>
       <td className="number">{formatNumber(offer.price)}</td>
-      <td className="number muted">{formatNumber(offer.count * offer.price)}</td>
+      <td className="number muted narrow-hidden">{formatNumber(offer.count * offer.price)}</td>
       <td className="market-buy">
         {own ? (
           <button
@@ -163,7 +163,7 @@ export const Market: React.FC = () => {
                     <th>Seller</th>
                     <th className="number">Amount</th>
                     <th className="number">Price each</th>
-                    <th className="number">All of it</th>
+                    <th className="number narrow-hidden">All of it</th>
                     <th />
                   </tr>
                 </thead>

@@ -47,7 +47,7 @@ export const RankingsPage: React.FC = () => {
                     <th className="number">#</th>
                     <th>Kingdom</th>
                     <th className="number">Land</th>
-                    <th className="number">Buildings</th>
+                    <th className="number narrow-hidden">Buildings</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -65,7 +65,7 @@ export const RankingsPage: React.FC = () => {
                         </span>
                       </td>
                       <td className="number">{formatNumber(rank.land)}</td>
-                      <td className="number muted">{formatNumber(rank.buildings)}</td>
+                      <td className="number muted narrow-hidden">{formatNumber(rank.buildings)}</td>
                     </tr>
                   ))}
                 </tbody>
