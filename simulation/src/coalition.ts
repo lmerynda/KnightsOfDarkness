@@ -20,6 +20,8 @@ export type Council = {
 export type Coalition = { name: string; rulers: Ruler[]; council: Council };
 
 const strikeMargin = 1.3;
+/** a guardian shares soldiers only while its own defense per acre is this many times the weakest ally's */
+const shareAbove = 1.5;
 
 /**
  * a warlord who marches with the coalition: on an attack turn the first warlord to act scouts the largest enemy within
@@ -63,8 +65,8 @@ export const coalitionWarlord = (council: Council, attackEvery = 6): Strategy =>
 });
 
 /**
- * a turtle that guards the coalition: it builds walls and an army like a turtle, and every few turns sends half of the
- * soldiers it has at home to stand guard with the ally whose defense is weakest for its size
+ * a turtle that guards the coalition: it builds walls and an army like a turtle, and every few turns, while its own defense
+ * per acre is clearly above the weakest ally's, sends a third of the soldiers it has at home to stand guard there
  */
 export const guardian = (council: Council, guardEvery = 6): Strategy => ({
   name: "guardian",
@@ -79,12 +81,13 @@ export const guardian = (council: Council, guardEvery = 6): Strategy => ({
         .map(async member => ({ member, defense: (await member.details()).defensePower, land: (await member.kingdom()).resources.land })),
     );
     const weakest = allies.sort((one, other) => one.defense / one.land - other.defense / other.land)[0];
-    if (!weakest) return;
-    const half = Object.fromEntries(militaryUnits.map(unit => [unit, Math.floor(kingdom.units.availableUnits[unit] / 2)])) as Partial<
+    const ownCover = (await player.details()).defensePower / Math.max(1, kingdom.resources.land);
+    if (!weakest || (weakest.defense / Math.max(1, weakest.land)) * shareAbove >= ownCover) return;
+    const third = Object.fromEntries(militaryUnits.map(unit => [unit, Math.floor(kingdom.units.availableUnits[unit] / 3)])) as Partial<
       Counts<UnitName>
     >;
-    if (militaryUnits.every(unit => (half[unit] ?? 0) === 0)) return;
-    await player.sendReinforcements(weakest.member.name, half);
+    if (militaryUnits.every(unit => (third[unit] ?? 0) === 0)) return;
+    await player.sendReinforcements(weakest.member.name, third);
   },
 });
 
