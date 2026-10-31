@@ -1,4 +1,7 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "@playwright/test";
+
+const backend = fileURLToPath(new URL("../backend", import.meta.url));
 
 /**
  * Black-box scenarios against the real game: the Spring backend on 8080 and the Vite dev server on 3000.
@@ -20,8 +23,9 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: "./gradlew bootRun --console=plain",
-      cwd: "../backend",
+      // Playwright runs commands through cmd on Windows, which needs the batch wrapper
+      command: process.platform === "win32" ? ".\\gradlew.bat bootRun --console=plain" : "./gradlew bootRun --console=plain",
+      cwd: backend,
       url: "http://localhost:8080/health",
       reuseExistingServer: true,
       timeout: 180_000,

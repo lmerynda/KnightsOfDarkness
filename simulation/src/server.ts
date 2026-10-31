@@ -51,7 +51,7 @@ const freePort = (): Promise<number> =>
 const serverJar = (): string => {
   const jar = process.env.KOD_SERVER_JAR ?? defaultJar;
   if (!existsSync(jar)) {
-    const gradle = process.platform === "win32" ? "gradlew.bat" : "./gradlew";
+    const gradle = process.platform === "win32" ? ".\\gradlew.bat" : "./gradlew";
     const build = spawnSync(gradle, ["bootJar", "--console=plain", "-q"], { cwd: backend, stdio: "inherit", shell: process.platform === "win32" });
     if (build.status !== 0 || !existsSync(jar)) {
       throw new Error(`Could not build the server jar at ${jar}`);
