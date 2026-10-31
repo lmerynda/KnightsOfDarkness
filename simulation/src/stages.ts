@@ -88,7 +88,15 @@ try {
   const rulers = await foundRulers(world, [warlord(), economist, turtle, raider], "Stage");
   const [warlordName, economistName, turtleName] = rulers.map(ruler => ruler.player.name);
 
-  console.log("photographing a newcomer");
+  console.log("photographing the gates and a newcomer");
+  const visitor = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+  const gate = await visitor.newPage();
+  for (const route of ["", "sign-in", "register"]) {
+    await gate.goto(`${ui}/${route}`);
+    await gate.waitForTimeout(1200);
+    await gate.screenshot({ path: join(values.out, `t00-gate-${route || "landing"}.png`), fullPage: true });
+  }
+  await visitor.close();
   await photograph(economistName, "t00-newcomer", pages);
   await runWorld(world, rulers, lastTurn, {
     afterTurn: async turn => {

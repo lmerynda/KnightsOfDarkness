@@ -1,5 +1,5 @@
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -94,9 +94,11 @@ const waitUntilReady = async (url: string, process: ChildProcess, output: () => 
  * gameconfig.json with the given overrides
  */
 export const startServer = async (overrides: ConfigOverrides = {}): Promise<GameServer> => {
-  const jar = serverJar();
   const port = await freePort();
   const configDirectory = mkdtempSync(join(tmpdir(), "kod-sim-"));
+  // each world runs its own copy of the jar, so a rebuild for another run cannot pull it from under this one
+  const jar = join(configDirectory, "server.jar");
+  copyFileSync(serverJar(), jar);
   const configPath = join(configDirectory, "gameconfig.json");
   writeFileSync(configPath, JSON.stringify(applyOverrides(readBaseConfig(), overrides), null, 2));
 
@@ -113,15 +115,20 @@ export const startServer = async (overrides: ConfigOverrides = {}): Promise<Game
   const url = `http://localhost:${port}`;
   await waitUntilReady(url, child, () => log);
 
+  const cleanUp = (): void => rmSync(configDirectory, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
   return {
     url,
     stop: () =>
       new Promise(done => {
         if (child.exitCode !== null) {
+          cleanUp();
           done();
           return;
         }
-        child.once("exit", () => done());
+        child.once("exit", () => {
+          cleanUp();
+          done();
+        });
         child.kill();
       }),
   };
