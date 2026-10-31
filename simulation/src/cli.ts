@@ -120,4 +120,9 @@ const main = async (): Promise<void> => {
   process.exitCode = violations.length ? 1 : 0;
 };
 
-await main();
+try {
+  await main();
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error);
+  process.exitCode = 2;
+}

@@ -1,0 +1,73 @@
+# Black-box checks of the whole game: simulated worlds driven over HTTP, and browser scenarios in Chrome.
+
+name: Game scenarios
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+permissions:
+  contents: read
+
+jobs:
+  simulation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+          cache-dependency-path: |
+            backend/*.gradle.kts
+            backend/gradle.properties
+            backend/gradle/wrapper/gradle-wrapper.properties
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.22.0"
+          cache: "npm"
+          cache-dependency-path: ./simulation/package-lock.json
+      - name: Build the server jar
+        run: ./gradlew --no-daemon bootJar
+        working-directory: backend
+      - run: npm ci
+        working-directory: simulation
+      - run: npm run typecheck
+        working-directory: simulation
+      - name: Simulate worlds
+        run: npm test
+        working-directory: simulation
+
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+          cache-dependency-path: |
+            backend/*.gradle.kts
+            backend/gradle.properties
+            backend/gradle/wrapper/gradle-wrapper.properties
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.22.0"
+          cache: "npm"
+          cache-dependency-path: ./browser/package-lock.json
+      - run: npm ci
+        working-directory: browser
+      # the runner image ships Google Chrome, which the scenarios drive; Playwright starts the backend and the dev server
+      - name: Browser scenarios
+        run: npm run test:e2e
+        working-directory: browser
