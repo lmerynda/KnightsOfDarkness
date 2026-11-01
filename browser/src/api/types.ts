@@ -157,6 +157,8 @@ export type GameConfig = {
     turnsToArrive: number;
     minTargetLandRatio: number;
     maxLandCaptureRatio: number;
+    /** how steeply the land a win takes shrinks with the target's size against the attacker's */
+    smallerTargetCaptureExponent: number;
     maxPlunderRatio: number;
     towerDefenseBonusPerTower: number;
     maxTowerDefenseBonus: number;

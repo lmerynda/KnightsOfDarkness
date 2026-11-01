@@ -5,7 +5,7 @@ import type { AttackType, BattleReport, Counts, MilitaryUnit, ResourceName, SpyR
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, resourceLabel, unitLore } from "../game/lore";
-import { estimatedDefense, targetProblem } from "../game/rules";
+import { estimatedDefense, landAtStake, targetProblem } from "../game/rules";
 import { Crest } from "../ui/Crest";
 import { Icon } from "../ui/Icon";
 import { AmountField, Banner, Choice, Panel } from "../ui/parts";
@@ -67,6 +67,7 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (
   const attackPower = militaryUnits.reduce((sum, unit) => sum + (army[unit] ?? 0) * (config.attack.unitAttackPower[unit] ?? 0), 0);
   const intel = spyReports.find(report => report.success && report.targetKingdomName === target);
   const defense = intel ? estimatedDefense(intel, config) : null;
+  const stake = chosen && !problem ? landAtStake(chosen.land, kingdom.resources.land, config) : null;
 
   const send = async (): Promise<void> => {
     const result = await act(
@@ -87,7 +88,7 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (
   return (
     <Panel
       title="Send an army"
-      lede={`Armies arrive after ${plural(config.attack.turnsToArrive, "turn", "turns")} of your own. Archers on both sides loose first, then infantry and cavalry cut into the whole enemy army; bowmen strike nobody in melee but still fall. Win and you take up to ${Math.round(config.attack.maxLandCaptureRatio * 100)}% of their land, or plunder up to ${Math.round(config.attack.maxPlunderRatio * 100)}% of their stores; crushing victories take the most.`}
+      lede={`Armies arrive after ${plural(config.attack.turnsToArrive, "turn", "turns")} of your own. Archers on both sides loose first, then infantry and cavalry cut into the whole enemy army; bowmen strike nobody in melee but still fall. Win and you take up to ${Math.round(config.attack.maxLandCaptureRatio * 100)}% of their land, less from a kingdom smaller than yours, or plunder up to ${Math.round(config.attack.maxPlunderRatio * 100)}% of their stores; crushing victories take the most.`}
     >
       <div className="stack">
         <div className="two-columns compact">
@@ -152,6 +153,15 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (
             {target && defense === null ? <Link to="/kingdom/spies">send spies first</Link> : null}
           </span>
         </div>
+        {stake && attackType === "land" ? (
+          <p className="muted">
+            A crushing victory takes up to {plural(stake.acres, "acre", "acres")} from {target}
+            {stake.sizeFactor < 1
+              ? `, ${Math.round(stake.sizeFactor * 100)}% of the usual share since it holds ${Math.round(((chosen?.land ?? 0) / Math.max(1, kingdom.resources.land)) * 100)}% of your land`
+              : ""}
+            .
+          </p>
+        ) : null}
         {kingdom.protectionTicks > 0 ? (
           <p className="notice">
             <Icon name="shield" size={18} /> You are protected for {plural(kingdom.protectionTicks, "more turn", "more turns")}. Marching

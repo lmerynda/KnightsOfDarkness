@@ -116,6 +116,7 @@ test("an army marches, fights and leaves a battle report", async ({ page, browse
 
   await goTo(page, "Army");
   await page.getByRole("combobox", { name: /^Target/ }).selectOption(target);
+  await expect(page.locator("main")).toContainText(`A crushing victory takes up to 15 acres from ${target}.`);
   await page.getByLabel("Infantry to send", { exact: true }).fill("10");
   await page.getByRole("button", { name: "March" }).click();
   await expect(toast(page, `The army marches on ${target}`)).toBeVisible();

@@ -218,10 +218,21 @@ public class KingdomInteractor implements IKingdomInteractor
         return Math.clamp(attackPower / defensePower - 1, 0.0, 1.0);
     }
 
+    /**
+     * the share of a smaller target's land a won attack can take: the full share against a kingdom at least the attacker's
+     * size, less the smaller the target, so a large kingdom gains little from beating small ones
+     */
+    double sizeCaptureFactor(int attackerLand, int defenderLand)
+    {
+        var relativeSize = Math.min(1.0, (double) defenderLand / Math.max(1, attackerLand));
+        return Math.pow(relativeSize, gameConfig.attack().smallerTargetCaptureExponent());
+    }
+
     int captureLand(KingdomEntity attacker, KingdomEntity defender, double dominance)
     {
         var defenderLand = defender.getResources().getCount(ResourceName.land);
-        var landCaptured = Math.max(1, (int) Math.floor(defenderLand * gameConfig.attack().maxLandCaptureRatio() * dominance));
+        var sizeFactor = sizeCaptureFactor(attacker.getResources().getCount(ResourceName.land), defenderLand);
+        var landCaptured = Math.max(1, (int) Math.floor(defenderLand * gameConfig.attack().maxLandCaptureRatio() * dominance * sizeFactor));
         landCaptured = Math.min(landCaptured, defenderLand);
 
         var buildingsToRaze = landCaptured - Math.max(0, defender.getUnusedLand());

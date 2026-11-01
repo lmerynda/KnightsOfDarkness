@@ -43,6 +43,12 @@ export const targetProblem = (
   return null;
 };
 
+/** the most land a crushing land victory takes: the full share of a target at least our size, less of a smaller one */
+export const landAtStake = (targetLand: number, ownLand: number, config: GameConfig): { acres: number; sizeFactor: number } => {
+  const sizeFactor = Math.min(1, targetLand / Math.max(1, ownLand)) ** config.attack.smallerTargetCaptureExponent;
+  return { acres: Math.max(1, Math.floor(targetLand * config.attack.maxLandCaptureRatio * sizeFactor)), sizeFactor };
+};
+
 export const roundTimeLeft = (round: Round): string => {
   const millis = Math.max(0, round.lengthInTicks - round.ticksElapsed) * round.tickPeriodMillis;
   const hours = Math.floor(millis / 3600000);

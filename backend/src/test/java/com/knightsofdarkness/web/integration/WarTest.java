@@ -168,13 +168,38 @@ class WarTest {
     void wonLandAttack_onFullyBuiltKingdom_shouldRazeBuildings()
     {
         defender.getResources().setCount(ResourceName.land, 59);
+        attacker.getResources().setCount(ResourceName.land, 59);
 
         sendAndResolve(AttackType.land, cavalry(100));
 
         var captured = (int) Math.floor(59 * gameConfig.attack().maxLandCaptureRatio());
         assertEquals(59 - captured, defender.getResources().getCount(ResourceName.land));
         assertEquals(59 - captured, defender.getBuildings().countAll());
-        assertEquals(100 + captured, attacker.getResources().getCount(ResourceName.land));
+        assertEquals(59 + captured, attacker.getResources().getCount(ResourceName.land));
+    }
+
+    @Test
+    void wonLandAttack_onSmallerKingdom_shouldTakeLessLand()
+    {
+        attacker.getResources().setCount(ResourceName.land, 160);
+
+        sendAndResolve(AttackType.land, cavalry(100));
+
+        // the defender has 100 acres against 160, so it loses 100 / 160 of the usual share
+        var captured = (int) Math.floor(100 * gameConfig.attack().maxLandCaptureRatio() * 100 / 160.0);
+        assertEquals(100 - captured, defender.getResources().getCount(ResourceName.land));
+        assertEquals(160 + captured, attacker.getResources().getCount(ResourceName.land));
+    }
+
+    @Test
+    void wonLandAttack_onLargerKingdom_shouldTakeTheFullShare()
+    {
+        attacker.getResources().setCount(ResourceName.land, 60);
+
+        sendAndResolve(AttackType.land, cavalry(100));
+
+        var captured = (int) Math.floor(100 * gameConfig.attack().maxLandCaptureRatio());
+        assertEquals(100 - captured, defender.getResources().getCount(ResourceName.land));
     }
 
     @Test
