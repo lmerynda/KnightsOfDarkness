@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
-import type { Notification, ResourceName, TurnReport, UnitName, WarRoom } from "../api/types";
+import type { MarketOffer, Notification, ResourceName, TurnReport, UnitName, WarRoom } from "../api/types";
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
 import { counsel } from "../game/advice";
@@ -10,7 +10,7 @@ import { art, marketResourceLabel, realmStage, resourceLabel, unitLore } from ".
 import type { IconName } from "../ui/Icon";
 import { Icon } from "../ui/Icon";
 import { Banner, Meter, Panel } from "../ui/parts";
-import { ago, formatNumber, plural, signed } from "../ui/format";
+import { formatNumber, plural, signed } from "../ui/format";
 
 const producedResources: { resource: ResourceName; icon: IconName }[] = [
   { resource: "gold", icon: "gold" },
@@ -293,17 +293,28 @@ const RecentChronicle: React.FC = () => {
 const Counsel: React.FC = () => {
   const { kingdom, details, config, weaponsPercentage, rankings } = useGame();
   const [warRoom, setWarRoom] = useState<WarRoom | undefined>(undefined);
+  const [offers, setOffers] = useState<MarketOffer[]>([]);
   useEffect(() => {
     if (!kingdom.allianceName) return;
     api
       .warRoom()
       .then(setWarRoom)
       .catch(() => undefined);
+    api
+      .alliesOffers()
+      .then(setOffers)
+      .catch(() => undefined);
   }, [kingdom]);
   const allies = (rankings?.kingdoms ?? [])
     .filter(rank => kingdom.allianceName && rank.allianceName === kingdom.allianceName && rank.kingdomName !== kingdom.name)
     .map(rank => rank.kingdomName);
-  const lines = counsel(kingdom, details, config, weaponsPercentage, warRoom && kingdom.allianceName ? { allies, warRoom } : undefined);
+  const lines = counsel(
+    kingdom,
+    details,
+    config,
+    weaponsPercentage,
+    warRoom && kingdom.allianceName ? { allies, warRoom, offers } : undefined,
+  );
   if (!lines.length) return null;
   return (
     <Panel title="Your steward advises">

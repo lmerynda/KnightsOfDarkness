@@ -322,6 +322,8 @@ test("an ally asks for gold and another sends it through the market", async ({ p
   await expect(toast(squirePage, "Your allies can send you 50,000 gold now")).toBeVisible();
   await expect(squirePage.locator("main")).toContainText("You ask for 50,000 gold");
 
+  await goTo(page, "Overview");
+  await expect(page.locator(".counsel")).toContainText(`${squire.kingdomName} asks the alliance for 50,000 gold`);
   await goTo(page, "Market");
   await expect(page.locator("tbody")).toContainText(`${squire.kingdomName} (ally)`);
   await goTo(page, "Alliance");

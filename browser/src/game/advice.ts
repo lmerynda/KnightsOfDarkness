@@ -1,4 +1,4 @@
-import type { BuildingName, GameConfig, Kingdom, KingdomDetails, TurnReport, UnitName, WarRoom } from "../api/types";
+import type { BuildingName, GameConfig, Kingdom, KingdomDetails, MarketOffer, TurnReport, UnitName, WarRoom } from "../api/types";
 import { militaryUnits } from "../api/types";
 import { formatNumber, plural, signed } from "../ui/format";
 import { unitHome } from "./rules";
@@ -29,8 +29,8 @@ const acresFor = (land: number, gold: number): number => {
  * what a steward would tell the ruler this turn, most pressing first; every line is read from the kingdom and the
  * server's forecast of the next turn
  */
-/** what a ruler in an alliance knows about the coalition: who the allies are and the war room */
-export type Coalition = { allies: string[]; warRoom: WarRoom };
+/** what a ruler in an alliance knows about the coalition: who the allies are, the war room and the allies' market offers */
+export type Coalition = { allies: string[]; warRoom: WarRoom; offers: MarketOffer[] };
 
 export const counsel = (
   kingdom: Kingdom,
@@ -122,6 +122,15 @@ export const counsel = (
         link: { to: "/kingdom/war", label: "Join the strike" },
       });
     }
+  }
+  // an ally asks for gold by offering a single piece at the sum it needs
+  const ask = coalition?.offers.find(offer => offer.count === 1 && offer.price <= resources.gold);
+  if (ask) {
+    lines.push({
+      urgent: false,
+      text: `${ask.sellerName} asks the alliance for ${formatNumber(ask.price)} gold. We hold ${formatNumber(resources.gold)}.`,
+      link: { to: "/kingdom/alliance", label: "Send gold" },
+    });
   }
   if (resources.unemployed > 0 && freeWorkplaces > 0) {
     lines.push({
