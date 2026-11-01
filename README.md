@@ -29,6 +29,8 @@ You can also found a new kingdom from the landing page. Four merchant bots (Farm
 
 A new turn is handed to every kingdom every 10 seconds (up to 36 stored) and a round lasts 4,320 of those ticks, about 12 hours; both are set in `gameconfig.json` (`common.newTurnPeriodicity`, `round.lengthInTicks`).
 
+The pages are written for players who know the game: they show figures, and the steward on the overview warns only of what will not wait (an army on the way, hunger, unpaid soldiers, an ally's call for gold, a full turn store). The rules sit in tooltips, behind a `?` beside a title or a dotted word, opened by hovering, focusing or tapping.
+
 ## How a turn works
 
 Passing a turn spends one stored turn: people who lack houses leave, farmers bring in the harvest, everyone eats and people who go hungry leave, the other workers produce (small kingdoms get a production bonus that fades by 1,000 land), soldiers are paid a hundredth of their training gold (`common.soldierUpkeepRatio`; those away on the march or standing guard with an ally too) and when the gold falls short soldiers at home desert in proportion to the unpaid share, a tenth of them when nothing is paid, new people arrive into empty houses, carriers deliver, and armies on the march move one step closer. Building points are only good for the current turn. The overview page shows an exact forecast of the next turn, computed by the server. Now and then fortune strikes after a turn (`events` in `gameconfig.json`, one turn in ten): a bountiful harvest or a rich gold vein, rats in the granary or a fire in the workshops, or bandits on the roads, who leave a realm alone when it keeps one guard for every 20 acres. The forecast never includes fortune.

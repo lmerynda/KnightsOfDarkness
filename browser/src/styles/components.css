@@ -343,10 +343,12 @@
 .banner {
   position: relative;
   display: flex;
-  align-items: flex-end;
-  min-height: 220px;
-  margin-bottom: var(--space-6);
-  padding: var(--space-6) var(--space-6) var(--space-5);
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  min-height: 96px;
+  margin-bottom: var(--space-5);
+  padding: var(--space-6) var(--space-5) var(--space-3);
   border-radius: var(--radius);
   overflow: hidden;
   background-size: cover;
@@ -362,22 +364,87 @@
     linear-gradient(90deg, rgba(26, 33, 41, 0.7), transparent 60%);
 }
 
-.banner > div {
+.banner > * {
   position: relative;
   z-index: 1;
-  max-width: 62ch;
 }
 
 .banner h1 {
-  font-size: var(--step-4);
+  font-size: var(--step-3);
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
 }
 
+.banner p::first-letter {
+  text-transform: uppercase;
+}
+
 .banner p {
-  margin-top: var(--space-2);
+  margin: 0;
   color: #cfc6b4;
-  font-size: var(--step-1);
-  line-height: 1.35;
+}
+
+/* ---------- tooltips: the rules, kept out of the way ---------- */
+.tip-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 0.45em;
+  padding: 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--pewter);
+  font-family: var(--font-text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: 0.2em;
+  cursor: help;
+}
+
+.banner .tip-mark {
+  vertical-align: 0.5em;
+}
+
+.tip-mark:hover,
+.tip-mark:focus-visible,
+.tip-mark[aria-describedby] {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+
+.term {
+  border-bottom: 1px dotted var(--pewter-dim);
+  cursor: help;
+}
+
+.term:hover,
+.term:focus-visible,
+.term[aria-describedby] {
+  border-bottom-color: var(--gold);
+  outline: none;
+}
+
+.tip-bubble {
+  position: fixed;
+  z-index: 50;
+  width: max-content;
+  max-width: min(340px, calc(100vw - 16px));
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--night-deep);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  color: var(--bone);
+  font-family: var(--font-text);
+  font-size: 0.9rem;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+  text-shadow: none;
+  white-space: normal;
+  pointer-events: none;
 }
 
 /* ---------- plates: buildings and units ---------- */

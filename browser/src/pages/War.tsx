@@ -10,6 +10,8 @@ import { Crest } from "../ui/Crest";
 import { Icon } from "../ui/Icon";
 import { AmountField, Banner, Choice, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
+import { Term } from "../ui/Tip";
+import { defenseHelp, protectionHelp } from "../game/help";
 
 const unitList = (units: Partial<Counts<UnitName>>): string => {
   const parts = [...militaryUnits, "guard" as const]
@@ -88,7 +90,7 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (
   return (
     <Panel
       title="Send an army"
-      lede={`Armies arrive after ${plural(config.attack.turnsToArrive, "turn", "turns")} of your own. Archers on both sides loose first, then infantry and cavalry cut into the whole enemy army; bowmen strike nobody in melee but still fall. Win and you take up to ${Math.round(config.attack.maxLandCaptureRatio * 100)}% of their land, less from a kingdom smaller than yours, or plunder up to ${Math.round(config.attack.maxPlunderRatio * 100)}% of their stores; crushing victories take the most.`}
+      help={`Armies arrive after ${plural(config.attack.turnsToArrive, "turn", "turns")} of your own. Archers on both sides loose first, then infantry and cavalry cut into the whole enemy army; bowmen strike nobody in melee but still fall. Win and you take up to ${Math.round(config.attack.maxLandCaptureRatio * 100)}% of their land, less from a kingdom smaller than yours, or plunder up to ${Math.round(config.attack.maxPlunderRatio * 100)}% of their stores; crushing victories take the most.`}
     >
       <div className="stack">
         <div className="two-columns compact">
@@ -155,17 +157,17 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (
         </div>
         {stake && attackType === "land" ? (
           <p className="muted">
-            A crushing victory takes up to {plural(stake.acres, "acre", "acres")} from {target}
-            {stake.sizeFactor < 1
-              ? `, ${Math.round(stake.sizeFactor * 100)}% of the usual share since it holds ${Math.round(((chosen?.land ?? 0) / Math.max(1, kingdom.resources.land)) * 100)}% of your land`
-              : ""}
-            .
+            <Term tip="What a crushing victory takes. The share shrinks with the target's land against yours: a kingdom half your size yields half.">
+              At stake
+            </Term>
+            : up to {plural(stake.acres, "acre", "acres")}
+            {stake.sizeFactor < 1 ? `, ${Math.round(stake.sizeFactor * 100)}% of the full share` : ""}
           </p>
         ) : null}
         {kingdom.protectionTicks > 0 ? (
           <p className="notice">
-            <Icon name="shield" size={18} /> You are protected for {plural(kingdom.protectionTicks, "more turn", "more turns")}. Marching
-            out ends your protection.
+            <Icon name="shield" size={18} /> <Term tip={protectionHelp}>Protected</Term> for{" "}
+            {plural(kingdom.protectionTicks, "more turn", "more turns")}; marching out ends it.
           </p>
         ) : null}
       </div>
@@ -204,7 +206,7 @@ const StandGuard: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => 
   return (
     <Panel
       title="Stand guard with allies"
-      lede="Soldiers sent to an ally reach it after two of your turns and defend it beside its own, sharing its losses. They stay yours: you feed them and can call them home at once."
+      help="Soldiers sent to an ally reach it after two of your turns and defend it beside its own, sharing its losses. They stay yours: you feed and pay them, and can call them home at once."
     >
       <div className="stack">
         <label className="field">
@@ -277,7 +279,8 @@ const Threats: React.FC = () => {
   return (
     <Panel
       title="Armies marching on us"
-      lede={`Our defense at home is ${formatNumber(details.defensePower)}. Soldiers we train now defend at once; soldiers allies send arrive after two of their turns.`}
+      lede={`Our defense at home: ${formatNumber(details.defensePower)}.`}
+      help="Soldiers trained now defend at once; soldiers allies send arrive after two of their turns."
     >
       <ul className="plain-list threats">
         {kingdom.incoming.map((army, index) => (
@@ -437,7 +440,7 @@ const AlliedMarches: React.FC<{ warRoom: WarRoom | undefined; onJoin: (target: s
   return (
     <Panel
       title="Allies on the march"
-      lede="Armies that land on the same turn strike together, and a beaten kingdom is protected only from armies sent after its defeat."
+      help="Armies that land on the same turn strike together, and a beaten kingdom is protected only from armies sent after its defeat."
     >
       <ul className="plain-list">
         {marches.map(march => (
@@ -498,8 +501,7 @@ export const War: React.FC = () => {
   return (
     <>
       <Banner image={art("war")} title="Army">
-        Your defense at home is {formatNumber(details.defensePower)}: soldiers, guards, allies standing guard, towers and castles. Soldiers
-        sent away do not defend.
+        <Term tip={defenseHelp}>Defense</Term> at home {formatNumber(details.defensePower)}
       </Banner>
       <div className="stack">
         <Threats />
@@ -511,7 +513,7 @@ export const War: React.FC = () => {
           {reports === null ? (
             <p className="muted">Reading the reports</p>
           ) : reports.length === 0 ? (
-            <p className="muted">No battles yet this round. When your army arrives, or someone attacks you, the outcome is written here.</p>
+            <p className="muted">No battles yet this round.</p>
           ) : (
             <div className="battles">
               {reports.map(report => (

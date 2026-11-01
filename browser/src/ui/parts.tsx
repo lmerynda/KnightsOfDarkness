@@ -2,6 +2,7 @@ import React, { useId } from "react";
 import { formatNumber } from "./format";
 import type { IconName } from "./Icon";
 import { Icon } from "./Icon";
+import { Tip } from "./Tip";
 
 export const Figure: React.FC<{ icon: IconName; value: React.ReactNode; title?: string; size?: number }> = ({
   icon,
@@ -15,23 +16,39 @@ export const Figure: React.FC<{ icon: IconName; value: React.ReactNode; title?: 
   </span>
 );
 
-export const Banner: React.FC<{ image: string; title: string; children?: React.ReactNode }> = ({ image, title, children }) => (
+/** a strip of the painting with the page name; children are a short line of facts, never an explanation */
+export const Banner: React.FC<{ image: string; title: string; help?: React.ReactNode; children?: React.ReactNode }> = ({
+  image,
+  title,
+  help,
+  children,
+}) => (
   <header className="banner" style={{ backgroundImage: `url(${image})` }}>
-    <div>
-      <h1>{title}</h1>
-      {children ? <p>{children}</p> : null}
-    </div>
+    <h1>
+      {title}
+      {help ? <Tip about={title}>{help}</Tip> : null}
+    </h1>
+    {children ? <p>{children}</p> : null}
   </header>
 );
 
-export const Panel: React.FC<{ title?: string; lede?: React.ReactNode; children: React.ReactNode; className?: string }> = ({
-  title,
-  lede,
-  children,
-  className,
-}) => (
+/**
+ * lede is for facts the player acts on; help holds the rules, behind a mark beside the title
+ */
+export const Panel: React.FC<{
+  title?: string;
+  lede?: React.ReactNode;
+  help?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}> = ({ title, lede, help, children, className }) => (
   <section className={`panel ${className ?? ""}`}>
-    {title ? <h2>{title}</h2> : null}
+    {title ? (
+      <h2>
+        {title}
+        {help ? <Tip about={title}>{help}</Tip> : null}
+      </h2>
+    ) : null}
     {lede ? <p className="lede">{lede}</p> : null}
     {children}
   </section>

@@ -81,13 +81,29 @@ test("a new ruler can arm soldiers after a few turns", async ({ page }) => {
   await expect(page.locator("tr").filter({ hasText: "Soldiers' pay" })).toContainText("-1,500");
 });
 
-test("the steward tells a newcomer what to do and leads there", async ({ page }) => {
+test("the rules wait behind a mark until hovered or tapped", async ({ page }) => {
   await foundKingdom(page);
+  await goTo(page, "Build");
 
-  const advice = page.locator(".counsel li").filter({ hasText: "acres stand empty" });
-  await expect(advice).toBeVisible();
-  await advice.getByRole("link", { name: "Build" }).click();
-  await expect(page).toHaveURL(/\/kingdom\/build$/);
+  const rule = page.getByRole("tooltip");
+  await expect(page.locator("main")).not.toContainText("Every building stands on an acre");
+  const mark = page.getByRole("button", { name: "About Land" });
+  await mark.hover();
+  await expect(rule).toContainText("Every building stands on an acre");
+  await page.mouse.move(0, 0);
+  await expect(rule).toHaveCount(0);
+
+  // a tap keeps it open until the next tap
+  await mark.click();
+  await page.mouse.move(0, 0);
+  await expect(rule).toContainText("Every building stands on an acre");
+  await mark.click();
+  await expect(rule).toHaveCount(0);
+
+  // words explain themselves the same way
+  await goTo(page, "Overview");
+  await page.locator(".term", { hasText: "counter intelligence" }).hover();
+  await expect(rule).toContainText("for each spy");
 });
 
 test("land can be priced and bought", async ({ page }) => {
@@ -116,7 +132,7 @@ test("an army marches, fights and leaves a battle report", async ({ page, browse
 
   await goTo(page, "Army");
   await page.getByRole("combobox", { name: /^Target/ }).selectOption(target);
-  await expect(page.locator("main")).toContainText(`A crushing victory takes up to 15 acres from ${target}.`);
+  await expect(page.locator("main")).toContainText("At stake: up to 15 acres");
   await page.getByLabel("Infantry to send", { exact: true }).fill("10");
   await page.getByRole("button", { name: "March" }).click();
   await expect(toast(page, `The army marches on ${target}`)).toBeVisible();
@@ -126,7 +142,9 @@ test("an army marches, fights and leaves a battle report", async ({ page, browse
   await goTo(other, "Army");
   await expect(other.locator("main")).toContainText(`${attacker} with about 10 soldiers`);
   await goTo(other, "Overview");
-  await expect(other.locator(".counsel li.urgent")).toContainText(`${attacker} marches on us`);
+  const warning = other.locator(".counsel li.urgent").filter({ hasText: `${attacker} marches on us` });
+  await warning.getByRole("link", { name: "Prepare" }).click();
+  await expect(other).toHaveURL(/\/kingdom\/war$/);
   await other.close();
 
   for (let turn = 0; turn < 4; turn++) {
@@ -143,7 +161,7 @@ test("spies bring back intel about another kingdom", async ({ page }) => {
 
   await page.getByRole("combobox", { name: /^Target/ }).selectOption("FarmerBot");
   await page.getByLabel(/Spies, \d+ at home/).fill("3");
-  await page.getByRole("button", { name: "Send spies" }).click();
+  await page.getByRole("button", { name: "Send spies", exact: true }).click();
 
   await expect(page.locator(".intel").first()).toContainText("FarmerBot");
   await expect(page.locator(".intel").first()).toContainText("Stores");

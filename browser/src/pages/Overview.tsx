@@ -10,6 +10,8 @@ import { art, marketResourceLabel, realmStage, resourceLabel, unitLore } from ".
 import type { IconName } from "../ui/Icon";
 import { Icon } from "../ui/Icon";
 import { Banner, Meter, Panel } from "../ui/parts";
+import { Term, Tip } from "../ui/Tip";
+import { counterIntelligenceHelp, defenseHelp, protectionHelp, turnsHelp } from "../game/help";
 import { formatNumber, plural, signed } from "../ui/format";
 
 const producedResources: { resource: ResourceName; icon: IconName }[] = [
@@ -29,7 +31,7 @@ const departures = (report: TurnReport): string[] => {
     report.exiledPeople > 0 ? `${plural(report.exiledPeople, "person leaves", "people leave")} for lack of houses` : null,
     ...leaving.map(
       ([unit, count]) =>
-        `${formatNumber(count)} ${count === 1 ? unitLore[unit].label.toLowerCase() : unitLore[unit].plural.toLowerCase()} quit, there is no room for them`,
+        `${formatNumber(count)} ${count === 1 ? unitLore[unit].label.toLowerCase() : unitLore[unit].plural.toLowerCase()} quit for lack of room`,
     ),
   ].filter((line): line is string => line !== null);
 };
@@ -108,14 +110,10 @@ const Forecast: React.FC = () => {
   return (
     <Panel
       title="If the turn passed now"
-      lede={`Your realm grows ${forecast.kingdomSizeProductionBonus.toFixed(1)} times faster while it is small, the bonus fades as it reaches 1,000 land.`}
+      help={`The server's own forecast; fortune never shows in it. Small realms produce faster, ×${forecast.kingdomSizeProductionBonus.toFixed(1)} now, fading to nothing at 1,000 acres.`}
     >
       <TurnLines report={forecast} />
-      {foodBalance < 0 ? (
-        <p className="warning overview-note">
-          Your people eat more than the farms grow. Train farmers or buy food before the stores run out.
-        </p>
-      ) : null}
+      {foodBalance < 0 ? <p className="warning overview-note">The people eat more than the farms grow.</p> : null}
       {warnings.map(line => (
         <p key={line} className="warning overview-note">
           {line}
@@ -140,7 +138,9 @@ const Forecast: React.FC = () => {
         <button className="button quiet" type="button" disabled={passing || several < 2} onClick={passSeveral}>
           Pass {several < 2 ? severalTurns : several} turns
         </button>
-        <span className="muted">One after another, stopping as soon as people leave hungry or homeless, or soldiers desert unpaid.</span>
+        <Tip about={`passing ${severalTurns} turns`}>
+          One after another, stopping as soon as people leave hungry or homeless, or soldiers desert unpaid.
+        </Tip>
       </div>
     </Panel>
   );
@@ -194,15 +194,17 @@ const Realm: React.FC = () => {
       </div>
       {kingdom.protectionTicks > 0 ? (
         <p className="notice">
-          <Icon name="shield" size={18} /> Your walls were breached, so no army may march on you for{" "}
-          {plural(kingdom.protectionTicks, "more turn", "more turns")}. Sending an army of your own ends this protection.
+          <Icon name="shield" size={18} /> <Term tip={protectionHelp}>Protected</Term> from attack for{" "}
+          {plural(kingdom.protectionTicks, "more turn", "more turns")}.
         </p>
       ) : null}
       <div className="realm-stats">
         <div>
           <Icon name="shield" size={22} />
           <strong>{formatNumber(details.defensePower)}</strong>
-          <span className="muted">defense at home</span>
+          <span className="muted">
+            <Term tip={defenseHelp}>defense</Term> at home
+          </span>
         </div>
         <div>
           <Icon name="sword" size={22} />
@@ -212,14 +214,18 @@ const Realm: React.FC = () => {
         <div>
           <Icon name="eye" size={22} />
           <strong>{formatNumber(details.counterIntelligence)}</strong>
-          <span className="muted">counter intelligence</span>
+          <span className="muted">
+            <Term tip={counterIntelligenceHelp(config)}>counter intelligence</Term>
+          </span>
         </div>
         <div>
           <Icon name="turns" size={22} />
           <strong>
             {kingdom.resources.turns} / {config.common.maxTurns}
           </strong>
-          <span className="muted">turns stored</span>
+          <span className="muted">
+            <Term tip={turnsHelp(config)}>turns stored</Term>
+          </span>
         </div>
       </div>
     </Panel>
@@ -260,7 +266,7 @@ const Movements: React.FC = () => {
   return (
     <Panel title="On the roads">
       {moves.length === 0 ? (
-        <p className="muted">Nobody is on the move. Armies and carriers you send out will show here until they arrive.</p>
+        <p className="muted">Nobody is on the move.</p>
       ) : (
         <ul className="plain-list">
           {moves.map(move => (
@@ -289,7 +295,7 @@ const RecentChronicle: React.FC = () => {
   return (
     <Panel title="Chronicle">
       {entries.length === 0 ? (
-        <p className="muted">Battles, trades and alliance news will be written here.</p>
+        <p className="muted">Nothing yet.</p>
       ) : (
         <ol className="chronicle compact">
           {entries.map(entry => (
@@ -305,7 +311,7 @@ const RecentChronicle: React.FC = () => {
 };
 
 const Counsel: React.FC = () => {
-  const { kingdom, details, config, weaponsPercentage, rankings } = useGame();
+  const { kingdom, details, config, rankings } = useGame();
   const [warRoom, setWarRoom] = useState<WarRoom | undefined>(undefined);
   const [offers, setOffers] = useState<MarketOffer[]>([]);
   useEffect(() => {
@@ -322,16 +328,10 @@ const Counsel: React.FC = () => {
   const allies = (rankings?.kingdoms ?? [])
     .filter(rank => kingdom.allianceName && rank.allianceName === kingdom.allianceName && rank.kingdomName !== kingdom.name)
     .map(rank => rank.kingdomName);
-  const lines = counsel(
-    kingdom,
-    details,
-    config,
-    weaponsPercentage,
-    warRoom && kingdom.allianceName ? { allies, warRoom, offers } : undefined,
-  );
+  const lines = counsel(kingdom, details, config, warRoom && kingdom.allianceName ? { allies, warRoom, offers } : undefined);
   if (!lines.length) return null;
   return (
-    <Panel title="Your steward advises">
+    <Panel title="The steward warns">
       <ul className="counsel">
         {lines.map(line => (
           <li key={line.text} className={line.urgent ? "urgent" : undefined}>
@@ -355,9 +355,7 @@ export const Overview: React.FC = () => {
   return (
     <>
       <Banner image={art(stage.art)} title={kingdom.name}>
-        A {stage.title} of {formatNumber(kingdom.resources.land)} acres,{" "}
-        {kingdom.allianceName ? `sworn to ${kingdom.allianceName}.` : "without allies."} Spend this turn&apos;s building points, then pass
-        the turn.
+        {stage.title} of {formatNumber(kingdom.resources.land)} acres · {kingdom.allianceName ?? "no alliance"}
       </Banner>
       <div className="stack">
         <Counsel />

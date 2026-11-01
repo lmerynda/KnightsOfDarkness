@@ -7,6 +7,8 @@ import { art, buildingLore, resourceLabel, unitLore } from "../game/lore";
 import { Crest } from "../ui/Crest";
 import { AmountField, Banner, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
+import { Term } from "../ui/Tip";
+import { counterIntelligenceHelp } from "../game/help";
 
 const shownResources: ResourceName[] = ["land", "gold", "food", "iron", "tools", "weapons", "unemployed", "turns"];
 
@@ -89,14 +91,12 @@ export const Spies: React.FC = () => {
   return (
     <>
       <Banner image={art("spies")} title="Spies">
-        Spies slip in and out at once, no turn needed. They succeed when they outnumber the target's counter intelligence:{" "}
-        {config.espionage.counterIntelligencePerSpy} for each of its spies and {config.espionage.counterIntelligencePerGuard} for each
-        guard. Yours stands at {formatNumber(details.counterIntelligence)}.
+        <Term tip={counterIntelligenceHelp(config)}>Counter intelligence</Term> {formatNumber(details.counterIntelligence)}
       </Banner>
       <div className="stack">
         <Panel
           title="Send spies"
-          lede={`Caught spies are lost, about ${Math.round(config.espionage.failedMissionLossRatio * 100)}% of those sent, and the target learns who sent them.`}
+          help={`Spies slip in and out at once, no turn needed, and succeed when they outnumber the target's counter intelligence. Caught spies are lost, about ${Math.round(config.espionage.failedMissionLossRatio * 100)}% of those sent, and the target learns who sent them.`}
         >
           <div className="row">
             <label className="field" style={{ minWidth: 260 }}>
@@ -117,7 +117,7 @@ export const Spies: React.FC = () => {
               Send spies
             </button>
           </div>
-          {available === 0 ? <p className="muted overview-note">You have no spies. Build a spy guild and train some first.</p> : null}
+          {available === 0 ? <p className="muted overview-note">No spies at home.</p> : null}
         </Panel>
         <Panel title="Reports">
           {reports === null ? (

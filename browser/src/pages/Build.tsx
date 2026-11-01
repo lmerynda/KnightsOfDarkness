@@ -46,7 +46,8 @@ const LandPurchase: React.FC = () => {
   return (
     <Panel
       title="Land"
-      lede={`Every building needs an acre. You hold ${formatNumber(kingdom.resources.land)} acres, ${formatNumber(free)} of them free. Each new acre costs more than the last; the next one costs ${formatNumber(details.nextLandPrice)} gold.`}
+      lede={`${formatNumber(kingdom.resources.land)} acres, ${formatNumber(free)} free. Next acre: ${formatNumber(details.nextLandPrice)} gold.`}
+      help="Every building stands on an acre. Each acre costs more than the last: the square of your land, over ten, in gold."
     >
       <div className="row">
         <div style={{ width: 180 }}>
@@ -87,7 +88,7 @@ const SpecialBuildingRow: React.FC<{ building: SpecialBuilding }> = ({ building 
         </div>
         <p className="muted">{lore.effect}</p>
         {building.isMaxLevel ? (
-          <p className="gain">Finished, at its highest level.</p>
+          <p className="gain">Finished.</p>
         ) : (
           <>
             <div className="special-progress">
@@ -151,7 +152,7 @@ const SpecialBuildings: React.FC = () => {
   return (
     <Panel
       title="Great works"
-      lede={`Up to ${config.common.specialBuildingMaxCount} great works, each raised level by level with building points. Every level costs twice the one before.`}
+      help={`Up to ${config.common.specialBuildingMaxCount} great works, each raised level by level with building points. Every level costs twice the one before; tearing one down loses its levels.`}
     >
       {kingdom.specialBuildings.length > 0 ? (
         <ul className="specials">
@@ -253,9 +254,11 @@ export const Build: React.FC = () => {
 
   return (
     <>
-      <Banner image={art("castle")} title="Build">
-        Building points come from your builders each turn and are lost when the turn passes, so spend them before you do.
-      </Banner>
+      <Banner
+        image={art("castle")}
+        title="Build"
+        help="Builders bring building points each turn. Points not spent are lost when the turn passes."
+      />
       <div className="stack">
         <LandPurchase />
         <div className="row build-mode">

@@ -72,7 +72,7 @@
 .rank-number {
   width: 2.5em;
   color: var(--gold);
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   font-size: var(--step-1);
 }
 
@@ -325,7 +325,7 @@
 .intel-title {
   margin: 0 0 var(--space-2);
   color: var(--gold);
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   font-size: var(--step-1);
   font-weight: 500;
 }
@@ -539,7 +539,7 @@
 
 .standing-rank {
   color: var(--gold);
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   font-size: var(--step-2);
   line-height: 1;
 }

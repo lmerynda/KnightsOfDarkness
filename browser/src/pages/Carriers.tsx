@@ -41,13 +41,12 @@ export const Carriers: React.FC = () => {
 
   return (
     <>
-      <Banner image={art("transfers")} title="Carriers">
-        Carriers haul goods to any kingdom, usually an ally in need. They come home when the goods are delivered.
-      </Banner>
+      <Banner image={art("transfers")} title="Carriers" />
       <div className="stack">
         <Panel
           title="Send goods"
-          lede={`You have ${plural(carriers, "carrier", "carriers")} at home. Each carries ${config.carrierCapacity.food} food or ${config.carrierCapacity.iron} iron, tools or weapons.${carriers === 0 ? " Carriers live in markets: raise a market, then train them." : ""}`}
+          lede={`${plural(carriers, "carrier", "carriers")} at home.`}
+          help={`Carriers haul goods to any kingdom, arriving after ${plural(config.common.turnsToDeliverResources, "turn", "turns")}, and come home when the goods are delivered. Each carries ${config.carrierCapacity.food} food or ${config.carrierCapacity.iron} iron, tools or weapons. Carriers live in markets.`}
         >
           <div className="row">
             <label className="field" style={{ minWidth: 240 }}>
@@ -79,9 +78,7 @@ export const Carriers: React.FC = () => {
               Send {needed > 0 ? plural(needed, "carrier", "carriers") : "carriers"}
             </button>
           </div>
-          {needed > carriers ? (
-            <p className="warning overview-note">That needs {plural(needed, "carrier", "carriers")}; train more in a market.</p>
-          ) : null}
+          {needed > carriers ? <p className="warning overview-note">Needs {plural(needed, "carrier", "carriers")}.</p> : null}
         </Panel>
         <Panel title="On the road">
           {kingdom.carriersOnTheMove.length === 0 ? (

@@ -48,7 +48,7 @@
   margin-bottom: 2px;
   padding-left: var(--space-3);
   color: var(--gold);
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   font-size: var(--step-1);
 }
 
@@ -185,13 +185,13 @@
     inset 0 2px 3px rgba(255, 220, 170, 0.45),
     0 0 0 3px rgba(224, 138, 46, 0.18);
   color: #2b1503;
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 700;
 }
 
 .seal-label {
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   font-size: var(--step-1);
   white-space: nowrap;
 }
@@ -252,7 +252,7 @@
 .seal-forecast-title {
   margin-bottom: var(--space-2);
   color: var(--gold-bright);
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   font-size: var(--step-1);
 }
 
@@ -358,11 +358,11 @@
   }
 
   .banner {
-    min-height: 170px;
-    padding: var(--space-5) var(--space-4) var(--space-4);
+    min-height: 80px;
+    padding: var(--space-5) var(--space-4) var(--space-3);
   }
 
   .banner h1 {
-    font-size: var(--step-3);
+    font-size: var(--step-2);
   }
 }

@@ -130,9 +130,7 @@ export const Letters: React.FC = () => {
 
   return (
     <>
-      <Banner image={art("messages")} title="Letters">
-        Words travel faster than armies. Make pacts, ask for help, or warn a rival off.
-      </Banner>
+      <Banner image={art("messages")} title="Letters" />
       <div className="two-columns letters-layout">
         <div>
           <Tabs
@@ -146,9 +144,7 @@ export const Letters: React.FC = () => {
           {letters === null ? (
             <p className="muted">Opening the satchel</p>
           ) : letters.length === 0 ? (
-            <p className="empty">
-              {box === "inbox" ? "No letters yet. Write first; most alliances start with a letter." : "You have not sent any letters."}
-            </p>
+            <p className="empty">{box === "inbox" ? "No letters yet." : "No letters sent."}</p>
           ) : (
             <ul className="letters">
               {letters.map(letter => (

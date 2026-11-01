@@ -26,14 +26,17 @@ export const RankingsPage: React.FC = () => {
 
   return (
     <>
-      <Banner image={art("victory")} title="Rankings">
-        Land decides the round. When it ends, the largest kingdom and the largest alliance are remembered, and every realm starts again.
-      </Banner>
+      <Banner
+        image={art("victory")}
+        title="Rankings"
+        help="Land decides the round. When it ends, the largest kingdom and the largest alliance are remembered, and every realm starts again."
+      />
       <div className="stack">
         {round ? (
           <Panel
             title={`Round ${round.number}`}
-            lede={`Ends in about ${roundTimeLeft(round)}, after ${formatNumber(round.lengthInTicks)} turns have been handed out.`}
+            lede={`Ends in about ${roundTimeLeft(round)}.`}
+            help={`The round lasts ${formatNumber(round.lengthInTicks)} turns.`}
           >
             <Meter value={round.ticksElapsed} max={round.lengthInTicks} label="Round progress" />
           </Panel>

@@ -30,9 +30,7 @@ export const Chronicle: React.FC = () => {
 
   return (
     <>
-      <Banner image={art("rankings")} title="Chronicle">
-        What happened to your kingdom while you were away: battles, caught spies, sales, deliveries and alliance news.
-      </Banner>
+      <Banner image={art("rankings")} title="Chronicle" />
       <Panel>
         <div className="row chronicle-head">
           <span className="muted">{unread > 0 ? `${unread} new` : "Nothing new"}</span>
@@ -45,7 +43,7 @@ export const Chronicle: React.FC = () => {
         {entries === null ? (
           <p className="muted">Unrolling the chronicle</p>
         ) : entries.length === 0 ? (
-          <p className="empty">Nothing has happened yet. It will.</p>
+          <p className="empty">Nothing yet.</p>
         ) : (
           <ol className="chronicle">
             {entries.map(entry => (

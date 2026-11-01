@@ -78,7 +78,7 @@ const SellPanel: React.FC<{ resource: MarketResource; onDone: () => void }> = ({
   return (
     <Panel
       title={`Sell ${label}`}
-      lede={`Goods you offer leave your stores until someone buys them or you withdraw them. You can keep ${config.market.maxKingdomOffers} offers of each good.`}
+      help={`Goods you offer leave your stores until someone buys them or you withdraw them. Up to ${config.market.maxKingdomOffers} offers of each good.`}
     >
       <div className="row">
         <div style={{ width: 160 }}>
@@ -108,7 +108,7 @@ const SellPanel: React.FC<{ resource: MarketResource; onDone: () => void }> = ({
 };
 
 export const Market: React.FC = () => {
-  const { kingdom } = useGame();
+  const { kingdom, config } = useGame();
   const [resource, setResource] = useState<MarketResource>("food");
   const [offers, setOffers] = useState<MarketOffer[] | null>(null);
   const [alliesOffers, setAlliesOffers] = useState<MarketOffer[]>([]);
@@ -143,9 +143,7 @@ export const Market: React.FC = () => {
 
   return (
     <>
-      <Banner image={art("marketplace")} title="Market">
-        Buy what your realm cannot make and sell what it makes too much of. Prices are per piece, paid in gold.
-      </Banner>
+      <Banner image={art("marketplace")} title="Market" />
       <Tabs
         value={resource}
         onChange={setResource}
@@ -162,12 +160,13 @@ export const Market: React.FC = () => {
       <div className="stack">
         <Panel
           title={`${marketResourceLabel[resource]} for sale`}
-          lede={`You have ${formatNumber(kingdom.resources.gold)} gold. The cheapest offers are shown first${allied ? ", and every offer of your allies" : ""}.`}
+          lede={`${formatNumber(kingdom.resources.gold)} gold in the treasury.`}
+          help={`Prices are per piece, in gold, and you may buy part of an offer. Only the ${config.market.visibleMarketOffersCap} cheapest offers of each good are listed${allied ? ", besides every offer of your allies" : ""}.`}
         >
           {offers === null ? (
             <p className="muted">Asking the merchants</p>
           ) : shown.length === 0 ? (
-            <p className="muted">Nobody sells {marketResourceLabel[resource].toLowerCase()} right now. Offer some yourself below.</p>
+            <p className="muted">Nobody sells {marketResourceLabel[resource].toLowerCase()}.</p>
           ) : (
             <div className="table-scroll">
               <table className="ledger">
@@ -198,8 +197,7 @@ export const Market: React.FC = () => {
         <SellPanel resource={resource} onDone={load} />
         {kingdom.marketOffers.length > ownOffers.length ? (
           <p className="muted">
-            You also have {plural(kingdom.marketOffers.length - ownOffers.length, "offer", "offers")} for other goods; switch the tab to see
-            them.
+            {plural(kingdom.marketOffers.length - ownOffers.length, "more offer", "more offers")} of yours under other goods.
           </p>
         ) : null}
       </div>

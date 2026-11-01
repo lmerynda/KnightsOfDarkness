@@ -100,9 +100,11 @@ export const Train: React.FC = () => {
 
   return (
     <>
-      <Banner image={art("barracks")} title="Train">
-        Idle people become workers, watchmen and soldiers. Each needs gold, its tools or weapons, and a place in its building.
-      </Banner>
+      <Banner
+        image={art("barracks")}
+        title="Train"
+        help={`Idle people become workers, watchmen and soldiers. Each needs gold, its tools or weapons, and a place in its building. Soldiers are paid every turn, those away too; when the gold falls short, soldiers at home desert.`}
+      />
       <div className="row build-mode">
         <Choice
           label="Train or dismiss"
@@ -117,7 +119,7 @@ export const Train: React.FC = () => {
           ]}
         />
         <span className="figure muted">
-          <Icon name="people" /> {plural(resources.unemployed, "idle person", "idle people")} ready to train
+          <Icon name="people" /> {plural(resources.unemployed, "idle person", "idle people")}
         </span>
       </div>
       <div className="stack">
@@ -201,14 +203,14 @@ export const Train: React.FC = () => {
                 {spent.weapons ? `, ${formatNumber(spent.weapons)} weapons` : ""}
                 {short.length ? <span className="warning"> Not enough {short.join(", ")}.</span> : null}
                 {short.includes("weapons") ? (
-                  <span className="muted">
+                  <>
                     {" "}
-                    Blacksmiths forge weapons; set their share on the <Link to="/kingdom/overview">overview</Link>.
-                  </span>
+                    <Link to="/kingdom/overview">Set the forge</Link>
+                  </>
                 ) : null}
               </>
             ) : (
-              `Dismiss ${plural(ordered, "person", "people")}; they stay as idle people`
+              `Dismiss ${plural(ordered, "person", "people")} to idle`
             )}
           </span>
           <span className="row">

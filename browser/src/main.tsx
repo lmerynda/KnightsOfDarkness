@@ -1,5 +1,6 @@
 import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import "@fontsource-variable/grenze";
 import "@fontsource-variable/grenze-gotisch";
 import "@fontsource/alegreya-sans/400.css";
 import "@fontsource/alegreya-sans/500.css";

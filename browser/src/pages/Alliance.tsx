@@ -29,7 +29,8 @@ const Members: React.FC<{ alliance: Alliance; onChange: () => void }> = ({ allia
     <>
       <Panel
         title={alliance.name}
-        lede={`${alliance.members.length} of ${config.common.allianceMaxMembers} members, led by ${alliance.emperor}. Write to everyone at once from the letters page.`}
+        lede={`${alliance.members.length} of ${config.common.allianceMaxMembers} members, led by ${alliance.emperor}.`}
+        help="Allies cannot attack each other and rise together in the alliance rankings. Write to everyone at once from the letters page."
       >
         <div className="table-scroll">
           <table className="ledger">
@@ -85,7 +86,7 @@ const Members: React.FC<{ alliance: Alliance; onChange: () => void }> = ({ allia
       </Panel>
       {emperor ? (
         <div className="two-columns">
-          <Panel title="Invite a kingdom" lede="Only kingdoms without an alliance can be invited.">
+          <Panel title="Invite a kingdom" help="Only kingdoms without an alliance can be invited.">
             <div className="row">
               <label className="field" style={{ minWidth: 220 }}>
                 <span>Kingdom</span>
@@ -110,7 +111,7 @@ const Members: React.FC<{ alliance: Alliance; onChange: () => void }> = ({ allia
           </Panel>
           <Panel
             title="Raise a vassal"
-            lede="A vassal is a kingdom run by the game that trades on the market and fills a place in your alliance."
+            help="A vassal is a kingdom run by the game that trades on the market and fills a place in your alliance."
           >
             <div className="row">
               <label className="field" style={{ minWidth: 200 }}>
@@ -179,7 +180,7 @@ const NoAlliance: React.FC<{ onChange: () => void }> = ({ onChange }) => {
         </Panel>
       ) : null}
       <div className="two-columns">
-        <Panel title="Found an alliance" lede="You become its emperor: you invite members, and you leave last.">
+        <Panel title="Found an alliance" help="You become its emperor: you invite members, and you leave last.">
           <div className="row">
             <label className="field" style={{ minWidth: 220 }}>
               <span>Alliance name</span>
@@ -195,9 +196,9 @@ const NoAlliance: React.FC<{ onChange: () => void }> = ({ onChange }) => {
             </button>
           </div>
         </Panel>
-        <Panel title="Alliances of this round" lede="Write to an emperor to ask for an invitation.">
+        <Panel title="Alliances of this round" help="Write to an emperor to ask for an invitation.">
           {alliances.length === 0 ? (
-            <p className="muted">No alliances yet. Be the first.</p>
+            <p className="muted">No alliances yet.</p>
           ) : (
             <ul className="plain-list">
               {alliances.map(alliance => (
@@ -232,7 +233,7 @@ const WarRoomPanel: React.FC = () => {
     Object.values(units).reduce<number>((sum, count) => sum + (count ?? 0), 0);
 
   return (
-    <Panel title="War room" lede="What the alliance knows together. Armies that land on the same turn strike together.">
+    <Panel title="War room" help="What the alliance knows together. Armies that land on the same turn strike together.">
       <div className="two-columns">
         <section>
           {warRoom.threats.length ? (
@@ -353,7 +354,7 @@ const GoldPanel: React.FC = () => {
   return (
     <Panel
       title="Gold between allies"
-      lede="Carriers cannot carry gold, so allies pass it on the market: ask by offering one piece of goods at the price you need, and an ally sends the gold by buying it. Your allies always see your offers, however dear."
+      help="Carriers cannot carry gold, so allies pass it on the market: ask by offering one piece of goods at the price you need, and an ally sends the gold by buying it. Your allies always see your offers, however dear."
     >
       <div className="row">
         <div style={{ width: 180 }}>
@@ -467,9 +468,7 @@ export const AlliancePage: React.FC = () => {
 
   return (
     <>
-      <Banner image={art("alliance")} title="Alliance">
-        Allies cannot attack each other, share a council of letters, and rise together in the alliance rankings.
-      </Banner>
+      <Banner image={art("alliance")} title="Alliance" />
       {alliance === null ? (
         <p className="muted">Calling the council</p>
       ) : alliance ? (

@@ -22,7 +22,9 @@
   --rule: rgba(142, 154, 166, 0.18);
   --rule-strong: rgba(184, 154, 90, 0.42);
 
+  /* blackletter only where a name is announced: page titles and the kingdom; its roman sister for every other heading */
   --font-display: "Grenze Gotisch Variable", "Grenze Gotisch", Georgia, serif;
+  --font-heading: "Grenze Variable", "Grenze", Georgia, serif;
   --font-text: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
 
   /* type scale, a perfect fourth from 16px */
