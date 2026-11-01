@@ -85,7 +85,7 @@ The game centres on coalitions of up to ten kingdoms competing with each other. 
 cd simulation && npm run coalitions -- --turns 120
 ```
 
-`--guard` turns the coordinated coalition's turtles into guardians who send soldiers to allies under threat; `--fund` has its warlords ask for gold on the market and its economists pay half of their spare gold into those asks.
+`--guard` turns the coordinated coalition's turtles into guardians who send soldiers to allies under threat; `--fund` has its warlords ask for gold on the market and its economists pay half of their spare gold into those asks. `--mirror` makes Horde play exactly as the coordinated coalition does, to see whether one of two equal coalitions runs away with the round.
 
 To see how the game looks as a world unfolds, play one and photograph the real browser UI along the way (needs `npm install` in `browser/` and an installed Chrome; the UI runs on port 3001):
 

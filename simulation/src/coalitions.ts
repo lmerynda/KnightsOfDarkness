@@ -1,20 +1,21 @@
 import { writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { World } from "./client.ts";
-import { askingWarlord, coalitionWarlord, foundCoalition, guardian, treasurer, type Coalition } from "./coalition.ts";
+import { askingWarlord, coalitionWarlord, foundCoalition, guardian, treasurer, type Coalition, type Council } from "./coalition.ts";
 import { startServer, type ConfigOverrides } from "./server.ts";
 import { economist, turtle, warlord, type Strategy } from "./strategies.ts";
 import { finalSnapshot, foundRulers, runWorld, type Ruler, type WorldRun } from "./world.ts";
 
 const usage = `Play coalitions of ten against each other and report how each group fared.
 
-  node src/coalitions.ts [--turns 120] [--set path=value ...] [--compare] [--guard] [--fund] [--out run.json]
+  node src/coalitions.ts [--turns 120] [--set path=value ...] [--compare] [--guard] [--fund] [--mirror] [--out run.json]
 
 Three groups of ten with the same make-up (5 economists, 3 warlords, 2 turtles): Order, a coalition whose warlords
 strike together through a war council; Horde, a coalition whose warlords each pick their own target; and Free, ten
 kingdoms in no alliance. The merchant bots play too. With --guard, Order's turtles become guardians who send soldiers to
 stand guard with their weakest allies. With --fund, Order's warlords ask for gold on the market and its economists pay
-half of their spare gold into those asks.`;
+half of their spare gold into those asks. With --mirror, Horde plays exactly as Order does, with its own war council, to
+see whether one of two equal coalitions runs away with the round.`;
 
 const { values } = parseArgs({
   options: {
@@ -23,6 +24,7 @@ const { values } = parseArgs({
     compare: { type: "boolean", default: false },
     guard: { type: "boolean", default: false },
     fund: { type: "boolean", default: false },
+    mirror: { type: "boolean", default: false },
     out: { type: "string" },
     help: { type: "boolean", default: false },
   },
@@ -69,14 +71,14 @@ const simulate = async (label: string, configOverrides: ConfigOverrides): Promis
   const server = await startServer(configOverrides);
   try {
     const world = new World(server.url);
-    const order: Coalition = await foundCoalition(world, "Order", council =>
+    const coordinated = (council: Council): Strategy[] =>
       makeUp(
         () => (values.fund ? askingWarlord(council) : coalitionWarlord(council)),
         values.guard ? () => guardian(council) : () => turtle,
         values.fund ? () => treasurer() : () => economist,
-      ),
-    );
-    const horde: Coalition = await foundCoalition(world, "Horde", () => makeUp(() => warlord()));
+      );
+    const order: Coalition = await foundCoalition(world, "Order", coordinated);
+    const horde: Coalition = await foundCoalition(world, "Horde", values.mirror ? coordinated : () => makeUp(() => warlord()));
     const free: Group = {
       name: "Free",
       rulers: await foundRulers(
