@@ -37,12 +37,20 @@ const workerHomes: [UnitName, BuildingName][] = [
 
 const foodBalance = (details: KingdomDetails): number => (details.forecast.resourcesProduced.food ?? 0) - details.forecast.foodConsumed;
 
-/** buys up to a fifth more land each turn, spending at most half of the treasury, since land is what every plan grows on */
-const growLand = async ({ player, kingdom }: TurnContext): Promise<void> => {
+/** turns of soldiers' pay a ruler keeps in the treasury, whatever else it buys */
+const payReserveTurns = 10;
+
+/**
+ * buys up to a fifth more land each turn, spending at most half of the treasury beyond the soldiers' pay reserve, since
+ * land is what every plan grows on
+ */
+const growLand = async ({ player }: TurnContext): Promise<void> => {
+  const [kingdom, details] = await Promise.all([player.kingdom(), player.details()]);
+  const budget = Math.max(0, kingdom.resources.gold - payReserveTurns * details.forecast.goldUpkeep) / 2;
   let acres = Math.max(1, Math.floor(kingdom.resources.land / 5));
   while (acres > 0) {
     const quote = await player.landQuote(acres);
-    if (quote.amount === acres && quote.cost <= kingdom.resources.gold / 2) {
+    if (quote.amount === acres && quote.cost <= budget) {
       await player.buyLand(acres);
       return;
     }
@@ -62,25 +70,30 @@ const buildTowardsPlan = async ({ player, kingdom }: TurnContext, plan: Plan, ur
   }
 };
 
+/** trains up to the given number of a unit with the gold beyond the soldiers' pay reserve */
+const trainWithinReserve = async ({ player, config }: TurnContext, details: KingdomDetails, unit: UnitName, count: number): Promise<void> => {
+  const spendable = (await player.kingdom()).resources.gold - payReserveTurns * details.forecast.goldUpkeep;
+  const affordable = Math.min(count, Math.floor(spendable / config.trainingCost[unit].gold));
+  if (affordable > 0) await player.train({ [unit]: affordable });
+};
+
 /** fills every workplace, farmers first when the kingdom eats more than it grows */
-const staffBuildings = async ({ player, details }: TurnContext, units: UnitName[]): Promise<void> => {
+const staffBuildings = async (context: TurnContext, units: UnitName[]): Promise<void> => {
+  const { details } = context;
   const order = foodBalance(details) < 0 ? ["farmer" as UnitName, ...units.filter(unit => unit !== "farmer")] : units;
   for (const unit of order) {
     const home = workerHomes.find(([worker]) => worker === unit)?.[1];
     if (!home) continue;
     const free = (details.buildingCapacity[home] ?? 0) - (details.buildingOccupancy[home] ?? 0);
-    if (free > 0) {
-      await player.train({ [unit]: free });
-    }
+    if (free > 0) await trainWithinReserve(context, details, unit, free);
   }
 };
 
 /** builders raise one turn's worth of building points each, keep them at about a tenth of the land */
-const keepBuilders = async ({ player, kingdom }: TurnContext): Promise<void> => {
+const keepBuilders = async (context: TurnContext): Promise<void> => {
+  const { kingdom, details } = context;
   const missing = Math.floor(kingdom.resources.land / 10) - kingdom.units.availableUnits.builder;
-  if (missing > 0) {
-    await player.train({ builder: missing });
-  }
+  if (missing > 0) await trainWithinReserve(context, details, "builder", missing);
 };
 
 const economyPlan: Plan = { house: 0.34, farm: 0.14, goldMine: 0.22, ironMine: 0.06, workshop: 0.08 };
@@ -158,12 +171,19 @@ export const estimatedDefense = (report: SpyReport, config: GameConfig): number 
   return base * (1 + towers + (report.buildings.castle ?? 0) * config.attack.castleDefenseBonusPerCastle);
 };
 
-/** trains soldiers into free barracks places in the given proportions, spending at most the budget when one is given */
+/**
+ * trains soldiers into free barracks places in the given proportions, spending at most the budget when one is given, and
+ * only as many as the gold income, with the treasury spread over `payReserveTurns`, can pay every turn
+ */
 const fillBarracks = async ({ player, config }: TurnContext, mix: Partial<Counts<UnitName>>, budget = Infinity): Promise<void> => {
   const details = await player.details();
+  const { gold } = (await player.kingdom()).resources;
   const total = Object.values(mix).reduce((sum, share) => sum + (share ?? 0), 0);
   const goldPerSoldier = Object.entries(mix).reduce((sum, [unit, share]) => sum + (config.trainingCost[unit as UnitName].gold * (share ?? 0)) / total, 0);
-  const free = Math.min((details.buildingCapacity.barracks ?? 0) - (details.buildingOccupancy.barracks ?? 0), Math.floor(budget / goldPerSoldier));
+  const payPerSoldier = goldPerSoldier * config.common.soldierUpkeepRatio;
+  const payRoom = (details.forecast.resourcesProduced.gold ?? 0) - details.forecast.goldUpkeep + gold / payReserveTurns;
+  const payable = payPerSoldier > 0 ? Math.floor(payRoom / payPerSoldier) : Infinity;
+  const free = Math.min((details.buildingCapacity.barracks ?? 0) - (details.buildingOccupancy.barracks ?? 0), Math.floor(budget / goldPerSoldier), payable);
   if (free <= 0) return;
   const order = Object.fromEntries(Object.entries(mix).map(([unit, share]) => [unit, Math.floor((free * (share ?? 0)) / total)]));
   await player.train(order);

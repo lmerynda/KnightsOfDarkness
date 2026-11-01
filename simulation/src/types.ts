@@ -67,7 +67,7 @@ export type KingdomDetails = {
 export type GameConfig = {
   buildingPointCosts: Counts<BuildingName>;
   trainingCost: Record<UnitName, { gold: number; tools: number; weapons: number }>;
-  common: { maxTurns: number; foodUpkeepPerUnit: number; specialBuildingMaxCount: number; turnsToReinforce: number };
+  common: { maxTurns: number; foodUpkeepPerUnit: number; specialBuildingMaxCount: number; turnsToReinforce: number; soldierUpkeepRatio: number };
   attack: {
     turnsToArrive: number;
     minTargetLandRatio: number;
