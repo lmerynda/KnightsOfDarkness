@@ -78,4 +78,16 @@ public class KingdomDetailsProvider {
     {
         return kingdom.units.countAll() * config.common().foodUpkeepPerUnit();
     }
+
+    /**
+     * the gold soldiers are paid each turn, a share of what training them cost; soldiers away on the march or standing guard
+     * with an ally are paid too
+     */
+    public int getGoldUpkeep(KingdomEntity kingdom)
+    {
+        var upkeep = UnitName.getMilitaryUnits().stream()
+                .mapToDouble(unit -> (double) kingdom.getUnits().getTotalCount(unit) * config.trainingCost().getTrainingCost(unit).gold())
+                .sum();
+        return (int) Math.round(upkeep * config.common().soldierUpkeepRatio());
+    }
 }

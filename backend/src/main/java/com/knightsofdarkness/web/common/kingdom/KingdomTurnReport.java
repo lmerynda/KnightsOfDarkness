@@ -10,6 +10,10 @@ public class KingdomTurnReport {
     public int arrivingPeople = 0;
     public int exiledPeople = 0;
     public int starvedPeople = 0;
+    /** gold paid to the soldiers */
+    public int goldUpkeep = 0;
+    /** soldiers at home who left because their pay fell short */
+    public int desertedSoldiers = 0;
     public int weaponsProductionPercentage = 0;
     public double kingdomSizeProductionBonus = 0.0;
     public double nourishmentProductionFactor = 1.0;
@@ -32,6 +36,7 @@ public class KingdomTurnReport {
         if (!(other instanceof KingdomTurnReport that))
             return false;
         return foodConsumed == that.foodConsumed && arrivingPeople == that.arrivingPeople && exiledPeople == that.exiledPeople && starvedPeople == that.starvedPeople
+                && goldUpkeep == that.goldUpkeep && desertedSoldiers == that.desertedSoldiers
                 && weaponsProductionPercentage == that.weaponsProductionPercentage && Double.compare(kingdomSizeProductionBonus, that.kingdomSizeProductionBonus) == 0
                 && Double.compare(nourishmentProductionFactor, that.nourishmentProductionFactor) == 0 && Objects.equals(resourcesProduced, that.resourcesProduced)
                 && Objects.equals(specialBuildingBonus, that.specialBuildingBonus) && Objects.equals(professionalsLeaving, that.professionalsLeaving) && Objects.equals(event, that.event);
@@ -40,7 +45,7 @@ public class KingdomTurnReport {
     @Override
     public int hashCode()
     {
-        return Objects.hash(foodConsumed, resourcesProduced, arrivingPeople, exiledPeople, starvedPeople, weaponsProductionPercentage, kingdomSizeProductionBonus, nourishmentProductionFactor,
+        return Objects.hash(foodConsumed, resourcesProduced, arrivingPeople, exiledPeople, starvedPeople, goldUpkeep, desertedSoldiers, weaponsProductionPercentage, kingdomSizeProductionBonus, nourishmentProductionFactor,
                 specialBuildingBonus, professionalsLeaving, event);
     }
 
@@ -53,6 +58,8 @@ public class KingdomTurnReport {
                 ", arrivingPeople=" + arrivingPeople +
                 ", exiledPeople=" + exiledPeople +
                 ", starvedPeople=" + starvedPeople +
+                ", goldUpkeep=" + goldUpkeep +
+                ", desertedSoldiers=" + desertedSoldiers +
                 ", weaponsProductionPercentage=" + weaponsProductionPercentage +
                 ", kingdomSizeProductionBonus=" + kingdomSizeProductionBonus +
                 ", nourishmentProductionFactor=" + nourishmentProductionFactor +

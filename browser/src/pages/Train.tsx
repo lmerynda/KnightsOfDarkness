@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
 import type { Counts, GameConfig, UnitName } from "../api/types";
-import { unitNames } from "../api/types";
+import { militaryUnits, unitNames } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, buildingLore, resourceLabel, unitGroups, unitLore } from "../game/lore";
 import { unitHome } from "../game/rules";
@@ -145,6 +145,9 @@ export const Train: React.FC = () => {
                           <span>
                             Attack {config.attack.unitAttackPower[unit] ?? 0}, defense {config.attack.unitDefensePower[unit]}
                           </span>
+                        ) : null}
+                        {(militaryUnits as readonly UnitName[]).includes(unit) ? (
+                          <span>Paid {formatNumber(Math.round(cost.gold * config.common.soldierUpkeepRatio))} gold a turn</span>
                         ) : null}
                         {away > 0 ? <span className="warning">{formatNumber(away)} away from home</span> : null}
                         {home ? (

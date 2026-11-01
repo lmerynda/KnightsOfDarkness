@@ -50,6 +50,10 @@ export type TurnReport = {
   arrivingPeople: number;
   exiledPeople: number;
   starvedPeople: number;
+  /** gold paid to the soldiers */
+  goldUpkeep: number;
+  /** soldiers at home who left because their pay fell short */
+  desertedSoldiers: number;
   weaponsProductionPercentage: number;
   kingdomSizeProductionBonus: number;
   nourishmentProductionFactor: number;
@@ -145,6 +149,8 @@ export type GameConfig = {
     turnsToDeliverResources: number;
     allianceMaxMembers: number;
     newTurnPeriodicity: number;
+    /** share of a soldier's training gold paid to it every turn */
+    soldierUpkeepRatio: number;
   };
   carrierCapacity: Counts<MarketResource>;
   attack: {

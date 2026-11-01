@@ -74,6 +74,11 @@ test("a new ruler can arm soldiers after a few turns", async ({ page }) => {
   await page.getByLabel("Infantry to train", { exact: true }).fill("10");
   await page.getByRole("button", { name: "Train them" }).click();
   await expect(toast(page, "Trained 10 recruits")).toBeVisible();
+  await expect(page.locator("article").filter({ hasText: "Infantry" }).first()).toContainText("Paid 150 gold a turn");
+
+  // soldiers are paid every turn, and the forecast says what they cost
+  await goTo(page, "Overview");
+  await expect(page.locator("tr").filter({ hasText: "Soldiers' pay" })).toContainText("-1,500");
 });
 
 test("the steward tells a newcomer what to do and leads there", async ({ page }) => {

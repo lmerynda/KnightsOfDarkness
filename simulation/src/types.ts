@@ -23,6 +23,8 @@ export type TurnReport = {
   arrivingPeople: number;
   exiledPeople: number;
   starvedPeople: number;
+  goldUpkeep: number;
+  desertedSoldiers: number;
   nourishmentProductionFactor: number;
   professionalsLeaving: Partial<Counts<UnitName>>;
 };

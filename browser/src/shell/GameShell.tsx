@@ -140,7 +140,8 @@ const TurnSeal: React.FC = () => {
         <ul>
           {(["gold", "food", "iron", "tools", "weapons", "buildingPoints"] as ResourceName[]).map(resource => {
             const produced = forecast.resourcesProduced[resource] ?? 0;
-            const net = resource === "food" ? produced - forecast.foodConsumed : produced;
+            const net =
+              resource === "food" ? produced - forecast.foodConsumed : resource === "gold" ? produced - forecast.goldUpkeep : produced;
             return (
               <li key={resource}>
                 <Icon name={resourceIcon[resource] ?? "gold"} size={16} />
@@ -184,8 +185,8 @@ const Ledger: React.FC<{ onMenu: () => void }> = ({ onMenu }) => {
           icon="gold"
           label="Gold"
           value={formatNumber(resources.gold)}
-          change={produced("gold")}
-          hint="Gold, and how much the next turn brings"
+          change={produced("gold") - forecast.goldUpkeep}
+          hint="Gold, and what the next turn brings after the soldiers are paid"
         />
         <LedgerItem
           icon="food"

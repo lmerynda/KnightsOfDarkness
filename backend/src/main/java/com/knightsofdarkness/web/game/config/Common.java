@@ -13,5 +13,6 @@ public record Common(
         int turnsToDeliverResources,
         int kingdomBaseHousingCapacity,
         int allianceMaxMembers,
-        int turnsToReinforce) {
+        int turnsToReinforce,
+        double soldierUpkeepRatio) {
 }

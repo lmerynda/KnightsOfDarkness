@@ -32,6 +32,7 @@ class KingdomAttackTest {
     private KingdomDetailsProvider kingdomDetailsProvider;
     private static final int weaponsProductionPercentage = 0;
 
+    // armies this size cost their pay every turn; a full treasury keeps the battles about the battles
     @BeforeEach
     void setUp()
     {
@@ -39,11 +40,11 @@ class KingdomAttackTest {
         gameConfig = game.getConfig();
         kingdomInteractor = game.getKingdomInteractor();
         kingdomDetailsProvider = new KingdomDetailsProvider(gameConfig);
-        primaryKingdom = new KingdomBuilder(game).withName("primary").withResource(ResourceName.land, 2500).withBuilding(BuildingName.house, 1000).withBuilding(BuildingName.barracks, 1000).withUnit(UnitName.bowman, 1000)
+        primaryKingdom = new KingdomBuilder(game).withName("primary").withResource(ResourceName.land, 2500).withResource(ResourceName.gold, 100_000_000).withBuilding(BuildingName.house, 1000).withBuilding(BuildingName.barracks, 1000).withUnit(UnitName.bowman, 1000)
                 .withUnit(UnitName.infantry, 1000)
                 .withUnit(UnitName.cavalry, 1000).build();
         game.addKingdom(primaryKingdom);
-        secondaryKingdom = new KingdomBuilder(game).withName("secondary").withResource(ResourceName.land, 2500).withBuilding(BuildingName.house, 1000).withBuilding(BuildingName.barracks, 1000).withUnit(UnitName.bowman, 1000)
+        secondaryKingdom = new KingdomBuilder(game).withName("secondary").withResource(ResourceName.land, 2500).withResource(ResourceName.gold, 100_000_000).withBuilding(BuildingName.house, 1000).withBuilding(BuildingName.barracks, 1000).withUnit(UnitName.bowman, 1000)
                 .withUnit(UnitName.infantry, 1000)
                 .withUnit(UnitName.cavalry, 1000).build();
         game.addKingdom(secondaryKingdom);

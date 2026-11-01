@@ -25,6 +25,7 @@ const departures = (report: TurnReport): string[] => {
   const leaving = Object.entries(report.professionalsLeaving).filter(([, count]) => (count ?? 0) > 0) as [UnitName, number][];
   return [
     report.starvedPeople > 0 ? `${plural(report.starvedPeople, "person leaves", "people leave")} for lack of food` : null,
+    report.desertedSoldiers > 0 ? `${plural(report.desertedSoldiers, "soldier deserts", "soldiers desert")} for lack of pay` : null,
     report.exiledPeople > 0 ? `${plural(report.exiledPeople, "person leaves", "people leave")} for lack of houses` : null,
     ...leaving.map(
       ([unit, count]) =>
@@ -62,6 +63,19 @@ const TurnLines: React.FC<{ report: TurnReport }> = ({ report }) => (
           {report.nourishmentProductionFactor < 1 ? `only ${Math.round(report.nourishmentProductionFactor * 100)}% fed` : ""}
         </td>
       </tr>
+      {report.goldUpkeep > 0 || report.desertedSoldiers > 0 ? (
+        <tr>
+          <td>
+            <span className="figure">
+              <Icon name="gold" /> Soldiers' pay
+            </span>
+          </td>
+          <td className="number loss">{signed(-report.goldUpkeep)}</td>
+          <td className="number muted">
+            {report.desertedSoldiers > 0 ? `${plural(report.desertedSoldiers, "soldier", "soldiers")} unpaid, leaving` : ""}
+          </td>
+        </tr>
+      ) : null}
       <tr>
         <td>
           <span className="figure">

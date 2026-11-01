@@ -52,6 +52,7 @@ public class KingdomTurnAction {
         results.nourishmentProductionFactor = nourishmentProductionFactor;
         var otherResources = ResourceName.productionResourceNames().stream().filter(resource -> resource != ResourceName.food).toList();
         doProduction(otherResources, nourishmentProductionFactor, weaponsProductionPercentage);
+        payTheArmy();
         getNewPeople();
         processCarriersOnTheMove();
         processAttacks();
@@ -136,6 +137,45 @@ public class KingdomTurnAction {
         }
 
         results.exiledPeople = removeCivilians(peopleCount - housingCapacity);
+    }
+
+    /**
+     * soldiers are paid from the turn's gold; when it falls short, soldiers at home leave in proportion to the unpaid share,
+     * as the hungry do
+     */
+    private void payTheArmy()
+    {
+        var upkeep = kingdomDetailsProvider.getGoldUpkeep(kingdom);
+        if (upkeep <= 0)
+        {
+            return;
+        }
+
+        var paid = Math.min(upkeep, kingdom.getResources().getCount(ResourceName.gold));
+        kingdom.getResources().subtractCount(ResourceName.gold, paid);
+        results.goldUpkeep = paid;
+        if (paid == upkeep)
+        {
+            return;
+        }
+
+        var units = kingdom.getUnits();
+        var soldiersHome = UnitName.getMilitaryUnits().stream().mapToInt(units::getAvailableCount).sum();
+        var deserting = Math.min(soldiersHome, (int) Math.ceil((1 - (double) paid / upkeep) * soldiersHome * config.common().starvationLeaveRatio()));
+        var deserted = 0;
+        for (var unit : UnitName.getMilitaryUnits())
+        {
+            var share = (int) Math.floor((double) units.getAvailableCount(unit) / soldiersHome * deserting);
+            units.subtractAvailableCount(unit, share);
+            deserted += share;
+        }
+        for (var unit : UnitName.getMilitaryUnits())
+        {
+            var more = Math.min(deserting - deserted, units.getAvailableCount(unit));
+            units.subtractAvailableCount(unit, more);
+            deserted += more;
+        }
+        results.desertedSoldiers = deserted;
     }
 
     private void peopleLeavingDueToHunger(double nourishmentProductionFactor)

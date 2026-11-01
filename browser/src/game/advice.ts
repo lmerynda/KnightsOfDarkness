@@ -72,6 +72,24 @@ export const counsel = (
       link: { to: "/kingdom/market", label: "Buy food" },
     });
   }
+  const goldBalance = (forecast.resourcesProduced.gold ?? 0) - forecast.goldUpkeep;
+  if (forecast.desertedSoldiers > 0) {
+    lines.push({
+      urgent: true,
+      text: `The treasury cannot pay the army: ${plural(forecast.desertedSoldiers, "soldier deserts", "soldiers desert")} next turn. Gold miners, or gold from allies, keep them.`,
+      link: kingdom.allianceName
+        ? { to: "/kingdom/alliance", label: "Ask allies for gold" }
+        : { to: "/kingdom/train", label: "Train gold miners" },
+    });
+  } else if (goldBalance < 0 && resources.gold < -goldBalance * 5) {
+    lines.push({
+      urgent: true,
+      text: `Soldiers' pay of ${formatNumber(forecast.goldUpkeep)} gold a turn is more than the mines bring; the treasury empties in about ${plural(Math.floor(resources.gold / -goldBalance), "turn", "turns")}.`,
+      link: kingdom.allianceName
+        ? { to: "/kingdom/alliance", label: "Ask allies for gold" }
+        : { to: "/kingdom/train", label: "Train gold miners" },
+    });
+  }
   if (forecast.exiledPeople > 0) {
     lines.push({
       urgent: true,
@@ -208,9 +226,10 @@ export const counsel = (
 export const turnSummary = (reports: TurnReport[]): string => {
   const total = (pick: (report: TurnReport) => number): number => reports.reduce((sum, report) => sum + pick(report), 0);
   const starved = total(report => report.starvedPeople);
+  const deserted = total(report => report.desertedSoldiers);
   const exiled = total(report => report.exiledPeople);
   const parts = [
-    `${signed(total(report => report.resourcesProduced.gold ?? 0))} gold`,
+    `${signed(total(report => (report.resourcesProduced.gold ?? 0) - report.goldUpkeep))} gold`,
     `${signed(total(report => (report.resourcesProduced.food ?? 0) - report.foodConsumed))} food`,
     total(report => report.arrivingPeople) > 0
       ? plural(
@@ -221,6 +240,7 @@ export const turnSummary = (reports: TurnReport[]): string => {
       : null,
     starved > 0 ? `${formatNumber(starved)} left hungry` : null,
     exiled > 0 ? `${formatNumber(exiled)} left for lack of houses` : null,
+    deserted > 0 ? `${plural(deserted, "soldier", "soldiers")} deserted unpaid` : null,
   ].filter(Boolean);
   const fortune = reports.flatMap(report => (report.event ? [report.event] : []));
   const turns = reports.length === 1 ? "A turn has passed" : `${reports.length} turns have passed`;

@@ -167,7 +167,8 @@
         "turnsToDeliverResources": 2,
         "kingdomBaseHousingCapacity": 30,
         "allianceMaxMembers": 10,
-        "turnsToReinforce": 2
+        "turnsToReinforce": 2,
+        "soldierUpkeepRatio": 0.01
     },
     "attack": {
         "turnsToArrive": 4,
