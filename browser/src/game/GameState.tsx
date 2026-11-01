@@ -138,7 +138,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode; fallback: (erro
             break;
           }
           reports.push(outcome.turnReport);
-          if (outcome.turnReport.starvedPeople > 0 || outcome.turnReport.exiledPeople > 0) break;
+          if (outcome.turnReport.starvedPeople > 0 || outcome.turnReport.exiledPeople > 0 || outcome.turnReport.desertedSoldiers > 0) break;
         }
       } catch (error) {
         failure = errorText(error);

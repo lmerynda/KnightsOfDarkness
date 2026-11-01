@@ -140,7 +140,7 @@ const Forecast: React.FC = () => {
         <button className="button quiet" type="button" disabled={passing || several < 2} onClick={passSeveral}>
           Pass {several < 2 ? severalTurns : several} turns
         </button>
-        <span className="muted">One after another, stopping as soon as people leave hungry or homeless.</span>
+        <span className="muted">One after another, stopping as soon as people leave hungry or homeless, or soldiers desert unpaid.</span>
       </div>
     </Panel>
   );
