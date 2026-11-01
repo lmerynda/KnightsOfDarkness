@@ -70,30 +70,25 @@ const buildTowardsPlan = async ({ player, kingdom }: TurnContext, plan: Plan, ur
   }
 };
 
-/** trains up to the given number of a unit with the gold beyond the soldiers' pay reserve */
-const trainWithinReserve = async ({ player, config }: TurnContext, details: KingdomDetails, unit: UnitName, count: number): Promise<void> => {
-  const spendable = (await player.kingdom()).resources.gold - payReserveTurns * details.forecast.goldUpkeep;
-  const affordable = Math.min(count, Math.floor(spendable / config.trainingCost[unit].gold));
-  if (affordable > 0) await player.train({ [unit]: affordable });
-};
-
 /** fills every workplace, farmers first when the kingdom eats more than it grows */
-const staffBuildings = async (context: TurnContext, units: UnitName[]): Promise<void> => {
-  const { details } = context;
+const staffBuildings = async ({ player, details }: TurnContext, units: UnitName[]): Promise<void> => {
   const order = foodBalance(details) < 0 ? ["farmer" as UnitName, ...units.filter(unit => unit !== "farmer")] : units;
   for (const unit of order) {
     const home = workerHomes.find(([worker]) => worker === unit)?.[1];
     if (!home) continue;
     const free = (details.buildingCapacity[home] ?? 0) - (details.buildingOccupancy[home] ?? 0);
-    if (free > 0) await trainWithinReserve(context, details, unit, free);
+    if (free > 0) {
+      await player.train({ [unit]: free });
+    }
   }
 };
 
 /** builders raise one turn's worth of building points each, keep them at about a tenth of the land */
-const keepBuilders = async (context: TurnContext): Promise<void> => {
-  const { kingdom, details } = context;
+const keepBuilders = async ({ player, kingdom }: TurnContext): Promise<void> => {
   const missing = Math.floor(kingdom.resources.land / 10) - kingdom.units.availableUnits.builder;
-  if (missing > 0) await trainWithinReserve(context, details, "builder", missing);
+  if (missing > 0) {
+    await player.train({ builder: missing });
+  }
 };
 
 const economyPlan: Plan = { house: 0.34, farm: 0.14, goldMine: 0.22, ironMine: 0.06, workshop: 0.08 };
