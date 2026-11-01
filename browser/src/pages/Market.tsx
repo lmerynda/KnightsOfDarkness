@@ -8,7 +8,7 @@ import { Icon } from "../ui/Icon";
 import { AmountField, Banner, Panel, Tabs } from "../ui/parts";
 import { formatNumber, plural } from "../ui/format";
 
-const OfferRow: React.FC<{ offer: MarketOffer; own: boolean; onDone: () => void }> = ({ offer, own, onDone }) => {
+const OfferRow: React.FC<{ offer: MarketOffer; own: boolean; ally: boolean; onDone: () => void }> = ({ offer, own, ally, onDone }) => {
   const { kingdom, act } = useGame();
   const [count, setCount] = useState(0);
   const affordable = Math.min(offer.count, Math.floor(kingdom.resources.gold / offer.price));
@@ -16,7 +16,7 @@ const OfferRow: React.FC<{ offer: MarketOffer; own: boolean; onDone: () => void 
 
   return (
     <tr className={own ? "mine" : undefined}>
-      <td>{own ? `${offer.sellerName} (you)` : offer.sellerName}</td>
+      <td>{own ? `${offer.sellerName} (you)` : ally ? `${offer.sellerName} (ally)` : offer.sellerName}</td>
       <td className="number">{formatNumber(offer.count)}</td>
       <td className="number">{formatNumber(offer.price)}</td>
       <td className="number muted narrow-hidden">{formatNumber(offer.count * offer.price)}</td>
@@ -111,13 +111,20 @@ export const Market: React.FC = () => {
   const { kingdom } = useGame();
   const [resource, setResource] = useState<MarketResource>("food");
   const [offers, setOffers] = useState<MarketOffer[] | null>(null);
+  const [alliesOffers, setAlliesOffers] = useState<MarketOffer[]>([]);
+  const allied = kingdom.allianceName !== null;
 
   const load = useCallback(() => {
     api
       .offers(resource)
       .then(list => setOffers([...list].sort((a, b) => a.price - b.price)))
       .catch(() => setOffers([]));
-  }, [resource]);
+    if (allied)
+      api
+        .alliesOffers()
+        .then(setAlliesOffers)
+        .catch(() => setAlliesOffers([]));
+  }, [resource, allied]);
 
   useEffect(() => {
     setOffers(null);
@@ -126,7 +133,13 @@ export const Market: React.FC = () => {
 
   const ownOffers = kingdom.marketOffers.filter(offer => offer.resource === resource);
   const ownIds = new Set(ownOffers.map(offer => offer.id));
-  const shown = [...(offers ?? []), ...ownOffers.filter(offer => !(offers ?? []).some(listed => listed.id === offer.id))];
+  // the market lists only the cheapest offers; ours and our allies' always show, so a dear piece can carry gold between allies
+  const listed = offers ?? [];
+  const extra = [...ownOffers, ...alliesOffers.filter(offer => offer.resource === resource)].filter(
+    offer => !listed.some(cheap => cheap.id === offer.id),
+  );
+  const shown = [...listed, ...extra].sort((a, b) => a.price - b.price);
+  const allyNames = new Set(alliesOffers.map(offer => offer.sellerName));
 
   return (
     <>
@@ -149,7 +162,7 @@ export const Market: React.FC = () => {
       <div className="stack">
         <Panel
           title={`${marketResourceLabel[resource]} for sale`}
-          lede={`You have ${formatNumber(kingdom.resources.gold)} gold. The cheapest offers are shown first.`}
+          lede={`You have ${formatNumber(kingdom.resources.gold)} gold. The cheapest offers are shown first${allied ? ", and every offer of your allies" : ""}.`}
         >
           {offers === null ? (
             <p className="muted">Asking the merchants</p>
@@ -169,7 +182,13 @@ export const Market: React.FC = () => {
                 </thead>
                 <tbody>
                   {shown.map(offer => (
-                    <OfferRow key={offer.id} offer={offer} own={ownIds.has(offer.id) || offer.sellerName === kingdom.name} onDone={load} />
+                    <OfferRow
+                      key={offer.id}
+                      offer={offer}
+                      own={ownIds.has(offer.id) || offer.sellerName === kingdom.name}
+                      ally={allyNames.has(offer.sellerName)}
+                      onDone={load}
+                    />
                   ))}
                 </tbody>
               </table>

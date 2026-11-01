@@ -3,6 +3,7 @@ package com.knightsofdarkness.web.market;
 import java.util.Optional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ import com.knightsofdarkness.web.common.market.MarketOfferDto;
 import com.knightsofdarkness.web.common.market.MarketResource;
 import com.knightsofdarkness.web.common.market.WithdrawMarketOfferResult;
 import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.market.model.MarketOfferReadRepository;
 
@@ -65,6 +67,19 @@ public class MarketService
         var allOffers = marketOfferReadRepository.findCheapestOffersByResource(resource, gameConfig.market().visibleMarketOffersCap());
         log.info("Found {} offers for {}", allOffers.size(), resource);
         return allOffers;
+    }
+
+    /**
+     * every offer the kingdom's allies keep on the market, whatever its price: the cheapest-offers list hides the dear ones
+     * allies post to pass each other gold
+     */
+    @Transactional(readOnly = true)
+    public List<MarketOfferDto> getAlliesOffers(String kingdomName)
+    {
+        var allies = kingdomRepository.getKingdomByName(kingdomName).flatMap(KingdomEntity::getAlliance).map(alliance -> alliance.getKingdoms()).orElse(List.of());
+        return allies.stream().map(KingdomEntity::getName).filter(name -> !name.equals(kingdomName))
+                .flatMap(name -> marketOfferReadRepository.findByKingdomName(name).stream())
+                .sorted(Comparator.comparing(MarketOfferDto::sellerName).thenComparing(MarketOfferDto::resource)).toList();
     }
 
     @Transactional

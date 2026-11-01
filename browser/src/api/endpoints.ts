@@ -72,6 +72,8 @@ export const api = {
   spyReports: (): Promise<SpyReport[]> => get("/war/spy-reports"),
 
   offers: (resource: MarketResource): Promise<MarketOffer[]> => get(`/market/${resource}`),
+  /** every offer our allies keep on the market, dear ones included */
+  alliesOffers: (): Promise<MarketOffer[]> => get("/market/allies"),
   postOffer: (resource: MarketResource, count: number, price: number): Promise<ActionResult> =>
     post("/market/create", { resource, count, price }),
   buyOffer: (id: string, count: number): Promise<{ resource: MarketResource; count: number; pricePerUnit: number; totalCost: number }> =>

@@ -247,14 +247,7 @@ class KingdomApiTest {
     void reinforcements_shouldStandGuardWithAnAllyAndComeHomeOnRecall() throws Exception
     {
         var hostName = "Host " + (System.nanoTime() % 1000000);
-        var hostToken = register(hostName);
-        var allianceName = "Pact " + (System.nanoTime() % 1000000);
-        postJson("/alliance/create", "{\"name\":\"" + allianceName + "\"}").andExpect(jsonPath("$.success").value(true));
-        postJson("/alliance/invite", "{\"kingdomName\":\"" + hostName + "\",\"allianceName\":\"" + allianceName + "\"}").andExpect(jsonPath("$.success").value(true));
-        var invitations = mockMvc.perform(get("/alliance/invitations").header("Authorization", "Bearer " + hostToken)).andReturn().getResponse().getContentAsString();
-        String invitationId = JsonPath.read(invitations, "$[0].id");
-        mockMvc.perform(post("/alliance/accept").header("Authorization", "Bearer " + hostToken).contentType(MediaType.APPLICATION_JSON)
-                .content("{\"invitationId\":\"" + invitationId + "\"}")).andExpect(jsonPath("$.success").value(true));
+        var hostToken = registerAlly(hostName);
         var kingdom = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
         kingdom.getUnits().addAvailableCount(UnitName.infantry, 20);
         kingdomRepository.update(kingdom);
@@ -300,5 +293,48 @@ class KingdomApiTest {
         mockMvc.perform(get("/kingdom/notifications").header("Authorization", "Bearer " + targetToken))
                 .andExpect(jsonPath("$[0].kind").value("threat"))
                 .andExpect(jsonPath("$[0].message").value(org.hamcrest.Matchers.containsString(kingdomName)));
+    }
+
+    /**
+     * registers a kingdom and brings it into a new alliance with the logged-in one
+     */
+    private String registerAlly(String name) throws Exception
+    {
+        var allyToken = register(name);
+        var allianceName = "Pact " + (System.nanoTime() % 1000000);
+        postJson("/alliance/create", "{\"name\":\"" + allianceName + "\"}").andExpect(jsonPath("$.success").value(true));
+        postJson("/alliance/invite", "{\"kingdomName\":\"" + name + "\",\"allianceName\":\"" + allianceName + "\"}").andExpect(jsonPath("$.success").value(true));
+        var invitations = mockMvc.perform(get("/alliance/invitations").header("Authorization", "Bearer " + allyToken)).andReturn().getResponse().getContentAsString();
+        String invitationId = JsonPath.read(invitations, "$[0].id");
+        mockMvc.perform(post("/alliance/accept").header("Authorization", "Bearer " + allyToken).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"invitationId\":\"" + invitationId + "\"}")).andExpect(jsonPath("$.success").value(true));
+        return allyToken;
+    }
+
+    @Test
+    void anAllysDearOffer_shouldBeListedForAlliesAndPassThemGold() throws Exception
+    {
+        var allyName = "Warlord " + (System.nanoTime() % 1000000);
+        var allyToken = registerAlly(allyName);
+        var kingdom = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
+        kingdom.getResources().setCount(ResourceName.gold, 60000);
+        kingdomRepository.update(kingdom);
+        var allyGold = kingdomRepository.getKingdomByName(allyName).orElseThrow().getResources().getCount(ResourceName.gold);
+        mockMvc.perform(post("/market/create").header("Authorization", "Bearer " + allyToken).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"resource\":\"food\",\"count\":1,\"price\":50000}")).andExpect(jsonPath("$.success").value(true));
+
+        var listed = mockMvc.perform(get("/market/allies").header("Authorization", "Bearer " + token))
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].sellerName").value(allyName))
+                .andExpect(jsonPath("$[0].price").value(50000))
+                .andReturn().getResponse().getContentAsString();
+        mockMvc.perform(get("/market/allies").header("Authorization", "Bearer " + allyToken)).andExpect(jsonPath("$.length()").value(0));
+        String offerId = JsonPath.read(listed, "$[0].id");
+
+        postJson("/market/" + offerId + "/buy", "{\"count\":1}").andExpect(jsonPath("$.totalCost").value(50000));
+
+        assertEquals(10000, kingdomRepository.getKingdomByName(kingdomName).orElseThrow().getResources().getCount(ResourceName.gold));
+        assertEquals(allyGold + 50000, kingdomRepository.getKingdomByName(allyName).orElseThrow().getResources().getCount(ResourceName.gold));
+        mockMvc.perform(get("/market/allies").header("Authorization", "Bearer " + token)).andExpect(jsonPath("$.length()").value(0));
     }
 }

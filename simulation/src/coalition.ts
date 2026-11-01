@@ -1,5 +1,15 @@
 import type { Player, World } from "./client.ts";
-import { armyAtHome, armyPower, attackableKingdoms, estimatedDefense, raiseArmy, turtle, type Strategy } from "./strategies.ts";
+import {
+  armyAtHome,
+  armyPower,
+  attackableKingdoms,
+  economist,
+  estimatedDefense,
+  raiseArmy,
+  turtle,
+  type Strategy,
+  type TurnContext,
+} from "./strategies.ts";
 import { militaryUnits, type Counts, type UnitName } from "./types.ts";
 import { foundRulers, type Ruler } from "./world.ts";
 
@@ -114,6 +124,58 @@ export const guardian = (council: Council, guardEvery = 6): Strategy => ({
     const ownCover = cover((await player.details()).defensePower, kingdom.resources.land);
     if (!weakest || cover(weakest.defense, weakest.home.resources.land) * shareAbove >= ownCover) return;
     await player.sendReinforcements(weakest.member.name, third);
+  },
+});
+
+/** the price of one piece of food a warlord offers when it asks for gold; no merchant pays it, so it tells allies an ask */
+export const askPrice = 5000;
+
+/**
+ * a warlord's ask for gold: when the gold at hand cannot fill its free barracks places, it offers as many pieces of food
+ * at the asking price as the shortfall is worth, so allies can send part of it by buying only some pieces
+ */
+const askForGold = async ({ player, config }: TurnContext): Promise<void> => {
+  const kingdom = await player.kingdom();
+  if (kingdom.marketOffers.some(offer => offer.price === askPrice)) return;
+  const details = await player.details();
+  const free = (details.buildingCapacity.barracks ?? 0) - (details.buildingOccupancy.barracks ?? 0);
+  const perSoldier = (2 * config.trainingCost.infantry.gold + config.trainingCost.cavalry.gold) / 3;
+  const pieces = Math.min(kingdom.resources.food, Math.floor((free * perSoldier - kingdom.resources.gold) / askPrice));
+  if (pieces <= 0) return;
+  await player.postOffer("food", pieces, askPrice);
+};
+
+/** a coalition warlord that also asks its allies for the gold its barracks could use */
+export const askingWarlord = (council: Council, attackEvery = 6): Strategy => {
+  const strategy = coalitionWarlord(council, attackEvery);
+  return {
+    ...strategy,
+    play: async context => {
+      await strategy.play(context);
+      await askForGold(context);
+    },
+  };
+};
+
+/**
+ * an economist that funds the coalition's warlords: after its own turn it spends up to the given share of the gold left
+ * on its allies' asks for gold, the largest first
+ */
+export const treasurer = (share = 0.5): Strategy => ({
+  name: "treasurer",
+  weaponsPercentage: economist.weaponsPercentage,
+  play: async context => {
+    await economist.play(context);
+    let budget = (await context.player.kingdom()).resources.gold * share;
+    const asks = (await context.player.alliesOffers())
+      .filter(offer => offer.price === askPrice)
+      .sort((one, other) => other.count - one.count);
+    for (const ask of asks) {
+      const pieces = Math.min(ask.count, Math.floor(budget / ask.price));
+      if (pieces <= 0) return;
+      const bought = await context.player.buyOffer(ask.id, pieces);
+      budget -= bought.totalCost;
+    }
   },
 });
 

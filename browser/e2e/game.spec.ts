@@ -301,3 +301,36 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await march.getByRole("button", { name: "Join the strike" }).click();
   await expect(emperorPage.getByRole("combobox", { name: /^Target/ })).toHaveValue(target);
 });
+
+test("an ally asks for gold and another sends it through the market", async ({ page, browser }) => {
+  const squire = await foundKingdom(page, "Squire");
+  await signOut(page);
+  await foundKingdom(page, "Emperor");
+  await goTo(page, "Alliance");
+  await page.getByLabel("Alliance name").fill(`Purse ${Date.now() % 100000}`);
+  await page.getByRole("button", { name: "Found it" }).click();
+  await page.getByRole("combobox", { name: /^Kingdom/ }).selectOption(squire.kingdomName);
+  await page.getByRole("button", { name: "Send invitation" }).click();
+  await expect(toast(page, `Invitation sent to ${squire.kingdomName}`)).toBeVisible();
+
+  const squirePage = await browser.newPage();
+  await signIn(squirePage, squire.email, password);
+  await goTo(squirePage, "Alliance");
+  await squirePage.getByRole("button", { name: "Join" }).click();
+  await squirePage.getByLabel("Gold to ask for").fill("50000");
+  await squirePage.getByRole("button", { name: "Ask allies for 50,000 gold" }).click();
+  await expect(toast(squirePage, "Your allies can send you 50,000 gold now")).toBeVisible();
+  await expect(squirePage.locator("main")).toContainText("You ask for 50,000 gold");
+
+  await goTo(page, "Market");
+  await expect(page.locator("tbody")).toContainText(`${squire.kingdomName} (ally)`);
+  await goTo(page, "Alliance");
+  const ask = page.locator("li").filter({ hasText: `${squire.kingdomName} asks for 50,000 gold` });
+  await ask.getByRole("button", { name: "Send 50,000 gold" }).click();
+  await expect(toast(page, `${squire.kingdomName} has 50,000 more gold`)).toBeVisible();
+  await expect(page.locator("main")).toContainText("Our allies have nothing on the market.");
+
+  await goTo(squirePage, "Chronicle");
+  await expect(squirePage.locator("main")).toContainText("for 50,000 gold");
+  await squirePage.close();
+});

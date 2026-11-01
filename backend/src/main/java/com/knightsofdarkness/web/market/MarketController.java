@@ -46,6 +46,18 @@ public class MarketController {
         return ResponseEntity.ok(createdOffer);
     }
 
+    @GetMapping("/market/allies")
+    ResponseEntity<List<MarketOfferDto>> getAlliesOffers(@AuthenticationPrincipal UserData currentUser)
+    {
+        if (currentUser == null)
+        {
+            logUserUnauthenticated();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.ok(marketService.getAlliesOffers(currentUser.getKingdomName()));
+    }
+
     @GetMapping("/market/{resource}")
     List<MarketOfferDto> getOffersByResource(@PathVariable("resource") MarketResource resource)
     {

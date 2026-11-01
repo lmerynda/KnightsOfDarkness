@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { World } from "../src/client.ts";
-import { coalitionWarlord, foundCoalition, guardian } from "../src/coalition.ts";
+import { askingWarlord, coalitionWarlord, foundCoalition, guardian, treasurer } from "../src/coalition.ts";
 import { startServer } from "../src/server.ts";
 import { economist, raider, warlord } from "../src/strategies.ts";
 import { runWorld } from "../src/world.ts";
@@ -28,6 +28,26 @@ test("coalitions fight, guard each other and keep every rule", async () => {
       assert.equal(host?.allianceName, "Order", `${garrison.to} is no ally`);
       assert.ok(host?.garrisons.some(hosted => hosted.id === garrison.id), `${garrison.to} does not list the garrison`);
     }
+  } finally {
+    await server.stop();
+  }
+});
+
+// A warlord short of gold asks for it on the market and the coalition's treasurer pays into the ask.
+test("a treasurer funds an allied warlord through the market", async () => {
+  const server = await startServer();
+  try {
+    const world = new World(server.url);
+    const purse = await foundCoalition(world, "Purse", council => [askingWarlord(council), treasurer()]);
+    const run = await runWorld(world, purse.rulers, 15, { bots: false });
+
+    assert.deepEqual(run.violations, []);
+    const [warlordRuler, treasurerRuler] = purse.rulers;
+    const trades = (await warlordRuler.player.notifications()).filter(note => note.kind === "trade");
+    assert.ok(
+      trades.some(note => note.message.startsWith(`${treasurerRuler.player.name} bought`)),
+      "the treasurer never paid into the warlord's ask",
+    );
   } finally {
     await server.stop();
   }

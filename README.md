@@ -43,6 +43,8 @@ A kingdom's scouts see every army marching on it, with its sender, its size to t
 
 Allies also defend each other. A member sends infantry, bowmen or cavalry to stand guard in an ally's kingdom; they arrive after two of the sender's turns (`common.turnsToReinforce`), count in the host's defense and fight beside its soldiers, sharing the losses by unit type. They stay the sender's: away from home, fed by the sender, called home at once, and sent home when either kingdom leaves the alliance. Battle reports name the allied losses, and the sender hears how every battle its soldiers stood in went.
 
+Allies pass gold through the market, since carriers cannot carry it. A member asks by offering a few pieces of goods at the price it needs (the Alliance page's "Gold between allies" offers one piece for the sum asked), and an ally sends the gold by buying them. The market lists only the cheapest offers of each good, but every member sees all of its allies' offers, however dear, on the Market and Alliance pages (`GET /market/allies`).
+
 ## Test
 
 ```bash
@@ -82,6 +84,8 @@ The game centres on coalitions of up to ten kingdoms competing with each other. 
 ```bash
 cd simulation && npm run coalitions -- --turns 120
 ```
+
+`--guard` turns the coordinated coalition's turtles into guardians who send soldiers to allies under threat; `--fund` has its warlords ask for gold on the market and its economists pay half of their spare gold into those asks.
 
 To see how the game looks as a world unfolds, play one and photograph the real browser UI along the way (needs `npm install` in `browser/` and an installed Chrome; the UI runs on port 3001):
 

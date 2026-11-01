@@ -166,6 +166,10 @@ export class Player {
     return this.post("/war/send-spies", { targetKingdomName: target, spies });
   }
 
+  public notifications(): Promise<{ kind: string; message: string }[]> {
+    return this.get("/kingdom/notifications");
+  }
+
   public battleReports(): Promise<BattleReport[]> {
     return this.get("/war/battle-reports");
   }
@@ -176,6 +180,11 @@ export class Player {
 
   public postOffer(resource: MarketResource, count: number, price: number): Promise<ActionResult> {
     return this.post("/market/create", { resource, count, price });
+  }
+
+  /** every offer the ruler's allies keep on the market, however dear */
+  public alliesOffers(): Promise<MarketOffer[]> {
+    return this.get("/market/allies");
   }
 
   public createAlliance(name: string): Promise<ActionResult> {

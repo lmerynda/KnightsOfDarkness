@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
-import type { Alliance, AllianceInvitation, AllianceSummary, WarRoom } from "../api/types";
+import type { Alliance, AllianceInvitation, AllianceSummary, MarketOffer, WarRoom } from "../api/types";
+import { marketResources } from "../api/types";
 import { useGame } from "../game/useGame";
-import { art } from "../game/lore";
+import { art, marketResourceLabel } from "../game/lore";
 import { estimatedDefense } from "../game/rules";
 import { Crest } from "../ui/Crest";
-import { Banner, Panel } from "../ui/parts";
+import { AmountField, Banner, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
 
 const Members: React.FC<{ alliance: Alliance; onChange: () => void }> = ({ alliance, onChange }) => {
@@ -334,6 +335,118 @@ const WarRoomPanel: React.FC = () => {
   );
 };
 
+/** allies pass gold through the market: one asks by offering a single piece at a dear price, another buys it */
+const GoldPanel: React.FC = () => {
+  const { kingdom, config, act } = useGame();
+  const [offers, setOffers] = useState<MarketOffer[]>([]);
+  const [ask, setAsk] = useState(0);
+  const load = useCallback(() => {
+    api
+      .alliesOffers()
+      .then(setOffers)
+      .catch(() => setOffers([]));
+  }, []);
+  useEffect(load, [load, kingdom]);
+  const pledge = marketResources.find(resource => kingdom.resources[resource] > 0);
+  const asking = kingdom.marketOffers.filter(offer => offer.count === 1);
+
+  return (
+    <Panel
+      title="Gold between allies"
+      lede="Carriers cannot carry gold, so allies pass it on the market: ask by offering one piece of goods at the price you need, and an ally sends the gold by buying it. Your allies always see your offers, however dear."
+    >
+      <div className="row">
+        <div style={{ width: 180 }}>
+          <AmountField label="Gold to ask for" value={ask} onChange={setAsk} />
+        </div>
+        <button
+          className="button"
+          type="button"
+          disabled={!pledge || ask < config.market.minPrice}
+          onClick={async () => {
+            if (!pledge) return;
+            const result = await act(
+              () => api.postOffer(pledge, 1, ask),
+              outcome => ({
+                text: outcome.success ? `Your allies can send you ${formatNumber(ask)} gold now` : outcome.message,
+                failure: !outcome.success,
+              }),
+            );
+            if (result?.success) setAsk(0);
+          }}
+        >
+          Ask allies for {ask > 0 ? `${formatNumber(ask)} ` : ""}gold
+        </button>
+      </div>
+      {asking.length ? (
+        <ul className="plain-list">
+          {asking.map(offer => (
+            <li key={offer.id}>
+              <span>
+                You ask for <strong>{formatNumber(offer.price)} gold</strong> against one piece of{" "}
+                {marketResourceLabel[offer.resource].toLowerCase()}
+              </span>
+              <button
+                className="button quiet small"
+                type="button"
+                onClick={() =>
+                  act(
+                    () => api.withdrawOffer(offer.id),
+                    outcome => ({ text: outcome.message, failure: !outcome.success }),
+                  )
+                }
+              >
+                Withdraw
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      <h3 className="section-title small">What our allies offer</h3>
+      {offers.length ? (
+        <ul className="plain-list">
+          {offers.map(offer => {
+            const total = offer.count * offer.price;
+            const label = marketResourceLabel[offer.resource].toLowerCase();
+            return (
+              <li key={offer.id}>
+                <span>
+                  <strong>{offer.sellerName}</strong>{" "}
+                  {offer.count === 1
+                    ? `asks for ${formatNumber(offer.price)} gold`
+                    : `sells ${formatNumber(offer.count)} ${label} at ${formatNumber(offer.price)} each`}
+                </span>
+                <button
+                  className="button small"
+                  type="button"
+                  disabled={kingdom.resources.gold < total}
+                  onClick={async () => {
+                    await act(
+                      () => api.buyOffer(offer.id, offer.count),
+                      result => ({
+                        text:
+                          result.count > 0
+                            ? `${offer.sellerName} has ${formatNumber(result.totalCost)} more gold`
+                            : "Not enough gold for it",
+                        failure: result.count === 0,
+                      }),
+                    );
+                    load();
+                  }}
+                >
+                  {offer.count === 1 ? `Send ${formatNumber(total)} gold` : `Buy all for ${formatNumber(total)}`}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className="muted">Our allies have nothing on the market.</p>
+      )}
+    </Panel>
+  );
+};
+
 export const AlliancePage: React.FC = () => {
   const { kingdom, reload } = useGame();
   const [alliance, setAlliance] = useState<Alliance | undefined | null>(null);
@@ -362,6 +475,7 @@ export const AlliancePage: React.FC = () => {
       ) : alliance ? (
         <div className="stack">
           <WarRoomPanel />
+          <GoldPanel />
           <Members alliance={alliance} onChange={onChange} />
         </div>
       ) : (
