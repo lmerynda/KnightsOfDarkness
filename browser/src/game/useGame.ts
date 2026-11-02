@@ -13,7 +13,7 @@ export type GameState = {
   reload: () => Promise<void>;
   /** runs an action against the server, reports the outcome and refreshes the kingdom */
   act: <T>(action: () => Promise<T>, describe: (result: T) => { text: string; failure?: boolean }) => Promise<T | undefined>;
-  notify: (text: string, failure?: boolean) => void;
+  notify: (text: string, failure?: boolean, topic?: string) => void;
   /** passes one turn and reports what it brought */
   passTurn: () => Promise<TurnReport | undefined>;
   refreshCounters: () => void;

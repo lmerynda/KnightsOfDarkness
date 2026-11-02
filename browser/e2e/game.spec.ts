@@ -66,6 +66,8 @@ test("a ruler raises buildings, trains workers and passes the turn", async ({ pa
 test("a new ruler can arm soldiers after a few turns", async ({ page }) => {
   await foundKingdom(page);
   await passTurns(page, 5);
+  // each turn's summary replaces the one before, so quick turns leave one message, not a pile
+  await expect(toast(page, /A turn has passed/)).toHaveCount(1);
 
   await goTo(page, "Train");
   await page.getByLabel("Infantry to train", { exact: true }).fill("10");
@@ -345,6 +347,7 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await emperorPage.locator(".counsel").getByRole("link", { name: "Join the strike" }).click();
   await expect(emperorPage).toHaveURL(/\/kingdom\/war$/);
   await expect(emperorPage.getByRole("combobox", { name: /^Target/ })).toHaveValue(target);
+  await expect(emperorPage.getByRole("combobox", { name: /^Target/ }).locator("option", { hasText: squire.kingdomName })).toHaveCount(0);
 
   // the joined army waits at the border, however many turns the emperor passes, and fights right after the squire's lands
   const sendArmy = emperorPage.locator(".panel").filter({ has: emperorPage.getByRole("heading", { name: "Send an army" }) });

@@ -74,7 +74,10 @@ const SendArmy: React.FC<{
   const [attackType, setAttackType] = useState<AttackType>("land");
   const [army, setArmy] = useState<Partial<Counts<MilitaryUnit>>>({});
 
-  const targets = (rankings?.kingdoms ?? []).filter(rank => rank.kingdomName !== kingdom.name);
+  // allies can never be attacked, so they are left out rather than listed and refused
+  const targets = (rankings?.kingdoms ?? []).filter(
+    rank => rank.kingdomName !== kingdom.name && !(kingdom.allianceName && rank.allianceName === kingdom.allianceName),
+  );
   const chosen = targets.find(rank => rank.kingdomName === target);
   const problem = chosen ? targetProblem(chosen, kingdom.name, kingdom.allianceName, kingdom.resources.land, config) : null;
   const sending = militaryUnits.reduce((sum, unit) => sum + (army[unit] ?? 0), 0);

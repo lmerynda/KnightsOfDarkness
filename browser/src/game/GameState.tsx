@@ -5,7 +5,7 @@ import type { GameConfig, Kingdom, KingdomDetails, Rankings, TurnReport } from "
 import { turnSummary } from "./advice";
 import { GameContext } from "./useGame";
 
-type Toast = { id: number; text: string; failure: boolean };
+type Toast = { id: number; text: string; failure: boolean; topic?: string };
 
 const weaponsKey = "weaponsPercentage";
 
@@ -48,9 +48,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode; fallback: (erro
   const nextToast = useRef(1);
   const weaponsRef = useRef(weaponsPercentage);
 
-  const notify = useCallback((text: string, failure = false) => {
+  // a toast with a topic replaces the one before it on that topic, so passing turns quickly leaves one summary, not a pile
+  const notify = useCallback((text: string, failure = false, topic?: string) => {
     const id = nextToast.current++;
-    setToasts(current => [...current.slice(-3), { id, text, failure }]);
+    setToasts(current => [...current.filter(toast => !topic || toast.topic !== topic).slice(-3), { id, text, failure, topic }]);
     window.setTimeout(() => setToasts(current => current.filter(toast => toast.id !== id)), failure ? 7000 : 4500);
   }, []);
 
@@ -131,7 +132,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode; fallback: (erro
       const outcome = await api.passTurn(weaponsRef.current);
       if (outcome.success && outcome.turnReport) {
         report = outcome.turnReport;
-        notify(turnSummary(report), false);
+        notify(turnSummary(report), false, "turn");
       } else notify(outcome.message, true);
     } catch (error) {
       notify(errorText(error), true);
