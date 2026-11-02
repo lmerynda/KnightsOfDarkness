@@ -18,7 +18,7 @@ cd backend && ./gradlew bootRun
 cd browser && npm install && npm run dev
 ```
 
-Open http://localhost:3000. Locally the server uses an in-memory H2 database, so every restart begins a fresh world. Local development, and only local development (`game.seed-dev-accounts`), seeds two player kingdoms in the alliance Legion, both with a small garrison and spies:
+Open http://localhost:3000. The page asks its own origin for `/api`, as in production, and the dev server forwards that to the game server on 8080 (`GAME_SERVER` to point elsewhere), so another device on your network can play at `http://<this machine>:3000`. Locally the server uses an in-memory H2 database, so every restart begins a fresh world. Local development, and only local development (`game.seed-dev-accounts`), seeds two player kingdoms in the alliance Legion, both with a small garrison and spies:
 
 | Sign in as | Password |
 |---|---|

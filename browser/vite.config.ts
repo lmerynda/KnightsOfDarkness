@@ -10,6 +10,14 @@ export default defineConfig({
         watch: {
             usePolling: true,
             interval: 100, // adjust as needed
-          }
+          },
+        // the page asks its own origin for /api, as in production, so any device that opens it reaches the game server
+        proxy: {
+            '/api': {
+                target: process.env.GAME_SERVER ?? 'http://localhost:8080',
+                changeOrigin: true,
+                rewrite: path => path.replace(/^\/api/, ''),
+            },
+        },
     },
 })

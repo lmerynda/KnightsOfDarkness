@@ -51,7 +51,7 @@ const server = await startServer();
 const vite = spawn(`npm run dev -- --port ${uiPort} --strictPort`, {
   cwd: browserDirectory,
   shell: true,
-  env: { ...process.env, VITE_GAME_API: server.url },
+  env: { ...process.env, GAME_SERVER: server.url },
   stdio: "ignore",
 });
 const browser = await chromium.launch({ channel: "chrome" });
