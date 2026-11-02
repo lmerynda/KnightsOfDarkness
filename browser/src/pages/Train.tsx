@@ -8,6 +8,7 @@ import { art, buildingLore, resourceLabel, unitGroups, unitLore } from "../game/
 import { unitHome } from "../game/rules";
 import { Icon } from "../ui/Icon";
 import { CountField, Banner, Choice } from "../ui/parts";
+import { fillFreePlaces } from "../game/plans";
 import { formatNumber, plural } from "../ui/format";
 
 type Order = Partial<Counts<UnitName>>;
@@ -33,7 +34,7 @@ const productionText = (unit: UnitName, config: GameConfig): string | null => {
 type Mode = "train" | "dismiss";
 
 export const Train: React.FC = () => {
-  const { kingdom, details, config, act } = useGame();
+  const { kingdom, details, config, act, notify } = useGame();
   const [mode, setMode] = useState<Mode>("train");
   const [order, setOrder] = useState<Order>({});
   const resources = kingdom.resources;
@@ -125,6 +126,23 @@ export const Train: React.FC = () => {
         <span className="figure muted">
           <Icon name="people" /> {plural(resources.unemployed, "idle person", "idle people")}
         </span>
+        {mode === "train" ? (
+          <button
+            className="button quiet"
+            type="button"
+            onClick={() => {
+              const free = (unit: UnitName): number => {
+                const home = unitHome[unit];
+                return home ? (details.buildingCapacity[home] ?? 0) - (details.buildingOccupancy[home] ?? 0) : 0;
+              };
+              const filled = fillFreePlaces(free, resources, config);
+              setOrder(filled);
+              if (Object.keys(filled).length === 0) notify("No free places to staff, or nothing to pay them with");
+            }}
+          >
+            Staff the free places
+          </button>
+        ) : null}
       </div>
       <div className="stack">
         {unitGroups.map(group => (

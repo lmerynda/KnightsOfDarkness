@@ -480,3 +480,23 @@ test("a ruler plays with only a kingdom name, then keeps the kingdom", async ({ 
   await signIn(page, email, password);
   await expect(page.locator("main h1")).toHaveText(kingdomName);
 });
+
+test("a plan fills the build order and the free places fill the training order", async ({ page }) => {
+  await foundKingdom(page);
+  await goTo(page, "Build");
+  await page.getByRole("group", { name: "Plan" }).getByRole("button", { name: "War" }).click();
+  await page.getByRole("button", { name: "Fill in the plan" }).click();
+  await expect(page.getByLabel("Barracks to raise", { exact: true })).toHaveValue(/^[1-9]/);
+  await expect(page.getByLabel("Farms to raise", { exact: true })).toHaveValue(/^[1-9]/);
+  await expect(page.locator(".order-bar")).toContainText(/Raise \d+ buildings/);
+  await page.getByRole("button", { name: "Raise all" }).click();
+  await expect(toast(page, /Raised \d+ buildings/)).toBeVisible();
+
+  await goTo(page, "Train");
+  // a new kingdom has fewer idle people than free farm places, so every one of them goes to the farms
+  await page.getByRole("button", { name: "Staff the free places" }).click();
+  await expect(page.locator(".plate.chosen")).toHaveCount(1);
+  await expect(page.getByLabel("Farmers to train", { exact: true })).toHaveValue("10");
+  await page.getByRole("button", { name: "Train farmers", exact: true }).click();
+  await expect(toast(page, "Trained 10 recruits")).toBeVisible();
+});

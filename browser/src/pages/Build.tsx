@@ -6,6 +6,8 @@ import { useGame } from "../game/useGame";
 import { art, buildingGroups, buildingLore, specialBuildingLore } from "../game/lore";
 import { Icon } from "../ui/Icon";
 import { CountField, Banner, Choice, Meter, Panel } from "../ui/parts";
+import { Tip } from "../ui/Tip";
+import { buildingPlans, fillPlan } from "../game/plans";
 import { formatNumber, plural } from "../ui/format";
 
 const LandPurchase: React.FC = () => {
@@ -223,8 +225,9 @@ const buildingFacts = (
 };
 
 export const Build: React.FC = () => {
-  const { kingdom, details, config, act } = useGame();
+  const { kingdom, details, config, act, notify } = useGame();
   const [mode, setMode] = useState<Mode>("build");
+  const [plan, setPlan] = useState(buildingPlans[0].name);
   const [order, setOrder] = useState<Partial<Counts<BuildingName>>>({});
 
   const points = kingdom.resources.buildingPoints;
@@ -293,6 +296,40 @@ export const Build: React.FC = () => {
             <Icon name="buildingPoints" /> {formatNumber(points)} building points this turn
           </span>
         </div>
+        {mode === "build" ? (
+          <div className="row plan-row">
+            <Choice
+              label="Plan"
+              value={plan}
+              onChange={setPlan}
+              options={buildingPlans.map(option => ({ value: option.name, label: option.label }))}
+            />
+            <button
+              className="button quiet"
+              type="button"
+              onClick={() => {
+                const chosen = buildingPlans.find(option => option.name === plan) ?? buildingPlans[0];
+                const filled = fillPlan(
+                  chosen.shares(kingdom.resources.land, config),
+                  kingdom.buildings,
+                  kingdom.resources.land,
+                  points,
+                  freeLand,
+                  config,
+                );
+                setOrder(filled);
+                if (Object.keys(filled).length === 0) notify("Nothing to fill in: the plan is met, or points or free land ran out");
+              }}
+            >
+              Fill in the plan
+            </button>
+            <Tip about="plans">
+              Each plan holds a share of your land for every building: Economy for mines and farms, War with barracks and a spy guild,
+              Fortress with towers and guard houses. Filling it in enters what is still missing, the largest gap first, within this turn's
+              points and free land; nothing is raised until you say so.
+            </Tip>
+          </div>
+        ) : null}
         {buildingGroups.map(group => (
           <section key={group.title}>
             <h2 className="section-title">{group.title}</h2>

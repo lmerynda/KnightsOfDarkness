@@ -29,6 +29,8 @@ You can also found a new kingdom from the landing page, or play at once with onl
 
 A new turn is handed to every kingdom every 10 seconds (up to 36 stored) and a round lasts 4,320 of those ticks, about 12 hours; both are set in `gameconfig.json` (`common.newTurnPeriodicity`, `round.lengthInTicks`).
 
+Build can fill in a plan (Economy, War or Fortress, the land shares the simulated rulers grow on) one building at a time into the largest gap, and Train can staff every free workplace; both only fill in the order, which the player then raises or trains.
+
 The pages are written for players who know the game: they show figures, and the steward on the overview warns only of what will not wait (an army on the way, hunger, unpaid soldiers, an ally's call for gold, a full turn store). The rules sit in tooltips, behind a `?` beside a title or a dotted word, opened by hovering, focusing or tapping.
 
 ## How a turn works

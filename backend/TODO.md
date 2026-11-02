@@ -24,6 +24,3 @@
 
 1. The Game scenarios CI workflow (simulation and browser jobs) has not run on GitHub yet.
 
-## Ideas
-
-1. Profession profiles that suggest what to build and train.

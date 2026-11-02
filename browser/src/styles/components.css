@@ -481,6 +481,11 @@
 }
 
 /* ---------- plates: buildings and units ---------- */
+.plan-row {
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .plates {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 232px), 1fr));
