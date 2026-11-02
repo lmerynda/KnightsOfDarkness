@@ -75,6 +75,24 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
       link: { to: "/kingdom/build", label: "Build" },
     });
   }
+  if (coalition) {
+    // allies wait at the border for our army: the strike lands when we pass the turns
+    const led = kingdom.ongoingAttacks.find(attack =>
+      coalition.warRoom.marching.some(march => march.joining === kingdom.name && march.to === attack.to),
+    );
+    if (led) {
+      const waiting = coalition.warRoom.marching.filter(march => march.joining === kingdom.name && march.to === led.to);
+      const atBorder = waiting.filter(march => march.turnsLeft === 0).map(march => march.from);
+      const names = waiting.map(march => march.from).join(", ");
+      lines.push({
+        urgent: false,
+        text: atBorder.length
+          ? `${atBorder.join(", ")} ${atBorder.length === 1 ? "waits" : "wait"} at the border of ${led.to}; they fight right after our army lands, in ${plural(led.turnsLeft, "turn", "turns")}.`
+          : `${names} joined our strike on ${led.to}; they fight right after our army lands, in ${plural(led.turnsLeft, "turn", "turns")}.`,
+        link: { to: "/kingdom/war", label: "See the march" },
+      });
+    }
+  }
   const soldiersHome = militaryUnits.reduce((sum, unit) => sum + kingdom.units.availableUnits[unit], 0);
   if (coalition && soldiersHome > 0) {
     const threat = coalition.warRoom.threats.find(army => army.to !== kingdom.name);
@@ -96,7 +114,7 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
       lines.push({
         urgent: false,
         text: `${strike.from} marches on ${strike.to}, landing in ${theirTurns(strike.turnsLeft)}.`,
-        link: { to: "/kingdom/war", label: "Join the strike" },
+        link: { to: `/kingdom/war?join=${strike.id}`, label: "Join the strike" },
       });
     }
   }

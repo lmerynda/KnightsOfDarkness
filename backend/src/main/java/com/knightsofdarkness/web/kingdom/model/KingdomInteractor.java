@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -65,6 +66,12 @@ public class KingdomInteractor implements IKingdomInteractor
     @Override
     public void resolveAttack(KingdomEntity attackerKingdom, KingdomOngoingAttackEntity attack)
     {
+        fight(attackerKingdom, attack);
+        landJoinedArmies(attack);
+    }
+
+    private Optional<BattleReportDto> fight(KingdomEntity attackerKingdom, KingdomOngoingAttackEntity attack)
+    {
         log.info("[KingdomInteractor] Resolving attack from {} on {}", attackerKingdom.getName(), attack.targetKingdomName);
 
         var maybeDefendantKingdom = kingdomRepository.getKingdomByName(attack.targetKingdomName);
@@ -72,7 +79,7 @@ public class KingdomInteractor implements IKingdomInteractor
         {
             log.warn("[KingdomInteractor] Kingdom with name {} not found", attack.targetKingdomName);
             returnSurvivors(attackerKingdom, attack.units);
-            return;
+            return Optional.empty();
         }
 
         var defendantKingdom = maybeDefendantKingdom.get();
@@ -118,8 +125,7 @@ public class KingdomInteractor implements IKingdomInteractor
 
         kingdomRepository.update(attackerKingdom);
         kingdomRepository.update(defendantKingdom);
-
-        landJoinedArmies(attack);
+        return Optional.of(report);
     }
 
     @Override
@@ -130,7 +136,7 @@ public class KingdomInteractor implements IKingdomInteractor
     }
 
     /**
-     * allies' armies waiting at the border fight right after the army whose strike they joined, each in its own battle
+     * allies' armies waiting at the border fight right after the army whose strike they joined, each in its own battle; the leader hears how each went
      */
     private void landJoinedArmies(KingdomOngoingAttackEntity lead)
     {
@@ -139,7 +145,9 @@ public class KingdomInteractor implements IKingdomInteractor
         {
             var ally = attack.getKingdom();
             ally.getOngoingAttacks().remove(attack);
-            resolveAttack(ally, attack);
+            fight(ally, attack).ifPresent(report -> notificationSystem.create(lead.getKingdom().getName(), NotificationKind.alliance,
+                    report.attackerWon() ? Utils.format("{} struck {} right after our army and won, taking {}", report.attacker(), report.defender(), spoils(report))
+                            : Utils.format("{} struck {} right after our army and was repelled", report.attacker(), report.defender())));
         }
     }
 
@@ -151,9 +159,14 @@ public class KingdomInteractor implements IKingdomInteractor
         }
     }
 
+    private static String spoils(BattleReportDto report)
+    {
+        return report.attackType() == AttackType.land ? Utils.format("{} land", report.landCaptured()) : Utils.format("{} gold and supplies", report.plunder().getOrDefault(ResourceName.gold, 0));
+    }
+
     private void notifyAboutBattle(BattleReportDto report)
     {
-        var spoils = report.attackType() == AttackType.land ? Utils.format("{} land", report.landCaptured()) : Utils.format("{} gold and supplies", report.plunder().getOrDefault(ResourceName.gold, 0));
+        var spoils = spoils(report);
         if (report.attackerWon())
         {
             notificationSystem.create(report.attacker(), NotificationKind.victory, Utils.format("Victory! Our army defeated {} and took {}", report.defender(), spoils));

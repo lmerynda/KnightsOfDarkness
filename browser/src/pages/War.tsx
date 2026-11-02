@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "../api/endpoints";
 import type {
   AttackType,
@@ -478,6 +478,9 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
 /** allies' armies on the march, so a ruler can send theirs to land in the same strike */
 const AlliedMarches: React.FC<{ warRoom: WarRoom | undefined; onJoin: (march: OngoingAttack) => void }> = ({ warRoom, onJoin }) => {
   const { kingdom } = useGame();
+  // our army already rides in this strike, beside its lead
+  const joined = (march: OngoingAttack): boolean =>
+    kingdom.ongoingAttacks.some(attack => attack.to === march.to && attack.joining === (march.joining ?? march.from));
   const marches = (warRoom?.marching ?? []).filter(march => march.from !== kingdom.name);
   if (!marches.length) return null;
   return (
@@ -497,9 +500,13 @@ const AlliedMarches: React.FC<{ warRoom: WarRoom | undefined; onJoin: (march: On
                   : `, joining ${march.joining}'s strike, at the border in ${plural(march.turnsLeft, "of their turns", "of their turns")}`
                 : `, arriving in ${plural(march.turnsLeft, "of their turns", "of their turns")}`}
             </span>
-            <button className="button quiet small" type="button" onClick={() => onJoin(march)}>
-              Join the strike
-            </button>
+            {joined(march) ? (
+              <span className="muted">Our army joins</span>
+            ) : (
+              <button className="button quiet small" type="button" onClick={() => onJoin(march)}>
+                Join the strike
+              </button>
+            )}
           </li>
         ))}
       </ul>
@@ -514,6 +521,7 @@ export const War: React.FC = () => {
   const [warRoom, setWarRoom] = useState<WarRoom | undefined>(undefined);
   const [target, setTarget] = useState("");
   const [joining, setJoining] = useState<OngoingAttack | null>(null);
+  const [search, setSearch] = useSearchParams();
 
   const load = useCallback(() => {
     api
@@ -539,6 +547,15 @@ export const War: React.FC = () => {
     setJoining(march);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+  // the steward's Join the strike link names the march; take it up once the war room has loaded
+  useEffect(() => {
+    const asked = search.get("join");
+    const march = asked ? warRoom?.marching.find(candidate => candidate.id === asked) : undefined;
+    if (!march) return;
+    setTarget(march.to);
+    setJoining(march);
+    setSearch({}, { replace: true });
+  }, [search, setSearch, warRoom]);
   // another target leaves the strike behind
   const chooseTarget = (next: string): void => {
     setTarget(next);

@@ -311,7 +311,12 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await goTo(emperorPage, "Army");
   const march = emperorPage.locator("li").filter({ hasText: `${squire.kingdomName} marches` });
   await expect(march).toContainText(target);
-  await march.getByRole("button", { name: "Join the strike" }).click();
+  await expect(march.getByRole("button", { name: "Join the strike" })).toBeVisible();
+
+  // the steward's link sets the strike up on the Army page
+  await goTo(emperorPage, "Overview");
+  await emperorPage.locator(".counsel").getByRole("link", { name: "Join the strike" }).click();
+  await expect(emperorPage).toHaveURL(/\/kingdom\/war$/);
   await expect(emperorPage.getByRole("combobox", { name: /^Target/ })).toHaveValue(target);
 
   // the joined army waits at the border, however many turns the emperor passes, and fights right after the squire's lands
@@ -320,20 +325,27 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await emperorPage.getByLabel("Infantry to send", { exact: true }).fill("10");
   await sendArmy.getByRole("button", { name: "Join the strike" }).click();
   await expect(toast(emperorPage, `The army marches to join ${squire.kingdomName}'s strike on ${target}`)).toBeVisible();
+  await expect(march).toContainText("Our army joins");
   await passTurns(emperorPage, 5);
   const ours = emperorPage.locator("tr").filter({ hasText: target });
   await expect(ours).toContainText("At the border");
   await expect(ours).toContainText(`joining ${squire.kingdomName}'s strike`);
+  await goTo(emperorPage, "Overview");
+  await expect(emperorPage.locator("main")).toContainText(`Army at the border of ${target}, waiting for ${squire.kingdomName}'s army`);
 
   const squireAgain = await browser.newPage();
   await signIn(squireAgain, squire.email, password);
+  // the leader's steward says who waits on its army, and the leader hears how the ally fared
+  await expect(squireAgain.locator(".counsel")).toContainText(`${emperor.kingdomName} waits at the border of ${target}`);
   await goTo(squireAgain, "Army");
   await expect(squireAgain.locator("tr").filter({ hasText: target })).toContainText(`joined by ${emperor.kingdomName}`);
   await passTurns(squireAgain, 4);
   await expect(squireAgain.locator(".battle").first()).toContainText(target);
+  await goTo(squireAgain, "Chronicle");
+  await expect(squireAgain.locator("main")).toContainText(`${emperor.kingdomName} struck ${target} right after our army`);
   await squireAgain.close();
 
-  await emperorPage.reload();
+  await goTo(emperorPage, "Army");
   await expect(emperorPage.getByRole("heading", { name: "Armies on the march" })).toHaveCount(0);
   await expect(emperorPage.locator(".battle").first()).toContainText(target);
 });

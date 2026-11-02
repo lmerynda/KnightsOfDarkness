@@ -218,19 +218,29 @@ const Realm: React.FC = () => {
 
 const Movements: React.FC = () => {
   const { kingdom } = useGame();
-  const moves = [
+  const moves: { id: string; text: string; turns: number; status?: string; link: string }[] = [
     ...kingdom.incoming.map((army, index) => ({
       id: `incoming-${index}`,
       text: `${army.from} marches on us with about ${formatNumber(army.soldiers)} soldiers`,
       turns: army.turnsLeft,
       link: "/kingdom/war",
     })),
-    ...kingdom.ongoingAttacks.map(attack => ({
-      id: attack.id,
-      text: `Army marching on ${attack.to} to ${attack.attackType === "land" ? "take land" : "plunder"}`,
-      turns: attack.turnsLeft,
-      link: "/kingdom/war",
-    })),
+    ...kingdom.ongoingAttacks.map(attack =>
+      attack.joining && attack.turnsLeft === 0
+        ? {
+            id: attack.id,
+            text: `Army at the border of ${attack.to}, waiting for ${attack.joining}'s army`,
+            turns: 0,
+            status: "waiting",
+            link: "/kingdom/war",
+          }
+        : {
+            id: attack.id,
+            text: `Army marching on ${attack.to} to ${attack.attackType === "land" ? "take land" : "plunder"}`,
+            turns: attack.turnsLeft,
+            link: "/kingdom/war",
+          },
+    ),
     ...kingdom.reinforcements
       .filter(sent => sent.turnsLeft > 0)
       .map(sent => ({
@@ -256,7 +266,7 @@ const Movements: React.FC = () => {
           {moves.map(move => (
             <li key={move.id}>
               <Link to={move.link}>{move.text}</Link>
-              <span className="muted">{plural(move.turns, "turn", "turns")} left</span>
+              <span className="muted">{move.status ?? `${plural(move.turns, "turn", "turns")} left`}</span>
             </li>
           ))}
         </ul>

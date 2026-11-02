@@ -15,6 +15,7 @@ import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
+import com.knightsofdarkness.web.common.messaging.NotificationDto;
 import com.knightsofdarkness.web.common.war.BattleReportDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
@@ -102,6 +103,8 @@ class StrikeTogetherTest
         assertThat(joiner.getOngoingAttacks()).isEmpty();
         assertEquals(1, battlesBy(leader));
         assertEquals(1, battlesBy(joiner));
+        assertThat(game.getNotificationSystem().getNotifications("leader")).extracting(NotificationDto::message)
+                .anyMatch(message -> message.startsWith("joiner struck target right after our army"));
         assertEquals(100, joiner.getUnits().getAvailableCount(UnitName.cavalry) + joiner.getUnits().getMobileCount(UnitName.cavalry)
                 + game.getWarReportRepository().getBattleReports("joiner", 1).get(0).attackerLosses().getCount(UnitName.cavalry));
     }
