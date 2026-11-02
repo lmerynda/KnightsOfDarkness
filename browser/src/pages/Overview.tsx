@@ -144,12 +144,13 @@ const Realm: React.FC = () => {
       link: "/kingdom/build",
       note: `${formatNumber(land - details.usedLand)} free`,
     },
+    // newcomers fill every empty house place each turn, so houses are always full; what matters is how many of them stand idle
     {
-      label: "House places",
-      value: details.housedPeople,
-      max: details.housingCapacity,
-      link: "/kingdom/build",
-      note: `${formatNumber(details.housingCapacity - details.housedPeople)} empty`,
+      label: "Idle people",
+      value: kingdom.resources.unemployed,
+      max: details.housedPeople,
+      link: "/kingdom/train",
+      note: `${formatNumber(details.housedPeople - kingdom.resources.unemployed)} at work`,
     },
     {
       label: "Barracks places",

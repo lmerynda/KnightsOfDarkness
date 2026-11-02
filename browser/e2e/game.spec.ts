@@ -99,12 +99,16 @@ test("the rules wait behind a mark until hovered or tapped", async ({ page }) =>
 
   // words explain themselves the same way
   await goTo(page, "Overview");
+  // houses always fill, so the realm shows how many of their people stand idle
+  await expect(page.locator(".realm-meters")).toContainText(/Idle people[\s\S]*at work/);
   await page.locator(".term", { hasText: "counter intelligence" }).hover();
   await expect(rule).toContainText("for each spy");
 
   // and so do the figures in the top bar
   await page.getByRole("button", { name: /^Gold [\d,]+$/ }).hover();
   await expect(rule).toContainText("from the mines next turn");
+  await page.getByRole("button", { name: /^Idle people [\d,]+$/ }).hover();
+  await expect(rule).toContainText(/Ready to train; [\d,]+ others at work/);
 });
 
 test("land can be priced and bought", async ({ page }) => {

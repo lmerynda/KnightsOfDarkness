@@ -223,7 +223,7 @@ const Ledger: React.FC<{ onMenu: () => void }> = ({ onMenu }) => {
           icon="people"
           label="Idle people"
           value={resources.unemployed}
-          detail={`Ready to train. ${formatNumber(details.housedPeople)} of ${formatNumber(details.housingCapacity)} house places taken.`}
+          detail={`Ready to train; ${formatNumber(details.housedPeople - resources.unemployed)} others at work. ${forecast.arrivingPeople > 0 ? `${signed(forecast.arrivingPeople)} arrive next turn.` : "The houses are full, so nobody arrives next turn."}`}
         />
         {(["iron", "tools", "weapons"] as const).map(resource => (
           <LedgerItem
