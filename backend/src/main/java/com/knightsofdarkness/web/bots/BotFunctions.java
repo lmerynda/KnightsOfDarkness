@@ -154,7 +154,7 @@ public final class BotFunctions
         kingdomBuildings.setCount(building, buildingsToBuild);
 
         var action = new KingdomBuildAction(kingdom, gameConfig);
-        return action.build(kingdomBuildings).buildings().countAll();
+        return action.build(kingdomBuildings).data().map(KingdomBuildingsDto::countAll).orElse(0);
     }
 
     public int trainUnits(KingdomEntity kingdom, UnitName unit, int count)
@@ -163,7 +163,7 @@ public final class BotFunctions
         toTrain.setCount(unit, count);
         var action = new KingdomTrainAction(kingdom, gameConfig);
         var trainedUnits = action.train(toTrain);
-        return trainedUnits.units().countAll();
+        return trainedUnits.data().map(UnitsMapDto::countAll).orElse(0);
     }
 
     public int buyToolsToMaintainCount(IMarket market, int count)
@@ -195,7 +195,7 @@ public final class BotFunctions
         toTrain.setCount(UnitName.builder, count);
         var action = new KingdomTrainAction(kingdom, gameConfig);
         var trainedUnits = action.train(toTrain);
-        return trainedUnits.units().countAll();
+        return trainedUnits.data().map(UnitsMapDto::countAll).orElse(0);
     }
 
     public int buildHouses(KingdomEntity kingdom, int count, double desiredHousesToSpecialistBuildingRatio)
@@ -214,7 +214,7 @@ public final class BotFunctions
         kingdomBuildings.setCount(BuildingName.house, count);
 
         var action = new KingdomBuildAction(kingdom, gameConfig);
-        return action.build(kingdomBuildings).buildings().countAll();
+        return action.build(kingdomBuildings).data().map(KingdomBuildingsDto::countAll).orElse(0);
     }
 
     public boolean doesHaveEnoughFoodForNextTurn(KingdomEntity kingdom)

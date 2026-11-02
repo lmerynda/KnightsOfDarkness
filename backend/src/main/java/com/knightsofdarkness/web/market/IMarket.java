@@ -1,26 +1,26 @@
 package com.knightsofdarkness.web.market;
 
+import com.knightsofdarkness.web.common.market.MarketOfferDto;
 import java.util.Optional;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
-import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.web.common.market.MarketPurchaseDto;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.market.MarketResource;
-import com.knightsofdarkness.web.common.market.RemoveMarketOfferResult;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.market.model.MarketOfferEntity;
 import com.knightsofdarkness.web.market.model.MarketTransactionEntity;
 
 public interface IMarket {
 
-    CreateMarketOfferResult createOffer(String kingdomName, MarketResource resource, int count, int price);
+    ActionResult<MarketOfferDto> createOffer(String kingdomName, MarketResource resource, int count, int price);
 
-    RemoveMarketOfferResult removeOffer(MarketOfferEntity offer);
+    ActionResult<Void> removeOffer(MarketOfferEntity offer);
 
-    RemoveMarketOfferResult removeOffer(UUID id);
+    ActionResult<Void> removeOffer(UUID id);
 
     List<MarketOfferEntity> getOffersByResource(MarketResource resource);
 
@@ -30,7 +30,7 @@ public interface IMarket {
 
     Optional<MarketOfferEntity> findOfferById(UUID id);
 
-    BuyMarketOfferResult buyExistingOffer(MarketOfferEntity offer, KingdomEntity seller, KingdomEntity buyer, int count);
+    MarketPurchaseDto buyExistingOffer(MarketOfferEntity offer, KingdomEntity seller, KingdomEntity buyer, int count);
 
     void updateMarketTransactionsAverages(Instant from, Instant to);
 

@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.market.model;
 
+import com.knightsofdarkness.web.common.market.MarketOfferDto;
 import java.util.Optional;
 
 import java.time.Instant;
@@ -9,10 +10,9 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
-import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.web.common.market.MarketPurchaseDto;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.market.MarketResource;
-import com.knightsofdarkness.web.common.market.RemoveMarketOfferResult;
 import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
@@ -39,13 +39,13 @@ public class Market implements IMarket {
     }
 
     @Override
-    public CreateMarketOfferResult createOffer(String kingdomName, MarketResource resource, int count, int price)
+    public ActionResult<MarketOfferDto> createOffer(String kingdomName, MarketResource resource, int count, int price)
     {
         var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
         if (maybeKingdom.isEmpty())
         {
             log.warn("Kingdom with name {} not found", kingdomName);
-            return CreateMarketOfferResult.failure(Utils.format("Kingdom with name {} not found", kingdomName), Optional.empty());
+            return ActionResult.failure(Utils.format("Kingdom with name {} not found", kingdomName));
         }
         KingdomEntity kingdom = maybeKingdom.get();
 
@@ -53,52 +53,52 @@ public class Market implements IMarket {
         if (offerCount >= gameConfig.market().maxKingdomOffers())
         {
             log.info("Kingdom {} already has max {} offers for resource {}", kingdom.getName(), offerCount, resource);
-            return CreateMarketOfferResult.failure(Utils.format("Your kingdom already has maximum number of offers for {}", resource), Optional.empty());
+            return ActionResult.failure(Utils.format("Your kingdom already has maximum number of offers for {}", resource));
         }
 
         if (price < gameConfig.market().minPrice())
         {
             log.info("Price {} is lower than minimum {}", price, gameConfig.market().minPrice());
-            return CreateMarketOfferResult.failure(Utils.format("Price {} is lower than minimum {}", price, gameConfig.market().minPrice()), Optional.empty());
+            return ActionResult.failure(Utils.format("Price {} is lower than minimum {}", price, gameConfig.market().minPrice()));
         }
         var action = new KingdomMarketAction(kingdom);
         if (count <= 0)
         {
-            return CreateMarketOfferResult.failure("Offer must contain at least one unit", Optional.empty());
+            return ActionResult.failure("Offer must contain at least one unit");
         }
 
         var countToOffer = action.postOffer(resource, count);
         if (countToOffer <= 0)
         {
-            return CreateMarketOfferResult.failure(Utils.format("Not enough {} to post an offer", resource), Optional.empty());
+            return ActionResult.failure(Utils.format("Not enough {} to post an offer", resource));
         }
         var offer = new MarketOfferEntity(Id.generate(), kingdom, resource, countToOffer, price);
         offersRepository.add(offer);
         kingdomRepository.update(kingdom);
 
-        return CreateMarketOfferResult.success(Utils.format("Offer created for {} {} at price {}", countToOffer, resource, price), offer.toDto());
+        return ActionResult.success(Utils.format("Offer created for {} {} at price {}", countToOffer, resource, price), offer.toDto());
     }
 
     // TODO why do we need to removeOffer?
     @Override
-    public RemoveMarketOfferResult removeOffer(MarketOfferEntity offer)
+    public ActionResult<Void> removeOffer(MarketOfferEntity offer)
     {
         var seller = offer.getSeller();
         var action = new KingdomMarketAction(seller);
         action.withdrawMarketOffer(offer);
         kingdomRepository.update(seller);
         offersRepository.remove(offer);
-        return RemoveMarketOfferResult.success("Offer removed succesfully");
+        return ActionResult.success("Offer removed succesfully");
     }
 
     @Override
-    public RemoveMarketOfferResult removeOffer(UUID offerId)
+    public ActionResult<Void> removeOffer(UUID offerId)
     {
         var maybeOffer = offersRepository.findById(offerId);
         if (maybeOffer.isEmpty())
         {
             log.warn("Offer with id {} not found", offerId);
-            return RemoveMarketOfferResult.failure(Utils.format("Requested offer not found"));
+            return ActionResult.failure(Utils.format("Requested offer not found"));
         }
         var offer = maybeOffer.get();
         var seller = offer.getSeller();
@@ -107,7 +107,7 @@ public class Market implements IMarket {
         kingdomRepository.update(seller);
         offersRepository.remove(offer);
 
-        return RemoveMarketOfferResult.success("Offer removed succesfully");
+        return ActionResult.success("Offer removed succesfully");
     }
 
     @Override
@@ -118,7 +118,7 @@ public class Market implements IMarket {
 
     // TODO make a LOT of tests for this
     @Override
-    public BuyMarketOfferResult buyExistingOffer(MarketOfferEntity offer, KingdomEntity seller, KingdomEntity buyer, int count)
+    public MarketPurchaseDto buyExistingOffer(MarketOfferEntity offer, KingdomEntity seller, KingdomEntity buyer, int count)
     {
         log.info("Transaction request: buyer: {} seller: {} count: {} offer: {}", buyer.getName(), seller.getName(), count, offer.getId());
         var maxToSell = Math.max(0, Math.min(offer.count, count));
@@ -129,7 +129,7 @@ public class Market implements IMarket {
         if (buyerCount == 0)
         {
             log.info("Not enough gold to buy any count of resource");
-            return new BuyMarketOfferResult(offer.getResource(), buyerCount, offer.getPrice(), buyerGold);
+            return new MarketPurchaseDto(offer.getResource(), buyerCount, offer.getPrice(), buyerGold);
         }
         offer.count -= buyerCount;
         action.acceptOffer(buyerGold);
@@ -137,7 +137,7 @@ public class Market implements IMarket {
 
         assert (offer.count >= 0);
 
-        var result = new BuyMarketOfferResult(offer.getResource(), buyerCount, offer.getPrice(), buyerGold);
+        var result = new MarketPurchaseDto(offer.getResource(), buyerCount, offer.getPrice(), buyerGold);
 
         kingdomRepository.update(seller);
         kingdomRepository.update(buyer);

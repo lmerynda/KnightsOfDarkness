@@ -74,6 +74,6 @@ class FarmerBotTest {
         var action = new KingdomTrainAction(kingdom, gameConfig);
         var trainedUnits = action.train(toTrain);
 
-        assertEquals(0, trainedUnits.units().countAll());
+        assertEquals(0, trainedUnits.data().orElseGet(UnitsMapDto::new).countAll());
     }
 }

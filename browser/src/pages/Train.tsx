@@ -86,7 +86,7 @@ export const Train: React.FC = () => {
     const result = await act(
       () => (mode === "train" ? api.train(part) : api.dismiss(part)),
       outcome => {
-        const total = Object.values(outcome.units).reduce((sum, count) => sum + count, 0);
+        const total = Object.values(outcome.data ?? {}).reduce((sum, count) => sum + count, 0);
         const partly = total < asked;
         const reason = partly && lacking.length ? `, the rest lacked ${lacking.join(" and ")}` : "";
         return {

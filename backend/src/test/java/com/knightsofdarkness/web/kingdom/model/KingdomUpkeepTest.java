@@ -49,7 +49,7 @@ class KingdomUpkeepTest {
         kingdom.getResources().setCount(ResourceName.gold, 1_000_000);
         var upkeep = pay(UnitName.infantry, 100) + pay(UnitName.cavalry, 50);
 
-        var report = turn().passTurn(0).turnReport().orElseThrow();
+        var report = turn().passTurn(0).data().orElseThrow();
 
         assertEquals(upkeep, report.goldUpkeep);
         assertEquals(0, report.desertedSoldiers);
@@ -62,7 +62,7 @@ class KingdomUpkeepTest {
         kingdom.getResources().setCount(ResourceName.gold, 1_000_000);
         kingdom.getUnits().moveAvailableToMobile(UnitName.infantry, 40);
 
-        var report = turn().passTurn(0).turnReport().orElseThrow();
+        var report = turn().passTurn(0).data().orElseThrow();
 
         assertEquals(pay(UnitName.infantry, 100) + pay(UnitName.cavalry, 50), report.goldUpkeep);
     }
@@ -72,7 +72,7 @@ class KingdomUpkeepTest {
     {
         kingdom.getResources().setCount(ResourceName.gold, 0);
 
-        var report = turn().passTurn(0).turnReport().orElseThrow();
+        var report = turn().passTurn(0).data().orElseThrow();
 
         assertEquals(0, report.goldUpkeep);
         assertEquals(15, report.desertedSoldiers);
@@ -86,7 +86,7 @@ class KingdomUpkeepTest {
         var upkeep = pay(UnitName.infantry, 100) + pay(UnitName.cavalry, 50);
         kingdom.getResources().setCount(ResourceName.gold, upkeep / 2);
 
-        var report = turn().passTurn(0).turnReport().orElseThrow();
+        var report = turn().passTurn(0).data().orElseThrow();
 
         assertEquals(upkeep / 2, report.goldUpkeep);
         assertEquals(8, report.desertedSoldiers);
@@ -100,7 +100,7 @@ class KingdomUpkeepTest {
         kingdom.getUnits().moveAvailableToMobile(UnitName.infantry, 100);
         kingdom.getUnits().moveAvailableToMobile(UnitName.cavalry, 50);
 
-        var report = turn().passTurn(0).turnReport().orElseThrow();
+        var report = turn().passTurn(0).data().orElseThrow();
 
         assertEquals(0, report.desertedSoldiers);
         assertEquals(100, kingdom.getUnits().getMobileCount(UnitName.infantry));

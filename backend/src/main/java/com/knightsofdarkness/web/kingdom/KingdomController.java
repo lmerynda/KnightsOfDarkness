@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.kingdom;
 
+import com.knightsofdarkness.web.common.kingdom.KingdomTurnReport;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,24 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsActionResult;
 import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomDetailsDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomDto;
-import com.knightsofdarkness.web.common.kingdom.KingdomPassTurnActionResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingBuildDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingDemolishDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingStartDto;
-import com.knightsofdarkness.web.common.kingdom.KingdomUnitsActionResult;
 import com.knightsofdarkness.web.common.kingdom.LandTransaction;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
-import com.knightsofdarkness.web.common.kingdom.SendAttackResult;
 import com.knightsofdarkness.web.common.kingdom.SendCarriersDto;
-import com.knightsofdarkness.web.common.kingdom.SendCarriersResult;
 import com.knightsofdarkness.web.common.kingdom.SendReinforcementsDto;
-import com.knightsofdarkness.web.common.kingdom.SendReinforcementsResult;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
-import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingEntity;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
@@ -71,7 +66,7 @@ public class KingdomController
     }
 
     @PostMapping("/build")
-    ResponseEntity<KingdomBuildingsActionResult> kingdomBuild(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
+    ResponseEntity<ActionResult<KingdomBuildingsDto>> kingdomBuild(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
     {
         if (currentUser == null)
         {
@@ -84,7 +79,7 @@ public class KingdomController
     }
 
     @PostMapping("/demolish")
-    ResponseEntity<KingdomBuildingsActionResult> kingdomDemolish(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
+    ResponseEntity<ActionResult<KingdomBuildingsDto>> kingdomDemolish(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomBuildingsDto buildings)
     {
         if (currentUser == null)
         {
@@ -98,7 +93,7 @@ public class KingdomController
     }
 
     @PostMapping("/start-special-building")
-    ResponseEntity<KingdomSpecialBuildingEntity> kingdomStartSpecialBuilding(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingStartDto specialBuildingStartDto)
+    ResponseEntity<ActionResult<UUID>> kingdomStartSpecialBuilding(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingStartDto specialBuildingStartDto)
     {
         if (currentUser == null)
         {
@@ -112,7 +107,7 @@ public class KingdomController
     }
 
     @PostMapping("/demolish-special-building")
-    ResponseEntity<Boolean> kingdomDemolishSpecialBuilding(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingDemolishDto specialBuildingDemolishDto)
+    ResponseEntity<ActionResult<Void>> kingdomDemolishSpecialBuilding(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingDemolishDto specialBuildingDemolishDto)
     {
         if (currentUser == null)
         {
@@ -126,7 +121,7 @@ public class KingdomController
     }
 
     @PostMapping("/build-special-building")
-    ResponseEntity<Integer> kingdomBuildSpecial(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingBuildDto specialBuildingBuildDto)
+    ResponseEntity<ActionResult<Integer>> kingdomBuildSpecial(@AuthenticationPrincipal UserData currentUser, @RequestBody KingdomSpecialBuildingBuildDto specialBuildingBuildDto)
     {
         if (currentUser == null)
         {
@@ -140,7 +135,7 @@ public class KingdomController
     }
 
     @PostMapping("/train")
-    ResponseEntity<KingdomUnitsActionResult> kingdomTrain(@AuthenticationPrincipal UserData currentUser, @RequestBody UnitsMapDto unitsToTrain)
+    ResponseEntity<ActionResult<UnitsMapDto>> kingdomTrain(@AuthenticationPrincipal UserData currentUser, @RequestBody UnitsMapDto unitsToTrain)
     {
         if (currentUser == null)
         {
@@ -154,7 +149,7 @@ public class KingdomController
     }
 
     @PostMapping("/fire")
-    ResponseEntity<KingdomUnitsActionResult> kingdomFireUnits(@AuthenticationPrincipal UserData currentUser, @RequestBody UnitsMapDto unitsToFire)
+    ResponseEntity<ActionResult<UnitsMapDto>> kingdomFireUnits(@AuthenticationPrincipal UserData currentUser, @RequestBody UnitsMapDto unitsToFire)
     {
         if (currentUser == null)
         {
@@ -168,7 +163,7 @@ public class KingdomController
     }
 
     @PostMapping(value = "/pass-turn")
-    ResponseEntity<KingdomPassTurnActionResult> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser, @RequestBody int weaponsProductionPercentage)
+    ResponseEntity<ActionResult<KingdomTurnReport>> kingdomPassTurn(@AuthenticationPrincipal UserData currentUser, @RequestBody int weaponsProductionPercentage)
     {
         if (currentUser == null)
         {
@@ -216,7 +211,7 @@ public class KingdomController
     }
 
     @PostMapping(value = "/buy-land")
-    ResponseEntity<LandTransaction> kingdomBuyLand(@AuthenticationPrincipal UserData currentUser, @RequestBody int count)
+    ResponseEntity<ActionResult<LandTransaction>> kingdomBuyLand(@AuthenticationPrincipal UserData currentUser, @RequestBody int count)
     {
         if (currentUser == null)
         {
@@ -230,7 +225,7 @@ public class KingdomController
     }
 
     @PostMapping(value = "/send-carriers")
-    ResponseEntity<SendCarriersResult> kingdomSendCarriers(@AuthenticationPrincipal UserData currentUser, @RequestBody SendCarriersDto sendCarriersDto)
+    ResponseEntity<ActionResult<SendCarriersDto>> kingdomSendCarriers(@AuthenticationPrincipal UserData currentUser, @RequestBody SendCarriersDto sendCarriersDto)
     {
         if (currentUser == null)
         {
@@ -244,7 +239,7 @@ public class KingdomController
     }
 
     @PostMapping(value = "/withdraw-carriers")
-    ResponseEntity<Boolean> kingdomWithdrawCarriers(@AuthenticationPrincipal UserData currentUser, @RequestBody UUID carriersOnTheMoveId)
+    ResponseEntity<ActionResult<Void>> kingdomWithdrawCarriers(@AuthenticationPrincipal UserData currentUser, @RequestBody UUID carriersOnTheMoveId)
     {
         if (currentUser == null)
         {
@@ -258,7 +253,7 @@ public class KingdomController
     }
 
     @PostMapping(value = "/send-attack")
-    ResponseEntity<SendAttackResult> kingdomSendAttack(@AuthenticationPrincipal UserData currentUser, @RequestBody SendAttackDto sendAttackDto)
+    ResponseEntity<ActionResult<SendAttackDto>> kingdomSendAttack(@AuthenticationPrincipal UserData currentUser, @RequestBody SendAttackDto sendAttackDto)
     {
         if (currentUser == null)
         {
@@ -272,7 +267,7 @@ public class KingdomController
     }
 
     @PostMapping(value = "/withdraw-attack")
-    ResponseEntity<Boolean> kingdomWithdrawAttack(@AuthenticationPrincipal UserData currentUser, @RequestBody UUID attackId)
+    ResponseEntity<ActionResult<Void>> kingdomWithdrawAttack(@AuthenticationPrincipal UserData currentUser, @RequestBody UUID attackId)
     {
         if (currentUser == null)
         {
@@ -286,7 +281,7 @@ public class KingdomController
     }
 
     @PostMapping(value = "/send-reinforcements")
-    ResponseEntity<SendReinforcementsResult> kingdomSendReinforcements(@AuthenticationPrincipal UserData currentUser, @RequestBody SendReinforcementsDto order)
+    ResponseEntity<ActionResult<Void>> kingdomSendReinforcements(@AuthenticationPrincipal UserData currentUser, @RequestBody SendReinforcementsDto order)
     {
         if (currentUser == null)
         {
@@ -300,7 +295,7 @@ public class KingdomController
     }
 
     @PostMapping(value = "/recall-reinforcements")
-    ResponseEntity<Boolean> kingdomRecallReinforcements(@AuthenticationPrincipal UserData currentUser, @RequestBody UUID reinforcementId)
+    ResponseEntity<ActionResult<Void>> kingdomRecallReinforcements(@AuthenticationPrincipal UserData currentUser, @RequestBody UUID reinforcementId)
     {
         if (currentUser == null)
         {

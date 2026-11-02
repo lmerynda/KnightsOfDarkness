@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.web.common.messaging.MessageDto;
 import com.knightsofdarkness.web.common.messaging.SendMessageDto;
-import com.knightsofdarkness.web.common.messaging.SendMessageResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
@@ -65,7 +65,7 @@ public class MessagesController {
     }
 
     @PostMapping("/send")
-    ResponseEntity<SendMessageResult> send(@AuthenticationPrincipal UserData currentUser, @RequestBody SendMessageDto sendMessageDto)
+    ResponseEntity<ActionResult<Integer>> send(@AuthenticationPrincipal UserData currentUser, @RequestBody SendMessageDto sendMessageDto)
     {
         if (currentUser == null)
         {
@@ -76,7 +76,7 @@ public class MessagesController {
     }
 
     @PostMapping("/send-alliance")
-    ResponseEntity<SendMessageResult> sendToAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody SendMessageDto sendMessageDto)
+    ResponseEntity<ActionResult<Integer>> sendToAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody SendMessageDto sendMessageDto)
     {
         if (currentUser == null)
         {
@@ -87,14 +87,14 @@ public class MessagesController {
     }
 
     @PostMapping("/{id}/mark-as-read")
-    ResponseEntity<Boolean> markAsRead(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
+    ResponseEntity<ActionResult<Void>> markAsRead(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
     {
         if (currentUser == null)
         {
             return unauthorized();
         }
 
-        return messageService.markAsRead(currentUser.getKingdomName(), id) ? ResponseEntity.ok(true) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(messageService.markAsRead(currentUser.getKingdomName(), id) ? ActionResult.success("Marked as read") : ActionResult.failure("No such letter"));
     }
 
     private static <T> ResponseEntity<T> unauthorized()

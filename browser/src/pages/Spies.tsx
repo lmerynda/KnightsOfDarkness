@@ -80,7 +80,7 @@ export const Spies: React.FC = () => {
   const send = async (): Promise<void> => {
     const result = await act(
       () => api.sendSpies(target, spies),
-      outcome => ({ text: outcome.message, failure: !outcome.success || outcome.report?.success === false }),
+      outcome => ({ text: outcome.message, failure: !outcome.success || outcome.data?.success === false }),
     );
     if (result) {
       setSpies(0);

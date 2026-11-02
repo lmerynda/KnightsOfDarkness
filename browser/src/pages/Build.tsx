@@ -32,10 +32,10 @@ const LandPurchase: React.FC = () => {
       () => api.buyLand(count),
       transaction => ({
         text:
-          transaction.count > 0
-            ? `Bought ${plural(transaction.count, "acre", "acres")} for ${formatNumber(transaction.cost)} gold`
-            : "Not enough gold for any land",
-        failure: transaction.count === 0,
+          transaction.success && transaction.data
+            ? `Bought ${plural(transaction.data.count, "acre", "acres")} for ${formatNumber(transaction.data.cost)} gold`
+            : transaction.message,
+        failure: !transaction.success,
       }),
     );
     if (result) setCount(0);
@@ -115,7 +115,12 @@ const SpecialBuildingRow: React.FC<{ building: SpecialBuilding }> = ({ building 
                 onClick={async () => {
                   await act(
                     () => api.investInSpecialBuilding(building.id, points),
-                    spent => ({ text: `Invested ${formatNumber(spent)} building points in the ${lore.label.toLowerCase()}` }),
+                    spent => ({
+                      text: spent.success
+                        ? `Invested ${formatNumber(spent.data ?? 0)} building points in the ${lore.label.toLowerCase()}`
+                        : spent.message,
+                      failure: !spent.success,
+                    }),
                   );
                   setPoints(0);
                 }}
@@ -133,7 +138,10 @@ const SpecialBuildingRow: React.FC<{ building: SpecialBuilding }> = ({ building 
           if (window.confirm(`Tear down this ${lore.label.toLowerCase()}? Its levels are lost.`)) {
             void act(
               () => api.demolishSpecialBuilding(building.id),
-              () => ({ text: `The ${lore.label.toLowerCase()} was torn down` }),
+              outcome => ({
+                text: outcome.success ? `The ${lore.label.toLowerCase()} was torn down` : outcome.message,
+                failure: !outcome.success,
+              }),
             );
           }
         }}
@@ -181,7 +189,10 @@ const SpecialBuildings: React.FC = () => {
             onClick={() =>
               act(
                 () => api.startSpecialBuilding(choice),
-                () => ({ text: `Ground broken for a ${specialBuildingLore[choice].label.toLowerCase()}` }),
+                outcome => ({
+                  text: outcome.success ? `Ground broken for a ${specialBuildingLore[choice].label.toLowerCase()}` : outcome.message,
+                  failure: !outcome.success,
+                }),
               )
             }
           >
@@ -243,7 +254,7 @@ export const Build: React.FC = () => {
     const result = await act(
       () => (mode === "build" ? api.build(part) : api.demolish(part)),
       outcome => {
-        const total = Object.values(outcome.buildings).reduce((sum, count) => sum + count, 0);
+        const total = Object.values(outcome.data ?? {}).reduce((sum, count) => sum + count, 0);
         return {
           text:
             mode === "build" ? `Raised ${plural(total, "building", "buildings")}` : `Tore down ${plural(total, "building", "buildings")}`,

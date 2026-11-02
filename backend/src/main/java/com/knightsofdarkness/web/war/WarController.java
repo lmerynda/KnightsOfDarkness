@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.web.common.war.BattleReportDto;
 import com.knightsofdarkness.web.common.war.SendSpiesDto;
-import com.knightsofdarkness.web.common.war.SendSpiesResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.war.SpyReportDto;
 import com.knightsofdarkness.web.user.UserData;
 
@@ -31,7 +31,7 @@ public class WarController {
     }
 
     @PostMapping("/send-spies")
-    ResponseEntity<SendSpiesResult> sendSpies(@AuthenticationPrincipal UserData currentUser, @RequestBody SendSpiesDto sendSpiesDto)
+    ResponseEntity<ActionResult<SpyReportDto>> sendSpies(@AuthenticationPrincipal UserData currentUser, @RequestBody SendSpiesDto sendSpiesDto)
     {
         if (currentUser == null)
         {

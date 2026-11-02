@@ -1,7 +1,7 @@
 package com.knightsofdarkness.web.kingdom.model;
 
 import com.knightsofdarkness.web.common.kingdom.BuildingName;
-import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsActionResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.kingdom.KingdomBuildingsDto;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.game.config.GameConfig;
@@ -22,7 +22,7 @@ public class KingdomBuildAction {
      * 
      * @return the buildings that were built
      */
-    public KingdomBuildingsActionResult build(KingdomBuildingsDto buildingsToBuild)
+    public ActionResult<KingdomBuildingsDto> build(KingdomBuildingsDto buildingsToBuild)
     {
         var buildingsBuilt = new KingdomBuildingsDto();
         for (var buildingName : BuildingName.values())
@@ -34,7 +34,8 @@ public class KingdomBuildAction {
             }
         }
 
-        return new KingdomBuildingsActionResult((Utils.format("Succesfully built {} buildings", buildingsBuilt.countAll())), buildingsBuilt);
+        return buildingsBuilt.countAll() > 0 ? ActionResult.success(Utils.format("Raised {} buildings", buildingsBuilt.countAll()), buildingsBuilt)
+                : ActionResult.failure("Nothing was raised: not enough building points or free land");
     }
 
     int build(BuildingName building, int count)
@@ -51,7 +52,7 @@ public class KingdomBuildAction {
         return howManyToBuild;
     }
 
-    public KingdomBuildingsActionResult demolish(KingdomBuildingsDto buildingsToDemolish)
+    public ActionResult<KingdomBuildingsDto> demolish(KingdomBuildingsDto buildingsToDemolish)
     {
         var buildingsDemolished = new KingdomBuildingsDto();
         for (var buildingName : BuildingName.values())
@@ -66,6 +67,7 @@ public class KingdomBuildAction {
             }
         }
 
-        return new KingdomBuildingsActionResult(Utils.format("Succesfully demolished {} buildings", buildingsDemolished.countAll()), buildingsDemolished);
+        return buildingsDemolished.countAll() > 0 ? ActionResult.success(Utils.format("Tore down {} buildings", buildingsDemolished.countAll()), buildingsDemolished)
+                : ActionResult.failure("Nothing was torn down");
     }
 }

@@ -15,11 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.web.common.market.BuyMarketOfferDto;
-import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
-import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.web.common.market.MarketPurchaseDto;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.market.MarketOfferDto;
 import com.knightsofdarkness.web.common.market.MarketResource;
-import com.knightsofdarkness.web.common.market.WithdrawMarketOfferResult;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
@@ -33,7 +32,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/create")
-    ResponseEntity<CreateMarketOfferResult> createOffer(@AuthenticationPrincipal UserData currentUser, @RequestBody MarketOfferDto offer)
+    ResponseEntity<ActionResult<MarketOfferDto>> createOffer(@AuthenticationPrincipal UserData currentUser, @RequestBody MarketOfferDto offer)
     {
         if (currentUser == null)
         {
@@ -65,7 +64,7 @@ public class MarketController {
     }
 
     @PostMapping("/market/{id}/buy")
-    ResponseEntity<BuyMarketOfferResult> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id, @RequestBody BuyMarketOfferDto buyerData)
+    ResponseEntity<ActionResult<MarketPurchaseDto>> buyOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id, @RequestBody BuyMarketOfferDto buyerData)
     {
         if (currentUser == null)
         {
@@ -73,12 +72,11 @@ public class MarketController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return marketService.buyOffer(id, buyerData.count(), currentUser.getKingdomName()).map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        return ResponseEntity.ok(marketService.buyOffer(id, buyerData.count(), currentUser.getKingdomName()));
     }
 
     @PostMapping("/market/{id}/withdraw")
-    ResponseEntity<WithdrawMarketOfferResult> withdrawOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
+    ResponseEntity<ActionResult<Void>> withdrawOffer(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
     {
         if (currentUser == null)
         {

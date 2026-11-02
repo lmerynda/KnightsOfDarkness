@@ -2,9 +2,8 @@ package com.knightsofdarkness.web.kingdom.model;
 
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
-import com.knightsofdarkness.web.common.kingdom.SendAttackResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.kingdom.SendReinforcementsDto;
-import com.knightsofdarkness.web.common.kingdom.SendReinforcementsResult;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
@@ -21,7 +20,7 @@ public class KingdomMilitaryAction {
         this.gameConfig = gameConfig;
     }
 
-    public SendAttackResult sendAttack(SendAttackDto sendAttackDto, KingdomEntity target)
+    public ActionResult<SendAttackDto> sendAttack(SendAttackDto sendAttackDto, KingdomEntity target)
     {
         return sendAttack(sendAttackDto, target, null);
     }
@@ -29,23 +28,23 @@ public class KingdomMilitaryAction {
     /**
      * lead is the ally's army on the march that ours joins, or null to march alone
      */
-    public SendAttackResult sendAttack(SendAttackDto sendAttackDto, KingdomEntity target, KingdomOngoingAttackEntity lead)
+    public ActionResult<SendAttackDto> sendAttack(SendAttackDto sendAttackDto, KingdomEntity target, KingdomOngoingAttackEntity lead)
     {
         if (sendAttackDto.attackType() == null)
         {
-            return SendAttackResult.failure("Choose an attack type");
+            return ActionResult.failure("Choose an attack type");
         }
 
         var targetError = validateTarget(target);
         if (targetError != null)
         {
-            return SendAttackResult.failure(targetError);
+            return ActionResult.failure(targetError);
         }
 
         var joinError = lead == null ? null : validateJoin(lead, target);
         if (joinError != null)
         {
-            return SendAttackResult.failure(joinError);
+            return ActionResult.failure(joinError);
         }
 
         var kingdomUnits = kingdom.getUnits();
@@ -55,17 +54,17 @@ public class KingdomMilitaryAction {
             var neededCount = sendAttackDto.units().getCount(unit);
             if (neededCount < 0)
             {
-                return SendAttackResult.failure(Utils.format("Cannot send a negative number of {}", unit));
+                return ActionResult.failure(Utils.format("Cannot send a negative number of {}", unit));
             }
             if (availableCount < neededCount)
             {
-                return SendAttackResult.failure(Utils.format("Not enough {} to send attack, available: {}, needed {}", unit, availableCount, neededCount));
+                return ActionResult.failure(Utils.format("Not enough {} to send attack, available: {}, needed {}", unit, availableCount, neededCount));
             }
         }
 
         if (sendAttackDto.units().countMilitary() <= 0)
         {
-            return SendAttackResult.failure("Need to send at least one unit");
+            return ActionResult.failure("Need to send at least one unit");
         }
 
         var army = new UnitsMapDto();
@@ -85,7 +84,7 @@ public class KingdomMilitaryAction {
         // a kingdom that marches gives up its own protection, it cannot strike and hide
         kingdom.setProtectionTicks(0);
 
-        return SendAttackResult.success("Attack sent", sendAttackDto);
+        return ActionResult.success("Attack sent", sendAttackDto);
     }
 
     private String validateJoin(KingdomOngoingAttackEntity lead, KingdomEntity target)
@@ -140,17 +139,17 @@ public class KingdomMilitaryAction {
     /**
      * soldiers leave home to stand guard in an ally's kingdom; they arrive after a few of our turns and stay ours
      */
-    public SendReinforcementsResult sendReinforcements(SendReinforcementsDto order, KingdomEntity host)
+    public ActionResult<Void> sendReinforcements(SendReinforcementsDto order, KingdomEntity host)
     {
         if (host.getName().equals(kingdom.getName()))
         {
-            return SendReinforcementsResult.failure("Your soldiers already stand guard at home");
+            return ActionResult.failure("Your soldiers already stand guard at home");
         }
         var ownAlliance = kingdom.getAlliance();
         var hostAlliance = host.getAlliance();
         if (ownAlliance.isEmpty() || hostAlliance.isEmpty() || !ownAlliance.get().getName().equals(hostAlliance.get().getName()))
         {
-            return SendReinforcementsResult.failure("Soldiers stand guard only with allies");
+            return ActionResult.failure("Soldiers stand guard only with allies");
         }
 
         var army = new UnitsMapDto();
@@ -159,17 +158,17 @@ public class KingdomMilitaryAction {
             var count = order.units().getCount(unit);
             if (count < 0)
             {
-                return SendReinforcementsResult.failure(Utils.format("Cannot send a negative number of {}", unit));
+                return ActionResult.failure(Utils.format("Cannot send a negative number of {}", unit));
             }
             if (count > kingdom.getUnits().getAvailableCount(unit))
             {
-                return SendReinforcementsResult.failure(Utils.format("Not enough {} at home", unit));
+                return ActionResult.failure(Utils.format("Not enough {} at home", unit));
             }
             army.setCount(unit, count);
         }
         if (army.countMilitary() <= 0)
         {
-            return SendReinforcementsResult.failure("Send at least one soldier");
+            return ActionResult.failure("Send at least one soldier");
         }
 
         for (var unit : UnitName.getMilitaryUnits())
@@ -179,7 +178,7 @@ public class KingdomMilitaryAction {
         var reinforcement = new KingdomReinforcementEntity(Id.generate(), kingdom, host, gameConfig.common().turnsToReinforce(), army);
         kingdom.getReinforcements().add(reinforcement);
         host.getGarrisons().add(reinforcement);
-        return SendReinforcementsResult.success(Utils.format("{} soldiers march to stand guard in {}", army.countMilitary(), host.getName()));
+        return ActionResult.success(Utils.format("{} soldiers march to stand guard in {}", army.countMilitary(), host.getName()));
     }
 
     /**

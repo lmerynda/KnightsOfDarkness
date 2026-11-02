@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.knightsofdarkness.web.common.market.BuyMarketOfferResult;
-import com.knightsofdarkness.web.common.market.CreateMarketOfferResult;
+import com.knightsofdarkness.web.common.market.MarketPurchaseDto;
+import com.knightsofdarkness.web.common.ActionResult;
+import com.knightsofdarkness.web.utils.Utils;
 import com.knightsofdarkness.web.common.market.MarketOfferDto;
 import com.knightsofdarkness.web.common.market.MarketResource;
-import com.knightsofdarkness.web.common.market.WithdrawMarketOfferResult;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
@@ -40,7 +40,7 @@ public class MarketService
     }
 
     @Transactional
-    public CreateMarketOfferResult createOffer(MarketOfferDto offer, String sellerName)
+    public ActionResult<MarketOfferDto> createOffer(MarketOfferDto offer, String sellerName)
     {
         log.info("Creating new offer {}", offer);
 
@@ -83,14 +83,14 @@ public class MarketService
     }
 
     @Transactional
-    public Optional<BuyMarketOfferResult> buyOffer(UUID id, int count, String buyerName)
+    public ActionResult<MarketPurchaseDto> buyOffer(UUID id, int count, String buyerName)
     {
         var maybeOffer = market.findOfferById(id);
         var maybeBuyerKingdom = kingdomRepository.getKingdomByName(buyerName);
         if (maybeOffer.isEmpty() || maybeBuyerKingdom.isEmpty())
         {
             log.warn("Offer or buyer not found");
-            return Optional.empty(); // TODO encapsulate message in the result
+            return ActionResult.failure("That offer is gone from the market");
         }
 
         var buyer = maybeBuyerKingdom.get();
@@ -103,30 +103,32 @@ public class MarketService
         log.info("Transaction on {} with {} and count {}", offer, buyerName, count);
 
         var result = market.buyExistingOffer(offer, seller, buyer, count);
-
-        // TODO report? what if the action failed?
-        return Optional.of(result);
+        if (result.count() <= 0)
+        {
+            return ActionResult.failure("Not enough gold for any of it");
+        }
+        return ActionResult.success(Utils.format("Bought {} {} for {} gold", result.count(), result.resource(), result.totalCost()), result);
     }
 
     @Transactional
-    public WithdrawMarketOfferResult withdraw(UUID id, String kingdomName)
+    public ActionResult<Void> withdraw(UUID id, String kingdomName)
     {
         var maybeOffer = market.findOfferById(id);
         if (maybeOffer.isEmpty())
         {
             log.warn("Offer not found");
-            return WithdrawMarketOfferResult.failure("Offer not found");
+            return ActionResult.failure("Offer not found");
         }
 
         var offer = maybeOffer.get();
         if (!offer.getSeller().getName().equals(kingdomName))
         {
             log.warn("Offer does not belong to kingdom {}", kingdomName);
-            return WithdrawMarketOfferResult.failure("Offer does not belong to kingdom " + kingdomName);
+            return ActionResult.failure("Offer does not belong to kingdom " + kingdomName);
         }
         log.info("Withdrawing offer {}", offer);
 
         market.removeOffer(offer);
-        return WithdrawMarketOfferResult.success("Offer withdrawn successfully");
+        return ActionResult.success("Offer withdrawn successfully");
     }
 }

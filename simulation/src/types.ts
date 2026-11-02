@@ -81,7 +81,8 @@ export type GameConfig = {
   [section: string]: unknown;
 };
 
-export type ActionResult = { message: string; success: boolean };
+/** what every action answers: whether it went through, a message for the player, and what it produced, if anything */
+export type ActionResult<T = never> = { message: string; success: boolean; data: T | null };
 
 export type BattleReport = {
   attacker: string;

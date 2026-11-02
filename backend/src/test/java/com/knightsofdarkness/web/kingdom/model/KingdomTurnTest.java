@@ -301,7 +301,7 @@ class KingdomTurnTest {
 
         var savedReport = kingdom.getLastTurnReport();
 
-        assertEquals(result.turnReport().get(), savedReport);
+        assertEquals(result.data().get(), savedReport);
     }
 
     @Test
@@ -371,7 +371,7 @@ class KingdomTurnTest {
         var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
         var result = action.passTurn(weaponsProductionPercentage);
 
-        assertEquals(0, result.turnReport().get().exiledPeople);
+        assertEquals(0, result.data().get().exiledPeople);
     }
 
     @Test
@@ -385,7 +385,7 @@ class KingdomTurnTest {
         var result = action.passTurn(weaponsProductionPercentage);
 
         assertEquals(0, kingdom.getResources().getCount(ResourceName.unemployed));
-        assertThat(result.turnReport().get().exiledPeople).isPositive();
+        assertThat(result.data().get().exiledPeople).isPositive();
     }
 
     @Test
@@ -398,7 +398,7 @@ class KingdomTurnTest {
         var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
         var result = action.passTurn(weaponsProductionPercentage);
 
-        assertEquals(20, result.turnReport().get().exiledPeople);
+        assertEquals(20, result.data().get().exiledPeople);
     }
 
     @Test
@@ -413,7 +413,7 @@ class KingdomTurnTest {
         var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
         var result = action.passTurn(weaponsProductionPercentage);
 
-        assertThat(result.turnReport().get().exiledPeople).isPositive();
+        assertThat(result.data().get().exiledPeople).isPositive();
         assertThat(kingdom.getUnits().getTotalCount(UnitName.goldMiner)).isLessThan(5);
         assertThat(kingdom.getUnits().getTotalCount(UnitName.blacksmith)).isLessThan(5);
     }

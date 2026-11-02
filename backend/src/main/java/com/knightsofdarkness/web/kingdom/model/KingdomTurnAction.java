@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.knightsofdarkness.web.common.kingdom.BuildingName;
-import com.knightsofdarkness.web.common.kingdom.KingdomPassTurnActionResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
@@ -33,11 +33,11 @@ public class KingdomTurnAction {
         this.kingdomDetailsProvider = kingdomDetailsProvider;
     }
 
-    public KingdomPassTurnActionResult passTurn(int weaponsProductionPercentage)
+    public ActionResult<KingdomTurnReport> passTurn(int weaponsProductionPercentage)
     {
         if (kingdom.getResources().getCount(ResourceName.turns) <= 0)
         {
-            return KingdomPassTurnActionResult.failure("Not enough turns");
+            return ActionResult.failure("Not enough turns");
         }
 
         kingdom.getResources().subtractCount(ResourceName.turns, 1);
@@ -59,7 +59,7 @@ public class KingdomTurnAction {
         processReinforcements();
 
         kingdom.lastTurnReport = results;
-        return KingdomPassTurnActionResult.success("Turn passed", results);
+        return ActionResult.success("Turn passed", results);
     }
 
     /**

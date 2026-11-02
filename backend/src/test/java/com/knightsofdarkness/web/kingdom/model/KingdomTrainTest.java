@@ -37,7 +37,7 @@ class KingdomTrainTest {
         var toTrain = new UnitsMapDto();
 
         var action = new KingdomTrainAction(kingdom, gameConfig);
-        var trainedUnits = action.train(toTrain).units();
+        var trainedUnits = action.train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         assertEquals(0, trainedUnits.countAll());
     }
@@ -50,7 +50,7 @@ class KingdomTrainTest {
         toTrain.setCount(UnitName.goldMiner, 10);
 
         var action = new KingdomTrainAction(kingdom, gameConfig);
-        var trainedUnits = action.train(toTrain).units();
+        var trainedUnits = action.train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         assertEquals(10, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -63,7 +63,7 @@ class KingdomTrainTest {
         toTrain.setCount(UnitName.goldMiner, 10);
 
         var action = new KingdomTrainAction(kingdom, gameConfig);
-        var trainedUnits = action.train(toTrain).units();
+        var trainedUnits = action.train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -76,7 +76,7 @@ class KingdomTrainTest {
         toTrain.setCount(UnitName.goldMiner, 10);
 
         var action = new KingdomTrainAction(kingdom, gameConfig);
-        var trainedUnits = action.train(toTrain).units();
+        var trainedUnits = action.train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -89,7 +89,7 @@ class KingdomTrainTest {
         toTrain.setCount(UnitName.goldMiner, 10);
 
         var action = new KingdomTrainAction(kingdom, gameConfig);
-        var trainedUnits = action.train(toTrain).units();
+        var trainedUnits = action.train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -104,7 +104,7 @@ class KingdomTrainTest {
         toTrain.setCount(UnitName.goldMiner, 10);
 
         var action = new KingdomTrainAction(kingdom, gameConfig);
-        var trainedUnits = action.train(toTrain).units();
+        var trainedUnits = action.train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         assertTrue(trainedUnits.countAll() > 0, "At least one unit should have been trained");
         assertTrue(trainedUnits.countAll() < 10, "Number of trained units was supposed to be smaller than desired");
@@ -125,7 +125,7 @@ class KingdomTrainTest {
         }
 
         var action = new KingdomTrainAction(kingdom, gameConfig);
-        var trainedUnits = action.train(toTrain).units();
+        var trainedUnits = action.train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         for (var unitName : UnitName.values())
         {
@@ -142,7 +142,7 @@ class KingdomTrainTest {
         toTrain.setCount(UnitName.goldMiner, 1);
 
         var action = new KingdomTrainAction(kingdom, gameConfig);
-        var trainedUnits = action.train(toTrain).units();
+        var trainedUnits = action.train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -156,7 +156,7 @@ class KingdomTrainTest {
         toTrain.setCount(UnitName.goldMiner, 1);
 
         var action = new KingdomTrainAction(kingdom, gameConfig);
-        var trainedUnits = action.train(toTrain).units();
+        var trainedUnits = action.train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         assertEquals(0, trainedUnits.getCount(UnitName.goldMiner));
     }
@@ -169,7 +169,7 @@ class KingdomTrainTest {
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.builder, -100);
 
-        var trainedUnits = new KingdomTrainAction(kingdom, gameConfig).train(toTrain).units();
+        var trainedUnits = new KingdomTrainAction(kingdom, gameConfig).train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         assertEquals(0, trainedUnits.getCount(UnitName.builder));
         assertEquals(goldBefore, kingdom.getResources().getCount(ResourceName.gold));

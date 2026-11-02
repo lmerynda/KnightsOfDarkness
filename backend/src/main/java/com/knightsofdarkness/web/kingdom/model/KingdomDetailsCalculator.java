@@ -53,7 +53,7 @@ public class KingdomDetailsCalculator {
         var copy = KingdomEntity.fromDto(kingdom.toDto());
         copy.getResources().setCount(ResourceName.turns, 1);
         var result = new KingdomTurnAction(copy, new IdleInteractor(), gameConfig, detailsProvider).passTurn(weaponsProductionPercentage);
-        return result.turnReport().orElseGet(KingdomTurnReport::new);
+        return result.data().orElseGet(KingdomTurnReport::new);
     }
 
     private static class IdleInteractor implements IKingdomInteractor {

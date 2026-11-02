@@ -304,7 +304,7 @@ class WarTest {
         var result = new KingdomSpyAction(attacker, gameConfig).sendSpies(defender, 10);
 
         assertTrue(result.success());
-        var report = result.report().orElseThrow();
+        var report = result.data().orElseThrow();
         assertTrue(report.success());
         assertEquals(defender.getResources().getCount(ResourceName.gold), report.resources().get(ResourceName.gold));
         assertEquals(5, report.units().get(UnitName.guard));
@@ -318,7 +318,7 @@ class WarTest {
 
         var result = new KingdomSpyAction(attacker, gameConfig).sendSpies(defender, 20);
 
-        var report = result.report().orElseThrow();
+        var report = result.data().orElseThrow();
         assertFalse(report.success());
         assertEquals(10, report.spiesLost());
         assertTrue(report.resources().isEmpty());

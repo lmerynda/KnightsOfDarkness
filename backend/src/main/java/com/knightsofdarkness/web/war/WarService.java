@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.common.war.BattleReportDto;
 import com.knightsofdarkness.web.common.war.SendSpiesDto;
-import com.knightsofdarkness.web.common.war.SendSpiesResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.war.SpyReportDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
@@ -37,7 +37,7 @@ public class WarService {
     }
 
     @Transactional
-    public Optional<SendSpiesResult> sendSpies(String kingdomName, SendSpiesDto sendSpiesDto)
+    public Optional<ActionResult<SpyReportDto>> sendSpies(String kingdomName, SendSpiesDto sendSpiesDto)
     {
         log.info("[{}] sending spies {}", kingdomName, sendSpiesDto);
         var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
@@ -49,12 +49,12 @@ public class WarService {
         var maybeTarget = kingdomRepository.getKingdomByName(sendSpiesDto.targetKingdomName());
         if (maybeTarget.isEmpty())
         {
-            return Optional.of(SendSpiesResult.failure("Target kingdom does not exist"));
+            return Optional.of(ActionResult.failure("Target kingdom does not exist"));
         }
 
         var kingdom = maybeKingdom.get();
         var result = new KingdomSpyAction(kingdom, gameConfig).sendSpies(maybeTarget.get(), sendSpiesDto.spies());
-        result.report().ifPresent(report ->
+        result.data().ifPresent(report ->
         {
             warReportRepository.addSpyReport(report);
             if (!report.success())

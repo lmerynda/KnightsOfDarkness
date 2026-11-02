@@ -120,11 +120,11 @@ export class Player {
     return this.post("/kingdom/pass-turn", weaponsPercentage);
   }
 
-  public build(buildings: Partial<Counts<BuildingName>>): Promise<{ buildings: Counts<BuildingName> }> {
+  public build(buildings: Partial<Counts<BuildingName>>): Promise<ActionResult<Counts<BuildingName>>> {
     return this.post("/kingdom/build", buildings);
   }
 
-  public train(units: Partial<Counts<UnitName>>): Promise<{ units: Counts<UnitName> }> {
+  public train(units: Partial<Counts<UnitName>>): Promise<ActionResult<Counts<UnitName>>> {
     return this.post("/kingdom/train", units);
   }
 
@@ -146,7 +146,7 @@ export class Player {
     return this.post("/kingdom/build-special-building", { id, buildingPoints });
   }
 
-  public dismiss(units: Partial<Counts<UnitName>>): Promise<{ units: Counts<UnitName> }> {
+  public dismiss(units: Partial<Counts<UnitName>>): Promise<ActionResult<Counts<UnitName>>> {
     return this.post("/kingdom/fire", units);
   }
 
@@ -154,7 +154,7 @@ export class Player {
     return this.get(`/kingdom/land-quote?count=${count}`);
   }
 
-  public buyLand(count: number): Promise<{ count: number; cost: number }> {
+  public buyLand(count: number): Promise<ActionResult<{ count: number; cost: number }>> {
     return this.post("/kingdom/buy-land", count);
   }
 
@@ -163,7 +163,7 @@ export class Player {
     return this.post("/kingdom/send-attack", { destinationKingdomName: target, attackType, units, joins });
   }
 
-  public sendSpies(target: string, spies: number): Promise<ActionResult & { report: SpyReport | null }> {
+  public sendSpies(target: string, spies: number): Promise<ActionResult<SpyReport>> {
     return this.post("/war/send-spies", { targetKingdomName: target, spies });
   }
 
@@ -175,7 +175,7 @@ export class Player {
     return this.get("/war/battle-reports");
   }
 
-  public buyOffer(id: string, count: number): Promise<{ count: number; totalCost: number }> {
+  public buyOffer(id: string, count: number): Promise<ActionResult<{ count: number; totalCost: number }>> {
     return this.post(`/market/${id}/buy`, { count });
   }
 

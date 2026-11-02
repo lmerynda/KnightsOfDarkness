@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.web.common.messaging.MessageDto;
-import com.knightsofdarkness.web.common.messaging.SendMessageResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.messaging.model.MessageEntity;
@@ -31,50 +31,50 @@ public class MessageService {
     }
 
     @Transactional
-    public SendMessageResult send(String sender, String recipient, String body)
+    public ActionResult<Integer> send(String sender, String recipient, String body)
     {
         var bodyError = validateBody(body);
         if (bodyError != null)
         {
-            return SendMessageResult.failure(bodyError);
+            return ActionResult.failure(bodyError);
         }
         if (recipient == null || recipient.equals(sender))
         {
-            return SendMessageResult.failure("Choose another kingdom to write to");
+            return ActionResult.failure("Choose another kingdom to write to");
         }
         if (kingdomRepository.getKingdomByName(recipient).isEmpty())
         {
-            return SendMessageResult.failure(Utils.format("Kingdom {} does not exist", recipient));
+            return ActionResult.failure(Utils.format("Kingdom {} does not exist", recipient));
         }
 
         messageRepository.save(new MessageEntity(Id.generate(), sender, recipient, body.strip(), Instant.now(), false));
-        return SendMessageResult.success(Utils.format("Message sent to {}", recipient), 1);
+        return ActionResult.success(Utils.format("Message sent to {}", recipient), 1);
     }
 
     @Transactional
-    public SendMessageResult sendToAlliance(String sender, String body)
+    public ActionResult<Integer> sendToAlliance(String sender, String body)
     {
         var bodyError = validateBody(body);
         if (bodyError != null)
         {
-            return SendMessageResult.failure(bodyError);
+            return ActionResult.failure(bodyError);
         }
 
         var maybeAlliance = kingdomRepository.getKingdomByName(sender).flatMap(KingdomEntity::getAlliance);
         if (maybeAlliance.isEmpty())
         {
-            return SendMessageResult.failure("You are not in an alliance");
+            return ActionResult.failure("You are not in an alliance");
         }
 
         var now = Instant.now();
         var recipients = maybeAlliance.get().getKingdoms().stream().map(KingdomEntity::getName).filter(name -> !name.equals(sender)).toList();
         if (recipients.isEmpty())
         {
-            return SendMessageResult.failure("Your alliance has no other members yet");
+            return ActionResult.failure("Your alliance has no other members yet");
         }
 
         recipients.forEach(recipient -> messageRepository.save(new MessageEntity(Id.generate(), sender, recipient, body.strip(), now, true)));
-        return SendMessageResult.success(Utils.format("Message sent to {} allies", recipients.size()), recipients.size());
+        return ActionResult.success(Utils.format("Message sent to {} allies", recipients.size()), recipients.size());
     }
 
     private static String validateBody(String body)

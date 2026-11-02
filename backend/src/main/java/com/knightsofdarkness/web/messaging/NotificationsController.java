@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.messaging;
 
+import com.knightsofdarkness.web.common.ActionResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -53,15 +54,16 @@ public class NotificationsController {
     }
 
     @PostMapping("/kingdom/notifications/{id}/mark-as-read")
-    void markNotificationAsRead(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
+    ResponseEntity<ActionResult<Void>> markNotificationAsRead(@AuthenticationPrincipal UserData currentUser, @PathVariable UUID id)
     {
         if (currentUser == null)
         {
             logUserUnauthenticated();
-            return;
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         notificationsService.markNotificationAsRead(currentUser.getKingdomName(), id);
+        return ResponseEntity.ok(ActionResult.success("Marked as read"));
     }
 
     private void logUserUnauthenticated()

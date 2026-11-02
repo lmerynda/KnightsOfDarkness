@@ -68,7 +68,7 @@ export const coalitionWarlord = (council: Council, attackEvery = 6): Strategy =>
       const candidate = attackableKingdoms(context).find(rank => !council.struck.includes(rank.kingdomName));
       if (!candidate || kingdom.units.availableUnits.spy <= 0) return;
       council.struck.push(candidate.kingdomName);
-      const { report } = await player.sendSpies(candidate.kingdomName, kingdom.units.availableUnits.spy);
+      const { data: report } = await player.sendSpies(candidate.kingdomName, kingdom.units.availableUnits.spy);
       if (!report?.success) return;
       const defense = estimatedDefense(report, config);
       const homes = await Promise.all(council.warlords.map(warlord => warlord.kingdom()));
@@ -186,7 +186,7 @@ export const treasurer = (share = 0.5): Strategy => ({
       const pieces = Math.min(ask.count, Math.floor(budget / ask.price));
       if (pieces <= 0) return;
       const bought = await context.player.buyOffer(ask.id, pieces);
-      budget -= bought.totalCost;
+      budget -= bought.data?.totalCost ?? 0;
     }
   },
 });

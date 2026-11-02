@@ -47,6 +47,10 @@ Allies also defend each other. A member sends infantry, bowmen or cavalry to sta
 
 Allies pass gold through the market, since carriers cannot carry it. A member asks by offering a few pieces of goods at the price it needs (the Alliance page's "Gold between allies" offers one piece for the sum asked), and an ally sends the gold by buying them. The market lists only the cheapest offers of each good, but every member sees all of its allies' offers, however dear, on the Market and Alliance pages (`GET /market/allies`).
 
+## The API
+
+The browser and the simulation drive the same HTTP API, and so can any other client. Every action answers in one shape, `{ message, success, data }`: `success` says whether it went through, `message` is ready to show a player, and `data` is what it produced (the buildings raised, the turn report, the spy report, a purchase), or null. An action that cannot go through still answers 200 with `success: false`; 401 means no valid token, and 404 that the signed-in kingdom no longer exists.
+
 ## Test
 
 ```bash

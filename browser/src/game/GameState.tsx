@@ -130,8 +130,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode; fallback: (erro
     let report: TurnReport | undefined;
     try {
       const outcome = await api.passTurn(weaponsRef.current);
-      if (outcome.success && outcome.turnReport) {
-        report = outcome.turnReport;
+      if (outcome.success && outcome.data) {
+        report = outcome.data;
         notify(turnSummary(report), false, "turn");
       } else notify(outcome.message, true);
     } catch (error) {

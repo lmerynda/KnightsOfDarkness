@@ -113,7 +113,7 @@ class AuthTest {
         mockMvc.perform(post("/alliance/create").header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"Heralds\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.alliance.emperor").value("Herald Keep"));
+                .andExpect(jsonPath("$.data.emperor").value("Herald Keep"));
         mockMvc.perform(get("/alliance").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.members[0]").value("Herald Keep"));

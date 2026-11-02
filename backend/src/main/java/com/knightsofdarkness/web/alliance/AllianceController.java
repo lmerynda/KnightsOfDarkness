@@ -14,20 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationDto;
-import com.knightsofdarkness.web.common.alliance.RejectAllianceInvitationResult;
-import com.knightsofdarkness.web.common.alliance.AcceptAllianceInvitationResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.alliance.AddBotToAllianceDto;
-import com.knightsofdarkness.web.common.alliance.AddBotToAllianceResult;
 import com.knightsofdarkness.web.common.alliance.AllianceDto;
 import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWarRoomDto;
 import com.knightsofdarkness.web.common.alliance.AllianceWithMembersDto;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
-import com.knightsofdarkness.web.common.alliance.CreateAllianceResult;
-import com.knightsofdarkness.web.common.alliance.InviteAllianceResult;
-import com.knightsofdarkness.web.common.alliance.LeaveAllianceResult;
 import com.knightsofdarkness.web.common.alliance.RemoveFromAllianceDto;
-import com.knightsofdarkness.web.common.alliance.RemoveFromAllianceResult;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
@@ -42,7 +36,7 @@ public class AllianceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<CreateAllianceResult> createAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody CreateAllianceDto allianceDto)
+    public ResponseEntity<ActionResult<AllianceDto>> createAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody CreateAllianceDto allianceDto)
     {
         if (currentUser == null)
         {
@@ -56,7 +50,7 @@ public class AllianceController {
     }
 
     @PostMapping("/leave")
-    public ResponseEntity<LeaveAllianceResult> leaveAlliance(@AuthenticationPrincipal UserData currentUser)
+    public ResponseEntity<ActionResult<Void>> leaveAlliance(@AuthenticationPrincipal UserData currentUser)
     {
         if (currentUser == null)
         {
@@ -70,7 +64,7 @@ public class AllianceController {
     }
 
     @PostMapping("/invite")
-    public ResponseEntity<InviteAllianceResult> inviteToAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody AllianceInvitationDto inviteDto)
+    public ResponseEntity<ActionResult<AllianceInvitationDto>> inviteToAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody AllianceInvitationDto inviteDto)
     {
         if (currentUser == null)
         {
@@ -96,7 +90,7 @@ public class AllianceController {
     }
 
     @PostMapping("/reject")
-    public ResponseEntity<RejectAllianceInvitationResult> rejectAllianceInvitation(@AuthenticationPrincipal UserData currentUser, @RequestBody AcceptAllianceInvitationDto inviteDto)
+    public ResponseEntity<ActionResult<Void>> rejectAllianceInvitation(@AuthenticationPrincipal UserData currentUser, @RequestBody AcceptAllianceInvitationDto inviteDto)
     {
         if (currentUser == null)
         {
@@ -108,7 +102,7 @@ public class AllianceController {
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<AcceptAllianceInvitationResult> acceptAllianceInvitation(@AuthenticationPrincipal UserData currentUser, @RequestBody AcceptAllianceInvitationDto inviteDto)
+    public ResponseEntity<ActionResult<Void>> acceptAllianceInvitation(@AuthenticationPrincipal UserData currentUser, @RequestBody AcceptAllianceInvitationDto inviteDto)
     {
         if (currentUser == null)
         {
@@ -122,7 +116,7 @@ public class AllianceController {
     }
 
     @PostMapping("/remove")
-    public ResponseEntity<RemoveFromAllianceResult> removeFromAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody RemoveFromAllianceDto removeDto)
+    public ResponseEntity<ActionResult<Void>> removeFromAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody RemoveFromAllianceDto removeDto)
     {
         if (currentUser == null)
         {
@@ -136,7 +130,7 @@ public class AllianceController {
     }
 
     @PostMapping("/add-bot")
-    public ResponseEntity<AddBotToAllianceResult> addBotToAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody AddBotToAllianceDto addBotDto)
+    public ResponseEntity<ActionResult<Void>> addBotToAlliance(@AuthenticationPrincipal UserData currentUser, @RequestBody AddBotToAllianceDto addBotDto)
     {
         if (currentUser == null)
         {

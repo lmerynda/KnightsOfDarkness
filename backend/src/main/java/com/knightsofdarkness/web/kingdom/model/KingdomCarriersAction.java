@@ -2,7 +2,7 @@ package com.knightsofdarkness.web.kingdom.model;
 
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.SendCarriersDto;
-import com.knightsofdarkness.web.common.kingdom.SendCarriersResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.utils.Id;
@@ -17,11 +17,11 @@ public class KingdomCarriersAction {
         this.gameConfig = gameConfig;
     }
 
-    public SendCarriersResult sendCarriers(SendCarriersDto sendCarriersDto)
+    public ActionResult<SendCarriersDto> sendCarriers(SendCarriersDto sendCarriersDto)
     {
         if (sendCarriersDto.count() <= 0)
         {
-            return SendCarriersResult.failure("Amount to send must be greater than 0");
+            return ActionResult.failure("Amount to send must be greater than 0");
         }
 
         var resource = sendCarriersDto.resource();
@@ -29,7 +29,7 @@ public class KingdomCarriersAction {
         int carriersCapacity = kingdom.getUnits().getAvailableCount(UnitName.carrier) * singleCarrierCapacity;
         if (carriersCapacity <= 0)
         {
-            return SendCarriersResult.failure("You have not enough carriers to send");
+            return ActionResult.failure("You have not enough carriers to send");
         }
 
         int resourceCount = kingdom.getResources().getCount(ResourceName.from(resource));
@@ -38,7 +38,7 @@ public class KingdomCarriersAction {
 
         if (countToSend <= 0)
         {
-            return SendCarriersResult.failure("You have not enough resources to send");
+            return ActionResult.failure("You have not enough resources to send");
         }
 
         int carriersToSend = (int) Math.ceil((double) countToSend / singleCarrierCapacity);
@@ -53,7 +53,7 @@ public class KingdomCarriersAction {
 
         var message = countToSend == sendCarriersDto.count() ? "Carriers sent and should arrive in a few turns"
                 : "Partial transfer sent, not enough carriers to carry everything requested";
-        return SendCarriersResult.success(message,
+        return ActionResult.success(message,
                 new SendCarriersDto(sendCarriersDto.destinationKingdomName(), resource, countToSend));
     }
 

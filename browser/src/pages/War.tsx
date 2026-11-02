@@ -230,7 +230,7 @@ const StandGuard: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => 
   const recall = (id: string): void =>
     void act(
       () => api.recallReinforcements(id),
-      () => ({ text: "Our soldiers are home again" }),
+      outcome => ({ text: outcome.message, failure: !outcome.success }),
     );
 
   return (
@@ -379,7 +379,7 @@ const Marching: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => {
                     onClick={() =>
                       act(
                         () => api.recallAttack(attack.id),
-                        () => ({ text: "The army turned back home" }),
+                        outcome => ({ text: outcome.message, failure: !outcome.success }),
                       )
                     }
                   >

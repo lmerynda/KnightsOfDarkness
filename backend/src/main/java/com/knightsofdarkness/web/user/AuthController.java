@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.user;
 
+import com.knightsofdarkness.web.common.ActionResult;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -51,12 +52,12 @@ public class AuthController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequestDto registerRequest)
+    public ResponseEntity<ActionResult<Void>> register(@RequestBody RegisterRequestDto registerRequest)
     {
         log.info("register request received for kingdomName: {}", registerRequest.kingdomName);
         return registrationService.register(registerRequest)
-                .map(error -> ResponseEntity.badRequest().body(Map.of("message", error)))
-                .orElseGet(() -> ResponseEntity.ok(Map.of("message", "Kingdom founded")));
+                .map(error -> ResponseEntity.badRequest().body(ActionResult.<Void>failure(error)))
+                .orElseGet(() -> ResponseEntity.ok(ActionResult.success("Kingdom founded")));
     }
 
     @PostMapping("/auth/validate-token")

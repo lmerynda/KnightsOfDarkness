@@ -22,7 +22,6 @@
 
 ## Code
 
-1. Controllers and services mix responsibilities: some services return DTOs and some controllers build them; result types differ per action.
 1. The Game scenarios CI workflow (simulation and browser jobs) has not run on GitHub yet.
 
 ## Ideas

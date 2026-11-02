@@ -222,7 +222,7 @@ export const warlord = (options: { attackEvery?: number; margin?: number } = {})
 
     let defense = Infinity;
     if (kingdom.units.availableUnits.spy > 0) {
-      const { report } = await player.sendSpies(target.kingdomName, kingdom.units.availableUnits.spy);
+      const { data: report } = await player.sendSpies(target.kingdomName, kingdom.units.availableUnits.spy);
       if (report?.success) defense = estimatedDefense(report, config);
     }
     if (power > defense * (options.margin ?? 1.3)) {
@@ -247,7 +247,7 @@ export const raider: Strategy = {
     for (const candidate of attackableKingdoms(context)) {
       const spies = (await player.kingdom()).units.availableUnits.spy;
       if (spies <= 0) break;
-      const { report } = await player.sendSpies(candidate.kingdomName, spies);
+      const { data: report } = await player.sendSpies(candidate.kingdomName, spies);
       if (!report?.success) continue;
       const soldiers = militaryUnits.reduce((sum, unit) => sum + (report.units[unit] ?? 0), 0);
       if (!target || soldiers > target.soldiers) target = { name: candidate.kingdomName, soldiers };

@@ -60,7 +60,7 @@ class MessageServiceTest {
         var result = messageService.sendToAlliance("Umbar", "Rally at dawn");
 
         assertTrue(result.success());
-        assertEquals(1, result.delivered());
+        assertEquals(1, result.data().orElseThrow());
         var received = messageService.getInbox("uprzejmy").get(0);
         assertEquals("Rally at dawn", received.body());
         assertTrue(received.toAlliance());

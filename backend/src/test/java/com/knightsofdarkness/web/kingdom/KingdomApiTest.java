@@ -92,22 +92,22 @@ class KingdomApiTest {
     @Test
     void buildAndDemolish_shouldUseFlatBuildingCounts() throws Exception
     {
-        postJson("/kingdom/build", "{\"house\":2}").andExpect(status().isOk()).andExpect(jsonPath("$.buildings.house").value(2));
-        postJson("/kingdom/demolish", "{\"house\":1}").andExpect(status().isOk()).andExpect(jsonPath("$.buildings.house").value(1));
+        postJson("/kingdom/build", "{\"house\":2}").andExpect(status().isOk()).andExpect(jsonPath("$.data.house").value(2));
+        postJson("/kingdom/demolish", "{\"house\":1}").andExpect(status().isOk()).andExpect(jsonPath("$.data.house").value(1));
     }
 
     @Test
     void trainAndFire_shouldUseFlatUnitCounts() throws Exception
     {
-        postJson("/kingdom/train", "{\"farmer\":3}").andExpect(status().isOk()).andExpect(jsonPath("$.units.farmer").value(3));
-        postJson("/kingdom/fire", "{\"farmer\":2}").andExpect(status().isOk()).andExpect(jsonPath("$.units.farmer").value(2));
+        postJson("/kingdom/train", "{\"farmer\":3}").andExpect(status().isOk()).andExpect(jsonPath("$.data.farmer").value(3));
+        postJson("/kingdom/fire", "{\"farmer\":2}").andExpect(status().isOk()).andExpect(jsonPath("$.data.farmer").value(2));
     }
 
     @Test
     void sendAttack_shouldMoveTroopsAndShowThemOnTheKingdom() throws Exception
     {
         postJson("/kingdom/build", "{\"barracks\":1}").andExpect(status().isOk());
-        postJson("/kingdom/train", "{\"infantry\":1}").andExpect(jsonPath("$.units.infantry").value(1));
+        postJson("/kingdom/train", "{\"infantry\":1}").andExpect(jsonPath("$.data.infantry").value(1));
 
         postJson("/kingdom/send-attack", "{\"destinationKingdomName\":\"GoldMinerBot\",\"attackType\":\"land\",\"units\":{\"infantry\":1}}")
                 .andExpect(status().isOk())
@@ -126,7 +126,7 @@ class KingdomApiTest {
         var kingdom = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
         kingdom.getResources().setCount(ResourceName.turns, maxTurns - 1);
         kingdomRepository.update(kingdom);
-        postJson("/kingdom/build", "{\"house\":1}").andExpect(jsonPath("$.buildings.house").value(1));
+        postJson("/kingdom/build", "{\"house\":1}").andExpect(jsonPath("$.data.house").value(1));
         var housesAfterBuilding = kingdomRepository.getKingdomByName(kingdomName).orElseThrow().getBuildings().getCount(BuildingName.house);
 
         kingdomService.addTurnForEveryone();
@@ -141,7 +141,7 @@ class KingdomApiTest {
     void battleReport_shouldBeStoredAndServedAfterTheArmyArrives() throws Exception
     {
         postJson("/kingdom/build", "{\"barracks\":1}").andExpect(status().isOk());
-        postJson("/kingdom/train", "{\"infantry\":1}").andExpect(jsonPath("$.units.infantry").value(1));
+        postJson("/kingdom/train", "{\"infantry\":1}").andExpect(jsonPath("$.data.infantry").value(1));
         postJson("/kingdom/send-attack", "{\"destinationKingdomName\":\"IronMinerBot\",\"attackType\":\"economy\",\"units\":{\"infantry\":1}}")
                 .andExpect(jsonPath("$.success").value(true));
 
@@ -161,7 +161,7 @@ class KingdomApiTest {
     void spyReport_shouldBeStoredAndServed() throws Exception
     {
         postJson("/kingdom/build", "{\"spyGuild\":1}").andExpect(status().isOk());
-        postJson("/kingdom/train", "{\"spy\":1}").andExpect(jsonPath("$.units.spy").value(1));
+        postJson("/kingdom/train", "{\"spy\":1}").andExpect(jsonPath("$.data.spy").value(1));
 
         postJson("/war/send-spies", "{\"targetKingdomName\":\"Umbar\",\"spies\":1}")
                 .andExpect(status().isOk())
@@ -418,7 +418,7 @@ class KingdomApiTest {
         mockMvc.perform(get("/market/allies").header("Authorization", "Bearer " + allyToken)).andExpect(jsonPath("$.length()").value(0));
         String offerId = JsonPath.read(listed, "$[0].id");
 
-        postJson("/market/" + offerId + "/buy", "{\"count\":1}").andExpect(jsonPath("$.totalCost").value(50000));
+        postJson("/market/" + offerId + "/buy", "{\"count\":1}").andExpect(jsonPath("$.data.totalCost").value(50000));
 
         assertEquals(10000, kingdomRepository.getKingdomByName(kingdomName).orElseThrow().getResources().getCount(ResourceName.gold));
         assertEquals(allyGold + 50000, kingdomRepository.getKingdomByName(allyName).orElseThrow().getResources().getCount(ResourceName.gold));

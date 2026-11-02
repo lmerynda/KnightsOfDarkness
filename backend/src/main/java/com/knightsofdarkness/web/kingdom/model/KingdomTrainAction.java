@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import com.knightsofdarkness.web.common.kingdom.BuildingName;
-import com.knightsofdarkness.web.common.kingdom.KingdomUnitsActionResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
@@ -22,7 +22,7 @@ public class KingdomTrainAction {
         this.gameConfig = gameConfig;
     }
 
-    public KingdomUnitsActionResult train(UnitsMapDto unitsToTrain)
+    public ActionResult<UnitsMapDto> train(UnitsMapDto unitsToTrain)
     {
         var trainedUnits = new UnitsMapDto();
 
@@ -49,10 +49,11 @@ public class KingdomTrainAction {
             trainedUnits.setCount(unitName, howManyToTrain);
         }
 
-        return new KingdomUnitsActionResult(Utils.format("Succesfully trained {} units", trainedUnits.countAll()), trainedUnits);
+        return trainedUnits.countAll() > 0 ? ActionResult.success(Utils.format("Trained {} recruits", trainedUnits.countAll()), trainedUnits)
+                : ActionResult.failure("Nobody was trained: not enough gold, tools, weapons, idle people or room");
     }
 
-    public KingdomUnitsActionResult fireUnits(UnitsMapDto unitsToFire)
+    public ActionResult<UnitsMapDto> fireUnits(UnitsMapDto unitsToFire)
     {
         var firedUnits = new UnitsMapDto();
         var kingdomUnits = kingdom.units;
@@ -66,7 +67,8 @@ public class KingdomTrainAction {
             firedUnits.setCount(unitName, howManyToFire);
         }
 
-        return new KingdomUnitsActionResult(Utils.format("Succesfully fired {} units", firedUnits.countAll()), firedUnits);
+        return firedUnits.countAll() > 0 ? ActionResult.success(Utils.format("Dismissed {} people, they are idle now", firedUnits.countAll()), firedUnits)
+                : ActionResult.failure("Nobody was dismissed");
     }
 
     private int calculateMaximumToAfford(KingdomResourcesEntity resources, UnitTrainingCost trainingCost)

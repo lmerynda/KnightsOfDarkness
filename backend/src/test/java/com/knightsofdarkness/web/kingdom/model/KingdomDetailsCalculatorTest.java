@@ -52,7 +52,7 @@ class KingdomDetailsCalculatorTest {
         assertEquals(goldBefore, kingdom.getResources().getCount(ResourceName.gold));
         assertEquals(turnsBefore, kingdom.getResources().getCount(ResourceName.turns));
 
-        var actual = new KingdomTurnAction(kingdom, game.getKingdomInteractor(), gameConfig, new KingdomDetailsProvider(gameConfig)).passTurn(30).turnReport().get();
+        var actual = new KingdomTurnAction(kingdom, game.getKingdomInteractor(), gameConfig, new KingdomDetailsProvider(gameConfig)).passTurn(30).data().get();
         assertEquals(actual.resourcesProduced, forecast.resourcesProduced);
         assertEquals(actual.foodConsumed, forecast.foodConsumed);
         assertEquals(actual.arrivingPeople, forecast.arrivingPeople);

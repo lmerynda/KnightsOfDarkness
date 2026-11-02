@@ -111,7 +111,10 @@ export const Carriers: React.FC = () => {
                           onClick={() =>
                             act(
                               () => api.recallCarriers(move.id),
-                              () => ({ text: "The carriers turned back with the goods" }),
+                              outcome => ({
+                                text: outcome.success ? "The carriers turned back with the goods" : outcome.message,
+                                failure: !outcome.success,
+                              }),
                             )
                           }
                         >

@@ -45,10 +45,10 @@ const OfferRow: React.FC<{ offer: MarketOffer; own: boolean; ally: boolean; onDo
               () => api.buyOffer(offer.id, count),
               result => ({
                 text:
-                  result.count > 0
-                    ? `Bought ${formatNumber(result.count)} ${label} for ${formatNumber(result.totalCost)} gold`
-                    : "Not enough gold for any of it",
-                failure: result.count === 0,
+                  result.success && result.data
+                    ? `Bought ${formatNumber(result.data.count)} ${label} for ${formatNumber(result.data.totalCost)} gold`
+                    : result.message,
+                failure: !result.success,
               }),
             );
             setCount(0);

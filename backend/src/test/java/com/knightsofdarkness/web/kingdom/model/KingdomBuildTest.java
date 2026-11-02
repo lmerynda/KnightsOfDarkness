@@ -56,7 +56,7 @@ class KingdomBuildTest {
         var action = new KingdomBuildAction(kingdom, config);
         var result = action.build(toBuild);
 
-        assertEquals(5, result.buildings().getCount(BuildingName.house));
+        assertEquals(5, result.data().orElseGet(KingdomBuildingsDto::new).getCount(BuildingName.house));
         assertEquals(housesBeforeBuild + 5, kingdom.getBuildings().getCount(BuildingName.house));
         assertEquals(goldMinesBeforeBuild + 2, kingdom.getBuildings().getCount(BuildingName.goldMine));
 

@@ -429,10 +429,10 @@ const GoldPanel: React.FC = () => {
                       () => api.buyOffer(offer.id, offer.count),
                       result => ({
                         text:
-                          result.count > 0
-                            ? `${offer.sellerName} has ${formatNumber(result.totalCost)} more gold`
-                            : "Not enough gold for it",
-                        failure: result.count === 0,
+                          result.success && result.data
+                            ? `${offer.sellerName} has ${formatNumber(result.data.totalCost)} more gold`
+                            : result.message,
+                        failure: !result.success,
                       }),
                     );
                     load();

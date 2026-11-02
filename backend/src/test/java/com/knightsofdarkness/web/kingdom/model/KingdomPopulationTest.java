@@ -37,7 +37,7 @@ class KingdomPopulationTest {
     {
         var kingdom = new KingdomBuilder(game).withBuilding(BuildingName.barracks, 10).withUnit(UnitName.cavalry, 500).withResource(ResourceName.food, 100000).build();
 
-        var report = turnAction(kingdom).passTurn(0).turnReport().get();
+        var report = turnAction(kingdom).passTurn(0).data().get();
 
         assertEquals(0, report.exiledPeople);
         assertEquals(500, kingdom.getUnits().getAvailableCount(UnitName.cavalry));
@@ -48,7 +48,7 @@ class KingdomPopulationTest {
     {
         var kingdom = new KingdomBuilder(game).withBuilding(BuildingName.barracks, 1).withUnit(UnitName.bowman, 60).withUnit(UnitName.infantry, 60).withResource(ResourceName.food, 100000).build();
 
-        var report = turnAction(kingdom).passTurn(0).turnReport().get();
+        var report = turnAction(kingdom).passTurn(0).data().get();
 
         assertEquals(gameConfig.buildingCapacity().getCapacity(BuildingName.barracks), kingdom.getUnits().countAllMilitary());
         assertEquals(20, report.professionalsLeaving.get(UnitName.bowman) + report.professionalsLeaving.get(UnitName.infantry));
@@ -60,7 +60,7 @@ class KingdomPopulationTest {
         var kingdom = new KingdomBuilder(game).withResource(ResourceName.food, 0).withUnit(UnitName.farmer, 0).build();
         var housedPeople = kingdom.getHousedPeopleCount();
 
-        var report = turnAction(kingdom).passTurn(0).turnReport().get();
+        var report = turnAction(kingdom).passTurn(0).data().get();
 
         assertEquals((int) Math.ceil(housedPeople * gameConfig.common().starvationLeaveRatio()), report.starvedPeople);
     }
@@ -71,7 +71,7 @@ class KingdomPopulationTest {
         // the starting ten farmers grow more than the kingdom eats
         var kingdom = new KingdomBuilder(game).withResource(ResourceName.food, 0).build();
 
-        var report = turnAction(kingdom).passTurn(0).turnReport().get();
+        var report = turnAction(kingdom).passTurn(0).data().get();
 
         assertEquals(1.0, report.nourishmentProductionFactor);
         assertEquals(0, report.starvedPeople);
@@ -83,7 +83,7 @@ class KingdomPopulationTest {
     {
         var kingdom = new KingdomBuilder(game).withResource(ResourceName.food, 100000).build();
 
-        var report = turnAction(kingdom).passTurn(0).turnReport().get();
+        var report = turnAction(kingdom).passTurn(0).data().get();
 
         assertEquals(0, report.starvedPeople);
     }
@@ -96,7 +96,7 @@ class KingdomPopulationTest {
         var toTrain = new UnitsMapDto();
         toTrain.setCount(UnitName.bowman, 50);
 
-        var trained = new KingdomTrainAction(kingdom, gameConfig).train(toTrain).units();
+        var trained = new KingdomTrainAction(kingdom, gameConfig).train(toTrain).data().orElseGet(UnitsMapDto::new);
 
         assertEquals(20, trained.getCount(UnitName.bowman));
     }

@@ -1,5 +1,6 @@
 package com.knightsofdarkness.web.alliance;
 
+import com.knightsofdarkness.web.common.alliance.AllianceInvitationDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.common.alliance.CreateAllianceDto;
-import com.knightsofdarkness.web.common.alliance.InviteAllianceResult;
+import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.kingdom.AttackType;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
@@ -47,9 +48,9 @@ public class AllianceTest
         var result = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
 
         assertTrue(result.success());
-        assertTrue(result.alliance().isPresent());
-        assertEquals("Test Alliance", result.alliance().get().name());
-        assertEquals(kingdom.getName(), result.alliance().get().emperor());
+        assertTrue(result.data().isPresent());
+        assertEquals("Test Alliance", result.data().get().name());
+        assertEquals(kingdom.getName(), result.data().get().emperor());
     }
 
     @Test
@@ -196,10 +197,10 @@ public class AllianceTest
         var inviteeKingdom = new KingdomBuilder(game).build();
         game.addKingdom(inviteeKingdom);
 
-        InviteAllianceResult inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), kingdom.getName(), alliance.getName());
+        ActionResult<AllianceInvitationDto> inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), kingdom.getName(), alliance.getName());
         assertTrue(inviteResult.success());
 
-        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), inviteResult.invitation().get().id());
+        var acceptResult = allianceService.acceptAllianceInvitation(inviteeKingdom.getName(), inviteResult.data().get().id());
         assertTrue(acceptResult.success());
         assertTrue(inviteeKingdom.getAlliance().isPresent());
         assertEquals(alliance.getName(), inviteeKingdom.getAlliance().get().getName());
@@ -221,7 +222,7 @@ public class AllianceTest
         createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance 2"), secondEmperor.getName());
         assertTrue(createResult.success());
 
-        InviteAllianceResult inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), secondEmperor.getName(), secondEmperor.getAlliance().get().getName());
+        ActionResult<AllianceInvitationDto> inviteResult = allianceService.inviteToAlliance(inviteeKingdom.getName(), secondEmperor.getName(), secondEmperor.getAlliance().get().getName());
         assertFalse(inviteResult.success());
         assertNotEquals(secondEmperor.getAlliance().get().getName(), inviteeKingdom.getAlliance().get().getName());
     }
@@ -240,7 +241,7 @@ public class AllianceTest
         var botKingdom = game.getKingdomRepository().getKingdomByName(botName);
         assertTrue(botKingdom.isPresent());
         assertTrue(botKingdom.get().getAlliance().isPresent());
-        assertEquals(createResult.alliance().get().name(), botKingdom.get().getAlliance().get().getName());
+        assertEquals(createResult.data().get().name(), botKingdom.get().getAlliance().get().getName());
     }
 
     @Test
@@ -310,7 +311,7 @@ public class AllianceTest
         allianceService.createAlliance(new CreateAllianceDto("Iron Pact"), kingdom.getName());
         var invitee = new KingdomBuilder(game).build();
         game.addKingdom(invitee);
-        var invitation = allianceService.inviteToAlliance(invitee.getName(), kingdom.getName(), "Iron Pact").invitation().get();
+        var invitation = allianceService.inviteToAlliance(invitee.getName(), kingdom.getName(), "Iron Pact").data().get();
 
         assertTrue(allianceService.rejectAllianceInvitation(invitee.getName(), invitation.id()).success());
 
