@@ -4,18 +4,20 @@ import { World } from "./client.ts";
 import { askingWarlord, coalitionWarlord, foundCoalition, guardian, treasurer, type Coalition, type Council } from "./coalition.ts";
 import { startServer, type ConfigOverrides } from "./server.ts";
 import { economist, turtle, warlord, type Strategy } from "./strategies.ts";
-import { finalSnapshot, foundRulers, runWorld, type Ruler, type WorldRun } from "./world.ts";
+import { finalSnapshot, foundRulers, runWorld, unevenPace, type Ruler, type WorldRun } from "./world.ts";
 
 const usage = `Play coalitions of ten against each other and report how each group fared.
 
-  node src/coalitions.ts [--turns 120] [--set path=value ...] [--compare] [--guard] [--fund] [--mirror] [--out run.json]
+  node src/coalitions.ts [--turns 120] [--set path=value ...] [--compare] [--guard] [--fund] [--mirror] [--uneven] [--solo-strikes] [--out run.json]
 
 Three groups of ten with the same make-up (5 economists, 3 warlords, 2 turtles): Order, a coalition whose warlords
 strike together through a war council; Horde, a coalition whose warlords each pick their own target; and Free, ten
 kingdoms in no alliance. The merchant bots play too. With --guard, Order's turtles become guardians who send soldiers to
 stand guard with their weakest allies. With --fund, Order's warlords ask for gold on the market and its economists pay
 half of their spare gold into those asks. With --mirror, Horde plays exactly as Order does, with its own war council, to
-see whether one of two equal coalitions runs away with the round.`;
+see whether one of two equal coalitions runs away with the round. With --uneven, rulers play in bursts of one to three
+turns at different ticks, as players who come back at different times. Order's warlords join the first army's strike so
+their armies land together; --solo-strikes has them march alone instead, to see what joining is worth.`;
 
 const { values } = parseArgs({
   options: {
@@ -25,6 +27,8 @@ const { values } = parseArgs({
     guard: { type: "boolean", default: false },
     fund: { type: "boolean", default: false },
     mirror: { type: "boolean", default: false },
+    uneven: { type: "boolean", default: false },
+    "solo-strikes": { type: "boolean", default: false },
     out: { type: "string" },
     help: { type: "boolean", default: false },
   },
@@ -77,8 +81,9 @@ const simulate = async (label: string, configOverrides: ConfigOverrides): Promis
         values.guard ? () => guardian(council) : () => turtle,
         values.fund ? () => treasurer() : () => economist,
       );
-    const order: Coalition = await foundCoalition(world, "Order", coordinated);
-    const horde: Coalition = await foundCoalition(world, "Horde", values.mirror ? coordinated : () => makeUp(() => warlord()));
+    const joins = !values["solo-strikes"];
+    const order: Coalition = await foundCoalition(world, "Order", coordinated, { joins });
+    const horde: Coalition = await foundCoalition(world, "Horde", values.mirror ? coordinated : () => makeUp(() => warlord()), { joins });
     const free: Group = {
       name: "Free",
       rulers: await foundRulers(
@@ -93,6 +98,7 @@ const simulate = async (label: string, configOverrides: ConfigOverrides): Promis
       world,
       groups.flatMap(group => group.rulers),
       turns,
+      { pace: values.uneven ? unevenPace : undefined },
     );
     console.error(`${label}: ${turns} turns in ${((Date.now() - started) / 1000).toFixed(1)} s`);
     return {

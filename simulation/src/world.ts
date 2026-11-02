@@ -74,15 +74,28 @@ const snapshot = (kingdom: Kingdom, turn: number, defense: number): Snapshot => 
   protection: kingdom.protectionTicks,
 });
 
+/** how many turns a ruler plays at one tick of the clock, by its place among the rulers */
+export type Pace = (index: number, turn: number) => number;
+
+/**
+ * real players come back at different times and spend the turns stored meanwhile: the n-th ruler plays every
+ * (n mod 3 + 1)-th tick and spends that many turns at once, so on average everyone keeps up with the clock
+ */
+export const unevenPace: Pace = (index, turn) => {
+  const every = (index % 3) + 1;
+  return turn % every === 0 ? every : 0;
+};
+
 /**
  * plays the given rulers for a number of turns: each turn the clock gives everyone a turn (bots act too), then every
- * ruler plays its strategy and passes the turn; the world is measured and checked after every turn
+ * ruler plays its strategy and passes the turn, or as many turns as its pace says; the world is measured and checked after
+ * every turn
  */
 export const runWorld = async (
   world: World,
   rulers: Ruler[],
   turns: number,
-  options: { bots?: boolean; afterTurn?: (turn: number) => Promise<void> } = {},
+  options: { bots?: boolean; afterTurn?: (turn: number) => Promise<void>; pace?: Pace } = {},
 ): Promise<WorldRun> => {
   const config = await world.config();
   const timeline: Snapshot[] = [];
@@ -91,11 +104,13 @@ export const runWorld = async (
   for (let turn = 1; turn <= turns; turn++) {
     await world.advance(1, options.bots ?? true);
     const rankings = await world.rankings();
-    for (const ruler of rulers) {
-      const [kingdom, details] = await Promise.all([ruler.player.kingdom(), ruler.player.details(ruler.strategy.weaponsPercentage)]);
-      await ruler.strategy.play({ player: ruler.player, world, config, kingdom, details, rankings, turn, memory: ruler.memory });
-      const passed = await ruler.player.passTurn(ruler.strategy.weaponsPercentage);
-      if (!passed.success) violations.push(`turn ${turn}, ${ruler.player.name}: could not pass the turn, ${passed.message}`);
+    for (const [index, ruler] of rulers.entries()) {
+      for (let play = 0; play < (options.pace?.(index, turn) ?? 1); play++) {
+        const [kingdom, details] = await Promise.all([ruler.player.kingdom(), ruler.player.details(ruler.strategy.weaponsPercentage)]);
+        await ruler.strategy.play({ player: ruler.player, world, config, kingdom, details, rankings, turn, memory: ruler.memory });
+        const passed = await ruler.player.passTurn(ruler.strategy.weaponsPercentage);
+        if (!passed.success) violations.push(`turn ${turn}, ${ruler.player.name}: could not pass the turn, ${passed.message}`);
+      }
     }
 
     const kingdoms = await world.kingdoms();

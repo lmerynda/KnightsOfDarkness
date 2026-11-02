@@ -3,8 +3,8 @@ import { test } from "node:test";
 import { World } from "../src/client.ts";
 import { askingWarlord, coalitionWarlord, foundCoalition, guardian, treasurer } from "../src/coalition.ts";
 import { startServer } from "../src/server.ts";
-import { economist, raider, warlord } from "../src/strategies.ts";
-import { runWorld } from "../src/world.ts";
+import { economist, raider, turtle, warlord } from "../src/strategies.ts";
+import { foundRulers, runWorld, unevenPace } from "../src/world.ts";
 
 // Two small coalitions at war: Order strikes together and guards its own, Horde plays every kingdom for itself.
 test("coalitions fight, guard each other and keep every rule", async () => {
@@ -47,6 +47,32 @@ test("a treasurer funds an allied warlord through the market", async () => {
     assert.ok(
       trades.some(note => note.message.startsWith(`${treasurerRuler.player.name} bought`)),
       "the treasurer never paid into the warlord's ask",
+    );
+  } finally {
+    await server.stop();
+  }
+});
+
+// Allied warlords who play at different paces still land one strike together: the later armies join the first one's.
+test("allied warlords at uneven paces join one strike", async () => {
+  const server = await startServer();
+  try {
+    const world = new World(server.url);
+    const order = await foundCoalition(world, "Order", council => [coalitionWarlord(council), coalitionWarlord(council), coalitionWarlord(council)]);
+    const wall = await foundRulers(world, [turtle, economist], "Wall");
+    const run = await runWorld(world, [...order.rulers, ...wall], 36, { bots: false, pace: unevenPace });
+
+    assert.deepEqual(run.violations, []);
+    const joined = (
+      await Promise.all(order.rulers.map(async ruler => (await ruler.player.notifications()).map(note => note.message)))
+    ).flat();
+    assert.ok(
+      joined.some(message => / joins our strike on /.test(message)),
+      "no warlord ever joined an ally's strike",
+    );
+    assert.ok(
+      joined.some(message => / struck .* right after our army/.test(message)),
+      "no joined army ever fought right after its lead",
     );
   } finally {
     await server.stop();

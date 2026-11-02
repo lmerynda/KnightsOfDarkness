@@ -150,16 +150,17 @@ export class Player {
     return this.post("/kingdom/fire", units);
   }
 
-  public landQuote(count: number): Promise<{ amount: number; cost: number }> {
+  public landQuote(count: number): Promise<{ count: number; cost: number }> {
     return this.get(`/kingdom/land-quote?count=${count}`);
   }
 
-  public buyLand(count: number): Promise<{ amount: number; cost: number }> {
+  public buyLand(count: number): Promise<{ count: number; cost: number }> {
     return this.post("/kingdom/buy-land", count);
   }
 
-  public sendAttack(target: string, attackType: AttackType, units: Partial<Counts<UnitName>>): Promise<ActionResult> {
-    return this.post("/kingdom/send-attack", { destinationKingdomName: target, attackType, units });
+  /** joins is an ally's army on the march against the same target: ours waits at the border and fights right after it lands */
+  public sendAttack(target: string, attackType: AttackType, units: Partial<Counts<UnitName>>, joins?: string): Promise<ActionResult> {
+    return this.post("/kingdom/send-attack", { destinationKingdomName: target, attackType, units, joins });
   }
 
   public sendSpies(target: string, spies: number): Promise<ActionResult & { report: SpyReport | null }> {

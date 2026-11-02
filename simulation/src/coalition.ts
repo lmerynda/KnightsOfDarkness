@@ -27,6 +27,10 @@ export type Council = {
   committed: number;
   /** kingdoms already named this attack turn, so each strike goes to a new enemy */
   struck: string[];
+  /** the first army sent on the current target; the warlords after it join its strike */
+  lead: string | null;
+  /** whether warlords join the first army's strike or each march alone, to measure what joining is worth */
+  joins: boolean;
 };
 
 export type Coalition = { name: string; rulers: Ruler[]; council: Council };
@@ -38,7 +42,8 @@ const shareAbove = 1.5;
 /**
  * a warlord who marches with the coalition: on an attack turn the first warlord to act scouts the largest enemy within
  * reach, and if the coalition's armies at home are together clearly stronger, warlords join the strike one after another
- * until enough strength marches; the next warlord then names the next enemy, so every army can strike in the same turn
+ * until enough strength marches, each joining the first army's strike so they land together; the next warlord then names
+ * the next enemy, so every army can strike in the same turn
  */
 export const coalitionWarlord = (council: Council, attackEvery = 6): Strategy => ({
   name: "allied warlord",
@@ -53,11 +58,13 @@ export const coalitionWarlord = (council: Council, attackEvery = 6): Strategy =>
       council.target = null;
       council.committed = 0;
       council.struck = [];
+      council.lead = null;
     }
     // once a strike has enough strength, the next warlord to act names a new enemy
     if (council.target === null || council.committed > council.defense * strikeMargin) {
       council.target = null;
       council.committed = 0;
+      council.lead = null;
       const candidate = attackableKingdoms(context).find(rank => !council.struck.includes(rank.kingdomName));
       if (!candidate || kingdom.units.availableUnits.spy <= 0) return;
       council.struck.push(candidate.kingdomName);
@@ -78,8 +85,13 @@ export const coalitionWarlord = (council: Council, attackEvery = 6): Strategy =>
     const army = armyAtHome(kingdom);
     const power = armyPower(army, config);
     if (power <= 0) return;
-    const sent = await player.sendAttack(council.target, "land", army);
-    if (sent.success) council.committed += power;
+    const sent = await player.sendAttack(council.target, "land", army, council.joins ? (council.lead ?? undefined) : undefined);
+    if (!sent.success) return;
+    council.committed += power;
+    if (council.lead === null) {
+      const target = council.target;
+      council.lead = (await player.kingdom()).ongoingAttacks.find(attack => attack.to === target)?.id ?? null;
+    }
   },
 });
 
@@ -183,7 +195,12 @@ export const treasurer = (share = 0.5): Strategy => ({
  * founds the rulers of one coalition: the first founds the alliance and invites the others, who accept; warlords made
  * with `coalitionWarlord(coalition.council)` march together
  */
-export const foundCoalition = async (world: World, name: string, roles: (council: Council) => Strategy[]): Promise<Coalition> => {
+export const foundCoalition = async (
+  world: World,
+  name: string,
+  roles: (council: Council) => Strategy[],
+  options: { joins?: boolean } = {},
+): Promise<Coalition> => {
   const council: Council = {
     members: [],
     warlords: [],
@@ -192,6 +209,8 @@ export const foundCoalition = async (world: World, name: string, roles: (council
     defense: Infinity,
     committed: 0,
     struck: [],
+    lead: null,
+    joins: options.joins ?? true,
   };
   const strategies = roles(council);
   const rulers = await foundRulers(world, strategies, name);

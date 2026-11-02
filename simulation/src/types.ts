@@ -37,7 +37,7 @@ export type Kingdom = {
   marketOffers: { id: string; resource: MarketResource; count: number; price: number }[];
   specialBuildings: { id: string; buildingType: SpecialBuildingType; level: number; isMaxLevel: boolean }[];
   lastTurnReport: TurnReport;
-  ongoingAttacks: { id: string; to: string; turnsLeft: number; units: Partial<Counts<UnitName>> }[];
+  ongoingAttacks: { id: string; to: string; turnsLeft: number; units: Partial<Counts<UnitName>>; joining: string | null }[];
   carriersOnTheMove: { id: string; to: string; turnsLeft: number }[];
   allianceName: string | null;
   protectionTicks: number;
