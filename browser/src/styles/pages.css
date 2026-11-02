@@ -337,10 +337,28 @@
   text-align: right;
 }
 
-.market-buy .row {
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: flex-end;
+/* the amount, Max and the buy button in one piece, narrow enough for a phone */
+.market-buy-field {
+  width: 168px;
+  margin-left: auto;
+}
+
+.market-buy-line {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .market-buy-line {
+    display: table-row;
+  }
+
+  .market-buy-line td {
+    padding-top: 0;
+  }
+
+  .market-buy-line .market-buy-field {
+    width: 100%;
+  }
 }
 
 /* ---------- letters ---------- */

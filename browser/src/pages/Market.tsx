@@ -14,57 +14,64 @@ const OfferRow: React.FC<{ offer: MarketOffer; own: boolean; ally: boolean; onDo
   const affordable = Math.min(offer.count, Math.floor(kingdom.resources.gold / offer.price));
   const label = marketResourceLabel[offer.resource].toLowerCase();
 
+  // on a phone the buy field gets a line of its own under the offer, where it has room
+  const action = own ? (
+    <button
+      className="button quiet small"
+      type="button"
+      onClick={async () => {
+        await act(
+          () => api.withdrawOffer(offer.id),
+          result => ({ text: result.success ? `Your ${label} came back from the market` : result.message, failure: !result.success }),
+        );
+        onDone();
+      }}
+    >
+      Withdraw
+    </button>
+  ) : (
+    <div className="market-buy-field">
+      <CountField
+        label={`Amount of ${label} to buy`}
+        hideLabel
+        value={count}
+        onChange={setCount}
+        max={affordable}
+        action={{
+          label: count > 0 ? `Buy ${label} for ${formatNumber(count * offer.price)} gold` : `Buy ${label}`,
+          icon: "gold",
+          onClick: async () => {
+            await act(
+              () => api.buyOffer(offer.id, count),
+              result => ({
+                text:
+                  result.count > 0
+                    ? `Bought ${formatNumber(result.count)} ${label} for ${formatNumber(result.totalCost)} gold`
+                    : "Not enough gold for any of it",
+                failure: result.count === 0,
+              }),
+            );
+            setCount(0);
+            onDone();
+          },
+        }}
+      />
+    </div>
+  );
+
   return (
-    <tr className={own ? "mine" : undefined}>
-      <td>{own ? `${offer.sellerName} (you)` : ally ? `${offer.sellerName} (ally)` : offer.sellerName}</td>
-      <td className="number">{formatNumber(offer.count)}</td>
-      <td className="number">{formatNumber(offer.price)}</td>
-      <td className="number muted narrow-hidden">{formatNumber(offer.count * offer.price)}</td>
-      <td className="market-buy">
-        {own ? (
-          <button
-            className="button quiet small"
-            type="button"
-            onClick={async () => {
-              await act(
-                () => api.withdrawOffer(offer.id),
-                result => ({ text: result.success ? `Your ${label} came back from the market` : result.message, failure: !result.success }),
-              );
-              onDone();
-            }}
-          >
-            Withdraw
-          </button>
-        ) : (
-          <div className="row">
-            <div style={{ width: 140 }}>
-              <CountField label={`Amount of ${label} to buy`} hideLabel value={count} onChange={setCount} max={affordable} />
-            </div>
-            <button
-              className="button small"
-              type="button"
-              disabled={count <= 0}
-              onClick={async () => {
-                await act(
-                  () => api.buyOffer(offer.id, count),
-                  result => ({
-                    text:
-                      result.count > 0
-                        ? `Bought ${formatNumber(result.count)} ${label} for ${formatNumber(result.totalCost)} gold`
-                        : "Not enough gold for any of it",
-                    failure: result.count === 0,
-                  }),
-                );
-                setCount(0);
-                onDone();
-              }}
-            >
-              Buy{count > 0 ? ` for ${formatNumber(count * offer.price)}` : ""}
-            </button>
-          </div>
-        )}
-      </td>
-    </tr>
+    <>
+      <tr className={own ? "mine" : undefined}>
+        <td>{own ? `${offer.sellerName} (you)` : ally ? `${offer.sellerName} (ally)` : offer.sellerName}</td>
+        <td className="number">{formatNumber(offer.count)}</td>
+        <td className="number">{formatNumber(offer.price)}</td>
+        <td className="number muted narrow-hidden">{formatNumber(offer.count * offer.price)}</td>
+        <td className="market-buy narrow-hidden">{action}</td>
+      </tr>
+      <tr className={`market-buy-line ${own ? "mine" : ""}`}>
+        <td colSpan={3}>{action}</td>
+      </tr>
+    </>
   );
 };
 

@@ -180,6 +180,23 @@ test("food can be bought from a merchant on the market", async ({ page }) => {
   await expect(toast(page, /Bought 10 food for [\d,]+ gold/)).toBeVisible();
 });
 
+test("on a phone the market's buy field stays on screen", async ({ page }) => {
+  await foundKingdom(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/kingdom/market");
+
+  const buy = page.getByRole("button", { name: /^Buy/ }).first();
+  await expect(buy).toBeVisible();
+  const box = await buy.boundingBox();
+  expect((box?.x ?? Infinity) + (box?.width ?? 0)).toBeLessThanOrEqual(390);
+  await page
+    .getByRole("spinbutton", { name: /^Amount of food to buy/ })
+    .first()
+    .fill("10");
+  await buy.click();
+  await expect(toast(page, /Bought 10 food for [\d,]+ gold/)).toBeVisible();
+});
+
 test("letters reach the other kingdom", async ({ page }) => {
   const sender = await foundKingdom(page, "Writer");
   await goTo(page, "Letters");
