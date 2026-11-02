@@ -93,6 +93,8 @@ export type OngoingAttack = {
   units: Partial<Counts<UnitName>>;
   /** the ally whose strike this army joined: it waits at the border and fights right after that army lands */
   joining: string | null;
+  /** how many of its owner's turns a joined army has waited at the border for its lead */
+  turnsAtBorder: number;
 };
 
 export type Kingdom = {
@@ -157,6 +159,8 @@ export type GameConfig = {
   carrierCapacity: Counts<MarketResource>;
   attack: {
     turnsToArrive: number;
+    /** how many of its owner's turns a joined army waits at the border before it fights alone */
+    turnsToWaitAtBorder: number;
     minTargetLandRatio: number;
     maxLandCaptureRatio: number;
     /** how steeply the land a win takes shrinks with the target's size against the attacker's */

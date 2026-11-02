@@ -39,6 +39,8 @@ public class KingdomOngoingAttackEntity {
     // the ally's army this one joins: it waits at the border and fights right after that army lands
     UUID joinsAttackId;
 
+    int turnsAtBorder;
+
     String joinsKingdomName;
 
     public KingdomOngoingAttackEntity()
@@ -65,6 +67,7 @@ public class KingdomOngoingAttackEntity {
         dto.attackType = attackType;
         dto.units = units;
         dto.joining = joinsKingdomName;
+        dto.turnsAtBorder = turnsAtBorder;
         return dto;
     }
 

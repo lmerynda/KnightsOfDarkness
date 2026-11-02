@@ -376,6 +376,7 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await passTurns(emperorPage, 5);
   const ours = emperorPage.locator("tr").filter({ hasText: target });
   await expect(ours).toContainText("At the border");
+  await expect(ours).toContainText("or alone in 3 turns");
   await expect(ours).toContainText(`joining ${squire.kingdomName}'s strike`);
   await goTo(emperorPage, "Overview");
   await expect(emperorPage.locator("main")).toContainText(`Army at the border of ${target}, waiting for ${squire.kingdomName}'s army`);

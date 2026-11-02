@@ -11,7 +11,7 @@ public interface IKingdomInteractor {
     void resolveAttack(KingdomEntity kingdom, KingdomOngoingAttackEntity attack);
 
     /**
-     * an army that joined an ally's strike holds at the border while that army is still on the march
+     * an army that joined an ally's strike holds at the border while that army is still on the march, for a few of its owner's turns at most
      */
     boolean waitsAtBorder(KingdomOngoingAttackEntity attack);
 

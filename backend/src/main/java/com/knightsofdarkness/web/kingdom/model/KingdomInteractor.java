@@ -132,7 +132,7 @@ public class KingdomInteractor implements IKingdomInteractor
     public boolean waitsAtBorder(KingdomOngoingAttackEntity attack)
     {
         var lead = attack.getJoinsAttackId();
-        return lead != null && kingdomRepository.getAttacksOn(attack.getTargetKingdomName()).stream().anyMatch(other -> other.getId().equals(lead));
+        return lead != null && attack.turnsAtBorder < gameConfig.attack().turnsToWaitAtBorder() && kingdomRepository.getAttacksOn(attack.getTargetKingdomName()).stream().anyMatch(other -> other.getId().equals(lead));
     }
 
     /**

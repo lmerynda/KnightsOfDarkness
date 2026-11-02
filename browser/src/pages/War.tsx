@@ -328,7 +328,7 @@ const Threats: React.FC = () => {
 };
 
 const Marching: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => {
-  const { kingdom, act } = useGame();
+  const { kingdom, config, act } = useGame();
   // allies whose armies joined a strike of ours on the same target
   const joinedBy = (to: string): string[] =>
     (warRoom?.marching ?? []).filter(march => march.joining === kingdom.name && march.to === to).map(march => march.from);
@@ -363,7 +363,10 @@ const Marching: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => {
                   {attack.joining && attack.turnsLeft === 0 ? (
                     <>
                       At the border
-                      <span className="muted block">fights when {attack.joining}'s army lands</span>
+                      <span className="muted block">
+                        fights when {attack.joining}'s army lands, or alone in{" "}
+                        {plural(config.attack.turnsToWaitAtBorder - attack.turnsAtBorder, "turn", "turns")}
+                      </span>
                     </>
                   ) : (
                     plural(attack.turnsLeft, "turn", "turns")
@@ -480,7 +483,7 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
 
 /** allies' armies on the march, so a ruler can send theirs to land in the same strike */
 const AlliedMarches: React.FC<{ warRoom: WarRoom | undefined; onJoin: (march: OngoingAttack) => void }> = ({ warRoom, onJoin }) => {
-  const { kingdom } = useGame();
+  const { kingdom, config } = useGame();
   // our army already rides in this strike, beside its lead
   const joined = (march: OngoingAttack): boolean =>
     kingdom.ongoingAttacks.some(attack => attack.to === march.to && attack.joining === (march.joining ?? march.from));
@@ -489,7 +492,7 @@ const AlliedMarches: React.FC<{ warRoom: WarRoom | undefined; onJoin: (march: On
   return (
     <Panel
       title="Allies on the march"
-      help="Join a strike and your army marches as usual, then waits at the border and fights right after the ally's army lands, however fast either of you passes turns; if it is late, it fights when it arrives. A beaten kingdom is protected only from armies sent after its defeat, so every army already on the road lands."
+      help={`Join a strike and your army marches as usual, then waits at the border and fights right after the ally's army lands, however fast either of you passes turns; after ${plural(config.attack.turnsToWaitAtBorder, "turn", "turns")} of yours at the border it fights alone, and if it is late it fights when it arrives. A beaten kingdom is protected only from armies sent after its defeat, so every army already on the road lands.`}
     >
       <ul className="plain-list">
         {marches.map(march => (

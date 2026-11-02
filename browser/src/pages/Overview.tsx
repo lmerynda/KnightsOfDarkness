@@ -217,7 +217,7 @@ const Realm: React.FC = () => {
 };
 
 const Movements: React.FC = () => {
-  const { kingdom } = useGame();
+  const { kingdom, config } = useGame();
   const moves: { id: string; text: string; turns: number; status?: string; link: string }[] = [
     ...kingdom.incoming.map((army, index) => ({
       id: `incoming-${index}`,
@@ -231,7 +231,7 @@ const Movements: React.FC = () => {
             id: attack.id,
             text: `Army at the border of ${attack.to}, waiting for ${attack.joining}'s army`,
             turns: 0,
-            status: "waiting",
+            status: `alone in ${plural(config.attack.turnsToWaitAtBorder - attack.turnsAtBorder, "turn", "turns")}`,
             link: "/kingdom/war",
           }
         : {

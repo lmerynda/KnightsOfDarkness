@@ -140,6 +140,23 @@ class StrikeTogetherTest
     }
 
     @Test
+    void aJoinedArmyWhoseLeadIsSlow_shouldFightAloneOnceItHasWaitedLongEnough()
+    {
+        var lead = march(leader, null);
+        march(joiner, lead);
+
+        passTurns(joiner, config.attack().turnsToArrive() + config.attack().turnsToWaitAtBorder() - 1);
+        assertThat(joiner.getOngoingAttacks()).singleElement().satisfies(attack -> assertEquals(config.attack().turnsToWaitAtBorder() - 1, attack.toDto().turnsAtBorder));
+        assertEquals(0, battlesBy(joiner));
+
+        passTurns(joiner, 1);
+
+        assertThat(joiner.getOngoingAttacks()).isEmpty();
+        assertEquals(1, battlesBy(joiner));
+        assertThat(leader.getOngoingAttacks()).hasSize(1);
+    }
+
+    @Test
     void onlyAnAllysStrikeOnTheSameTarget_canBeJoined()
     {
         var lead = march(leader, null);

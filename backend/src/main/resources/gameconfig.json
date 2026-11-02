@@ -172,6 +172,7 @@
     },
     "attack": {
         "turnsToArrive": 4,
+        "turnsToWaitAtBorder": 4,
         "minTargetLandRatio": 0.5,
         "maxLandCaptureRatio": 0.15,
         "maxPlunderRatio": 0.2,

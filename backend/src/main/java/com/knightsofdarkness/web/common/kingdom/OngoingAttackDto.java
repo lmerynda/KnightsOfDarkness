@@ -11,4 +11,6 @@ public class OngoingAttackDto {
     public UnitsMapDto units;
     /** the ally whose strike this army joins, or null when it marches alone */
     public String joining;
+    /** how many of its owner's turns a joined army has waited at the border for its lead */
+    public int turnsAtBorder;
 }
