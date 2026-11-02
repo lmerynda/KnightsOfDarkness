@@ -58,7 +58,7 @@ public class KingdomDetailsCalculator {
 
     private static class IdleInteractor implements IKingdomInteractor {
         @Override
-        public void transferResources(KingdomEntity from, String to, MarketResource resource, int amount)
+        public void transferResources(KingdomEntity from, String to, MarketResource resource, int count)
         {
             // a forecast does not touch other kingdoms
         }

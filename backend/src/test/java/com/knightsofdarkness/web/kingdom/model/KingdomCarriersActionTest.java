@@ -88,7 +88,7 @@ class KingdomCarriersActionTest {
         var sendCarriersResult = action.sendCarriers(sendCarriersDto);
 
         assertTrue(sendCarriersResult.success());
-        assertThat(sendCarriersResult.data().get().amount()).isEqualTo(50);
+        assertThat(sendCarriersResult.data().get().count()).isEqualTo(50);
         assertEquals(0, kingdom.getResources().getCount(ResourceName.food));
         assertEquals(9, kingdom.getUnits().getAvailableCount(UnitName.carrier));
     }
@@ -105,7 +105,7 @@ class KingdomCarriersActionTest {
         var sendCarriersResult = action.sendCarriers(sendCarriersDto);
 
         assertTrue(sendCarriersResult.success());
-        assertThat(sendCarriersResult.data().get().amount()).isEqualTo(carrierCapacity);
+        assertThat(sendCarriersResult.data().get().count()).isEqualTo(carrierCapacity);
         assertEquals(900, kingdom.getResources().getCount(ResourceName.food));
         assertEquals(0, kingdom.getUnits().getAvailableCount(UnitName.carrier));
     }

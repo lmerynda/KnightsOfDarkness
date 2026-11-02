@@ -54,13 +54,13 @@ export const Panel: React.FC<{
   </section>
 );
 
-/** what a field's own button does with the amount: an icon beside Max that carries out just this order */
+/** what a field's own button does with the count: an icon beside Max that carries out just this order */
 export type FieldAction = { label: string; icon: IconName; onClick: () => void; danger?: boolean };
 
 /**
  * a whole number field with a button that fills in the most the player can afford
  */
-export const AmountField: React.FC<{
+export const CountField: React.FC<{
   value: number;
   onChange: (value: number) => void;
   max?: number;
@@ -74,7 +74,7 @@ export const AmountField: React.FC<{
       <label htmlFor={id} className={hideLabel ? "visually-hidden" : undefined}>
         {label}
       </label>
-      <span className="amount">
+      <span className="count-field">
         <input
           id={id}
           className="input"

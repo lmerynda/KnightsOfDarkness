@@ -30,7 +30,7 @@ public interface IMarket {
 
     Optional<MarketOfferEntity> findOfferById(UUID id);
 
-    BuyMarketOfferResult buyExistingOffer(MarketOfferEntity offer, KingdomEntity seller, KingdomEntity buyer, int amount);
+    BuyMarketOfferResult buyExistingOffer(MarketOfferEntity offer, KingdomEntity seller, KingdomEntity buyer, int count);
 
     void updateMarketTransactionsAverages(Instant from, Instant to);
 

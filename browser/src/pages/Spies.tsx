@@ -5,7 +5,7 @@ import { buildingNames, unitNames } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, buildingLore, resourceLabel, unitLore } from "../game/lore";
 import { Crest } from "../ui/Crest";
-import { AmountField, Banner, Panel } from "../ui/parts";
+import { CountField, Banner, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
 import { Term } from "../ui/Tip";
 import { counterIntelligenceHelp } from "../game/help";
@@ -111,7 +111,7 @@ export const Spies: React.FC = () => {
               </select>
             </label>
             <div style={{ width: 180 }}>
-              <AmountField label={`Spies, ${formatNumber(available)} at home`} value={spies} onChange={setSpies} max={available} />
+              <CountField label={`Spies, ${formatNumber(available)} at home`} value={spies} onChange={setSpies} max={available} />
             </div>
             <button className="button" type="button" disabled={!target || spies <= 0 || spies > available} onClick={send}>
               Send spies

@@ -251,7 +251,7 @@ const Movements: React.FC = () => {
       })),
     ...kingdom.carriersOnTheMove.map(carriers => ({
       id: carriers.id,
-      text: `${formatNumber(carriers.amount)} ${marketResourceLabel[carriers.resource].toLowerCase()} on the road to ${carriers.to}`,
+      text: `${formatNumber(carriers.count)} ${marketResourceLabel[carriers.resource].toLowerCase()} on the road to ${carriers.to}`,
       turns: carriers.turnsLeft,
       link: "/kingdom/carriers",
     })),

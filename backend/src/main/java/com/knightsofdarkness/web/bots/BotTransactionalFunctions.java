@@ -15,8 +15,8 @@ public class BotTransactionalFunctions
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public static BuyMarketOfferResult buyOffer(IMarket market, int amountToBuy, MarketOfferEntity offer, KingdomEntity buyer)
+    public static BuyMarketOfferResult buyOffer(IMarket market, int countToBuy, MarketOfferEntity offer, KingdomEntity buyer)
     {
-        return market.buyExistingOffer(offer, offer.getSeller(), buyer, amountToBuy);
+        return market.buyExistingOffer(offer, offer.getSeller(), buyer, countToBuy);
     }
 }

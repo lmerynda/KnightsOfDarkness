@@ -83,7 +83,7 @@ public class MarketService
     }
 
     @Transactional
-    public Optional<BuyMarketOfferResult> buyOffer(UUID id, int amount, String buyerName)
+    public Optional<BuyMarketOfferResult> buyOffer(UUID id, int count, String buyerName)
     {
         var maybeOffer = market.findOfferById(id);
         var maybeBuyerKingdom = kingdomRepository.getKingdomByName(buyerName);
@@ -100,9 +100,9 @@ public class MarketService
         // to avoid complications in persistence layer deserialization
         var seller = offer.getSeller().getName().equals(buyerName) ? buyer : offer.getSeller();
 
-        log.info("Transaction on {} with {} and amount {}", offer, buyerName, amount);
+        log.info("Transaction on {} with {} and count {}", offer, buyerName, count);
 
-        var result = market.buyExistingOffer(offer, seller, buyer, amount);
+        var result = market.buyExistingOffer(offer, seller, buyer, count);
 
         // TODO report? what if the action failed?
         return Optional.of(result);

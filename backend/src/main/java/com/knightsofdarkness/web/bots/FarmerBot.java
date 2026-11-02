@@ -67,16 +67,16 @@ public class FarmerBot extends Bot
 
     private int postFoodOffer()
     {
-        var foodAmount = kingdom.getResources().getCount(ResourceName.food);
+        var foodCount = kingdom.getResources().getCount(ResourceName.food);
         var foodUpkeep = kingdomDetailsProvider.getFoodUpkeep(kingdom);
-        var amountToOffer = Math.max(0, foodAmount - foodUpkeep);
+        var countToOffer = Math.max(0, foodCount - foodUpkeep);
 
-        if (amountToOffer > 0)
+        if (countToOffer > 0)
         {
-            botFunctions.postOffer(kingdom, market, MarketResource.food, amountToOffer, 15);
+            botFunctions.postOffer(kingdom, market, MarketResource.food, countToOffer, 15);
         }
 
-        return amountToOffer;
+        return countToOffer;
     }
 
     @Override

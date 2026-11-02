@@ -104,18 +104,18 @@
   box-shadow: 0 0 0 2px rgba(184, 154, 90, 0.25);
 }
 
-.amount {
+.count-field {
   display: flex;
   align-items: stretch;
 }
 
-.amount .input {
+.count-field .input {
   min-width: 0;
   border-radius: var(--radius-small) 0 0 var(--radius-small);
   text-align: right;
 }
 
-.amount .max {
+.count-field .max {
   flex: none;
   padding: 0 var(--space-3);
   border: 1px solid rgba(142, 154, 166, 0.3);
@@ -127,12 +127,12 @@
   cursor: pointer;
 }
 
-.amount .max:hover {
+.count-field .max:hover {
   color: var(--gold-bright);
 }
 
 /* the field's own order, carried out at once */
-.amount .act {
+.count-field .act {
   display: grid;
   flex: none;
   place-items: center;
@@ -144,20 +144,20 @@
   cursor: pointer;
 }
 
-.amount .act:hover:not(:disabled) {
+.count-field .act:hover:not(:disabled) {
   background: rgba(224, 138, 46, 0.28);
 }
 
-.amount .act.danger {
+.count-field .act.danger {
   border-color: rgba(178, 78, 68, 0.6);
   background: rgba(178, 78, 68, 0.14);
 }
 
-.amount .act.danger:hover:not(:disabled) {
+.count-field .act.danger:hover:not(:disabled) {
   background: rgba(178, 78, 68, 0.3);
 }
 
-.amount .act:disabled {
+.count-field .act:disabled {
   border-color: var(--rule);
   background: none;
   cursor: default;

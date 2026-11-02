@@ -227,15 +227,15 @@ public class KingdomService
     }
 
     @Transactional(readOnly = true)
-    public Optional<LandTransaction> quoteLand(String name, int amount)
+    public Optional<LandTransaction> quoteLand(String name, int count)
     {
-        return kingdomRepository.getKingdomByName(name).map(kingdom -> KingdomOtherAction.calculateCost(kingdom.getResources().getCount(ResourceName.land), amount, kingdom.getResources().getCount(ResourceName.gold)));
+        return kingdomRepository.getKingdomByName(name).map(kingdom -> KingdomOtherAction.calculateCost(kingdom.getResources().getCount(ResourceName.land), count, kingdom.getResources().getCount(ResourceName.gold)));
     }
 
     @Transactional
-    public Optional<LandTransaction> buyLand(String name, int amount)
+    public Optional<LandTransaction> buyLand(String name, int count)
     {
-        log.info("[{}] buying land {}", name, amount);
+        log.info("[{}] buying land {}", name, count);
         Optional<KingdomEntity> maybeKingdom = kingdomRepository.getKingdomByName(name);
         if (maybeKingdom.isEmpty())
         {
@@ -244,7 +244,7 @@ public class KingdomService
 
         var kingdom = maybeKingdom.get();
         var action = new KingdomOtherAction(kingdom);
-        var transaction = action.buyLand(amount);
+        var transaction = action.buyLand(count);
         kingdomRepository.update(kingdom);
 
         return Optional.of(transaction);

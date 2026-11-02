@@ -7,7 +7,7 @@ import { useGame } from "../game/useGame";
 import { art, buildingLore, resourceLabel, unitGroups, unitLore } from "../game/lore";
 import { unitHome } from "../game/rules";
 import { Icon } from "../ui/Icon";
-import { AmountField, Banner, Choice } from "../ui/parts";
+import { CountField, Banner, Choice } from "../ui/parts";
 import { formatNumber, plural } from "../ui/format";
 
 type Order = Partial<Counts<UnitName>>;
@@ -183,7 +183,7 @@ export const Train: React.FC = () => {
                       </div>
                     </div>
                     <div className="plate-input">
-                      <AmountField
+                      <CountField
                         label={`${unitLore[unit].plural} to ${mode}`}
                         hideLabel
                         value={order[unit] ?? 0}

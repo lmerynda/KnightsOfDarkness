@@ -50,7 +50,7 @@ const growLand = async ({ player }: TurnContext): Promise<void> => {
   let acres = Math.max(1, Math.floor(kingdom.resources.land / 5));
   while (acres > 0) {
     const quote = await player.landQuote(acres);
-    if (quote.amount === acres && quote.cost <= budget) {
+    if (quote.count === acres && quote.cost <= budget) {
       await player.buyLand(acres);
       return;
     }

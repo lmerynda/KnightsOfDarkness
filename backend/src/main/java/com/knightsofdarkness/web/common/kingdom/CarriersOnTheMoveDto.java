@@ -11,9 +11,9 @@ public class CarriersOnTheMoveDto {
     public int turnsLeft;
     public int carriersCount;
     public MarketResource resource;
-    public int amount;
+    public int count;
 
-    public CarriersOnTheMoveDto(UUID id, String from, String to, int turnsLeft, int carriersCount, MarketResource resource, int amount)
+    public CarriersOnTheMoveDto(UUID id, String from, String to, int turnsLeft, int carriersCount, MarketResource resource, int count)
     {
         this.id = id;
         this.from = from;
@@ -21,7 +21,7 @@ public class CarriersOnTheMoveDto {
         this.turnsLeft = turnsLeft;
         this.carriersCount = carriersCount;
         this.resource = resource;
-        this.amount = amount;
+        this.count = count;
     }
 
     public String toString()
@@ -33,7 +33,7 @@ public class CarriersOnTheMoveDto {
                 ", turnsLeft=" + turnsLeft +
                 ", carriersCount=" + carriersCount +
                 ", resource=" + resource +
-                ", amount=" + amount +
+                ", count=" + count +
                 '}';
     }
 }

@@ -26,7 +26,7 @@ public class KingdomOtherAction {
         var transaction = calculateCost(initialLand, count, availableGold);
 
         kingdom.getResources().subtractCount(ResourceName.gold, transaction.cost());
-        kingdom.getResources().addCount(ResourceName.land, transaction.amount());
+        kingdom.getResources().addCount(ResourceName.land, transaction.count());
 
         return transaction;
     }
@@ -34,7 +34,7 @@ public class KingdomOtherAction {
     public static LandTransaction calculateCost(int initialLand, int count, int availableGold)
     {
         // TODO split this function to separately cover cost and how much can be bought
-        // for a given amount of gold
+        // for a given sum of gold
         var power = 2; // linear function f(x) = 1/10 * x^2
         var landPrice = 0;
         var landToBuy = 0;

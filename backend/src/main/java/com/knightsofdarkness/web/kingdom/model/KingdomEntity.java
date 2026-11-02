@@ -217,9 +217,9 @@ public class KingdomEntity
     }
 
     // TODO do it directly?
-    public void receiveResourceTransfer(MarketResource resource, int amount)
+    public void receiveResourceTransfer(MarketResource resource, int count)
     {
-        resources.addCount(ResourceName.from(resource), amount);
+        resources.addCount(ResourceName.from(resource), count);
     }
 
     public void setAlliance(AllianceEntity allianceEntity)

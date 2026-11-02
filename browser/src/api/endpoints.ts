@@ -56,8 +56,8 @@ export const api = {
     post("/kingdom/build-special-building", { id, buildingPoints }),
   demolishSpecialBuilding: (id: string): Promise<boolean> => post("/kingdom/demolish-special-building", { id }),
 
-  sendCarriers: (destinationKingdomName: string, resource: MarketResource, amount: number): Promise<ActionResult> =>
-    post("/kingdom/send-carriers", { destinationKingdomName, resource, amount }),
+  sendCarriers: (destinationKingdomName: string, resource: MarketResource, count: number): Promise<ActionResult> =>
+    post("/kingdom/send-carriers", { destinationKingdomName, resource, count }),
   recallCarriers: (id: string): Promise<boolean> => post("/kingdom/withdraw-carriers", id),
   /** joins is an ally's army on the march against the same target, whose strike ours joins */
   sendAttack: (

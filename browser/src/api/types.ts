@@ -81,7 +81,7 @@ export type CarriersOnTheMove = {
   turnsLeft: number;
   carriersCount: number;
   resource: MarketResource;
-  amount: number;
+  count: number;
 };
 
 export type OngoingAttack = {
@@ -176,7 +176,7 @@ export type ActionResult = { message: string; success: boolean };
 
 export type PassTurnResult = ActionResult & { turnReport: TurnReport | null };
 
-export type LandTransaction = { amount: number; cost: number };
+export type LandTransaction = { count: number; cost: number };
 
 export type BattleReport = {
   id: string;

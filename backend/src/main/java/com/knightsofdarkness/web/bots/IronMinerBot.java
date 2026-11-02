@@ -66,14 +66,14 @@ public class IronMinerBot extends Bot
 
     private int postIronOffer()
     {
-        var ironAmount = kingdom.getResources().getCount(ResourceName.iron);
+        var ironCount = kingdom.getResources().getCount(ResourceName.iron);
 
-        if (ironAmount > 0)
+        if (ironCount > 0)
         {
-            botFunctions.postOffer(kingdom, market, MarketResource.iron, ironAmount, 25);
+            botFunctions.postOffer(kingdom, market, MarketResource.iron, ironCount, 25);
         }
 
-        return ironAmount;
+        return ironCount;
     }
 
     @Override

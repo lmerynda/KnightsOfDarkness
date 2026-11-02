@@ -93,7 +93,7 @@ class KingdomTurnTest {
     }
 
     @Test
-    void passTurn_withEnoughIronAndNoIronProduction_shouldConsumeExactAmountOfIron()
+    void passTurn_withEnoughIronAndNoIronProduction_shouldConsumeExactCountOfIron()
     {
         var blacksmithCount = 10;
         var kingdom = kingdomBuilder.withUnit(UnitName.blacksmith, blacksmithCount).withUnit(UnitName.ironMiner, 0).build();

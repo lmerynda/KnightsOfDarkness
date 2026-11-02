@@ -7,7 +7,7 @@ import { useGame } from "../game/useGame";
 import { art, marketResourceLabel } from "../game/lore";
 import { estimatedDefense } from "../game/rules";
 import { Crest } from "../ui/Crest";
-import { AmountField, Banner, Panel } from "../ui/parts";
+import { CountField, Banner, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
 
 const Members: React.FC<{ alliance: Alliance; onChange: () => void }> = ({ alliance, onChange }) => {
@@ -361,7 +361,7 @@ const GoldPanel: React.FC = () => {
     >
       <div className="row">
         <div style={{ width: 180 }}>
-          <AmountField label="Gold to ask for" value={ask} onChange={setAsk} />
+          <CountField label="Gold to ask for" value={ask} onChange={setAsk} />
         </div>
         <button
           className="button"

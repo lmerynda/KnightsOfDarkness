@@ -34,14 +34,14 @@ public final class BotFunctions
 
     public int buyFoodForUpkeep(IMarket market)
     {
-        var foodAmount = kingdom.getResources().getCount(ResourceName.food);
+        var foodCount = kingdom.getResources().getCount(ResourceName.food);
         var foodUpkeep = kingdomDetailsProvider.getFoodUpkeep(kingdom);
-        var amountToBuy = Math.max(0, foodUpkeep - foodAmount);
-        log.info("[{}] Food to buy {} to maintain upkeep {}, while kingdom has {}", kingdom.getName(), amountToBuy, foodUpkeep, foodAmount);
+        var countToBuy = Math.max(0, foodUpkeep - foodCount);
+        log.info("[{}] Food to buy {} to maintain upkeep {}, while kingdom has {}", kingdom.getName(), countToBuy, foodUpkeep, foodCount);
         var totalBought = 0;
 
-        // TODO accumulation of amountToBuy and totalBought is the same thing
-        while (amountToBuy > 0)
+        // TODO accumulation of countToBuy and totalBought is the same thing
+        while (countToBuy > 0)
         {
             var optionalOffer = market.getCheapestOfferByResource(MarketResource.food);
             if (optionalOffer.isEmpty())
@@ -51,14 +51,14 @@ public final class BotFunctions
             }
 
             var offer = optionalOffer.get();
-            var result = BotTransactionalFunctions.buyOffer(market, amountToBuy, offer, kingdom);
+            var result = BotTransactionalFunctions.buyOffer(market, countToBuy, offer, kingdom);
             if (result.count() == 0)
             {
                 // Could not afford, TODO tests
                 log.info("[{}] didn't have enough gold to buy food", kingdom.getName());
                 return totalBought;
             }
-            amountToBuy -= result.count();
+            countToBuy -= result.count();
             totalBought += result.count();
         }
 
@@ -70,12 +70,12 @@ public final class BotFunctions
         var blacksmithProduction = kingdom.getUnits().getAvailableCount(UnitName.blacksmith) * gameConfig.production().getProductionRate(UnitName.blacksmith);
         var ironNeeded = blacksmithProduction;
 
-        var ironAmount = kingdom.getResources().getCount(ResourceName.iron);
-        var amountToBuy = Math.max(0, ironNeeded - ironAmount);
+        var ironCount = kingdom.getResources().getCount(ResourceName.iron);
+        var countToBuy = Math.max(0, ironNeeded - ironCount);
         var totalBought = 0;
 
-        // TODO accumulation of amountToBuy and totalBought is the same thing
-        while (amountToBuy > 0)
+        // TODO accumulation of countToBuy and totalBought is the same thing
+        while (countToBuy > 0)
         {
             var optionalOffer = market.getCheapestOfferByResource(MarketResource.iron);
             if (optionalOffer.isEmpty())
@@ -84,13 +84,13 @@ public final class BotFunctions
             }
 
             var offer = optionalOffer.get();
-            var result = BotTransactionalFunctions.buyOffer(market, amountToBuy, offer, kingdom);
+            var result = BotTransactionalFunctions.buyOffer(market, countToBuy, offer, kingdom);
             if (result.count() == 0)
             {
                 // Could not afford, TODO tests
                 return totalBought;
             }
-            amountToBuy -= result.count();
+            countToBuy -= result.count();
             totalBought += result.count();
         }
 
@@ -105,18 +105,18 @@ public final class BotFunctions
         if (unusedLand < count && landBelowCap > 0)
         {
             var action = new KingdomOtherAction(kingdom);
-            return action.buyLand(Math.min(count, landBelowCap)).amount();
+            return action.buyLand(Math.min(count, landBelowCap)).count();
         }
 
         return 0;
     }
 
-    public void postOffer(KingdomEntity kingdom, IMarket market, MarketResource resource, int amount, int price)
+    public void postOffer(KingdomEntity kingdom, IMarket market, MarketResource resource, int count, int price)
     {
-        var amountToOffer = Math.min(amount, gameConfig.bots().getMaxOffer(resource));
-        if (amountToOffer > 0)
+        var countToOffer = Math.min(count, gameConfig.bots().getMaxOffer(resource));
+        if (countToOffer > 0)
         {
-            market.createOffer(kingdom.getName(), resource, amountToOffer, price);
+            market.createOffer(kingdom.getName(), resource, countToOffer, price);
         }
     }
 
@@ -229,7 +229,7 @@ public final class BotFunctions
 
     public void withdrawAllOffers(KingdomEntity kingdom, IMarket market)
     {
-        // TODO make it more sophisticated to withdraw only necessary amount
+        // TODO make it more sophisticated to withdraw only what is needed
         var offers = market.getOffersByKingdomName(kingdom.getName());
         for (var offer : offers)
         {

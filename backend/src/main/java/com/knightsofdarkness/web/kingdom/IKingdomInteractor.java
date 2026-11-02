@@ -6,7 +6,7 @@ import com.knightsofdarkness.web.kingdom.model.KingdomOngoingAttackEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomReinforcementEntity;
 
 public interface IKingdomInteractor {
-    void transferResources(KingdomEntity from, String to, MarketResource resource, int amount);
+    void transferResources(KingdomEntity from, String to, MarketResource resource, int count);
 
     void resolveAttack(KingdomEntity kingdom, KingdomOngoingAttackEntity attack);
 

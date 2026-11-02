@@ -111,7 +111,7 @@ class MarketTest {
     }
 
     @Test
-    void buyingOffer_whenOneOfferExistsAndHasEnoughAmount_shouldSellEntireRequestedAmountAndStillHasOfferAvailable()
+    void buyingOffer_whenOneOfferExistsAndHasEnoughCount_shouldSellEntireRequestedCountAndStillHasOfferAvailable()
     {
         market.createOffer(kingdom.getName(), MarketResource.food, 100, 50);
         var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
@@ -127,7 +127,7 @@ class MarketTest {
     }
 
     @Test
-    void buyingOffer_whenOneOfferExistsAndHasExactlyTheSameAmount_shouldSellEntireRequestedAmountAndHasNoOffersAvailable()
+    void buyingOffer_whenOneOfferExistsAndHasExactlyTheSameCount_shouldSellEntireRequestedCountAndHasNoOffersAvailable()
     {
         market.createOffer(kingdom.getName(), MarketResource.food, 100, 50);
         var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
@@ -141,7 +141,7 @@ class MarketTest {
     }
 
     @Test
-    void buyingOffer_whenOfferExist_shouldReduceTheAmountStillAvailableByTheAmountBought()
+    void buyingOffer_whenOfferExist_shouldReduceTheCountStillAvailableByTheCountBought()
     {
         market.createOffer(kingdom.getName(), MarketResource.food, 100, 50);
         var maybeOffer = market.getCheapestOfferByResource(MarketResource.food);
@@ -229,7 +229,7 @@ class MarketTest {
     }
 
     @Test
-    void createOffer_withMoreThanOwned_shouldOfferOnlyOwnedAmount()
+    void createOffer_withMoreThanOwned_shouldOfferOnlyOwnedCount()
     {
         kingdom.getResources().setCount(ResourceName.iron, 100);
 
@@ -263,7 +263,7 @@ class MarketTest {
     }
 
     @Test
-    void buyingNegativeAmount_shouldNotMoveAnything()
+    void buyingNegativeCount_shouldNotMoveAnything()
     {
         var buyer = new KingdomBuilder(game).build();
         game.addKingdom(buyer);

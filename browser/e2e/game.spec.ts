@@ -198,6 +198,33 @@ test("letters reach the other kingdom", async ({ page }) => {
   await expect(page.locator(".letter-body")).toContainText(body);
 });
 
+test("carriers haul goods to another kingdom", async ({ page, browser }) => {
+  const other = await browser.newPage();
+  const { kingdomName: receiver } = await foundKingdom(other, "Receiver");
+  await foundKingdom(page, "Hauler");
+  await goTo(page, "Build");
+  await page.getByLabel("Markets to raise", { exact: true }).fill("1");
+  await page.getByRole("button", { name: "Raise markets", exact: true }).click();
+  await expect(toast(page, "Raised 1 building")).toBeVisible();
+  await goTo(page, "Train");
+  await page.getByLabel("Carriers to train", { exact: true }).fill("2");
+  await page.getByRole("button", { name: "Train carriers", exact: true }).click();
+  await expect(toast(page, "Trained 2 recruits")).toBeVisible();
+
+  await goTo(page, "Carriers");
+  await page.getByRole("combobox", { name: /^To/ }).selectOption(receiver);
+  await page.getByLabel("Amount", { exact: true }).fill("100");
+  await page.getByRole("button", { name: "Send 1 carrier" }).click();
+  await expect(toast(page, `Carriers set out for ${receiver}`)).toBeVisible();
+  await expect(page.locator("tr").filter({ hasText: receiver })).toContainText("100 food");
+
+  await passTurns(page, 2);
+  await expect(page.locator("main")).toContainText("No carriers are out.");
+  await goTo(other, "Chronicle");
+  await expect(other.locator("main")).toContainText(/carriers delivered 100 food/);
+  await other.close();
+});
+
 test("an alliance is founded and a second kingdom joins it", async ({ page }) => {
   const invitee = await foundKingdom(page, "Squire");
   await signOut(page);

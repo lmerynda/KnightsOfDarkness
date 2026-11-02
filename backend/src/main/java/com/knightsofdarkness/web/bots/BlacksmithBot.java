@@ -85,14 +85,14 @@ public class BlacksmithBot extends Bot
 
     private int postToolsOffer(double percentage)
     {
-        var toolsAmount = kingdom.getResources().getCount(ResourceName.tools);
+        var toolsCount = kingdom.getResources().getCount(ResourceName.tools);
 
-        if (toolsAmount > 0)
+        if (toolsCount > 0)
         {
-            botFunctions.postOffer(kingdom, market, MarketResource.tools, (int) (toolsAmount * percentage), runPricingAlgorithm());
+            botFunctions.postOffer(kingdom, market, MarketResource.tools, (int) (toolsCount * percentage), runPricingAlgorithm());
         }
 
-        return toolsAmount;
+        return toolsCount;
     }
 
     private int runPricingAlgorithm()
@@ -155,8 +155,8 @@ public class BlacksmithBot extends Bot
     {
         var nourishmentFactor = 1.0; // Assume everyone is fed
         var ironUpkeep = kingdomDetailsProvider.getIronUpkeep(kingdom, nourishmentFactor);
-        var ironAmount = kingdom.getResources().getCount(ResourceName.iron);
-        double ironReserve = (double) ironAmount / ironUpkeep;
+        var ironCount = kingdom.getResources().getCount(ResourceName.iron);
+        double ironReserve = (double) ironCount / ironUpkeep;
         log.info("[{}] iron reserve {}", kingdom.getName(), ironReserve);
         return ironReserve >= 0.8d;
     }

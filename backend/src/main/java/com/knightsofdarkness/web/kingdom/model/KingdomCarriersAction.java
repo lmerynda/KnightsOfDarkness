@@ -19,7 +19,7 @@ public class KingdomCarriersAction {
 
     public SendCarriersResult sendCarriers(SendCarriersDto sendCarriersDto)
     {
-        if (sendCarriersDto.amount() <= 0)
+        if (sendCarriersDto.count() <= 0)
         {
             return SendCarriersResult.failure("Amount to send must be greater than 0");
         }
@@ -33,28 +33,28 @@ public class KingdomCarriersAction {
         }
 
         int resourceCount = kingdom.getResources().getCount(ResourceName.from(resource));
-        int amountPossibleToSend = Math.min(resourceCount, sendCarriersDto.amount());
-        int amountToSend = Math.min(amountPossibleToSend, carriersCapacity);
+        int countPossibleToSend = Math.min(resourceCount, sendCarriersDto.count());
+        int countToSend = Math.min(countPossibleToSend, carriersCapacity);
 
-        if (amountToSend <= 0)
+        if (countToSend <= 0)
         {
             return SendCarriersResult.failure("You have not enough resources to send");
         }
 
-        int carriersToSend = (int) Math.ceil((double) amountToSend / singleCarrierCapacity);
+        int carriersToSend = (int) Math.ceil((double) countToSend / singleCarrierCapacity);
 
         int turnsLeft = gameConfig.common().turnsToDeliverResources();
         KingdomCarriersOnTheMoveEntity carriersOnTheMove = new KingdomCarriersOnTheMoveEntity(Id.generate(), kingdom,
                 sendCarriersDto.destinationKingdomName(), turnsLeft, carriersToSend, sendCarriersDto.resource(),
-                amountToSend);
+                countToSend);
         kingdom.getCarriersOnTheMove().add(carriersOnTheMove);
-        kingdom.getResources().subtractCount(ResourceName.from(resource), amountToSend);
+        kingdom.getResources().subtractCount(ResourceName.from(resource), countToSend);
         kingdom.getUnits().moveAvailableToMobile(UnitName.carrier, carriersToSend);
 
-        var message = amountToSend == sendCarriersDto.amount() ? "Carriers sent and should arrive in a few turns"
+        var message = countToSend == sendCarriersDto.count() ? "Carriers sent and should arrive in a few turns"
                 : "Partial transfer sent, not enough carriers to carry everything requested";
         return SendCarriersResult.success(message,
-                new SendCarriersDto(sendCarriersDto.destinationKingdomName(), resource, amountToSend));
+                new SendCarriersDto(sendCarriersDto.destinationKingdomName(), resource, countToSend));
     }
 
     public void withdrawCarriers(KingdomCarriersOnTheMoveEntity carriersOnTheMove)

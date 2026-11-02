@@ -216,7 +216,7 @@ public class KingdomController
     }
 
     @PostMapping(value = "/buy-land")
-    ResponseEntity<LandTransaction> kingdomBuyLand(@AuthenticationPrincipal UserData currentUser, @RequestBody int amount)
+    ResponseEntity<LandTransaction> kingdomBuyLand(@AuthenticationPrincipal UserData currentUser, @RequestBody int count)
     {
         if (currentUser == null)
         {
@@ -224,7 +224,7 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.buyLand(currentUser.getKingdomName(), amount)
+        return kingdomService.buyLand(currentUser.getKingdomName(), count)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

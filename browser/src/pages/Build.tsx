@@ -5,7 +5,7 @@ import { specialBuildingTypes } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, buildingGroups, buildingLore, specialBuildingLore } from "../game/lore";
 import { Icon } from "../ui/Icon";
-import { AmountField, Banner, Choice, Meter, Panel } from "../ui/parts";
+import { CountField, Banner, Choice, Meter, Panel } from "../ui/parts";
 import { formatNumber, plural } from "../ui/format";
 
 const LandPurchase: React.FC = () => {
@@ -32,10 +32,10 @@ const LandPurchase: React.FC = () => {
       () => api.buyLand(count),
       transaction => ({
         text:
-          transaction.amount > 0
-            ? `Bought ${plural(transaction.amount, "acre", "acres")} for ${formatNumber(transaction.cost)} gold`
+          transaction.count > 0
+            ? `Bought ${plural(transaction.count, "acre", "acres")} for ${formatNumber(transaction.cost)} gold`
             : "Not enough gold for any land",
-        failure: transaction.amount === 0,
+        failure: transaction.count === 0,
       }),
     );
     if (result) setCount(0);
@@ -51,16 +51,16 @@ const LandPurchase: React.FC = () => {
     >
       <div className="row">
         <div style={{ width: 180 }}>
-          <AmountField label="Acres to buy" value={count} onChange={setCount} />
+          <CountField label="Acres to buy" value={count} onChange={setCount} />
         </div>
-        <button className="button" type="button" disabled={count <= 0 || !quote || quote.amount === 0} onClick={buy}>
+        <button className="button" type="button" disabled={count <= 0 || !quote || quote.count === 0} onClick={buy}>
           Buy land
         </button>
         <span className="muted">
           {quote
-            ? quote.amount < count
-              ? `You can afford ${plural(quote.amount, "acre", "acres")}, for ${formatNumber(quote.cost)} gold`
-              : `${plural(quote.amount, "acre costs", "acres cost")} ${formatNumber(quote.cost)} gold`
+            ? quote.count < count
+              ? `You can afford ${plural(quote.count, "acre", "acres")}, for ${formatNumber(quote.cost)} gold`
+              : `${plural(quote.count, "acre costs", "acres cost")} ${formatNumber(quote.cost)} gold`
             : null}
         </span>
       </div>
@@ -100,7 +100,7 @@ const SpecialBuildingRow: React.FC<{ building: SpecialBuilding }> = ({ building 
             </div>
             <div className="row">
               <div style={{ width: 170 }}>
-                <AmountField
+                <CountField
                   label="Points to invest"
                   hideLabel
                   value={points}
@@ -307,7 +307,7 @@ export const Build: React.FC = () => {
                     </div>
                   </div>
                   <div className="plate-input">
-                    <AmountField
+                    <CountField
                       label={`${buildingLore[building].plural} to ${mode === "build" ? "raise" : "tear down"}`}
                       hideLabel
                       value={order[building] ?? 0}

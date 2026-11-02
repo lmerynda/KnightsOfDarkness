@@ -4,19 +4,19 @@ import type { MarketResource } from "../api/types";
 import { marketResources } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, marketResourceLabel } from "../game/lore";
-import { AmountField, Banner, Panel } from "../ui/parts";
+import { CountField, Banner, Panel } from "../ui/parts";
 import { formatNumber, plural } from "../ui/format";
 
 export const Carriers: React.FC = () => {
   const { kingdom, config, rankings, act } = useGame();
   const [target, setTarget] = useState("");
   const [resource, setResource] = useState<MarketResource>("food");
-  const [amount, setAmount] = useState(0);
+  const [count, setCount] = useState(0);
 
   const carriers = kingdom.units.availableUnits.carrier;
   const perCarrier = config.carrierCapacity[resource];
   const canCarry = Math.min(kingdom.resources[resource], carriers * perCarrier);
-  const needed = Math.ceil(amount / perCarrier);
+  const needed = Math.ceil(count / perCarrier);
   const allies = new Set(
     (rankings?.kingdoms ?? [])
       .filter(rank => kingdom.allianceName && rank.allianceName === kingdom.allianceName)
@@ -28,7 +28,7 @@ export const Carriers: React.FC = () => {
 
   const send = async (): Promise<void> => {
     const result = await act(
-      () => api.sendCarriers(target, resource, amount),
+      () => api.sendCarriers(target, resource, count),
       outcome => ({
         text: outcome.success
           ? `Carriers set out for ${target}, they arrive in ${plural(config.common.turnsToDeliverResources, "turn", "turns")}`
@@ -36,7 +36,7 @@ export const Carriers: React.FC = () => {
         failure: !outcome.success,
       }),
     );
-    if (result?.success) setAmount(0);
+    if (result?.success) setCount(0);
   };
 
   return (
@@ -72,9 +72,9 @@ export const Carriers: React.FC = () => {
               </select>
             </label>
             <div style={{ width: 170 }}>
-              <AmountField label="Amount" value={amount} onChange={setAmount} max={canCarry} />
+              <CountField label="Amount" value={count} onChange={setCount} max={canCarry} />
             </div>
-            <button className="button" type="button" disabled={!target || amount <= 0 || needed > carriers} onClick={send}>
+            <button className="button" type="button" disabled={!target || count <= 0 || needed > carriers} onClick={send}>
               Send {needed > 0 ? plural(needed, "carrier", "carriers") : "carriers"}
             </button>
           </div>
@@ -100,7 +100,7 @@ export const Carriers: React.FC = () => {
                     <tr key={move.id}>
                       <td>{move.to}</td>
                       <td className="number">
-                        {formatNumber(move.amount)} {marketResourceLabel[move.resource].toLowerCase()}
+                        {formatNumber(move.count)} {marketResourceLabel[move.resource].toLowerCase()}
                       </td>
                       <td className="number">{formatNumber(move.carriersCount)}</td>
                       <td className="number">{plural(move.turnsLeft, "turn", "turns")}</td>

@@ -18,7 +18,7 @@ import { art, resourceLabel, unitLore } from "../game/lore";
 import { estimatedDefense, landAtStake, targetProblem } from "../game/rules";
 import { Crest } from "../ui/Crest";
 import { Icon } from "../ui/Icon";
-import { AmountField, Banner, Choice, Panel } from "../ui/parts";
+import { CountField, Banner, Choice, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
 import { Term } from "../ui/Tip";
 import { defenseHelp, protectionHelp } from "../game/help";
@@ -158,7 +158,7 @@ const SendArmy: React.FC<{
                   {formatNumber(kingdom.units.availableUnits[unit])} at home, attack {config.attack.unitAttackPower[unit]} each
                 </span>
               </div>
-              <AmountField
+              <CountField
                 label={`${unitLore[unit].plural} to send`}
                 hideLabel
                 value={army[unit] ?? 0}
@@ -249,7 +249,7 @@ const StandGuard: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => 
         </label>
         <div className="army-picker">
           {militaryUnits.map(unit => (
-            <AmountField
+            <CountField
               key={unit}
               label={`${unitLore[unit].plural} to send, ${formatNumber(kingdom.units.availableUnits[unit])} at home`}
               value={guard[unit] ?? 0}
@@ -402,7 +402,7 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
   const theirLosses = attacking ? report.defenderLosses : report.attackerLosses;
   const ourArrowLosses = attacking ? report.attackerArrowLosses : report.defenderArrowLosses;
   const theirArrowLosses = attacking ? report.defenderArrowLosses : report.attackerArrowLosses;
-  const plunder = (Object.entries(report.plunder) as [ResourceName, number][]).filter(([, amount]) => amount > 0);
+  const plunder = (Object.entries(report.plunder) as [ResourceName, number][]).filter(([, count]) => count > 0);
 
   return (
     <article className={`battle ${won ? "won" : "lost"}`}>
@@ -465,7 +465,7 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
             <div>
               <dt>{attacking ? "Plundered" : "Stolen"}</dt>
               <dd className={attacking ? "gain" : "loss"}>
-                {plunder.map(([resource, amount]) => `${formatNumber(amount)} ${resourceLabel[resource].toLowerCase()}`).join(", ")}
+                {plunder.map(([resource, count]) => `${formatNumber(count)} ${resourceLabel[resource].toLowerCase()}`).join(", ")}
               </dd>
             </div>
           ) : null}

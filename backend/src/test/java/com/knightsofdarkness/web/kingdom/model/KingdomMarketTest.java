@@ -73,25 +73,25 @@ class KingdomMarketTest {
     {
         int initialGold = 5000;
         int price = 100;
-        int amount = 50;
+        int count = 50;
         kingdom.getResources().setCount(ResourceName.gold, initialGold);
         var action = new KingdomMarketAction(kingdom);
-        action.reserveGoldForOffer(kingdom, price, amount);
+        action.reserveGoldForOffer(kingdom, price, count);
         int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
-        assertEquals(initialGold - price * amount, kingdomGold);
+        assertEquals(initialGold - price * count, kingdomGold);
     }
 
     @Test
-    void whenKingdomBuysMultipleResourcesAndHasGoldForLimitedAmount_reserveGold_shouldChangeKingdomGold()
+    void whenKingdomBuysMultipleResourcesAndHasGoldForLimitedCount_reserveGold_shouldChangeKingdomGold()
     {
         int initialGold = 5000;
         int price = 100;
-        int amount = 70;
+        int count = 70;
         kingdom.getResources().setCount(ResourceName.gold, initialGold);
         var action = new KingdomMarketAction(kingdom);
-        int reservedGold = action.reserveGoldForOffer(kingdom, price, amount);
+        int reservedGold = action.reserveGoldForOffer(kingdom, price, count);
         int kingdomGold = kingdom.getResources().getCount(ResourceName.gold);
-        assertThat(reservedGold).isLessThan(amount * price);
+        assertThat(reservedGold).isLessThan(count * price);
         assertThat(kingdomGold).isEqualTo(initialGold - reservedGold);
     }
 

@@ -5,7 +5,7 @@ import { marketResources } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, marketResourceLabel } from "../game/lore";
 import { Icon } from "../ui/Icon";
-import { AmountField, Banner, Panel, Tabs } from "../ui/parts";
+import { CountField, Banner, Panel, Tabs } from "../ui/parts";
 import { formatNumber, plural } from "../ui/format";
 
 const OfferRow: React.FC<{ offer: MarketOffer; own: boolean; ally: boolean; onDone: () => void }> = ({ offer, own, ally, onDone }) => {
@@ -38,7 +38,7 @@ const OfferRow: React.FC<{ offer: MarketOffer; own: boolean; ally: boolean; onDo
         ) : (
           <div className="row">
             <div style={{ width: 140 }}>
-              <AmountField label={`Amount of ${label} to buy`} hideLabel value={count} onChange={setCount} max={affordable} />
+              <CountField label={`Amount of ${label} to buy`} hideLabel value={count} onChange={setCount} max={affordable} />
             </div>
             <button
               className="button small"
@@ -82,10 +82,10 @@ const SellPanel: React.FC<{ resource: MarketResource; onDone: () => void }> = ({
     >
       <div className="row">
         <div style={{ width: 160 }}>
-          <AmountField label={`Amount, ${formatNumber(owned)} in store`} value={count} onChange={setCount} max={owned} />
+          <CountField label={`Amount, ${formatNumber(owned)} in store`} value={count} onChange={setCount} max={owned} />
         </div>
         <div style={{ width: 130 }}>
-          <AmountField label={`Gold each, at least ${config.market.minPrice}`} value={price} onChange={setPrice} />
+          <CountField label={`Gold each, at least ${config.market.minPrice}`} value={price} onChange={setPrice} />
         </div>
         <button
           className="button"

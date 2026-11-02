@@ -118,26 +118,26 @@ public class Market implements IMarket {
 
     // TODO make a LOT of tests for this
     @Override
-    public BuyMarketOfferResult buyExistingOffer(MarketOfferEntity offer, KingdomEntity seller, KingdomEntity buyer, int amount)
+    public BuyMarketOfferResult buyExistingOffer(MarketOfferEntity offer, KingdomEntity seller, KingdomEntity buyer, int count)
     {
-        log.info("Transaction request: buyer: {} seller: {} amount: {} offer: {}", buyer.getName(), seller.getName(), amount, offer.getId());
-        var maxToSell = Math.max(0, Math.min(offer.count, amount));
+        log.info("Transaction request: buyer: {} seller: {} count: {} offer: {}", buyer.getName(), seller.getName(), count, offer.getId());
+        var maxToSell = Math.max(0, Math.min(offer.count, count));
         var action = new KingdomMarketAction(seller);
         var buyerGold = action.reserveGoldForOffer(buyer, offer.getPrice(), maxToSell);
-        var buyerAmount = buyerGold / offer.getPrice();
+        var buyerCount = buyerGold / offer.getPrice();
 
-        if (buyerAmount == 0)
+        if (buyerCount == 0)
         {
-            log.info("Not enough gold to buy any amount of resource");
-            return new BuyMarketOfferResult(offer.getResource(), buyerAmount, offer.getPrice(), buyerGold);
+            log.info("Not enough gold to buy any count of resource");
+            return new BuyMarketOfferResult(offer.getResource(), buyerCount, offer.getPrice(), buyerGold);
         }
-        offer.count -= buyerAmount;
+        offer.count -= buyerCount;
         action.acceptOffer(buyerGold);
-        action.deliverResourcesFromOffer(buyer, offer.getResource(), buyerAmount);
+        action.deliverResourcesFromOffer(buyer, offer.getResource(), buyerCount);
 
         assert (offer.count >= 0);
 
-        var result = new BuyMarketOfferResult(offer.getResource(), buyerAmount, offer.getPrice(), buyerGold);
+        var result = new BuyMarketOfferResult(offer.getResource(), buyerCount, offer.getPrice(), buyerGold);
 
         kingdomRepository.update(seller);
         kingdomRepository.update(buyer);
@@ -151,10 +151,10 @@ public class Market implements IMarket {
             offersRepository.update(offer);
         }
 
-        var transaction = new MarketTransactionEntity(Id.generate(), offer.getResource(), seller.getName(), buyer.getName(), offer.getPrice(), buyerAmount, Instant.now());
+        var transaction = new MarketTransactionEntity(Id.generate(), offer.getResource(), seller.getName(), buyer.getName(), offer.getPrice(), buyerCount, Instant.now());
         offersRepository.registerMarketTransaction(transaction);
 
-        var message = Utils.format("{} bought {} {} from us for {} gold", buyer.getName(), buyerAmount, offer.getResource(), buyerGold);
+        var message = Utils.format("{} bought {} {} from us for {} gold", buyer.getName(), buyerCount, offer.getResource(), buyerGold);
         notificationSystem.create(seller.getName(), NotificationKind.trade, message);
 
         return result;

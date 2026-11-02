@@ -48,7 +48,7 @@ public class KingdomInteractor implements IKingdomInteractor
     }
 
     @Override
-    public void transferResources(KingdomEntity from, String to, MarketResource resource, int amount)
+    public void transferResources(KingdomEntity from, String to, MarketResource resource, int count)
     {
         var toKingdom = kingdomRepository.getKingdomByName(to);
         if (toKingdom.isEmpty())
@@ -57,10 +57,10 @@ public class KingdomInteractor implements IKingdomInteractor
             return;
         }
 
-        toKingdom.get().receiveResourceTransfer(resource, amount);
+        toKingdom.get().receiveResourceTransfer(resource, count);
         kingdomRepository.update(from);
         kingdomRepository.update(toKingdom.get());
-        notificationSystem.create(to, NotificationKind.delivery, Utils.format("{} carriers delivered {} {}", from.getName(), amount, resource));
+        notificationSystem.create(to, NotificationKind.delivery, Utils.format("{} carriers delivered {} {}", from.getName(), count, resource));
     }
 
     @Override
@@ -321,10 +321,10 @@ public class KingdomInteractor implements IKingdomInteractor
         Map<ResourceName, Integer> plunder = new EnumMap<>(ResourceName.class);
         for (var resource : plunderableResources)
         {
-            var amount = (int) Math.floor(defender.getResources().getCount(resource) * plunderRatio);
-            defender.getResources().subtractCount(resource, amount);
-            attacker.getResources().addCount(resource, amount);
-            plunder.put(resource, amount);
+            var count = (int) Math.floor(defender.getResources().getCount(resource) * plunderRatio);
+            defender.getResources().subtractCount(resource, count);
+            attacker.getResources().addCount(resource, count);
+            plunder.put(resource, count);
         }
         return plunder;
     }
