@@ -103,8 +103,8 @@ public class KingdomTurnAction {
     private void processAttacks()
     {
         var allAttacks = kingdom.getOngoingAttacks();
-        allAttacks.forEach(attack -> attack.turnsLeft--);
-        var finishedAttacks = allAttacks.stream().filter(attack -> attack.turnsLeft <= 0).toList();
+        allAttacks.forEach(attack -> attack.turnsLeft = Math.max(0, attack.turnsLeft - 1));
+        var finishedAttacks = allAttacks.stream().filter(attack -> attack.turnsLeft <= 0 && !kingdomInteractor.waitsAtBorder(attack)).toList();
         finishedAttacks.forEach(attack ->
         {
             log.info("Attack arrived at the destination: {}", attack);

@@ -385,17 +385,44 @@ public class KingdomService
             return Optional.of(SendAttackResult.failure("Destination kingdom does not exist"));
         }
 
+        KingdomOngoingAttackEntity lead = null;
+        if (sendAttackDto.joins() != null)
+        {
+            var maybeLead = strikeLead(sendAttackDto.destinationKingdomName(), sendAttackDto.joins());
+            if (maybeLead.isEmpty())
+            {
+                return Optional.of(SendAttackResult.failure("That army has already landed"));
+            }
+            lead = maybeLead.get();
+        }
+
         var action = new KingdomMilitaryAction(kingdom, gameConfig);
-        SendAttackResult result = action.sendAttack(sendAttackDto, maybeDestinationKingdom.get());
+        SendAttackResult result = action.sendAttack(sendAttackDto, maybeDestinationKingdom.get(), lead);
         if (result.success())
         {
             kingdomRepository.update(kingdom);
             var army = kingdom.getOngoingAttacks().get(kingdom.getOngoingAttacks().size() - 1).toIncomingDto();
             notificationSystem.create(army.to(), NotificationKind.threat,
                     Utils.format("Our scouts saw {} with about {} soldiers march on us, they arrive in {} of their turns", army.from(), army.soldiers(), army.turnsLeft()));
+            if (lead != null)
+            {
+                notificationSystem.create(lead.getKingdom().getName(), NotificationKind.alliance,
+                        Utils.format("{} joins our strike on {} with {} soldiers, they wait at the border and fight right after our army lands", kingdomName, army.to(),
+                                army.soldiers()));
+            }
         }
 
         return Optional.of(result);
+    }
+
+    /**
+     * the army that sets off a strike: the one asked for, or the army it joins itself while that one is still on the march
+     */
+    private Optional<KingdomOngoingAttackEntity> strikeLead(String target, UUID attackId)
+    {
+        var marching = kingdomRepository.getAttacksOn(target);
+        var asked = marching.stream().filter(attack -> attack.getId().equals(attackId)).findFirst();
+        return asked.map(attack -> marching.stream().filter(other -> other.getId().equals(attack.getJoinsAttackId())).findFirst().orElse(attack));
     }
 
     @Transactional

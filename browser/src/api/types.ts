@@ -91,6 +91,8 @@ export type OngoingAttack = {
   turnsLeft: number;
   attackType: AttackType;
   units: Partial<Counts<UnitName>>;
+  /** the ally whose strike this army joined: it waits at the border and fights right after that army lands */
+  joining: string | null;
 };
 
 export type Kingdom = {

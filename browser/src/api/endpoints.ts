@@ -59,8 +59,13 @@ export const api = {
   sendCarriers: (destinationKingdomName: string, resource: MarketResource, amount: number): Promise<ActionResult> =>
     post("/kingdom/send-carriers", { destinationKingdomName, resource, amount }),
   recallCarriers: (id: string): Promise<boolean> => post("/kingdom/withdraw-carriers", id),
-  sendAttack: (destinationKingdomName: string, attackType: AttackType, units: Partial<Counts<UnitName>>): Promise<ActionResult> =>
-    post("/kingdom/send-attack", { destinationKingdomName, attackType, units }),
+  /** joins is an ally's army on the march against the same target, whose strike ours joins */
+  sendAttack: (
+    destinationKingdomName: string,
+    attackType: AttackType,
+    units: Partial<Counts<UnitName>>,
+    joins?: string,
+  ): Promise<ActionResult> => post("/kingdom/send-attack", { destinationKingdomName, attackType, units, joins }),
   recallAttack: (id: string): Promise<boolean> => post("/kingdom/withdraw-attack", id),
   sendReinforcements: (hostKingdomName: string, units: Partial<Counts<UnitName>>): Promise<ActionResult> =>
     post("/kingdom/send-reinforcements", { hostKingdomName, units }),

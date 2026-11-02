@@ -267,7 +267,7 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await other.close();
   const squire = await foundKingdom(page, "Squire");
   await signOut(page);
-  await foundKingdom(page, "Emperor");
+  const emperor = await foundKingdom(page, "Emperor");
   await goTo(page, "Alliance");
   const allianceName = `Pact ${Date.now() % 100000}`;
   await page.getByLabel("Alliance name").fill(allianceName);
@@ -313,6 +313,29 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await expect(march).toContainText(target);
   await march.getByRole("button", { name: "Join the strike" }).click();
   await expect(emperorPage.getByRole("combobox", { name: /^Target/ })).toHaveValue(target);
+
+  // the joined army waits at the border, however many turns the emperor passes, and fights right after the squire's lands
+  const sendArmy = emperorPage.locator(".panel").filter({ has: emperorPage.getByRole("heading", { name: "Send an army" }) });
+  await expect(sendArmy).toContainText(`Joining ${squire.kingdomName}'s strike on ${target}`);
+  await emperorPage.getByLabel("Infantry to send", { exact: true }).fill("10");
+  await sendArmy.getByRole("button", { name: "Join the strike" }).click();
+  await expect(toast(emperorPage, `The army marches to join ${squire.kingdomName}'s strike on ${target}`)).toBeVisible();
+  await passTurns(emperorPage, 5);
+  const ours = emperorPage.locator("tr").filter({ hasText: target });
+  await expect(ours).toContainText("At the border");
+  await expect(ours).toContainText(`joining ${squire.kingdomName}'s strike`);
+
+  const squireAgain = await browser.newPage();
+  await signIn(squireAgain, squire.email, password);
+  await goTo(squireAgain, "Army");
+  await expect(squireAgain.locator("tr").filter({ hasText: target })).toContainText(`joined by ${emperor.kingdomName}`);
+  await passTurns(squireAgain, 4);
+  await expect(squireAgain.locator(".battle").first()).toContainText(target);
+  await squireAgain.close();
+
+  await emperorPage.reload();
+  await expect(emperorPage.getByRole("heading", { name: "Armies on the march" })).toHaveCount(0);
+  await expect(emperorPage.locator(".battle").first()).toContainText(target);
 });
 
 test("an ally asks for gold and another sends it through the market", async ({ page, browser }) => {

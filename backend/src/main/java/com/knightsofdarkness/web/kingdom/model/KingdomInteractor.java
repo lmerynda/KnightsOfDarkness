@@ -118,6 +118,29 @@ public class KingdomInteractor implements IKingdomInteractor
 
         kingdomRepository.update(attackerKingdom);
         kingdomRepository.update(defendantKingdom);
+
+        landJoinedArmies(attack);
+    }
+
+    @Override
+    public boolean waitsAtBorder(KingdomOngoingAttackEntity attack)
+    {
+        var lead = attack.getJoinsAttackId();
+        return lead != null && kingdomRepository.getAttacksOn(attack.getTargetKingdomName()).stream().anyMatch(other -> other.getId().equals(lead));
+    }
+
+    /**
+     * allies' armies waiting at the border fight right after the army whose strike they joined, each in its own battle
+     */
+    private void landJoinedArmies(KingdomOngoingAttackEntity lead)
+    {
+        var waiting = kingdomRepository.getAttacksOn(lead.getTargetKingdomName()).stream().filter(attack -> attack.joins(lead) && attack.turnsLeft <= 0).toList();
+        for (var attack : waiting)
+        {
+            var ally = attack.getKingdom();
+            ally.getOngoingAttacks().remove(attack);
+            resolveAttack(ally, attack);
+        }
     }
 
     private void returnSurvivors(KingdomEntity attackerKingdom, UnitsMapDto survivors)

@@ -311,6 +311,93 @@ class KingdomApiTest {
         return allyToken;
     }
 
+    private void arm(String name, int cavalry)
+    {
+        var kingdom = kingdomRepository.getKingdomByName(name).orElseThrow();
+        kingdom.getUnits().addAvailableCount(UnitName.cavalry, cavalry);
+        kingdomRepository.update(kingdom);
+    }
+
+    private ResultActions postJsonAs(String bearer, String path, String body) throws Exception
+    {
+        return mockMvc.perform(post(path).header("Authorization", "Bearer " + bearer).contentType(MediaType.APPLICATION_JSON).content(body));
+    }
+
+    @Test
+    void anArmyJoiningAnAllysStrike_shouldWaitAtTheBorderAndLandRightAfterIt() throws Exception
+    {
+        var leaderName = "Leader " + (System.nanoTime() % 1000000);
+        var leaderToken = registerAlly(leaderName);
+        var targetName = "Target " + (System.nanoTime() % 1000000);
+        register(targetName);
+        arm(leaderName, 50);
+        arm(kingdomName, 30);
+        postJsonAs(leaderToken, "/kingdom/send-attack", "{\"destinationKingdomName\":\"" + targetName + "\",\"attackType\":\"land\",\"units\":{\"cavalry\":50}}")
+                .andExpect(jsonPath("$.success").value(true));
+        var leader = mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + leaderToken)).andReturn().getResponse().getContentAsString();
+        String leadId = JsonPath.read(leader, "$.ongoingAttacks[0].id");
+
+        postJson("/kingdom/send-attack", "{\"destinationKingdomName\":\"" + targetName + "\",\"attackType\":\"land\",\"units\":{\"cavalry\":30},\"joins\":\"" + leadId + "\"}")
+                .andExpect(jsonPath("$.success").value(true));
+        mockMvc.perform(get("/kingdom/notifications").header("Authorization", "Bearer " + leaderToken))
+                .andExpect(jsonPath("$[0].message").value(org.hamcrest.Matchers.containsString(kingdomName + " joins our strike on " + targetName)));
+
+        // ours reaches the border first and waits there for the leader's army
+        for (int turn = 0; turn < gameConfig.attack().turnsToArrive() + 2; turn++)
+        {
+            postJson("/kingdom/pass-turn", "0").andExpect(jsonPath("$.success").value(true));
+        }
+        mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + token))
+                .andExpect(jsonPath("$.ongoingAttacks[0].turnsLeft").value(0))
+                .andExpect(jsonPath("$.ongoingAttacks[0].joining").value(leaderName));
+        mockMvc.perform(get("/war/battle-reports").header("Authorization", "Bearer " + token)).andExpect(jsonPath("$.length()").value(0));
+
+        for (int turn = 0; turn < gameConfig.attack().turnsToArrive(); turn++)
+        {
+            postJsonAs(leaderToken, "/kingdom/pass-turn", "0").andExpect(jsonPath("$.success").value(true));
+        }
+
+        mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + token))
+                .andExpect(jsonPath("$.ongoingAttacks.length()").value(0))
+                .andExpect(jsonPath("$.units.mobileUnits.cavalry").value(0));
+        mockMvc.perform(get("/war/battle-reports").header("Authorization", "Bearer " + token))
+                .andExpect(jsonPath("$[0].attacker").value(kingdomName))
+                .andExpect(jsonPath("$[0].defender").value(targetName))
+                .andExpect(jsonPath("$[0].unitsSent.cavalry").value(30));
+        mockMvc.perform(get("/war/battle-reports").header("Authorization", "Bearer " + leaderToken)).andExpect(jsonPath("$[0].attacker").value(leaderName));
+    }
+
+    @Test
+    void joiningAnArmyThatItselfJoined_shouldJoinTheStrikesLead() throws Exception
+    {
+        var leaderName = "Leader " + (System.nanoTime() % 1000000);
+        var leaderToken = registerAlly(leaderName);
+        var allianceName = kingdomRepository.getKingdomByName(kingdomName).orElseThrow().getAlliance().orElseThrow().getName();
+        var thirdName = "Third " + (System.nanoTime() % 1000000);
+        var thirdToken = register(thirdName);
+        postJson("/alliance/invite", "{\"kingdomName\":\"" + thirdName + "\",\"allianceName\":\"" + allianceName + "\"}").andExpect(jsonPath("$.success").value(true));
+        var invitations = mockMvc.perform(get("/alliance/invitations").header("Authorization", "Bearer " + thirdToken)).andReturn().getResponse().getContentAsString();
+        String invitationId = JsonPath.read(invitations, "$[0].id");
+        postJsonAs(thirdToken, "/alliance/accept", "{\"invitationId\":\"" + invitationId + "\"}").andExpect(jsonPath("$.success").value(true));
+        var targetName = "Target " + (System.nanoTime() % 1000000);
+        register(targetName);
+        arm(leaderName, 10);
+        arm(kingdomName, 10);
+        arm(thirdName, 10);
+
+        postJsonAs(leaderToken, "/kingdom/send-attack", "{\"destinationKingdomName\":\"" + targetName + "\",\"attackType\":\"land\",\"units\":{\"cavalry\":10}}");
+        String leadId = JsonPath.read(mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + leaderToken)).andReturn().getResponse().getContentAsString(),
+                "$.ongoingAttacks[0].id");
+        postJson("/kingdom/send-attack", "{\"destinationKingdomName\":\"" + targetName + "\",\"attackType\":\"land\",\"units\":{\"cavalry\":10},\"joins\":\"" + leadId + "\"}");
+        String ourId = JsonPath.read(mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + token)).andReturn().getResponse().getContentAsString(),
+                "$.ongoingAttacks[0].id");
+
+        postJsonAs(thirdToken, "/kingdom/send-attack", "{\"destinationKingdomName\":\"" + targetName + "\",\"attackType\":\"land\",\"units\":{\"cavalry\":10},\"joins\":\"" + ourId + "\"}")
+                .andExpect(jsonPath("$.success").value(true));
+
+        mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + thirdToken)).andExpect(jsonPath("$.ongoingAttacks[0].joining").value(leaderName));
+    }
+
     @Test
     void anAllysDearOffer_shouldBeListedForAlliesAndPassThemGold() throws Exception
     {

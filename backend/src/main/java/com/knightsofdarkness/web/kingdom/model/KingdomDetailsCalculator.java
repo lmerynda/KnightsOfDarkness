@@ -70,6 +70,13 @@ public class KingdomDetailsCalculator {
         }
 
         @Override
+        public boolean waitsAtBorder(KingdomOngoingAttackEntity attack)
+        {
+            // a forecast does not look at other kingdoms' armies
+            return false;
+        }
+
+        @Override
         public void reinforcementsArrived(KingdomReinforcementEntity reinforcement)
         {
             // a forecast does not touch other kingdoms

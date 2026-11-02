@@ -261,7 +261,10 @@ const WarRoomPanel: React.FC = () => {
                   <span>
                     {march.from} → <strong>{march.to}</strong>, {plural(soldiers(march.units), "soldier", "soldiers")}
                   </span>
-                  <span className="muted">in {plural(march.turnsLeft, "turn", "turns")}</span>
+                  <span className="muted">
+                    {march.joining ? `joins ${march.joining}, ` : ""}
+                    {march.joining && march.turnsLeft === 0 ? "at the border" : `in ${plural(march.turnsLeft, "turn", "turns")}`}
+                  </span>
                 </li>
               ))}
             </ul>

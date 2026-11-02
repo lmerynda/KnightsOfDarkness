@@ -1,7 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
-import type { AttackType, BattleReport, Counts, MilitaryUnit, ResourceName, SpyReport, UnitName, WarRoom } from "../api/types";
+import type {
+  AttackType,
+  BattleReport,
+  Counts,
+  MilitaryUnit,
+  OngoingAttack,
+  ResourceName,
+  SpyReport,
+  UnitName,
+  WarRoom,
+} from "../api/types";
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, resourceLabel, unitLore } from "../game/lore";
@@ -52,12 +62,14 @@ const Losses: React.FC<{ losses: Partial<Counts<UnitName>>; arrowLosses: Partial
   );
 };
 
-const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (target: string) => void; onSent: () => void }> = ({
-  spyReports,
-  target,
-  setTarget,
-  onSent,
-}) => {
+const SendArmy: React.FC<{
+  spyReports: SpyReport[];
+  target: string;
+  setTarget: (target: string) => void;
+  joining: OngoingAttack | null;
+  onMarchAlone: () => void;
+  onSent: () => void;
+}> = ({ spyReports, target, setTarget, joining, onMarchAlone, onSent }) => {
   const { kingdom, config, rankings, act } = useGame();
   const [attackType, setAttackType] = useState<AttackType>("land");
   const [army, setArmy] = useState<Partial<Counts<MilitaryUnit>>>({});
@@ -73,16 +85,19 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (
 
   const send = async (): Promise<void> => {
     const result = await act(
-      () => api.sendAttack(target, attackType, army),
+      () => api.sendAttack(target, attackType, army, joining?.id),
       outcome => ({
         text: outcome.success
-          ? `The army marches on ${target}, it arrives in ${plural(config.attack.turnsToArrive, "turn", "turns")}`
+          ? joining
+            ? `The army marches to join ${joining.from}'s strike on ${target}, it reaches the border in ${plural(config.attack.turnsToArrive, "turn", "turns")}`
+            : `The army marches on ${target}, it arrives in ${plural(config.attack.turnsToArrive, "turn", "turns")}`
           : outcome.message,
         failure: !outcome.success,
       }),
     );
     if (result?.success) {
       setArmy({});
+      onMarchAlone();
       onSent();
     }
   };
@@ -93,6 +108,18 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (
       help={`Armies arrive after ${plural(config.attack.turnsToArrive, "turn", "turns")} of your own. Archers on both sides loose first, then infantry and cavalry cut into the whole enemy army; bowmen strike nobody in melee but still fall. Win and you take up to ${Math.round(config.attack.maxLandCaptureRatio * 100)}% of their land, less from a kingdom smaller than yours, or plunder up to ${Math.round(config.attack.maxPlunderRatio * 100)}% of their stores; crushing victories take the most.`}
     >
       <div className="stack">
+        {joining ? (
+          <p className="notice">
+            <Icon name="sword" size={18} />{" "}
+            <span>
+              Joining <strong>{joining.joining ?? joining.from}</strong>'s strike on <strong>{joining.to}</strong>: our army waits at the
+              border and fights right after theirs lands.
+            </span>{" "}
+            <button className="button quiet small" type="button" onClick={onMarchAlone}>
+              March alone
+            </button>
+          </p>
+        ) : null}
         <div className="two-columns compact">
           <label className="field">
             <span>Target</span>
@@ -143,7 +170,7 @@ const SendArmy: React.FC<{ spyReports: SpyReport[]; target: string; setTarget: (
         </div>
         <div className="row">
           <button className="button" type="button" disabled={!chosen || problem !== null || sending === 0} onClick={send}>
-            March
+            {joining ? "Join the strike" : "March"}
           </button>
           <span className="muted">
             Attack strength {formatNumber(attackPower)}
@@ -297,8 +324,11 @@ const Threats: React.FC = () => {
   );
 };
 
-const Marching: React.FC = () => {
+const Marching: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => {
   const { kingdom, act } = useGame();
+  // allies whose armies joined a strike of ours on the same target
+  const joinedBy = (to: string): string[] =>
+    (warRoom?.marching ?? []).filter(march => march.joining === kingdom.name && march.to === to).map(march => march.from);
   if (kingdom.ongoingAttacks.length === 0) {
     return null;
   }
@@ -319,10 +349,23 @@ const Marching: React.FC = () => {
               <tr key={attack.id}>
                 <td>
                   {attack.to}
-                  <span className="muted block">{attack.attackType === "land" ? "to take land" : "to plunder"}</span>
+                  <span className="muted block">
+                    {attack.attackType === "land" ? "to take land" : "to plunder"}
+                    {attack.joining ? `, joining ${attack.joining}'s strike` : ""}
+                    {joinedBy(attack.to).length ? `, joined by ${joinedBy(attack.to).join(", ")}` : ""}
+                  </span>
                 </td>
                 <td>{unitList(attack.units)}</td>
-                <td className="number">{plural(attack.turnsLeft, "turn", "turns")}</td>
+                <td className="number">
+                  {attack.joining && attack.turnsLeft === 0 ? (
+                    <>
+                      At the border
+                      <span className="muted block">fights when {attack.joining}'s army lands</span>
+                    </>
+                  ) : (
+                    plural(attack.turnsLeft, "turn", "turns")
+                  )}
+                </td>
                 <td className="number">
                   <button
                     className="button quiet small"
@@ -433,24 +476,28 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
 };
 
 /** allies' armies on the march, so a ruler can send theirs to land in the same strike */
-const AlliedMarches: React.FC<{ warRoom: WarRoom | undefined; onJoin: (target: string) => void }> = ({ warRoom, onJoin }) => {
+const AlliedMarches: React.FC<{ warRoom: WarRoom | undefined; onJoin: (march: OngoingAttack) => void }> = ({ warRoom, onJoin }) => {
   const { kingdom } = useGame();
   const marches = (warRoom?.marching ?? []).filter(march => march.from !== kingdom.name);
   if (!marches.length) return null;
   return (
     <Panel
       title="Allies on the march"
-      help="Armies that land on the same turn strike together, and a beaten kingdom is protected only from armies sent after its defeat."
+      help="Join a strike and your army marches as usual, then waits at the border and fights right after the ally's army lands, however fast either of you passes turns; if it is late, it fights when it arrives. A beaten kingdom is protected only from armies sent after its defeat, so every army already on the road lands."
     >
       <ul className="plain-list">
         {marches.map(march => (
           <li key={march.id}>
             <span>
               {march.from} marches {unitList(march.units)} on <strong>{march.to}</strong> to{" "}
-              {march.attackType === "land" ? "take land" : "plunder"}, arriving in{" "}
-              {plural(march.turnsLeft, "of their turns", "of their turns")}
+              {march.attackType === "land" ? "take land" : "plunder"}
+              {march.joining
+                ? march.turnsLeft === 0
+                  ? `, waiting at the border for ${march.joining}'s army`
+                  : `, joining ${march.joining}'s strike, at the border in ${plural(march.turnsLeft, "of their turns", "of their turns")}`
+                : `, arriving in ${plural(march.turnsLeft, "of their turns", "of their turns")}`}
             </span>
-            <button className="button quiet small" type="button" onClick={() => onJoin(march.to)}>
+            <button className="button quiet small" type="button" onClick={() => onJoin(march)}>
               Join the strike
             </button>
           </li>
@@ -466,6 +513,7 @@ export const War: React.FC = () => {
   const [spyReports, setSpyReports] = useState<SpyReport[]>([]);
   const [warRoom, setWarRoom] = useState<WarRoom | undefined>(undefined);
   const [target, setTarget] = useState("");
+  const [joining, setJoining] = useState<OngoingAttack | null>(null);
 
   const load = useCallback(() => {
     api
@@ -486,9 +534,15 @@ export const War: React.FC = () => {
     () => [...spyReports, ...(warRoom?.intel ?? [])].sort((one, other) => other.date.localeCompare(one.date)),
     [spyReports, warRoom],
   );
-  const join = (to: string): void => {
-    setTarget(to);
+  const join = (march: OngoingAttack): void => {
+    setTarget(march.to);
+    setJoining(march);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  // another target leaves the strike behind
+  const chooseTarget = (next: string): void => {
+    setTarget(next);
+    if (joining && joining.to !== next) setJoining(null);
   };
 
   // battles resolve when turns pass, so reload whenever the kingdom changes
@@ -505,9 +559,16 @@ export const War: React.FC = () => {
       </Banner>
       <div className="stack">
         <Threats />
-        <SendArmy spyReports={intel} target={target} setTarget={setTarget} onSent={load} />
+        <SendArmy
+          spyReports={intel}
+          target={target}
+          setTarget={chooseTarget}
+          joining={joining}
+          onMarchAlone={() => setJoining(null)}
+          onSent={load}
+        />
         <AlliedMarches warRoom={warRoom} onJoin={join} />
-        <Marching />
+        <Marching warRoom={warRoom} />
         <StandGuard warRoom={warRoom} />
         <Panel title="Battle reports">
           {reports === null ? (

@@ -85,7 +85,13 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
         link: { to: "/kingdom/war", label: "Stand guard" },
       });
     }
-    const strike = coalition.warRoom.marching.find(march => march.from !== kingdom.name);
+    // a strike's lead, one we have not joined yet
+    const strike = coalition.warRoom.marching.find(
+      march =>
+        march.from !== kingdom.name &&
+        !march.joining &&
+        !kingdom.ongoingAttacks.some(attack => attack.joining === march.from && attack.to === march.to),
+    );
     if (strike) {
       lines.push({
         urgent: false,

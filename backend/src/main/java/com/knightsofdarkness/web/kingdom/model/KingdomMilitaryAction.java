@@ -23,6 +23,14 @@ public class KingdomMilitaryAction {
 
     public SendAttackResult sendAttack(SendAttackDto sendAttackDto, KingdomEntity target)
     {
+        return sendAttack(sendAttackDto, target, null);
+    }
+
+    /**
+     * lead is the ally's army on the march that ours joins, or null to march alone
+     */
+    public SendAttackResult sendAttack(SendAttackDto sendAttackDto, KingdomEntity target, KingdomOngoingAttackEntity lead)
+    {
         if (sendAttackDto.attackType() == null)
         {
             return SendAttackResult.failure("Choose an attack type");
@@ -32,6 +40,12 @@ public class KingdomMilitaryAction {
         if (targetError != null)
         {
             return SendAttackResult.failure(targetError);
+        }
+
+        var joinError = lead == null ? null : validateJoin(lead, target);
+        if (joinError != null)
+        {
+            return SendAttackResult.failure(joinError);
         }
 
         var kingdomUnits = kingdom.getUnits();
@@ -63,11 +77,35 @@ public class KingdomMilitaryAction {
 
         var turnsLeft = gameConfig.attack().turnsToArrive();
         var newAttack = new KingdomOngoingAttackEntity(Id.generate(), kingdom, target.getName(), turnsLeft, sendAttackDto.attackType(), army);
+        if (lead != null)
+        {
+            newAttack.join(lead);
+        }
         kingdom.getOngoingAttacks().add(newAttack);
         // a kingdom that marches gives up its own protection, it cannot strike and hide
         kingdom.setProtectionTicks(0);
 
         return SendAttackResult.success("Attack sent", sendAttackDto);
+    }
+
+    private String validateJoin(KingdomOngoingAttackEntity lead, KingdomEntity target)
+    {
+        if (!lead.getTargetKingdomName().equals(target.getName()))
+        {
+            return Utils.format("That army marches on {}, not {}", lead.getTargetKingdomName(), target.getName());
+        }
+        var leader = lead.getKingdom();
+        if (leader.getName().equals(kingdom.getName()))
+        {
+            return "Join an ally's strike, not your own";
+        }
+        var ownAlliance = kingdom.getAlliance();
+        var leaderAlliance = leader.getAlliance();
+        if (ownAlliance.isEmpty() || leaderAlliance.isEmpty() || !ownAlliance.get().getName().equals(leaderAlliance.get().getName()))
+        {
+            return "Only allies' strikes can be joined";
+        }
+        return null;
     }
 
     private String validateTarget(KingdomEntity target)

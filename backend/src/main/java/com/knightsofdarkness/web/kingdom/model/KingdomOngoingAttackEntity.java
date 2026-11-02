@@ -36,6 +36,11 @@ public class KingdomOngoingAttackEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     UnitsMapDto units;
 
+    // the ally's army this one joins: it waits at the border and fights right after that army lands
+    UUID joinsAttackId;
+
+    String joinsKingdomName;
+
     public KingdomOngoingAttackEntity()
     {
     }
@@ -59,6 +64,7 @@ public class KingdomOngoingAttackEntity {
         dto.turnsLeft = turnsLeft;
         dto.attackType = attackType;
         dto.units = units;
+        dto.joining = joinsKingdomName;
         return dto;
     }
 
@@ -83,5 +89,34 @@ public class KingdomOngoingAttackEntity {
     public UUID getId()
     {
         return id;
+    }
+
+    public KingdomEntity getKingdom()
+    {
+        return kingdom;
+    }
+
+    public String getTargetKingdomName()
+    {
+        return targetKingdomName;
+    }
+
+    public UUID getJoinsAttackId()
+    {
+        return joinsAttackId;
+    }
+
+    /**
+     * a joining army joins the strike's lead, never another joiner, so every strike has one army that sets off the rest
+     */
+    void join(KingdomOngoingAttackEntity lead)
+    {
+        this.joinsAttackId = lead.id;
+        this.joinsKingdomName = lead.kingdom.getName();
+    }
+
+    public boolean joins(KingdomOngoingAttackEntity lead)
+    {
+        return lead.id.equals(joinsAttackId);
     }
 }
