@@ -366,6 +366,13 @@
   grid-template-columns: minmax(0, 3fr) minmax(min(100%, 340px), 2fr);
 }
 
+/* side by side only while both fit; a phone reads the letters, then writes below */
+@media (max-width: 900px) {
+  .letters-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .letters {
   display: grid;
   margin: 0;

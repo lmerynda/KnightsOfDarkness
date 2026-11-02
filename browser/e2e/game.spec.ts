@@ -431,3 +431,19 @@ test("an ally asks for gold and another sends it through the market", async ({ p
   await expect(squirePage.locator("main")).toContainText("for 50,000 gold");
   await squirePage.close();
 });
+
+test("every page fits a phone screen", async ({ page }) => {
+  await foundKingdom(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const path of ["overview", "build", "train", "war", "spies", "market", "carriers", "alliance", "letters", "chronicle", "rankings"]) {
+    await page.goto(`/kingdom/${path}`);
+    await expect(page.locator("main h1")).toBeVisible();
+    // nothing runs past the right edge, and no column is squeezed into a sliver beside another
+    const overflow = await page.evaluate(() => {
+      const width = document.documentElement.clientWidth;
+      const columns = [...document.querySelectorAll("main .two-columns > *")].map(element => element.getBoundingClientRect().width);
+      return { scroll: document.documentElement.scrollWidth - width, squeezed: columns.filter(column => column < 240).length };
+    });
+    expect(overflow, path).toEqual({ scroll: 0, squeezed: 0 });
+  }
+});
