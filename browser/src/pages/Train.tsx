@@ -76,28 +76,32 @@ export const Train: React.FC = () => {
         ].filter(Boolean)
       : [];
 
-  const submit = async (): Promise<void> => {
-    const lacking = short;
+  const chosen = (Object.keys(order) as UnitName[]).filter(unit => (order[unit] ?? 0) > 0);
+
+  // one plate's order alone, or every plate's at once
+  const submit = async (only?: UnitName): Promise<void> => {
+    const part: Order = only ? { [only]: order[only] ?? 0 } : order;
+    const asked = only ? (order[only] ?? 0) : ordered;
+    const lacking = only ? [] : short;
     const result = await act(
-      () => (mode === "train" ? api.train(order) : api.dismiss(order)),
+      () => (mode === "train" ? api.train(part) : api.dismiss(part)),
       outcome => {
         const total = Object.values(outcome.units).reduce((sum, count) => sum + count, 0);
-        const partly = total < ordered;
+        const partly = total < asked;
         const reason = partly && lacking.length ? `, the rest lacked ${lacking.join(" and ")}` : "";
         return {
           text:
             mode === "train"
               ? partly
-                ? `Trained ${formatNumber(total)} of ${formatNumber(ordered)} recruits${reason}`
+                ? `Trained ${formatNumber(total)} of ${formatNumber(asked)} recruits${reason}`
                 : `Trained ${plural(total, "recruit", "recruits")}`
               : `Dismissed ${plural(total, "person", "people")}, they are idle now`,
           failure: total === 0,
         };
       },
     );
-    if (result) setOrder({});
+    if (result) setOrder(current => (only ? { ...current, [only]: 0 } : {}));
   };
-
   return (
     <>
       <Banner
@@ -184,7 +188,28 @@ export const Train: React.FC = () => {
                         value={order[unit] ?? 0}
                         onChange={count => setOrder(current => ({ ...current, [unit]: count }))}
                         max={maxFor(unit)}
+                        action={
+                          mode === "train"
+                            ? { label: `Train ${unitLore[unit].plural.toLowerCase()}`, icon: "recruit", onClick: () => submit(unit) }
+                            : {
+                                label: `Dismiss ${unitLore[unit].plural.toLowerCase()}`,
+                                icon: "dismiss",
+                                danger: true,
+                                onClick: () => submit(unit),
+                              }
+                        }
                       />
+                      {(order[unit] ?? 0) > maxFor(unit) ? (
+                        <p className="warning plate-warning">
+                          Only {formatNumber(maxFor(unit))} within reach.
+                          {mode === "train" && (order[unit] ?? 0) * cost.weapons > resources.weapons ? (
+                            <>
+                              {" "}
+                              <Link to="/kingdom/overview">Set the forge</Link>
+                            </>
+                          ) : null}
+                        </p>
+                      ) : null}
                     </div>
                   </article>
                 );
@@ -193,7 +218,7 @@ export const Train: React.FC = () => {
           </section>
         ))}
       </div>
-      {ordered > 0 ? (
+      {chosen.length > 1 ? (
         <div className="order-bar">
           <span>
             {mode === "train" ? (
@@ -217,8 +242,8 @@ export const Train: React.FC = () => {
             <button className="button quiet" type="button" onClick={() => setOrder({})}>
               Clear
             </button>
-            <button className={`button ${mode === "dismiss" ? "danger" : ""}`} type="button" onClick={submit}>
-              {mode === "train" ? "Train them" : "Dismiss them"}
+            <button className={`button ${mode === "dismiss" ? "danger" : ""}`} type="button" onClick={() => submit()}>
+              {mode === "train" ? "Train all" : "Dismiss all"}
             </button>
           </span>
         </div>

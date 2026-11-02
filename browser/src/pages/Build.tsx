@@ -235,9 +235,13 @@ export const Build: React.FC = () => {
     return Math.max(0, Math.min(byPoints, landLeft + current));
   };
 
-  const submit = async (): Promise<void> => {
+  const chosen = (Object.keys(order) as BuildingName[]).filter(building => (order[building] ?? 0) > 0);
+
+  // one plate's order alone, or every plate's at once
+  const submit = async (only?: BuildingName): Promise<void> => {
+    const part = only ? { [only]: order[only] ?? 0 } : order;
     const result = await act(
-      () => (mode === "build" ? api.build(order) : api.demolish(order)),
+      () => (mode === "build" ? api.build(part) : api.demolish(part)),
       outcome => {
         const total = Object.values(outcome.buildings).reduce((sum, count) => sum + count, 0);
         return {
@@ -247,7 +251,7 @@ export const Build: React.FC = () => {
         };
       },
     );
-    if (result) setOrder({});
+    if (result) setOrder(current => (only ? { ...current, [only]: 0 } : {}));
   };
 
   const overBudget = mode === "build" && (pointsLeft < 0 || landLeft < 0);
@@ -309,14 +313,33 @@ export const Build: React.FC = () => {
                       value={order[building] ?? 0}
                       onChange={count => setCount(building, count)}
                       max={maxFor(building)}
+                      action={
+                        mode === "build"
+                          ? {
+                              label: `Raise ${buildingLore[building].plural.toLowerCase()}`,
+                              icon: "hammer",
+                              onClick: () => submit(building),
+                            }
+                          : {
+                              label: `Tear down ${buildingLore[building].plural.toLowerCase()}`,
+                              icon: "pickaxe",
+                              danger: true,
+                              onClick: () => submit(building),
+                            }
+                      }
                     />
+                    {(order[building] ?? 0) > maxFor(building) ? (
+                      <p className="warning plate-warning">
+                        {mode === "build" ? `Room for ${formatNumber(maxFor(building))}.` : `Only ${formatNumber(maxFor(building))} stand.`}
+                      </p>
+                    ) : null}
                   </div>
                 </article>
               ))}
             </div>
           </section>
         ))}
-        {ordered > 0 ? (
+        {chosen.length > 1 ? (
           <div className="order-bar">
             <span>
               {mode === "build"
@@ -330,8 +353,8 @@ export const Build: React.FC = () => {
               <button className="button quiet" type="button" onClick={() => setOrder({})}>
                 Clear
               </button>
-              <button className={`button ${mode === "demolish" ? "danger" : ""}`} type="button" onClick={submit}>
-                {mode === "build" ? "Raise them" : "Tear them down"}
+              <button className={`button ${mode === "demolish" ? "danger" : ""}`} type="button" onClick={() => submit()}>
+                {mode === "build" ? "Raise all" : "Tear all down"}
               </button>
             </span>
           </div>

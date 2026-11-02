@@ -14,7 +14,11 @@ export type IconName =
   | "eye"
   | "sword"
   | "warning"
-  | "scroll";
+  | "scroll"
+  | "hammer"
+  | "pickaxe"
+  | "recruit"
+  | "dismiss";
 
 const tint: Record<IconName, string> = {
   gold: "#d4b878",
@@ -31,6 +35,10 @@ const tint: Record<IconName, string> = {
   sword: "#c7ccd2",
   warning: "#e08a2e",
   scroll: "#d4b878",
+  hammer: "#e08a2e",
+  pickaxe: "#b24e44",
+  recruit: "#e08a2e",
+  dismiss: "#b24e44",
 };
 
 const paths: Record<IconName, React.ReactNode> = {
@@ -116,6 +124,30 @@ const paths: Record<IconName, React.ReactNode> = {
     <>
       <path d="M7 4h11a2 2 0 0 1 0 4h-1v10a2 2 0 0 1-2 2H6a2 2 0 0 1 0-4h1z" />
       <path d="M7 16V4a2 2 0 0 0-2 2v1h2M10 9h4M10 12h4" />
+    </>
+  ),
+  hammer: (
+    <>
+      <path d="m13.5 10.5-9 9a1.6 1.6 0 0 1-2.2-2.2l9-9" />
+      <path d="m9.5 6.5 4-4 3 1 4.5 4.5-1.5 1.5-2-1-3.5 3.5z" />
+    </>
+  ),
+  pickaxe: (
+    <>
+      <path d="M4 20 14.5 9.5" />
+      <path d="M3.5 9C7 4.5 13 3 17 5l2 2c2 4 .5 10-4 13.5 1.5-4.5 1-8-1.5-10.5S8 7.5 3.5 9z" />
+    </>
+  ),
+  recruit: (
+    <>
+      <circle cx="10" cy="7.5" r="3.5" />
+      <path d="M3 20.5c.6-4.4 3.3-7 7-7 2 0 3.7.8 4.9 2.2M19 14v6M16 17h6" />
+    </>
+  ),
+  dismiss: (
+    <>
+      <circle cx="10" cy="7.5" r="3.5" />
+      <path d="M3 20.5c.6-4.4 3.3-7 7-7 2 0 3.7.8 4.9 2.2M16 17h6" />
     </>
   ),
 };

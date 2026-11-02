@@ -39,15 +39,22 @@ test("a ruler raises buildings, trains workers and passes the turn", async ({ pa
 
   await goTo(page, "Build");
   const housesBefore = Number(await page.locator(".plate").filter({ hasText: "House" }).first().locator(".plate-count").textContent());
+  // one plate is ordered from its own button; the bar to order them all appears only for two or more
   await page.getByLabel("Houses to raise", { exact: true }).fill("3");
-  await expect(page.locator(".order-bar")).toContainText("Raise 3 buildings");
-  await page.getByRole("button", { name: "Raise them" }).click();
+  await expect(page.locator(".order-bar")).toHaveCount(0);
+  await page.getByRole("button", { name: "Raise houses", exact: true }).click();
   await expect(toast(page, "Raised 3 buildings")).toBeVisible();
   await expect(page.locator(".plate").filter({ hasText: "House" }).first().locator(".plate-count")).toHaveText(String(housesBefore + 3));
+  await page.getByLabel("Houses to raise", { exact: true }).fill("1");
+  await page.getByLabel("Farms to raise", { exact: true }).fill("1");
+  await expect(page.locator(".order-bar")).toContainText("Raise 2 buildings");
+  await page.getByRole("button", { name: "Raise all" }).click();
+  await expect(toast(page, "Raised 2 buildings")).toBeVisible();
+  await expect(page.locator(".plate").filter({ hasText: "House" }).first().locator(".plate-count")).toHaveText(String(housesBefore + 4));
 
   await goTo(page, "Train");
   await page.getByLabel("Farmers to train", { exact: true }).fill("2");
-  await page.getByRole("button", { name: "Train them" }).click();
+  await page.getByRole("button", { name: "Train farmers", exact: true }).click();
   await expect(toast(page, "Trained 2 recruits")).toBeVisible();
 
   await passTurn(page);
@@ -60,7 +67,7 @@ test("a new ruler can arm soldiers after a few turns", async ({ page }) => {
 
   await goTo(page, "Train");
   await page.getByLabel("Infantry to train", { exact: true }).fill("10");
-  await page.getByRole("button", { name: "Train them" }).click();
+  await page.getByRole("button", { name: "Train infantry", exact: true }).click();
   await expect(toast(page, "Trained 10 recruits")).toBeVisible();
   await expect(page.locator("article").filter({ hasText: "Infantry" }).first()).toContainText("Paid 150 gold a turn");
 
@@ -116,7 +123,7 @@ test("an army marches, fights and leaves a battle report", async ({ page, browse
   await passTurns(page, 5);
   await goTo(page, "Train");
   await page.getByLabel("Infantry to train", { exact: true }).fill("10");
-  await page.getByRole("button", { name: "Train them" }).click();
+  await page.getByRole("button", { name: "Train infantry", exact: true }).click();
   await expect(toast(page, "Trained 10 recruits")).toBeVisible();
 
   await goTo(page, "Army");
@@ -227,7 +234,7 @@ test("an ally's soldiers stand guard and go home when called", async ({ page, br
   await passTurns(squirePage, 5);
   await goTo(squirePage, "Train");
   await squirePage.getByLabel("Infantry to train", { exact: true }).fill("10");
-  await squirePage.getByRole("button", { name: "Train them" }).click();
+  await squirePage.getByRole("button", { name: "Train infantry", exact: true }).click();
   await expect(toast(squirePage, "Trained 10 recruits")).toBeVisible();
   await goTo(squirePage, "Army");
   await squirePage.getByRole("combobox", { name: "Ally" }).selectOption(emperor.kingdomName);
@@ -273,7 +280,7 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await passTurns(squirePage, 5);
   await goTo(squirePage, "Train");
   await squirePage.getByLabel("Infantry to train", { exact: true }).fill("10");
-  await squirePage.getByRole("button", { name: "Train them" }).click();
+  await squirePage.getByRole("button", { name: "Train infantry", exact: true }).click();
   await expect(toast(squirePage, "Trained 10 recruits")).toBeVisible();
   await goTo(squirePage, "Army");
   await squirePage.getByRole("combobox", { name: /^Target/ }).selectOption(target);
@@ -287,7 +294,7 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await passTurns(emperorPage, 5);
   await goTo(emperorPage, "Train");
   await emperorPage.getByLabel("Infantry to train", { exact: true }).fill("10");
-  await emperorPage.getByRole("button", { name: "Train them" }).click();
+  await emperorPage.getByRole("button", { name: "Train infantry", exact: true }).click();
   await expect(toast(emperorPage, "Trained 10 recruits")).toBeVisible();
   await goTo(emperorPage, "Overview");
   await expect(emperorPage.locator(".counsel")).toContainText(`${squire.kingdomName} marches on ${target}`);

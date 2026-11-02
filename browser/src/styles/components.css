@@ -131,6 +131,39 @@
   color: var(--gold-bright);
 }
 
+/* the field's own order, carried out at once */
+.amount .act {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  margin-left: var(--space-2);
+  border: 1px solid rgba(224, 138, 46, 0.55);
+  border-radius: var(--radius-small);
+  background: rgba(224, 138, 46, 0.14);
+  cursor: pointer;
+}
+
+.amount .act:hover:not(:disabled) {
+  background: rgba(224, 138, 46, 0.28);
+}
+
+.amount .act.danger {
+  border-color: rgba(178, 78, 68, 0.6);
+  background: rgba(178, 78, 68, 0.14);
+}
+
+.amount .act.danger:hover:not(:disabled) {
+  background: rgba(178, 78, 68, 0.3);
+}
+
+.amount .act:disabled {
+  border-color: var(--rule);
+  background: none;
+  cursor: default;
+  opacity: 0.45;
+}
+
 .choice {
   display: inline-flex;
   border: 1px solid rgba(142, 154, 166, 0.3);
@@ -517,6 +550,11 @@
 .plate-input {
   padding: var(--space-3) var(--space-4) var(--space-4);
   border-top: 1px solid var(--rule);
+}
+
+.plate-warning {
+  margin: var(--space-2) 0 0;
+  font-size: var(--step--1);
 }
 
 /* ---------- sticky order bar ---------- */
