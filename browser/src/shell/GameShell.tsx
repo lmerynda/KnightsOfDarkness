@@ -135,10 +135,14 @@ const TurnSeal: React.FC = () => {
         className={`seal ${warnings.length ? "warn" : ""}`}
         onClick={onPass}
         disabled={passing || turns <= 0}
+        aria-label={turns > 0 ? `Pass turn, ${turns} stored` : "No turns left"}
         aria-describedby="seal-forecast"
       >
+        <span className="seal-glass">
+          <Icon name="turns" size={26} />
+        </span>
+        <span className="seal-label">{turns > 0 ? "Pass turn" : "No turns"}</span>
         <span className="seal-turns">{turns}</span>
-        <span className="seal-label">{turns > 0 ? "Pass the turn" : "No turns left"}</span>
       </button>
       <div className="seal-forecast" id="seal-forecast" role="tooltip">
         <div className="seal-forecast-title">

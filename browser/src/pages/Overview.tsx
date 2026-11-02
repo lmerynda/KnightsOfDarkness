@@ -10,7 +10,7 @@ import { art, marketResourceLabel, realmStage, resourceLabel, unitLore } from ".
 import type { IconName } from "../ui/Icon";
 import { Icon } from "../ui/Icon";
 import { Banner, Meter, Panel } from "../ui/parts";
-import { Term, Tip } from "../ui/Tip";
+import { Term } from "../ui/Tip";
 import { counterIntelligenceHelp, defenseHelp, protectionHelp, turnsHelp } from "../game/help";
 import { formatNumber, plural, signed } from "../ui/format";
 
@@ -91,17 +91,8 @@ const TurnLines: React.FC<{ report: TurnReport }> = ({ report }) => (
   </table>
 );
 
-const severalTurns = 5;
-
 const Forecast: React.FC = () => {
-  const { details, weaponsPercentage, setWeaponsPercentage, kingdom, passTurn } = useGame();
-  const [passing, setPassing] = useState(false);
-  const several = Math.min(severalTurns, kingdom.resources.turns);
-  const passSeveral = async (): Promise<void> => {
-    setPassing(true);
-    await passTurn(several);
-    setPassing(false);
-  };
+  const { details, weaponsPercentage, setWeaponsPercentage, kingdom } = useGame();
   const forecast = details.forecast;
   const warnings = departures(forecast);
   const foodBalance = (forecast.resourcesProduced.food ?? 0) - forecast.foodConsumed;
@@ -134,14 +125,6 @@ const Forecast: React.FC = () => {
           />
         </label>
       ) : null}
-      <div className="row overview-note">
-        <button className="button quiet" type="button" disabled={passing || several < 2} onClick={passSeveral}>
-          Pass {several < 2 ? severalTurns : several} turns
-        </button>
-        <Tip about={`passing ${severalTurns} turns`}>
-          One after another, stopping as soon as people leave hungry or homeless, or soldiers desert unpaid.
-        </Tip>
-      </div>
     </Panel>
   );
 };

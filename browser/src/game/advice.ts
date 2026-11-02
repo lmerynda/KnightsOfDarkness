@@ -111,26 +111,14 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
 };
 
 /** one line on what the turns just passed brought, for the toast */
-export const turnSummary = (reports: TurnReport[]): string => {
-  const total = (pick: (report: TurnReport) => number): number => reports.reduce((sum, report) => sum + pick(report), 0);
-  const starved = total(report => report.starvedPeople);
-  const deserted = total(report => report.desertedSoldiers);
-  const exiled = total(report => report.exiledPeople);
+export const turnSummary = (report: TurnReport): string => {
   const parts = [
-    `${signed(total(report => (report.resourcesProduced.gold ?? 0) - report.goldUpkeep))} gold`,
-    `${signed(total(report => (report.resourcesProduced.food ?? 0) - report.foodConsumed))} food`,
-    total(report => report.arrivingPeople) > 0
-      ? plural(
-          total(report => report.arrivingPeople),
-          "newcomer",
-          "newcomers",
-        )
-      : null,
-    starved > 0 ? `${formatNumber(starved)} left hungry` : null,
-    exiled > 0 ? `${formatNumber(exiled)} left for lack of houses` : null,
-    deserted > 0 ? `${plural(deserted, "soldier", "soldiers")} deserted unpaid` : null,
+    `${signed((report.resourcesProduced.gold ?? 0) - report.goldUpkeep)} gold`,
+    `${signed((report.resourcesProduced.food ?? 0) - report.foodConsumed)} food`,
+    report.arrivingPeople > 0 ? plural(report.arrivingPeople, "newcomer", "newcomers") : null,
+    report.starvedPeople > 0 ? `${formatNumber(report.starvedPeople)} left hungry` : null,
+    report.exiledPeople > 0 ? `${formatNumber(report.exiledPeople)} left for lack of houses` : null,
+    report.desertedSoldiers > 0 ? `${plural(report.desertedSoldiers, "soldier", "soldiers")} deserted unpaid` : null,
   ].filter(Boolean);
-  const fortune = reports.flatMap(report => (report.event ? [report.event] : []));
-  const turns = reports.length === 1 ? "A turn has passed" : `${reports.length} turns have passed`;
-  return `${turns}: ${parts.join(", ")}${fortune.length ? `. ${fortune.join(". ")}` : ""}`;
+  return `A turn has passed: ${parts.join(", ")}${report.event ? `. ${report.event}` : ""}`;
 };

@@ -42,8 +42,14 @@ export const toast = (page: Page, text: string | RegExp): ReturnType<Page["locat
 export const passTurn = async (page: Page): Promise<void> => {
   const passed = page.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
   const reloaded = page.waitForResponse(response => response.url().includes("/kingdom/details") && response.ok());
-  await page.getByRole("button", { name: /Pass the turn/ }).click();
+  await page.getByRole("button", { name: /^Pass turn/ }).click();
   const result = (await (await passed).json()) as { success: boolean };
   expect(result.success).toBe(true);
   await reloaded;
+};
+
+export const passTurns = async (page: Page, count: number): Promise<void> => {
+  for (let turn = 0; turn < count; turn++) {
+    await passTurn(page);
+  }
 };

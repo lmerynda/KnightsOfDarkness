@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { foundKingdom, goTo, passTurn, password, signIn, signOut, toast } from "./helpers";
+import { foundKingdom, goTo, passTurn, passTurns, password, signIn, signOut, toast } from "./helpers";
 
 test("the landing page shows the round and lets a new player found a kingdom", async ({ page }) => {
   await page.goto("/");
@@ -54,21 +54,9 @@ test("a ruler raises buildings, trains workers and passes the turn", async ({ pa
   await expect(toast(page, /A turn has passed: \+[\d,]+ gold/).first()).toBeVisible();
 });
 
-test("several turns pass with one order", async ({ page }) => {
-  await foundKingdom(page);
-  const passed = page.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
-  await page.getByRole("button", { name: "Pass 5 turns" }).click();
-  await passed;
-
-  await expect(toast(page, /5 turns have passed: \+[\d,]+ gold/)).toBeVisible();
-});
-
 test("a new ruler can arm soldiers after a few turns", async ({ page }) => {
   await foundKingdom(page);
-  const passed = page.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
-  await page.getByRole("button", { name: "Pass 5 turns" }).click();
-  await passed;
-  await expect(toast(page, /5 turns have passed/)).toBeVisible();
+  await passTurns(page, 5);
 
   await goTo(page, "Train");
   await page.getByLabel("Infantry to train", { exact: true }).fill("10");
@@ -125,10 +113,7 @@ test("an army marches, fights and leaves a battle report", async ({ page, browse
   const other = await browser.newPage();
   const { kingdomName: target } = await foundKingdom(other, "Target");
   const { kingdomName: attacker } = await foundKingdom(page);
-  const passed = page.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
-  await page.getByRole("button", { name: "Pass 5 turns" }).click();
-  await passed;
-  await expect(toast(page, /5 turns have passed/)).toBeVisible();
+  await passTurns(page, 5);
   await goTo(page, "Train");
   await page.getByLabel("Infantry to train", { exact: true }).fill("10");
   await page.getByRole("button", { name: "Train them" }).click();
@@ -151,9 +136,7 @@ test("an army marches, fights and leaves a battle report", async ({ page, browse
   await expect(other).toHaveURL(/\/kingdom\/war$/);
   await other.close();
 
-  for (let turn = 0; turn < 4; turn++) {
-    await passTurn(page);
-  }
+  await passTurns(page, 4);
 
   await expect(page.locator(".battle").first()).toContainText(`Victory over ${target}`);
   await expect(page.getByRole("heading", { name: "Armies on the march" })).toHaveCount(0);
@@ -241,10 +224,7 @@ test("an ally's soldiers stand guard and go home when called", async ({ page, br
   await goTo(squirePage, "Alliance");
   await squirePage.getByRole("button", { name: "Join" }).click();
   await goTo(squirePage, "Overview");
-  const passed = squirePage.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
-  await squirePage.getByRole("button", { name: "Pass 5 turns" }).click();
-  await passed;
-  await expect(toast(squirePage, /5 turns have passed/)).toBeVisible();
+  await passTurns(squirePage, 5);
   await goTo(squirePage, "Train");
   await squirePage.getByLabel("Infantry to train", { exact: true }).fill("10");
   await squirePage.getByRole("button", { name: "Train them" }).click();
@@ -254,9 +234,7 @@ test("an ally's soldiers stand guard and go home when called", async ({ page, br
   await squirePage.getByLabel(/^Infantry to send, \d+ at home/).fill("10");
   await squirePage.getByRole("button", { name: "Send to stand guard" }).click();
   await expect(toast(squirePage, `10 soldiers march to stand guard in ${emperor.kingdomName}`)).toBeVisible();
-  for (let turn = 0; turn < 2; turn++) {
-    await passTurn(squirePage);
-  }
+  await passTurns(squirePage, 2);
   await expect(squirePage.locator("main")).toContainText(`10 infantry stand guard in ${emperor.kingdomName}`);
 
   await goTo(page, "Overview");
@@ -292,10 +270,7 @@ test("allies see each other's armies and join the strike", async ({ page, browse
   await squirePage.getByRole("button", { name: "Join" }).click();
   await expect(squirePage.locator(".rail-alliance")).toHaveText(allianceName);
   await goTo(squirePage, "Overview");
-  const passed = squirePage.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
-  await squirePage.getByRole("button", { name: "Pass 5 turns" }).click();
-  await passed;
-  await expect(toast(squirePage, /5 turns have passed/)).toBeVisible();
+  await passTurns(squirePage, 5);
   await goTo(squirePage, "Train");
   await squirePage.getByLabel("Infantry to train", { exact: true }).fill("10");
   await squirePage.getByRole("button", { name: "Train them" }).click();
@@ -309,10 +284,7 @@ test("allies see each other's armies and join the strike", async ({ page, browse
 
   // the steward points an emperor with soldiers at home to the strike
   await goTo(emperorPage, "Overview");
-  const emperorPassed = emperorPage.waitForResponse(response => response.url().endsWith("/kingdom/pass-turn") && response.ok());
-  await emperorPage.getByRole("button", { name: "Pass 5 turns" }).click();
-  await emperorPassed;
-  await expect(toast(emperorPage, /5 turns have passed/)).toBeVisible();
+  await passTurns(emperorPage, 5);
   await goTo(emperorPage, "Train");
   await emperorPage.getByLabel("Infantry to train", { exact: true }).fill("10");
   await emperorPage.getByRole("button", { name: "Train them" }).click();
