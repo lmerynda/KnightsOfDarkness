@@ -201,8 +201,8 @@ const buildingFacts = (
   occupancy: number | undefined,
   capacity: number | undefined,
 ): string[] => {
-  const facts = [buildingLore[building].purpose];
-  if (building === "house") facts[0] = `Shelters ${config.buildingCapacity.house} civilians`;
+  const holds: Partial<Record<BuildingName, number>> = config.buildingCapacity;
+  const facts = [buildingLore[building].purpose(holds[building] ?? 0)];
   const percent = (ratio: number): number => Math.round(ratio * 100);
   if (building === "tower")
     facts[0] = `Adds ${percent(config.attack.towerDefenseBonusPerTower)}% defense each, up to ${percent(config.attack.maxTowerDefenseBonus)}%`;

@@ -38,6 +38,7 @@ test("a ruler raises buildings, trains workers and passes the turn", async ({ pa
   await foundKingdom(page);
 
   await goTo(page, "Build");
+  await expect(page.locator(".plate").filter({ hasText: "Farm" }).first()).toContainText(/Each employs \d+ farmers/);
   const housesBefore = Number(await page.locator(".plate").filter({ hasText: "House" }).first().locator(".plate-count").textContent());
   // one plate is ordered from its own button; the bar to order them all appears only for two or more
   await page.getByLabel("Houses to raise", { exact: true }).fill("3");
@@ -53,6 +54,7 @@ test("a ruler raises buildings, trains workers and passes the turn", async ({ pa
   await expect(page.locator(".plate").filter({ hasText: "House" }).first().locator(".plate-count")).toHaveText(String(housesBefore + 4));
 
   await goTo(page, "Train");
+  await expect(page.locator(".plate").filter({ hasText: "Farmer" }).first()).toContainText(/Farms: \d+ of \d+ places, \d+ each/);
   await page.getByLabel("Farmers to train", { exact: true }).fill("2");
   await page.getByRole("button", { name: "Train farmers", exact: true }).click();
   await expect(toast(page, "Trained 2 recruits")).toBeVisible();

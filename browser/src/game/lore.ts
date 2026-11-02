@@ -31,20 +31,21 @@ export const marketResourceLabel: Record<MarketResource, string> = {
   weapons: "Weapons",
 };
 
-type BuildingLore = { label: string; plural: string; purpose: string };
+/** purpose takes what one building holds, from the config, so the number on the card is the server's own */
+type BuildingLore = { label: string; plural: string; purpose: (holds: number) => string };
 
 export const buildingLore: Record<BuildingName, BuildingLore> = {
-  house: { label: "House", plural: "Houses", purpose: "Shelters your civilians" },
-  goldMine: { label: "Gold mine", plural: "Gold mines", purpose: "Employs gold miners" },
-  ironMine: { label: "Iron mine", plural: "Iron mines", purpose: "Employs iron miners" },
-  workshop: { label: "Workshop", plural: "Workshops", purpose: "Employs blacksmiths" },
-  farm: { label: "Farm", plural: "Farms", purpose: "Employs farmers" },
-  market: { label: "Market", plural: "Markets", purpose: "Houses carriers" },
-  barracks: { label: "Barracks", plural: "Barracks", purpose: "Quarters infantry, bowmen and cavalry" },
-  guardHouse: { label: "Guard house", plural: "Guard houses", purpose: "Quarters the town guard" },
-  spyGuild: { label: "Spy guild", plural: "Spy guilds", purpose: "Hides your spies" },
-  tower: { label: "Tower", plural: "Towers", purpose: "Strengthens your defense" },
-  castle: { label: "Castle", plural: "Castles", purpose: "Strengthens your defense" },
+  house: { label: "House", plural: "Houses", purpose: holds => `Each shelters ${holds} civilians` },
+  goldMine: { label: "Gold mine", plural: "Gold mines", purpose: holds => `Each employs ${holds} gold miners` },
+  ironMine: { label: "Iron mine", plural: "Iron mines", purpose: holds => `Each employs ${holds} iron miners` },
+  workshop: { label: "Workshop", plural: "Workshops", purpose: holds => `Each employs ${holds} blacksmiths` },
+  farm: { label: "Farm", plural: "Farms", purpose: holds => `Each employs ${holds} farmers` },
+  market: { label: "Market", plural: "Markets", purpose: holds => `Each houses ${holds} carriers` },
+  barracks: { label: "Barracks", plural: "Barracks", purpose: holds => `Each quarters ${holds} infantry, bowmen or cavalry` },
+  guardHouse: { label: "Guard house", plural: "Guard houses", purpose: holds => `Each quarters ${holds} guards` },
+  spyGuild: { label: "Spy guild", plural: "Spy guilds", purpose: holds => `Each hides ${holds} spies` },
+  tower: { label: "Tower", plural: "Towers", purpose: () => "Strengthens your defense" },
+  castle: { label: "Castle", plural: "Castles", purpose: () => "Strengthens your defense" },
 };
 
 type UnitLore = { label: string; plural: string; duty: string };

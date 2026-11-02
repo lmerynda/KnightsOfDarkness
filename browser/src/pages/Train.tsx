@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
-import type { Counts, GameConfig, UnitName } from "../api/types";
+import type { BuildingName, Counts, GameConfig, UnitName } from "../api/types";
 import { militaryUnits, unitNames } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, buildingLore, resourceLabel, unitGroups, unitLore } from "../game/lore";
@@ -159,7 +159,8 @@ export const Train: React.FC = () => {
                         {home ? (
                           <span>
                             {buildingLore[home].plural}: {formatNumber(details.buildingOccupancy[home] ?? 0)} of{" "}
-                            {formatNumber(details.buildingCapacity[home] ?? 0)} places
+                            {formatNumber(details.buildingCapacity[home] ?? 0)} places,{" "}
+                            {formatNumber((config.buildingCapacity as Partial<Record<BuildingName, number>>)[home] ?? 0)} each
                           </span>
                         ) : (
                           <span>Lives in a house</span>
