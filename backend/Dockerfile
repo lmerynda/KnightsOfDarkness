@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:25.0.5-jre@sha256:d0e68819f46c96d557fb112a6ea7636e4e36c543005f6325316efc4ec6f7fe5a
+FROM azul/zulu-openjdk-alpine:26.0.2.1-26.32-jre@sha256:1f0e20dd1b41ae1d283ac907421682257518ae1d1e190bd5fc4981ad01321c5d
 WORKDIR /app
 COPY ./build/libs/kod-game-server-*.jar kod-game-server.jar
 EXPOSE 8080
