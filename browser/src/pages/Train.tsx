@@ -25,8 +25,9 @@ const orderCost = (order: Order, config: GameConfig): { gold: number; tools: num
   );
 
 const productionText = (unit: UnitName, config: GameConfig): string | null => {
-  const production = config.production[unit];
-  if (!production) return null;
+  // the config lists only the units that produce something
+  if (!(unit in config.production)) return null;
+  const production = config.production[unit as keyof GameConfig["production"]];
   if (unit === "blacksmith") return `Makes ${production.rate} tools or weapons a turn, using as much iron`;
   return `Makes ${formatNumber(production.rate)} ${resourceLabel[production.resource].toLowerCase()} a turn, before bonuses`;
 };

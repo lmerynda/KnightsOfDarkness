@@ -128,10 +128,10 @@ class KingdomPopulationTest {
     }
 
     @Test
-    void specialBuilding_emptyBuildingType_shouldNotStart()
+    void specialBuilding_withoutAType_shouldNotStart()
     {
         var kingdom = new KingdomBuilder(game).build();
 
-        assertThat(new KingdomSpecialBuildingAction(kingdom, gameConfig).startSpecialBuilding(SpecialBuildingType.emptyBuilding)).isEmpty();
+        assertThat(new KingdomSpecialBuildingAction(kingdom, gameConfig).startSpecialBuilding(null)).isEmpty();
     }
 }

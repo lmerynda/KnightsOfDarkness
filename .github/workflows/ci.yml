@@ -66,6 +66,10 @@ jobs:
           cache-dependency-path: browser/package-lock.json
       - run: npm ci
         working-directory: browser
+      # the API types come from api/openapi.json, which the server tests keep true to the server
+      - name: API types match the API description
+        run: npm run api:check
+        working-directory: browser
       - run: npm run build
         working-directory: browser
       - run: npm run ci:lint
@@ -101,6 +105,9 @@ jobs:
           cache: npm
           cache-dependency-path: simulation/package-lock.json
       - run: npm ci
+        working-directory: simulation
+      - name: API types match the API description
+        run: npm run api:check
         working-directory: simulation
       - run: npm run typecheck
         working-directory: simulation

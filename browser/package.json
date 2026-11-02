@@ -14,7 +14,9 @@
         "ci:lint": "npm run lint && npm run format:check",
         "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\" \"e2e/**/*.ts\" playwright.config.ts",
         "preview": "vite preview",
-        "test:e2e": "playwright test"
+        "test:e2e": "playwright test",
+        "api:types": "openapi-typescript ../api/openapi.json --output src/api/schema.ts && prettier --write src/api/schema.ts",
+        "api:check": "npm run api:types && git diff --exit-code -- src/api/schema.ts"
     },
     "dependencies": {
         "@fontsource-variable/grenze": "5.3.0",
@@ -40,6 +42,7 @@
         "eslint-plugin-react-hooks": "^5.2.0",
         "eslint-plugin-react-refresh": "^0.4.26",
         "globals": "^16.5.0",
+        "openapi-typescript": "7.13.0",
         "prettier": "^3.9.10",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.71.2",

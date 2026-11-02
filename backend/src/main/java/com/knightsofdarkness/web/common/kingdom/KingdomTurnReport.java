@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.common.kingdom;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -20,7 +22,7 @@ public class KingdomTurnReport {
     public Map<ResourceName, Double> specialBuildingBonus = new EnumMap<>(ResourceName.class);
     public Map<UnitName, Integer> professionalsLeaving = new EnumMap<>(UnitName.class);
     /** what fortune brought after the turn, if anything */
-    public String event;
+    public @Nullable String event;
 
     public void addLeavingProfessionals(UnitName unit, int count)
     {

@@ -1,0 +1,4599 @@
+{
+  "components" : {
+    "schemas" : {
+      "AcceptAllianceInvitationDto" : {
+        "properties" : {
+          "invitationId" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        },
+        "required" : [ "invitationId" ],
+        "type" : "object"
+      },
+      "AccountDto" : {
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "kingdomName" : {
+            "type" : "string"
+          },
+          "trial" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "email", "kingdomName", "trial" ],
+        "type" : "object"
+      },
+      "ActionResultAllianceDto" : {
+        "properties" : {
+          "data" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/AllianceDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultAllianceInvitationDto" : {
+        "properties" : {
+          "data" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/AllianceInvitationDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultInteger" : {
+        "properties" : {
+          "data" : {
+            "format" : "int32",
+            "type" : [ "integer", "null" ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultKingdomBuildingsDto" : {
+        "properties" : {
+          "data" : {
+            "additionalProperties" : {
+              "format" : "int32",
+              "type" : "integer"
+            },
+            "type" : [ "object", "null" ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultKingdomTurnReport" : {
+        "properties" : {
+          "data" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/KingdomTurnReport"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultLandTransaction" : {
+        "properties" : {
+          "data" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/LandTransaction"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultMarketOfferDto" : {
+        "properties" : {
+          "data" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/MarketOfferDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultMarketPurchaseDto" : {
+        "properties" : {
+          "data" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/MarketPurchaseDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultSendAttackDto" : {
+        "properties" : {
+          "data" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/SendAttackDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultSendCarriersDto" : {
+        "properties" : {
+          "data" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/SendCarriersDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultSpyReportDto" : {
+        "properties" : {
+          "data" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/SpyReportDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultString" : {
+        "properties" : {
+          "data" : {
+            "type" : [ "string", "null" ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultTrialStartedDto" : {
+        "properties" : {
+          "data" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/TrialStartedDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultUUID" : {
+        "properties" : {
+          "data" : {
+            "format" : "uuid",
+            "type" : [ "string", "null" ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultUnitsMapDto" : {
+        "properties" : {
+          "data" : {
+            "additionalProperties" : {
+              "format" : "int32",
+              "type" : "integer"
+            },
+            "type" : [ "object", "null" ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "ActionResultVoid" : {
+        "properties" : {
+          "data" : {
+            "type" : "null"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "data", "message", "success" ],
+        "type" : "object"
+      },
+      "AddBotToAllianceDto" : {
+        "properties" : {
+          "botName" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "botName" ],
+        "type" : "object"
+      },
+      "AllianceDto" : {
+        "properties" : {
+          "emperor" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "emperor", "name" ],
+        "type" : "object"
+      },
+      "AllianceInvitationDto" : {
+        "properties" : {
+          "allianceName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "kingdomName" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "allianceName", "id", "kingdomName" ],
+        "type" : "object"
+      },
+      "AllianceMemberStrengthDto" : {
+        "properties" : {
+          "defense" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "kingdomName" : {
+            "type" : "string"
+          },
+          "land" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "defense", "kingdomName", "land" ],
+        "type" : "object"
+      },
+      "AllianceRankDto" : {
+        "properties" : {
+          "allianceName" : {
+            "type" : "string"
+          },
+          "land" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "members" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "rank" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "allianceName", "land", "members", "rank" ],
+        "type" : "object"
+      },
+      "AllianceWarRoomDto" : {
+        "properties" : {
+          "battles" : {
+            "items" : {
+              "$ref" : "#/components/schemas/BattleReportDto"
+            },
+            "type" : "array"
+          },
+          "guards" : {
+            "items" : {
+              "$ref" : "#/components/schemas/ReinforcementDto"
+            },
+            "type" : "array"
+          },
+          "intel" : {
+            "items" : {
+              "$ref" : "#/components/schemas/SpyReportDto"
+            },
+            "type" : "array"
+          },
+          "marching" : {
+            "items" : {
+              "$ref" : "#/components/schemas/OngoingAttackDto"
+            },
+            "type" : "array"
+          },
+          "members" : {
+            "items" : {
+              "$ref" : "#/components/schemas/AllianceMemberStrengthDto"
+            },
+            "type" : "array"
+          },
+          "threats" : {
+            "items" : {
+              "$ref" : "#/components/schemas/IncomingArmyDto"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "battles", "guards", "intel", "marching", "members", "threats" ],
+        "type" : "object"
+      },
+      "AllianceWithMembersDto" : {
+        "properties" : {
+          "emperor" : {
+            "type" : "string"
+          },
+          "members" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "emperor", "members", "name" ],
+        "type" : "object"
+      },
+      "Attack" : {
+        "properties" : {
+          "castleDefenseBonusPerCastle" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "maxGuardLossRatio" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "maxLandCaptureRatio" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "maxPlunderRatio" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "maxTowerDefenseBonus" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "maxWarehousePlunderProtection" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "minTargetLandRatio" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "protectionTicksAfterDefeat" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "smallerTargetCaptureExponent" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "towerDefenseBonusPerTower" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "turnsToArrive" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "turnsToWaitAtBorder" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "unitAttackPower" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "bowman" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "builder" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "carrier" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "cavalry" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "farmer" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "goldMiner" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "guard" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "infantry" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "ironMiner" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "spy" : {
+                "format" : "double",
+                "type" : "number"
+              }
+            },
+            "type" : "object"
+          },
+          "unitDefensePower" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "bowman" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "builder" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "carrier" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "cavalry" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "farmer" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "goldMiner" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "guard" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "infantry" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "ironMiner" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "spy" : {
+                "format" : "double",
+                "type" : "number"
+              }
+            },
+            "type" : "object"
+          },
+          "warehousePlunderProtectionPerLevel" : {
+            "format" : "double",
+            "type" : "number"
+          }
+        },
+        "required" : [ "castleDefenseBonusPerCastle", "maxGuardLossRatio", "maxLandCaptureRatio", "maxPlunderRatio", "maxTowerDefenseBonus", "maxWarehousePlunderProtection", "minTargetLandRatio", "protectionTicksAfterDefeat", "smallerTargetCaptureExponent", "towerDefenseBonusPerTower", "turnsToArrive", "turnsToWaitAtBorder", "unitAttackPower", "unitDefensePower", "warehousePlunderProtectionPerLevel" ],
+        "type" : "object"
+      },
+      "AttackType" : {
+        "enum" : [ "economy", "land" ],
+        "type" : "string"
+      },
+      "AuthRequestDto" : {
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "email", "password" ],
+        "type" : "object"
+      },
+      "AuthResponseDto" : {
+        "properties" : {
+          "token" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "token" ],
+        "type" : "object"
+      },
+      "BattleReportDto" : {
+        "properties" : {
+          "alliedLosses" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "attackPower" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "attackType" : {
+            "$ref" : "#/components/schemas/AttackType"
+          },
+          "attacker" : {
+            "type" : "string"
+          },
+          "attackerArrowLosses" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "attackerLosses" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "attackerWon" : {
+            "type" : "boolean"
+          },
+          "date" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "defender" : {
+            "type" : "string"
+          },
+          "defenderArrowLosses" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "defenderLosses" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "defensePower" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "landCaptured" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "plunder" : {
+            "properties" : {
+              "buildingPoints" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "food" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "gold" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "iron" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "land" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tools" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "turns" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "unemployed" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "weapons" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "unitsSent" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          }
+        },
+        "required" : [ "alliedLosses", "attackPower", "attackType", "attacker", "attackerArrowLosses", "attackerLosses", "attackerWon", "date", "defender", "defenderArrowLosses", "defenderLosses", "defensePower", "id", "landCaptured", "plunder", "unitsSent" ],
+        "type" : "object"
+      },
+      "Bots" : {
+        "properties" : {
+          "maxLand" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "maxOffer" : {
+            "properties" : {
+              "food" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "iron" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tools" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "weapons" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "maxStock" : {
+            "properties" : {
+              "buildingPoints" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "food" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "gold" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "iron" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "land" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tools" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "turns" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "unemployed" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "weapons" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          }
+        },
+        "required" : [ "maxLand", "maxOffer", "maxStock" ],
+        "type" : "object"
+      },
+      "BuildingCapacity" : {
+        "properties" : {
+          "barracks" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "farm" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "goldMine" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "guardHouse" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "house" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "ironMine" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "market" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "spyGuild" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "workshop" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "barracks", "farm", "goldMine", "guardHouse", "house", "ironMine", "market", "spyGuild", "workshop" ],
+        "type" : "object"
+      },
+      "BuildingName" : {
+        "enum" : [ "house", "goldMine", "ironMine", "workshop", "farm", "market", "barracks", "guardHouse", "spyGuild", "tower", "castle" ],
+        "type" : "string"
+      },
+      "BuildingPointCosts" : {
+        "properties" : {
+          "barracks" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "castle" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "farm" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "goldMine" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "guardHouse" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "house" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "ironMine" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "market" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "spyGuild" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tower" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "workshop" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "barracks", "castle", "farm", "goldMine", "guardHouse", "house", "ironMine", "market", "spyGuild", "tower", "workshop" ],
+        "type" : "object"
+      },
+      "BuyMarketOfferDto" : {
+        "properties" : {
+          "count" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "count" ],
+        "type" : "object"
+      },
+      "CarrierCapacity" : {
+        "properties" : {
+          "food" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "iron" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tools" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "weapons" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "food", "iron", "tools", "weapons" ],
+        "type" : "object"
+      },
+      "CarriersOnTheMoveDto" : {
+        "properties" : {
+          "carriersCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "count" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "from" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "resource" : {
+            "$ref" : "#/components/schemas/MarketResource"
+          },
+          "to" : {
+            "type" : "string"
+          },
+          "turnsLeft" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "carriersCount", "count", "from", "id", "resource", "to", "turnsLeft" ],
+        "type" : "object"
+      },
+      "Common" : {
+        "properties" : {
+          "allianceMaxMembers" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "foodUpkeepPerUnit" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "ironConsumptionPerProductionUnit" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "kingdomBaseHousingCapacity" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "maxNotificationsCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "maxTurns" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "newTurnPeriodicity" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "soldierUpkeepRatio" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "specialBuildingMaxCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "specialBuildingMaxLevel" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "specialBuildingPerLevelProductionBonus" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "starvationLeaveRatio" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "turnsToDeliverResources" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "turnsToReinforce" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "allianceMaxMembers", "foodUpkeepPerUnit", "ironConsumptionPerProductionUnit", "kingdomBaseHousingCapacity", "maxNotificationsCount", "maxTurns", "newTurnPeriodicity", "soldierUpkeepRatio", "specialBuildingMaxCount", "specialBuildingMaxLevel", "specialBuildingPerLevelProductionBonus", "starvationLeaveRatio", "turnsToDeliverResources", "turnsToReinforce" ],
+        "type" : "object"
+      },
+      "CreateAllianceDto" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "name" ],
+        "type" : "object"
+      },
+      "Espionage" : {
+        "properties" : {
+          "counterIntelligencePerGuard" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "counterIntelligencePerSpy" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "failedMissionLossRatio" : {
+            "format" : "double",
+            "type" : "number"
+          }
+        },
+        "required" : [ "counterIntelligencePerGuard", "counterIntelligencePerSpy", "failedMissionLossRatio" ],
+        "type" : "object"
+      },
+      "Events" : {
+        "properties" : {
+          "chancePerTurn" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "guardsPerAcreAgainstBandits" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "lossShare" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "windfallShare" : {
+            "format" : "double",
+            "type" : "number"
+          }
+        },
+        "required" : [ "chancePerTurn", "guardsPerAcreAgainstBandits", "lossShare", "windfallShare" ],
+        "type" : "object"
+      },
+      "GameConfig" : {
+        "properties" : {
+          "attack" : {
+            "$ref" : "#/components/schemas/Attack"
+          },
+          "bots" : {
+            "$ref" : "#/components/schemas/Bots"
+          },
+          "buildingCapacity" : {
+            "$ref" : "#/components/schemas/BuildingCapacity"
+          },
+          "buildingPointCosts" : {
+            "$ref" : "#/components/schemas/BuildingPointCosts"
+          },
+          "carrierCapacity" : {
+            "$ref" : "#/components/schemas/CarrierCapacity"
+          },
+          "common" : {
+            "$ref" : "#/components/schemas/Common"
+          },
+          "espionage" : {
+            "$ref" : "#/components/schemas/Espionage"
+          },
+          "events" : {
+            "$ref" : "#/components/schemas/Events"
+          },
+          "kingdomStartConfiguration" : {
+            "$ref" : "#/components/schemas/KingdomStartConfiguration"
+          },
+          "market" : {
+            "$ref" : "#/components/schemas/MarketConfig"
+          },
+          "production" : {
+            "$ref" : "#/components/schemas/Production"
+          },
+          "round" : {
+            "$ref" : "#/components/schemas/Round"
+          },
+          "specialBuildingCosts" : {
+            "$ref" : "#/components/schemas/SpecialBuildingCosts"
+          },
+          "trainingCost" : {
+            "$ref" : "#/components/schemas/TrainingCost"
+          }
+        },
+        "required" : [ "attack", "bots", "buildingCapacity", "buildingPointCosts", "carrierCapacity", "common", "espionage", "events", "kingdomStartConfiguration", "market", "production", "round", "specialBuildingCosts", "trainingCost" ],
+        "type" : "object"
+      },
+      "IncomingArmyDto" : {
+        "properties" : {
+          "attackType" : {
+            "$ref" : "#/components/schemas/AttackType"
+          },
+          "from" : {
+            "type" : "string"
+          },
+          "soldiers" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "to" : {
+            "type" : "string"
+          },
+          "turnsLeft" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "attackType", "from", "soldiers", "to", "turnsLeft" ],
+        "type" : "object"
+      },
+      "KeepRequestDto" : {
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "email", "password" ],
+        "type" : "object"
+      },
+      "KingdomDetailsDto" : {
+        "properties" : {
+          "buildingCapacity" : {
+            "properties" : {
+              "barracks" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "castle" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farm" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMine" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guardHouse" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "house" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMine" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "market" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spyGuild" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tower" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "workshop" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "buildingOccupancy" : {
+            "properties" : {
+              "barracks" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "castle" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farm" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMine" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guardHouse" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "house" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMine" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "market" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spyGuild" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tower" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "workshop" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "counterIntelligence" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "defensePower" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "foodUpkeep" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "forecast" : {
+            "$ref" : "#/components/schemas/KingdomTurnReport"
+          },
+          "housedPeople" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "housingCapacity" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "nextLandPrice" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "usedLand" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "buildingCapacity", "buildingOccupancy", "counterIntelligence", "defensePower", "foodUpkeep", "forecast", "housedPeople", "housingCapacity", "nextLandPrice", "usedLand" ],
+        "type" : "object"
+      },
+      "KingdomDto" : {
+        "properties" : {
+          "allianceName" : {
+            "type" : [ "string", "null" ]
+          },
+          "buildings" : {
+            "properties" : {
+              "barracks" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "castle" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farm" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMine" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guardHouse" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "house" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMine" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "market" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spyGuild" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tower" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "workshop" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "required" : [ "barracks", "castle", "farm", "goldMine", "guardHouse", "house", "ironMine", "market", "spyGuild", "tower", "workshop" ],
+            "type" : "object"
+          },
+          "carriersOnTheMove" : {
+            "items" : {
+              "$ref" : "#/components/schemas/CarriersOnTheMoveDto"
+            },
+            "type" : "array"
+          },
+          "garrisons" : {
+            "items" : {
+              "$ref" : "#/components/schemas/ReinforcementDto"
+            },
+            "type" : "array"
+          },
+          "incoming" : {
+            "items" : {
+              "$ref" : "#/components/schemas/IncomingArmyDto"
+            },
+            "type" : "array"
+          },
+          "lastTurnReport" : {
+            "$ref" : "#/components/schemas/KingdomTurnReport"
+          },
+          "marketOffers" : {
+            "items" : {
+              "$ref" : "#/components/schemas/MarketOfferDto"
+            },
+            "type" : "array"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "ongoingAttacks" : {
+            "items" : {
+              "$ref" : "#/components/schemas/OngoingAttackDto"
+            },
+            "type" : "array"
+          },
+          "protectionTicks" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "reinforcements" : {
+            "items" : {
+              "$ref" : "#/components/schemas/ReinforcementDto"
+            },
+            "type" : "array"
+          },
+          "resources" : {
+            "properties" : {
+              "buildingPoints" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "food" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "gold" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "iron" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "land" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tools" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "turns" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "unemployed" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "weapons" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "required" : [ "buildingPoints", "food", "gold", "iron", "land", "tools", "turns", "unemployed", "weapons" ],
+            "type" : "object"
+          },
+          "specialBuildings" : {
+            "items" : {
+              "$ref" : "#/components/schemas/KingdomSpecialBuildingDto"
+            },
+            "type" : "array"
+          },
+          "units" : {
+            "$ref" : "#/components/schemas/KingdomUnitsDto"
+          }
+        },
+        "required" : [ "allianceName", "buildings", "carriersOnTheMove", "garrisons", "incoming", "lastTurnReport", "marketOffers", "name", "ongoingAttacks", "protectionTicks", "reinforcements", "resources", "specialBuildings", "units" ],
+        "type" : "object"
+      },
+      "KingdomRankDto" : {
+        "properties" : {
+          "allianceName" : {
+            "type" : [ "string", "null" ]
+          },
+          "bot" : {
+            "type" : "boolean"
+          },
+          "buildings" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "kingdomName" : {
+            "type" : "string"
+          },
+          "land" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "protectionTicks" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "rank" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "allianceName", "bot", "buildings", "kingdomName", "land", "protectionTicks", "rank" ],
+        "type" : "object"
+      },
+      "KingdomSpecialBuildingBuildDto" : {
+        "properties" : {
+          "buildingPoints" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        },
+        "required" : [ "buildingPoints", "id" ],
+        "type" : "object"
+      },
+      "KingdomSpecialBuildingDemolishDto" : {
+        "properties" : {
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        },
+        "required" : [ "id" ],
+        "type" : "object"
+      },
+      "KingdomSpecialBuildingDto" : {
+        "properties" : {
+          "buildingPointsPut" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "buildingPointsRequired" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "buildingType" : {
+            "$ref" : "#/components/schemas/SpecialBuildingType"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "isMaxLevel" : {
+            "type" : "boolean"
+          },
+          "level" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "buildingPointsPut", "buildingPointsRequired", "buildingType", "id", "isMaxLevel", "level" ],
+        "type" : "object"
+      },
+      "KingdomSpecialBuildingStartDto" : {
+        "properties" : {
+          "name" : {
+            "$ref" : "#/components/schemas/SpecialBuildingType"
+          }
+        },
+        "required" : [ "name" ],
+        "type" : "object"
+      },
+      "KingdomStartConfiguration" : {
+        "properties" : {
+          "buildings" : {
+            "$ref" : "#/components/schemas/KingdomStartingBuildings"
+          },
+          "resources" : {
+            "$ref" : "#/components/schemas/KingdomStartingResources"
+          },
+          "units" : {
+            "$ref" : "#/components/schemas/KingdomStartingUnits"
+          }
+        },
+        "required" : [ "buildings", "resources", "units" ],
+        "type" : "object"
+      },
+      "KingdomStartingBuildings" : {
+        "properties" : {
+          "barracks" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "castle" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "farm" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "goldMine" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "guardHouse" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "house" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "ironMine" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "market" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "spyGuild" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tower" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "workshop" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "barracks", "castle", "farm", "goldMine", "guardHouse", "house", "ironMine", "market", "spyGuild", "tower", "workshop" ],
+        "type" : "object"
+      },
+      "KingdomStartingResources" : {
+        "properties" : {
+          "buildingPoints" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "food" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "gold" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "iron" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "land" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tools" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "turns" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "unemployed" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "weapons" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "buildingPoints", "food", "gold", "iron", "land", "tools", "turns", "unemployed", "weapons" ],
+        "type" : "object"
+      },
+      "KingdomStartingUnits" : {
+        "properties" : {
+          "blacksmith" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "bowman" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "builder" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "carrier" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "cavalry" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "farmer" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "goldMiner" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "guard" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "infantry" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "ironMiner" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "spy" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "blacksmith", "bowman", "builder", "carrier", "cavalry", "farmer", "goldMiner", "guard", "infantry", "ironMiner", "spy" ],
+        "type" : "object"
+      },
+      "KingdomTurnReport" : {
+        "properties" : {
+          "arrivingPeople" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "desertedSoldiers" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "event" : {
+            "type" : [ "string", "null" ]
+          },
+          "exiledPeople" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "foodConsumed" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "goldUpkeep" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "kingdomSizeProductionBonus" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "nourishmentProductionFactor" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "professionalsLeaving" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "resourcesProduced" : {
+            "properties" : {
+              "buildingPoints" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "food" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "gold" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "iron" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "land" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tools" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "turns" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "unemployed" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "weapons" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "specialBuildingBonus" : {
+            "properties" : {
+              "buildingPoints" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "food" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "gold" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "iron" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "land" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "tools" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "turns" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "unemployed" : {
+                "format" : "double",
+                "type" : "number"
+              },
+              "weapons" : {
+                "format" : "double",
+                "type" : "number"
+              }
+            },
+            "type" : "object"
+          },
+          "starvedPeople" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "weaponsProductionPercentage" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "arrivingPeople", "desertedSoldiers", "event", "exiledPeople", "foodConsumed", "goldUpkeep", "kingdomSizeProductionBonus", "nourishmentProductionFactor", "professionalsLeaving", "resourcesProduced", "specialBuildingBonus", "starvedPeople", "weaponsProductionPercentage" ],
+        "type" : "object"
+      },
+      "KingdomUnitsDto" : {
+        "properties" : {
+          "availableUnits" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "required" : [ "blacksmith", "bowman", "builder", "carrier", "cavalry", "farmer", "goldMiner", "guard", "infantry", "ironMiner", "spy" ],
+            "type" : "object"
+          },
+          "mobileUnits" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "required" : [ "blacksmith", "bowman", "builder", "carrier", "cavalry", "farmer", "goldMiner", "guard", "infantry", "ironMiner", "spy" ],
+            "type" : "object"
+          }
+        },
+        "required" : [ "availableUnits", "mobileUnits" ],
+        "type" : "object"
+      },
+      "LandTransaction" : {
+        "properties" : {
+          "cost" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "count" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "cost", "count" ],
+        "type" : "object"
+      },
+      "MarketConfig" : {
+        "properties" : {
+          "marketAveragePeriodicity" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "maxKingdomOffers" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "minPrice" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "visibleMarketOffersCap" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "marketAveragePeriodicity", "maxKingdomOffers", "minPrice", "visibleMarketOffersCap" ],
+        "type" : "object"
+      },
+      "MarketOfferDto" : {
+        "properties" : {
+          "count" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "price" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "resource" : {
+            "$ref" : "#/components/schemas/MarketResource"
+          },
+          "sellerName" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "count", "id", "price", "resource", "sellerName" ],
+        "type" : "object"
+      },
+      "MarketPurchaseDto" : {
+        "properties" : {
+          "count" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "pricePerUnit" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "resource" : {
+            "$ref" : "#/components/schemas/MarketResource"
+          },
+          "totalCost" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "count", "pricePerUnit", "resource", "totalCost" ],
+        "type" : "object"
+      },
+      "MarketResource" : {
+        "enum" : [ "iron", "food", "tools", "weapons" ],
+        "type" : "string"
+      },
+      "MessageDto" : {
+        "properties" : {
+          "body" : {
+            "type" : "string"
+          },
+          "date" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "isRead" : {
+            "type" : "boolean"
+          },
+          "recipient" : {
+            "type" : "string"
+          },
+          "sender" : {
+            "type" : "string"
+          },
+          "toAlliance" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "body", "date", "id", "isRead", "recipient", "sender", "toAlliance" ],
+        "type" : "object"
+      },
+      "NotificationDto" : {
+        "properties" : {
+          "date" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "isRead" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "$ref" : "#/components/schemas/NotificationKind"
+          },
+          "kingdomName" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "date", "id", "isRead", "kind", "kingdomName", "message" ],
+        "type" : "object"
+      },
+      "NotificationKind" : {
+        "enum" : [ "victory", "defeat", "repelled", "breached", "spies", "trade", "delivery", "alliance", "round", "event", "threat" ],
+        "type" : "string"
+      },
+      "OngoingAttackDto" : {
+        "properties" : {
+          "attackType" : {
+            "$ref" : "#/components/schemas/AttackType"
+          },
+          "from" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "joining" : {
+            "type" : [ "string", "null" ]
+          },
+          "to" : {
+            "type" : "string"
+          },
+          "turnsAtBorder" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "turnsLeft" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "units" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          }
+        },
+        "required" : [ "attackType", "from", "id", "joining", "to", "turnsAtBorder", "turnsLeft", "units" ],
+        "type" : "object"
+      },
+      "Production" : {
+        "properties" : {
+          "blacksmith" : {
+            "$ref" : "#/components/schemas/UnitProduction"
+          },
+          "builder" : {
+            "$ref" : "#/components/schemas/UnitProduction"
+          },
+          "farmer" : {
+            "$ref" : "#/components/schemas/UnitProduction"
+          },
+          "goldMiner" : {
+            "$ref" : "#/components/schemas/UnitProduction"
+          },
+          "ironMiner" : {
+            "$ref" : "#/components/schemas/UnitProduction"
+          }
+        },
+        "required" : [ "blacksmith", "builder", "farmer", "goldMiner", "ironMiner" ],
+        "type" : "object"
+      },
+      "RankingsDto" : {
+        "properties" : {
+          "alliances" : {
+            "items" : {
+              "$ref" : "#/components/schemas/AllianceRankDto"
+            },
+            "type" : "array"
+          },
+          "kingdoms" : {
+            "items" : {
+              "$ref" : "#/components/schemas/KingdomRankDto"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "alliances", "kingdoms" ],
+        "type" : "object"
+      },
+      "RegisterRequestDto" : {
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "kingdomName" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "email", "kingdomName", "password" ],
+        "type" : "object"
+      },
+      "ReinforcementDto" : {
+        "properties" : {
+          "from" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "to" : {
+            "type" : "string"
+          },
+          "turnsLeft" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "units" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          }
+        },
+        "required" : [ "from", "id", "to", "turnsLeft", "units" ],
+        "type" : "object"
+      },
+      "RemoveFromAllianceDto" : {
+        "properties" : {
+          "kingdomName" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "kingdomName" ],
+        "type" : "object"
+      },
+      "ResourceName" : {
+        "enum" : [ "land", "buildingPoints", "unemployed", "gold", "iron", "food", "tools", "weapons", "turns" ],
+        "type" : "string"
+      },
+      "Round" : {
+        "properties" : {
+          "lengthInTicks" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "lengthInTicks" ],
+        "type" : "object"
+      },
+      "RoundDto" : {
+        "properties" : {
+          "endedAt" : {
+            "format" : "date-time",
+            "type" : [ "string", "null" ]
+          },
+          "finalRankings" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/RankingsDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "lengthInTicks" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "number" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "startedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "tickPeriodMillis" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "ticksElapsed" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "endedAt", "finalRankings", "lengthInTicks", "number", "startedAt", "tickPeriodMillis", "ticksElapsed" ],
+        "type" : "object"
+      },
+      "SendAttackDto" : {
+        "properties" : {
+          "attackType" : {
+            "$ref" : "#/components/schemas/AttackType"
+          },
+          "destinationKingdomName" : {
+            "type" : "string"
+          },
+          "joins" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "units" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          }
+        },
+        "required" : [ "attackType", "destinationKingdomName", "joins", "units" ],
+        "type" : "object"
+      },
+      "SendCarriersDto" : {
+        "properties" : {
+          "count" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "destinationKingdomName" : {
+            "type" : "string"
+          },
+          "resource" : {
+            "$ref" : "#/components/schemas/MarketResource"
+          }
+        },
+        "required" : [ "count", "destinationKingdomName", "resource" ],
+        "type" : "object"
+      },
+      "SendMessageDto" : {
+        "properties" : {
+          "body" : {
+            "type" : "string"
+          },
+          "recipient" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "body", "recipient" ],
+        "type" : "object"
+      },
+      "SendReinforcementsDto" : {
+        "properties" : {
+          "hostKingdomName" : {
+            "type" : "string"
+          },
+          "units" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          }
+        },
+        "required" : [ "hostKingdomName", "units" ],
+        "type" : "object"
+      },
+      "SendSpiesDto" : {
+        "properties" : {
+          "spies" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "targetKingdomName" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "spies", "targetKingdomName" ],
+        "type" : "object"
+      },
+      "SpecialBuildingCosts" : {
+        "properties" : {
+          "forge" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "goldShaft" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "granary" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "ironShaft" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "warehouse" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "forge", "goldShaft", "granary", "ironShaft", "warehouse" ],
+        "type" : "object"
+      },
+      "SpecialBuildingType" : {
+        "enum" : [ "goldShaft", "ironShaft", "granary", "forge", "warehouse" ],
+        "type" : "string"
+      },
+      "SpyReportDto" : {
+        "properties" : {
+          "buildings" : {
+            "properties" : {
+              "barracks" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "castle" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farm" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMine" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guardHouse" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "house" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMine" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "market" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spyGuild" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tower" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "workshop" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "date" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "kingdomName" : {
+            "type" : "string"
+          },
+          "resources" : {
+            "properties" : {
+              "buildingPoints" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "food" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "gold" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "iron" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "land" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tools" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "turns" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "unemployed" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "weapons" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          },
+          "spiesLost" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "spiesSent" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "success" : {
+            "type" : "boolean"
+          },
+          "targetKingdomName" : {
+            "type" : "string"
+          },
+          "units" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          }
+        },
+        "required" : [ "buildings", "date", "id", "kingdomName", "resources", "spiesLost", "spiesSent", "success", "targetKingdomName", "units" ],
+        "type" : "object"
+      },
+      "TrainingCost" : {
+        "properties" : {
+          "blacksmith" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          },
+          "bowman" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          },
+          "builder" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          },
+          "carrier" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          },
+          "cavalry" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          },
+          "farmer" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          },
+          "goldMiner" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          },
+          "guard" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          },
+          "infantry" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          },
+          "ironMiner" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          },
+          "spy" : {
+            "$ref" : "#/components/schemas/UnitTrainingCost"
+          }
+        },
+        "required" : [ "blacksmith", "bowman", "builder", "carrier", "cavalry", "farmer", "goldMiner", "guard", "infantry", "ironMiner", "spy" ],
+        "type" : "object"
+      },
+      "TrialRequestDto" : {
+        "properties" : {
+          "kingdomName" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "kingdomName" ],
+        "type" : "object"
+      },
+      "TrialStartedDto" : {
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "kingdomName" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "token" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "email", "kingdomName", "password", "token" ],
+        "type" : "object"
+      },
+      "UnitName" : {
+        "enum" : [ "goldMiner", "ironMiner", "farmer", "blacksmith", "builder", "carrier", "guard", "spy", "infantry", "bowman", "cavalry" ],
+        "type" : "string"
+      },
+      "UnitProduction" : {
+        "properties" : {
+          "rate" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "resource" : {
+            "$ref" : "#/components/schemas/ResourceName"
+          }
+        },
+        "required" : [ "rate", "resource" ],
+        "type" : "object"
+      },
+      "UnitTrainingCost" : {
+        "properties" : {
+          "gold" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tools" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "weapons" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "gold", "tools", "weapons" ],
+        "type" : "object"
+      }
+    }
+  },
+  "info" : {
+    "title" : "OpenAPI definition",
+    "version" : "v0"
+  },
+  "openapi" : "3.1.0",
+  "paths" : {
+    "/alliance" : {
+      "get" : {
+        "operationId" : "getAlliance",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AllianceWithMembersDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/accept" : {
+      "post" : {
+        "operationId" : "acceptAllianceInvitation",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AcceptAllianceInvitationDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/add-bot" : {
+      "post" : {
+        "operationId" : "addBotToAlliance",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AddBotToAllianceDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/all" : {
+      "get" : {
+        "operationId" : "getAlliances",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/AllianceDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/create" : {
+      "post" : {
+        "operationId" : "createAlliance",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateAllianceDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultAllianceDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/invitations" : {
+      "get" : {
+        "operationId" : "getInvitations",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/AllianceInvitationDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/invite" : {
+      "post" : {
+        "operationId" : "inviteToAlliance",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AllianceInvitationDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultAllianceInvitationDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/leave" : {
+      "post" : {
+        "operationId" : "leaveAlliance",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/reject" : {
+      "post" : {
+        "operationId" : "rejectAllianceInvitation",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AcceptAllianceInvitationDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/remove" : {
+      "post" : {
+        "operationId" : "removeFromAlliance",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RemoveFromAllianceDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/war-room" : {
+      "get" : {
+        "operationId" : "getWarRoom",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AllianceWarRoomDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/auth/account" : {
+      "get" : {
+        "operationId" : "account",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AccountDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/auth/authenticate" : {
+      "post" : {
+        "operationId" : "login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AuthRequestDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/auth/keep" : {
+      "post" : {
+        "operationId" : "keep",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/KeepRequestDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultString"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/auth/refresh" : {
+      "post" : {
+        "operationId" : "refresh",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AuthResponseDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/auth/register" : {
+      "post" : {
+        "operationId" : "register",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RegisterRequestDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/auth/trial" : {
+      "post" : {
+        "operationId" : "trial",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TrialRequestDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultTrialStartedDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/auth/validate-token" : {
+      "post" : {
+        "operationId" : "validateToken",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "boolean"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/config" : {
+      "post" : {
+        "operationId" : "getConfig",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GameConfig"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "game-controller" ]
+      }
+    },
+    "/game/rankings" : {
+      "get" : {
+        "operationId" : "getRankings",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RankingsDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "game-controller" ]
+      }
+    },
+    "/game/round" : {
+      "get" : {
+        "operationId" : "getCurrentRound",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RoundDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "game-controller" ]
+      }
+    },
+    "/game/rounds" : {
+      "get" : {
+        "operationId" : "getFinishedRounds",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/RoundDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "game-controller" ]
+      }
+    },
+    "/health" : {
+      "get" : {
+        "operationId" : "healthCheck",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "maintenance-controller" ]
+      }
+    },
+    "/kingdom" : {
+      "get" : {
+        "operationId" : "getKingdom",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/KingdomDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/build" : {
+      "post" : {
+        "operationId" : "kingdomBuild",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "additionalProperties" : {
+                  "format" : "int32",
+                  "type" : "integer"
+                },
+                "type" : "object"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultKingdomBuildingsDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/build-special-building" : {
+      "post" : {
+        "operationId" : "kingdomBuildSpecial",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/KingdomSpecialBuildingBuildDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultInteger"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/buy-land" : {
+      "post" : {
+        "operationId" : "kingdomBuyLand",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultLandTransaction"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/demolish" : {
+      "post" : {
+        "operationId" : "kingdomDemolish",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "additionalProperties" : {
+                  "format" : "int32",
+                  "type" : "integer"
+                },
+                "type" : "object"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultKingdomBuildingsDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/demolish-special-building" : {
+      "post" : {
+        "operationId" : "kingdomDemolishSpecialBuilding",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/KingdomSpecialBuildingDemolishDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/details" : {
+      "get" : {
+        "operationId" : "getKingdomDetails",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "weaponsProductionPercentage",
+          "required" : false,
+          "schema" : {
+            "default" : 0,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/KingdomDetailsDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/fire" : {
+      "post" : {
+        "operationId" : "kingdomFireUnits",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "additionalProperties" : {
+                  "format" : "int32",
+                  "type" : "integer"
+                },
+                "type" : "object"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultUnitsMapDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/land-quote" : {
+      "get" : {
+        "operationId" : "getLandQuote",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "count",
+          "required" : true,
+          "schema" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LandTransaction"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/notifications" : {
+      "get" : {
+        "operationId" : "getNotifications",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/NotificationDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "notifications-controller" ]
+      }
+    },
+    "/kingdom/notifications/count" : {
+      "get" : {
+        "operationId" : "countNotifications",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "format" : "int64",
+                  "type" : "integer"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "notifications-controller" ]
+      }
+    },
+    "/kingdom/notifications/{id}/mark-as-read" : {
+      "post" : {
+        "operationId" : "markNotificationAsRead",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "notifications-controller" ]
+      }
+    },
+    "/kingdom/pass-turn" : {
+      "post" : {
+        "operationId" : "kingdomPassTurn",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultKingdomTurnReport"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/recall-reinforcements" : {
+      "post" : {
+        "operationId" : "kingdomRecallReinforcements",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "format" : "uuid",
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/send-attack" : {
+      "post" : {
+        "operationId" : "kingdomSendAttack",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SendAttackDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultSendAttackDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/send-carriers" : {
+      "post" : {
+        "operationId" : "kingdomSendCarriers",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SendCarriersDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultSendCarriersDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/send-reinforcements" : {
+      "post" : {
+        "operationId" : "kingdomSendReinforcements",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SendReinforcementsDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/start-special-building" : {
+      "post" : {
+        "operationId" : "kingdomStartSpecialBuilding",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/KingdomSpecialBuildingStartDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultUUID"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/train" : {
+      "post" : {
+        "operationId" : "kingdomTrain",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "additionalProperties" : {
+                  "format" : "int32",
+                  "type" : "integer"
+                },
+                "type" : "object"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultUnitsMapDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/withdraw-attack" : {
+      "post" : {
+        "operationId" : "kingdomWithdrawAttack",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "format" : "uuid",
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/kingdom/withdraw-carriers" : {
+      "post" : {
+        "operationId" : "kingdomWithdrawCarriers",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "format" : "uuid",
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "kingdom-controller" ]
+      }
+    },
+    "/market/allies" : {
+      "get" : {
+        "operationId" : "getAlliesOffers",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/MarketOfferDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "market-controller" ]
+      }
+    },
+    "/market/create" : {
+      "post" : {
+        "operationId" : "createOffer",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MarketOfferDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultMarketOfferDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "market-controller" ]
+      }
+    },
+    "/market/{id}/buy" : {
+      "post" : {
+        "operationId" : "buyOffer",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BuyMarketOfferDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultMarketPurchaseDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "market-controller" ]
+      }
+    },
+    "/market/{id}/withdraw" : {
+      "post" : {
+        "operationId" : "withdrawOffer",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "market-controller" ]
+      }
+    },
+    "/market/{resource}" : {
+      "get" : {
+        "operationId" : "getOffersByResource",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "resource",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/MarketResource"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/MarketOfferDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "market-controller" ]
+      }
+    },
+    "/messages/inbox" : {
+      "get" : {
+        "operationId" : "getInbox",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/MessageDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "messages-controller" ]
+      }
+    },
+    "/messages/send" : {
+      "post" : {
+        "operationId" : "send",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SendMessageDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultInteger"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "messages-controller" ]
+      }
+    },
+    "/messages/send-alliance" : {
+      "post" : {
+        "operationId" : "sendToAlliance",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SendMessageDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultInteger"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "messages-controller" ]
+      }
+    },
+    "/messages/sent" : {
+      "get" : {
+        "operationId" : "getSent",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/MessageDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "messages-controller" ]
+      }
+    },
+    "/messages/unread-count" : {
+      "get" : {
+        "operationId" : "countUnread",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "format" : "int64",
+                  "type" : "integer"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "messages-controller" ]
+      }
+    },
+    "/messages/{id}/mark-as-read" : {
+      "post" : {
+        "operationId" : "markAsRead",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "messages-controller" ]
+      }
+    },
+    "/war/battle-reports" : {
+      "get" : {
+        "operationId" : "getBattleReports",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/BattleReportDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "war-controller" ]
+      }
+    },
+    "/war/send-spies" : {
+      "post" : {
+        "operationId" : "sendSpies",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SendSpiesDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultSpyReportDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "war-controller" ]
+      }
+    },
+    "/war/spy-reports" : {
+      "get" : {
+        "operationId" : "getSpyReports",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/SpyReportDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "war-controller" ]
+      }
+    }
+  },
+  "servers" : [ {
+    "description" : "Generated server url",
+    "url" : "http://localhost"
+  } ]
+}

@@ -1,11 +1,15 @@
 package com.knightsofdarkness.web.common.kingdom;
 
+import com.knightsofdarkness.web.common.EveryKey;
+
 import java.util.EnumMap;
 import java.util.Map;
 
 public class KingdomUnitsDto
 {
+    @EveryKey
     EnumMap<UnitName, Integer> availableUnits = new EnumMap<>(UnitName.class);
+    @EveryKey
     EnumMap<UnitName, Integer> mobileUnits = new EnumMap<>(UnitName.class);
 
     public KingdomUnitsDto()

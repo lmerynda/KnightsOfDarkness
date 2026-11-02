@@ -9,10 +9,13 @@
         "sim": "node src/cli.ts",
         "stages": "node src/stages.ts",
         "coalitions": "node src/coalitions.ts",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "api:types": "openapi-typescript ../api/openapi.json --output src/schema.ts",
+        "api:check": "npm run api:types && git diff --exit-code -- src/schema.ts"
     },
     "devDependencies": {
         "@types/node": "24.19.2",
+        "openapi-typescript": "7.13.0",
         "playwright-core": "1.64.1",
         "typescript": "5.9.3"
     }

@@ -1,5 +1,7 @@
 package com.knightsofdarkness.web.common.kingdom;
 
+import com.knightsofdarkness.web.common.EveryKey;
+
 import java.util.Optional;
 
 import java.util.ArrayList;
@@ -11,7 +13,9 @@ import com.knightsofdarkness.web.common.market.MarketOfferDto;
 public class KingdomDto
 {
     public String name;
+    @EveryKey
     public EnumMap<ResourceName, Integer> resources;
+    @EveryKey
     public EnumMap<BuildingName, Integer> buildings;
     public KingdomUnitsDto units;
     public List<MarketOfferDto> marketOffers;

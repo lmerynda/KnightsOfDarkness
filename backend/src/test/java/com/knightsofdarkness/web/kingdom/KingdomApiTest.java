@@ -1,6 +1,7 @@
 package com.knightsofdarkness.web.kingdom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -101,6 +102,29 @@ class KingdomApiTest {
     {
         postJson("/kingdom/train", "{\"farmer\":3}").andExpect(status().isOk()).andExpect(jsonPath("$.data.farmer").value(3));
         postJson("/kingdom/fire", "{\"farmer\":2}").andExpect(status().isOk()).andExpect(jsonPath("$.data.farmer").value(2));
+    }
+
+    /**
+     * the maps marked @EveryKey promise clients a value for every key, so a new kingdom must carry them all
+     */
+    @Test
+    void aKingdom_shouldCarryEveryKeyOfItsCompleteCountMaps() throws Exception
+    {
+        var kingdom = mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + token)).andReturn().getResponse().getContentAsString();
+
+        for (var resource : ResourceName.values())
+        {
+            assertNotNull(JsonPath.read(kingdom, "$.resources." + resource.name()), resource.name());
+        }
+        for (var building : BuildingName.values())
+        {
+            assertNotNull(JsonPath.read(kingdom, "$.buildings." + building.name()), building.name());
+        }
+        for (var unit : UnitName.values())
+        {
+            assertNotNull(JsonPath.read(kingdom, "$.units.availableUnits." + unit.name()), unit.name());
+            assertNotNull(JsonPath.read(kingdom, "$.units.mobileUnits." + unit.name()), unit.name());
+        }
     }
 
     @Test

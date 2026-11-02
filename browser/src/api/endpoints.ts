@@ -1,5 +1,6 @@
 import { ApiError, get, getTrial, post, setToken, setTrial } from "./client";
 import type {
+  Account,
   ActionResult,
   Alliance,
   AllianceInvitation,
@@ -21,7 +22,9 @@ import type {
   Rankings,
   Round,
   SpecialBuildingType,
+  SignedIn,
   SpyReport,
+  TrialStarted,
   UnitName,
   WarRoom,
 } from "./types";
@@ -31,16 +34,14 @@ type BuildingsResult = ActionResult<Counts<BuildingName>>;
 
 export const api = {
   signIn: async (email: string, password: string): Promise<void> => {
-    const { token } = await post<{ token: string }>("/auth/authenticate", { email, password });
+    const { token } = await post<SignedIn>("/auth/authenticate", { email, password });
     setToken(token);
   },
-  register: (email: string, kingdomName: string, password: string): Promise<{ message: string }> =>
+  register: (email: string, kingdomName: string, password: string): Promise<ActionResult> =>
     post("/auth/register", { email, kingdomName, password }),
   /** founds a kingdom with only its name and keeps the trial account in this browser */
-  startTrial: async (
-    kingdomName: string,
-  ): Promise<ActionResult<{ email: string; password: string; kingdomName: string; token: string }>> => {
-    const started = await post<ActionResult<{ email: string; password: string; kingdomName: string; token: string }>>("/auth/trial", {
+  startTrial: async (kingdomName: string): Promise<ActionResult<TrialStarted>> => {
+    const started = await post<ActionResult<TrialStarted>>("/auth/trial", {
       kingdomName,
     });
     if (started.data) {
@@ -53,7 +54,7 @@ export const api = {
   resumeTrial: async (): Promise<void> => {
     const trial = getTrial();
     if (!trial) throw new Error("This browser keeps no kingdom");
-    const { token } = await post<{ token: string }>("/auth/authenticate", trial);
+    const { token } = await post<SignedIn>("/auth/authenticate", trial);
     setToken(token);
   },
   /** a trial ruler keeps the kingdom with an address and password of their own */
@@ -65,7 +66,7 @@ export const api = {
     }
     return kept;
   },
-  account: (): Promise<{ email: string; kingdomName: string; trial: boolean }> => get("/auth/account"),
+  account: (): Promise<Account> => get("/auth/account"),
   signOut: (): void => {
     setTrial(null);
     setToken(null);

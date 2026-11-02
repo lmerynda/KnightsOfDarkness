@@ -51,7 +51,7 @@ Allies pass gold through the market, since carriers cannot carry it. A member as
 
 ## The API
 
-The browser and the simulation drive the same HTTP API, and so can any other client. Every action answers in one shape, `{ message, success, data }`: `success` says whether it went through, `message` is ready to show a player, and `data` is what it produced (the buildings raised, the turn report, the spy report, a purchase), or null. An action that cannot go through still answers 200 with `success: false`; 401 means no valid token, and 404 that the signed-in kingdom no longer exists.
+The browser and the simulation drive the same HTTP API, and so can any other client. The server describes it as OpenAPI at `GET /v3/api-docs`, and the description is kept in `api/openapi.json`; the browser and the simulation generate their types from that file (`npm run api:types` in each), so a field the server renames or drops breaks their build instead of the game. When the API changes, the server tests rewrite `api/openapi.json` and fail once; regenerate both clients' types and commit the three together. CI checks all three agree. Every field is always present; a field is null only when it is an `Optional` or marked `@Nullable`, and a count map carries every key only when marked `@EveryKey`. Every action answers in one shape, `{ message, success, data }`: `success` says whether it went through, `message` is ready to show a player, and `data` is what it produced (the buildings raised, the turn report, the spy report, a purchase), or null. An action that cannot go through still answers 200 with `success: false`; 401 means no valid token, and 404 that the signed-in kingdom no longer exists.
 
 ## Test
 

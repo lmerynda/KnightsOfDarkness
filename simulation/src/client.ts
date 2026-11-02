@@ -1,5 +1,6 @@
 import type {
   ActionResult,
+  AllianceInvitation,
   AttackType,
   BattleReport,
   BuildingName,
@@ -7,10 +8,14 @@ import type {
   GameConfig,
   Kingdom,
   KingdomDetails,
+  LandTransaction,
   MarketOffer,
+  MarketPurchase,
   MarketResource,
+  Notification,
   Rankings,
   Round,
+  SignedIn,
   SpecialBuildingType,
   SpyReport,
   UnitName,
@@ -83,7 +88,7 @@ export class World {
     const email = `${kingdomName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}@simulation.test`;
     const password = "simulation-password";
     await call(`${this.url}/auth/register`, { method: "POST", body: { email, kingdomName, password } });
-    const { token } = await call<{ token: string }>(`${this.url}/auth/authenticate`, { method: "POST", body: { email, password } });
+    const { token } = await call<SignedIn>(`${this.url}/auth/authenticate`, { method: "POST", body: { email, password } });
     return new Player(this.url, kingdomName, token);
   }
 }
@@ -150,11 +155,11 @@ export class Player {
     return this.post("/kingdom/fire", units);
   }
 
-  public landQuote(count: number): Promise<{ count: number; cost: number }> {
+  public landQuote(count: number): Promise<LandTransaction> {
     return this.get(`/kingdom/land-quote?count=${count}`);
   }
 
-  public buyLand(count: number): Promise<ActionResult<{ count: number; cost: number }>> {
+  public buyLand(count: number): Promise<ActionResult<LandTransaction>> {
     return this.post("/kingdom/buy-land", count);
   }
 
@@ -167,7 +172,7 @@ export class Player {
     return this.post("/war/send-spies", { targetKingdomName: target, spies });
   }
 
-  public notifications(): Promise<{ kind: string; message: string }[]> {
+  public notifications(): Promise<Notification[]> {
     return this.get("/kingdom/notifications");
   }
 
@@ -175,7 +180,7 @@ export class Player {
     return this.get("/war/battle-reports");
   }
 
-  public buyOffer(id: string, count: number): Promise<ActionResult<{ count: number; totalCost: number }>> {
+  public buyOffer(id: string, count: number): Promise<ActionResult<MarketPurchase>> {
     return this.post(`/market/${id}/buy`, { count });
   }
 
@@ -196,7 +201,7 @@ export class Player {
     return this.post("/alliance/invite", { kingdomName, allianceName });
   }
 
-  public invitations(): Promise<{ id: string; allianceName: string }[]> {
+  public invitations(): Promise<AllianceInvitation[]> {
     return this.get("/alliance/invitations");
   }
 

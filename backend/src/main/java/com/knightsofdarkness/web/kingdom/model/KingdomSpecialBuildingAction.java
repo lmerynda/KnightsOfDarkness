@@ -22,7 +22,7 @@ public class KingdomSpecialBuildingAction {
 
     public Optional<KingdomSpecialBuildingEntity> startSpecialBuilding(SpecialBuildingType buildingType)
     {
-        if (buildingType == null || buildingType == SpecialBuildingType.emptyBuilding)
+        if (buildingType == null)
         {
             return Optional.empty();
         }

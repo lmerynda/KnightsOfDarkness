@@ -352,9 +352,13 @@ public class KingdomTurnAction {
     private double getSpecialBuildingBonus(ResourceName resourceName)
     {
         var specialBuildingType = SpecialBuildingType.fromResource(resourceName);
+        if (specialBuildingType.isEmpty())
+        {
+            return 1;
+        }
 
         var summedLevels = kingdom.getSpecialBuildings().stream()
-                .filter(b -> b.buildingType == specialBuildingType)
+                .filter(b -> b.buildingType == specialBuildingType.get())
                 .mapToInt(specialBuilding -> specialBuilding.level).sum();
 
         // TODO think about how bonuses have worked in the past
