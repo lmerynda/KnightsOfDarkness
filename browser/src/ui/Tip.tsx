@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 const gap = 6;
 const margin = 8;
@@ -71,18 +72,22 @@ const useTip = () => {
     },
   };
 
+  // the bubble lives at the root of the page, so no ancestor's filter or overflow can trap it
   const shown = (text: React.ReactNode) =>
-    open ? (
-      <span
-        ref={bubble}
-        id={id}
-        role="tooltip"
-        className="tip-bubble"
-        style={place ? { top: place.top, left: place.left } : { visibility: "hidden", top: 0, left: 0 }}
-      >
-        {text}
-      </span>
-    ) : null;
+    open
+      ? createPortal(
+          <span
+            ref={bubble}
+            id={id}
+            role="tooltip"
+            className="tip-bubble"
+            style={place ? { top: place.top, left: place.left } : { visibility: "hidden", top: 0, left: 0 }}
+          >
+            {text}
+          </span>,
+          document.body,
+        )
+      : null;
 
   return { anchor, triggers, shown };
 };
@@ -108,8 +113,13 @@ export const Tip: React.FC<{ about: string; children: React.ReactNode }> = ({ ab
   );
 };
 
-/** a word that explains itself */
-export const Term: React.FC<{ tip: React.ReactNode; children: React.ReactNode }> = ({ tip, children }) => {
+/** a word, or a figure, that explains itself */
+export const Term: React.FC<{ tip: React.ReactNode; children: React.ReactNode; className?: string; label?: string }> = ({
+  tip,
+  children,
+  className = "term",
+  label,
+}) => {
   const { anchor, triggers, shown } = useTip();
   return (
     <>
@@ -117,9 +127,10 @@ export const Term: React.FC<{ tip: React.ReactNode; children: React.ReactNode }>
         ref={element => {
           anchor.current = element;
         }}
-        className="term"
+        className={className}
         tabIndex={0}
         role="button"
+        aria-label={label}
         {...triggers}
       >
         {children}

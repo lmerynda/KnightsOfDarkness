@@ -104,6 +104,10 @@ test("the rules wait behind a mark until hovered or tapped", async ({ page }) =>
   await goTo(page, "Overview");
   await page.locator(".term", { hasText: "counter intelligence" }).hover();
   await expect(rule).toContainText("for each spy");
+
+  // and so do the figures in the top bar
+  await page.getByRole("button", { name: /^Gold [\d,]+$/ }).hover();
+  await expect(rule).toContainText("from the mines next turn");
 });
 
 test("land can be priced and bought", async ({ page }) => {

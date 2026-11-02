@@ -8,6 +8,7 @@ import { Crest } from "../ui/Crest";
 import type { IconName } from "../ui/Icon";
 import { Icon } from "../ui/Icon";
 import { formatNumber, signed } from "../ui/format";
+import { Term } from "../ui/Tip";
 
 type NavItem = { to: string; label: string; badge?: number; alert?: boolean };
 
@@ -85,23 +86,29 @@ const resourceIcon: Partial<Record<ResourceName, IconName>> = {
   buildingPoints: "buildingPoints",
 };
 
-const LedgerItem: React.FC<{ icon: IconName; label: string; value: React.ReactNode; change?: number; hint?: string }> = ({
-  icon,
-  label,
-  value,
-  change,
-  hint,
-}) => (
-  <div className="ledger-item" title={hint ?? label}>
-    <Icon name={icon} size={20} />
-    <div>
-      <div className="ledger-value">
-        {value}
-        {change ? <span className={change > 0 ? "gain" : "loss"}> {signed(change)}</span> : null}
-      </div>
-      <div className="ledger-label">{label}</div>
-    </div>
-  </div>
+/** a figure in the top bar: the value first, its name and what the next turn brings on hover or tap */
+const LedgerItem: React.FC<{
+  icon: IconName;
+  label: string;
+  value: number;
+  change?: number;
+  note?: string;
+  detail: React.ReactNode;
+}> = ({ icon, label, value, change, note, detail }) => (
+  <Term
+    className="ledger-item"
+    label={`${label} ${formatNumber(value)}`}
+    tip={
+      <>
+        <strong>{label}</strong> {detail}
+      </>
+    }
+  >
+    <Icon name={icon} size={18} />
+    <span className="ledger-value">{formatNumber(value)}</span>
+    {change ? <span className={`ledger-change ${change > 0 ? "gain" : "loss"}`}>{signed(change)}</span> : null}
+    {note ? <span className="ledger-note">{note}</span> : null}
+  </Term>
 );
 
 const TurnSeal: React.FC = () => {
@@ -184,33 +191,45 @@ const Ledger: React.FC<{ onMenu: () => void }> = ({ onMenu }) => {
         <LedgerItem
           icon="gold"
           label="Gold"
-          value={formatNumber(resources.gold)}
+          value={resources.gold}
           change={produced("gold") - forecast.goldUpkeep}
-          hint="Gold, and what the next turn brings after the soldiers are paid"
+          detail={`${signed(produced("gold"))} from the mines next turn${forecast.goldUpkeep ? `, ${formatNumber(forecast.goldUpkeep)} paid to the soldiers` : ""}.`}
         />
         <LedgerItem
           icon="food"
           label="Food"
-          value={formatNumber(resources.food)}
+          value={resources.food}
           change={produced("food") - forecast.foodConsumed}
-          hint="Food, and the harvest minus what your people eat next turn"
+          detail={`${signed(produced("food"))} harvested next turn, ${formatNumber(forecast.foodConsumed)} eaten.`}
         />
-        <LedgerItem icon="iron" label="Iron" value={formatNumber(resources.iron)} />
-        <LedgerItem icon="tools" label="Tools" value={formatNumber(resources.tools)} />
-        <LedgerItem icon="weapons" label="Weapons" value={formatNumber(resources.weapons)} />
+        <LedgerItem
+          icon="land"
+          label="Land"
+          value={resources.land}
+          note={`${formatNumber(freeLand)} free`}
+          detail={`${formatNumber(freeLand)} acres free. The next acre costs ${formatNumber(details.nextLandPrice)} gold.`}
+        />
         <LedgerItem
           icon="buildingPoints"
           label="Building points"
-          value={formatNumber(resources.buildingPoints)}
-          hint="Building points are spent on buildings this turn; unspent points are lost when the turn passes"
+          value={resources.buildingPoints}
+          detail="Spent on buildings this turn; what is left is lost when the turn passes."
         />
-        <LedgerItem icon="land" label={`Land, ${formatNumber(freeLand)} free`} value={formatNumber(resources.land)} />
         <LedgerItem
           icon="people"
           label="Idle people"
-          value={formatNumber(resources.unemployed)}
-          hint={`${formatNumber(details.housedPeople)} of ${formatNumber(details.housingCapacity)} house places taken`}
+          value={resources.unemployed}
+          detail={`Ready to train. ${formatNumber(details.housedPeople)} of ${formatNumber(details.housingCapacity)} house places taken.`}
         />
+        {(["iron", "tools", "weapons"] as const).map(resource => (
+          <LedgerItem
+            key={resource}
+            icon={resource}
+            label={resourceLabel[resource]}
+            value={resources[resource]}
+            detail={`${signed(produced(resource))} next turn.`}
+          />
+        ))}
       </div>
       <TurnSeal />
     </header>
