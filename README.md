@@ -25,7 +25,7 @@ Open http://localhost:3000. The page asks its own origin for `/api`, as in produ
 | `uprzejmy` | `uprzejmy_password` |
 | `umbar` | `umbar_password` |
 
-You can also found a new kingdom from the landing page. Four merchant bots (FarmerBot, GoldMinerBot, IronMinerBot, BlacksmithBot) trade on the market, can be attacked and spied on, and are not ranked. They stop growing at 400 acres and keep their stores and offers under the caps in `gameconfig.json` (`bots`).
+You can also found a new kingdom from the landing page, or play at once with only a kingdom name (Play now, `POST /auth/trial`): the browser keeps that trial account, signing back in by itself when a session runs out, until the ruler keeps the kingdom with an address and password of their own (`POST /auth/keep`). Signing out of a trial kingdom before keeping it loses it, and the game asks first. Four merchant bots (FarmerBot, GoldMinerBot, IronMinerBot, BlacksmithBot) trade on the market, can be attacked and spied on, and are not ranked. They stop growing at 400 acres and keep their stores and offers under the caps in `gameconfig.json` (`bots`).
 
 A new turn is handed to every kingdom every 10 seconds (up to 36 stored) and a round lasts 4,320 of those ticks, about 12 hours; both are set in `gameconfig.json` (`common.newTurnPeriodicity`, `round.lengthInTicks`).
 

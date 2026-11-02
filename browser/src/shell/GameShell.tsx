@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { getTrial } from "../api/client";
 import { api } from "../api/endpoints";
 import type { ResourceName } from "../api/types";
 import { useGame } from "../game/useGame";
@@ -12,7 +13,29 @@ import { Term } from "../ui/Tip";
 
 type NavItem = { to: string; label: string; badge?: number; alert?: boolean };
 
+/** whether this browser holds a kingdom started with only its name, one its ruler has not kept yet */
+const useTrial = (): boolean => {
+  const [trial, setTrial] = useState(() => getTrial() !== null);
+  useEffect(() => {
+    const check = (): void => setTrial(getTrial() !== null);
+    window.addEventListener("auth-changed", check);
+    return () => window.removeEventListener("auth-changed", check);
+  }, []);
+  return trial;
+};
+
+const signOut = (trial: boolean): void => {
+  if (
+    trial &&
+    !window.confirm("This kingdom lives only in this browser. Signing out loses it for good unless you keep it first. Sign out anyway?")
+  ) {
+    return;
+  }
+  api.signOut();
+};
+
 const Rail: React.FC<{ open: boolean; onNavigate: () => void }> = ({ open, onNavigate }) => {
+  const trial = useTrial();
   const { kingdom, unreadLetters, unreadNotifications } = useGame();
   const marching = kingdom.ongoingAttacks.length;
 
@@ -70,7 +93,7 @@ const Rail: React.FC<{ open: boolean; onNavigate: () => void }> = ({ open, onNav
           ))}
         </div>
       ))}
-      <button type="button" className="rail-signout" onClick={() => api.signOut()}>
+      <button type="button" className="rail-signout" onClick={() => signOut(trial)}>
         Sign out
       </button>
     </nav>
@@ -244,6 +267,7 @@ export const GameShell: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const { reload } = useGame();
+  const trial = useTrial();
 
   // allies and enemies change the kingdom between our own actions, so every page opens on fresh state
   useEffect(() => {
@@ -258,6 +282,14 @@ export const GameShell: React.FC = () => {
       <div className="shell-main">
         <Ledger onMenu={() => setMenuOpen(true)} />
         <main className="content">
+          {trial && location.pathname !== "/kingdom/keep" ? (
+            <p className="trial-notice">
+              <span>This kingdom lives only in this browser.</span>
+              <Link className="button quiet small" to="/kingdom/keep">
+                Keep it
+              </Link>
+            </p>
+          ) : null}
           <Outlet />
         </main>
       </div>

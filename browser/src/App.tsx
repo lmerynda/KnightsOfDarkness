@@ -15,6 +15,7 @@ import { AlliancePage } from "./pages/Alliance";
 import { Letters } from "./pages/Letters";
 import { Chronicle } from "./pages/Chronicle";
 import { RankingsPage } from "./pages/Rankings";
+import { Keep } from "./pages/Keep";
 import { GameShell } from "./shell/GameShell";
 
 const useSignedIn = (): boolean => {
@@ -72,6 +73,7 @@ const App: React.FC = () => {
           <Route path="letters" element={<Letters />} />
           <Route path="chronicle" element={<Chronicle />} />
           <Route path="rankings" element={<RankingsPage />} />
+          <Route path="keep" element={<Keep />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -26,5 +26,4 @@
 
 ## Ideas
 
-1. Trial play with only a kingdom name.
 1. Profession profiles that suggest what to build and train.

@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,6 +59,62 @@ public class AuthController {
         return registrationService.register(registerRequest)
                 .map(error -> ResponseEntity.badRequest().body(ActionResult.<Void>failure(error)))
                 .orElseGet(() -> ResponseEntity.ok(ActionResult.success("Kingdom founded")));
+    }
+
+    public record TrialRequestDto(String kingdomName) {
+    }
+
+    public record KeepRequestDto(String email, String password) {
+    }
+
+    /** the trial account and a token to play with at once */
+    public record TrialStartedDto(String email, String password, String kingdomName, String token) {
+    }
+
+    /**
+     * founds a kingdom with only its name, to try the game; the browser keeps the answer's address and password to come back
+     */
+    @PostMapping("/auth/trial")
+    public ResponseEntity<ActionResult<TrialStartedDto>> trial(@RequestBody TrialRequestDto request)
+    {
+        log.info("trial request received for kingdomName: {}", request.kingdomName());
+        var started = registrationService.startTrial(request.kingdomName());
+        if (!started.success() || started.data().isEmpty())
+        {
+            return ResponseEntity.badRequest().body(ActionResult.failure(started.message()));
+        }
+        var account = started.data().get();
+        var token = tokenService.generateToken(new UserData(account.email(), account.kingdomName(), ""));
+        return ResponseEntity.ok(ActionResult.success(started.message(), new TrialStartedDto(account.email(), account.password(), account.kingdomName(), token)));
+    }
+
+    /**
+     * a trial ruler keeps the kingdom with an address and password of their own; the answer carries a token for the new account
+     */
+    @PostMapping("/auth/keep")
+    public ResponseEntity<ActionResult<String>> keep(@AuthenticationPrincipal UserData currentUser, @RequestBody KeepRequestDto request)
+    {
+        if (currentUser == null)
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        var kept = registrationService.keepTrial(currentUser.email, request.email(), request.password());
+        if (!kept.success() || kept.data().isEmpty())
+        {
+            return ResponseEntity.ok(ActionResult.failure(kept.message()));
+        }
+        var token = tokenService.generateToken(new UserData(kept.data().get(), currentUser.kingdomName, ""));
+        return ResponseEntity.ok(ActionResult.success(kept.message(), token));
+    }
+
+    @GetMapping("/auth/account")
+    public ResponseEntity<AccountDto> account(@AuthenticationPrincipal UserData currentUser)
+    {
+        if (currentUser == null)
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(new AccountDto(currentUser.email, currentUser.kingdomName, RegistrationService.isTrial(currentUser.email)));
     }
 
     @PostMapping("/auth/validate-token")

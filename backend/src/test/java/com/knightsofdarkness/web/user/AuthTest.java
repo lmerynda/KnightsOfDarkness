@@ -118,4 +118,52 @@ class AuthTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.members[0]").value("Herald Keep"));
     }
+
+    private ResultActions trial(String kingdomName) throws Exception
+    {
+        return mockMvc.perform(post("/auth/trial").contentType(MediaType.APPLICATION_JSON).content("{\"kingdomName\":\"" + kingdomName + "\"}"));
+    }
+
+    @Test
+    void aTrial_shouldFoundAKingdomWithOnlyItsNameAndLetTheBrowserComeBack() throws Exception
+    {
+        var started = trial("Trial Vale").andExpect(status().isOk()).andExpect(jsonPath("$.success").value(true)).andReturn().getResponse().getContentAsString();
+        String token = JsonPath.read(started, "$.data.token");
+        String email = JsonPath.read(started, "$.data.email");
+        String password = JsonPath.read(started, "$.data.password");
+
+        mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + token)).andExpect(jsonPath("$.name").value("Trial Vale"));
+        mockMvc.perform(get("/auth/account").header("Authorization", "Bearer " + token)).andExpect(jsonPath("$.trial").value(true));
+        // the browser keeps the address and password, so the ruler signs back in once the token has run out
+        login(email, password).andExpect(status().isOk()).andExpect(jsonPath("$.token").exists());
+
+        trial("Trial Vale").andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value("A kingdom with this name already exists"));
+        register("someone" + RegistrationService.trialDomain, "Other Trial", "long-enough-password").andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Enter a valid email address"));
+    }
+
+    @Test
+    void aTrialRuler_shouldKeepTheKingdomWithAnAddressOfTheirOwn() throws Exception
+    {
+        var started = trial("Kept Vale").andReturn().getResponse().getContentAsString();
+        String token = JsonPath.read(started, "$.data.token");
+        String trialEmail = JsonPath.read(started, "$.data.email");
+        String trialPassword = JsonPath.read(started, "$.data.password");
+
+        mockMvc.perform(post("/auth/keep").header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"keeper@example.com\",\"password\":\"short\"}")).andExpect(jsonPath("$.success").value(false));
+        var kept = mockMvc.perform(post("/auth/keep").header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"Keeper@Example.com\",\"password\":\"long-enough-password\"}"))
+                .andExpect(jsonPath("$.success").value(true)).andReturn().getResponse().getContentAsString();
+        String keptToken = JsonPath.read(kept, "$.data");
+
+        mockMvc.perform(get("/kingdom").header("Authorization", "Bearer " + keptToken)).andExpect(jsonPath("$.name").value("Kept Vale"));
+        mockMvc.perform(get("/auth/account").header("Authorization", "Bearer " + keptToken)).andExpect(jsonPath("$.trial").value(false));
+        login("keeper@example.com", "long-enough-password").andExpect(status().isOk());
+        login(trialEmail, trialPassword).andExpect(status().isUnauthorized());
+
+        // a kingdom with an account of its own has nothing left to keep
+        mockMvc.perform(post("/auth/keep").header("Authorization", "Bearer " + keptToken).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"another@example.com\",\"password\":\"long-enough-password\"}")).andExpect(jsonPath("$.success").value(false));
+    }
 }

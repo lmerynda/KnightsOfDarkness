@@ -32,6 +32,47 @@ export const setToken = (token: string | null): void => {
   window.dispatchEvent(new Event("auth-changed"));
 };
 
+const trialKey = "trialAccount";
+
+/** a kingdom started with only its name: the browser keeps the placeholder address and password to sign back in */
+export type TrialAccount = { email: string; password: string };
+
+export const getTrial = (): TrialAccount | null => {
+  try {
+    const kept = localStorage.getItem(trialKey);
+    return kept ? (JSON.parse(kept) as TrialAccount) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const setTrial = (account: TrialAccount | null): void => {
+  try {
+    if (account) {
+      localStorage.setItem(trialKey, JSON.stringify(account));
+    } else {
+      localStorage.removeItem(trialKey);
+    }
+  } catch {
+    // storage unavailable, the trial lasts until the page closes
+  }
+};
+
+// a trial ruler has no password to type, so an expired session signs back in with the kept one
+const renewTrialSession = async (): Promise<boolean> => {
+  const trial = getTrial();
+  if (!trial) return false;
+  const response = await fetch(`${apiBase}/auth/authenticate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(trial),
+  });
+  if (!response.ok) return false;
+  const { token } = (await response.json()) as { token: string };
+  setToken(token);
+  return true;
+};
+
 const readMessage = async (response: Response): Promise<string> => {
   try {
     const body: unknown = await response.json();
@@ -46,21 +87,26 @@ const readMessage = async (response: Response): Promise<string> => {
 
 export const request = async <T>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> => {
   const token = getToken();
-  const send = (): Promise<Response> =>
-    fetch(`${apiBase}${path}`, {
+  const send = (): Promise<Response> => {
+    const current = getToken();
+    return fetch(`${apiBase}${path}`, {
       method: init.method ?? "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(current ? { Authorization: `Bearer ${current}` } : {}),
       },
       body: init.body === undefined ? undefined : JSON.stringify(init.body),
     });
+  };
   let response = await send();
   // the kingdom changed at the same moment (the turn tick, an attack), the server applied nothing, so try once more
   if (response.status === 409) {
     response = await send();
   }
 
+  if (response.status === 401 && token && (await renewTrialSession())) {
+    response = await send();
+  }
   if (response.status === 401 && token) {
     setToken(null);
     throw new ApiError(401, "Your session has ended, sign in again");

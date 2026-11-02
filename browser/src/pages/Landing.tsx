@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { errorText, getTrial } from "../api/client";
 import { api } from "../api/endpoints";
 import type { Rankings, Round } from "../api/types";
 import { art } from "../game/lore";
@@ -24,6 +25,53 @@ const pillars = [
     text: "No kingdom outlasts the dark alone. Trade on the market, send carriers to allies, write to your council, and rise together in the rankings until the round ends.",
   },
 ];
+
+/** a kingdom with only a name, to try the game; it lives in this browser until the ruler keeps it */
+const PlayNow: React.FC = () => {
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const kept = getTrial();
+
+  const enter = async (start: () => Promise<unknown>): Promise<void> => {
+    setBusy(true);
+    setError(null);
+    try {
+      await start();
+      navigate("/kingdom/overview");
+    } catch (failure) {
+      setError(errorText(failure));
+    }
+    setBusy(false);
+  };
+
+  return (
+    <form
+      className="play-now"
+      onSubmit={event => {
+        event.preventDefault();
+        void enter(() => api.startTrial(name));
+      }}
+    >
+      <label className="field">
+        <span>Play now with only a kingdom name</span>
+        <span className="row">
+          <input className="input" value={name} onChange={event => setName(event.target.value)} placeholder="Kingdom name" required />
+          <button className="button" type="submit" disabled={busy}>
+            Play now
+          </button>
+        </span>
+      </label>
+      {kept ? (
+        <button className="button quiet small" type="button" disabled={busy} onClick={() => void enter(api.resumeTrial)}>
+          Back to the kingdom this browser keeps
+        </button>
+      ) : null}
+      {error ? <p className="warning">{error}</p> : null}
+    </form>
+  );
+};
 
 export const Landing: React.FC = () => {
   const [round, setRound] = useState<Round | null>(null);
@@ -57,6 +105,7 @@ export const Landing: React.FC = () => {
               Return to your kingdom
             </Link>
           </div>
+          <PlayNow />
         </div>
       </section>
 

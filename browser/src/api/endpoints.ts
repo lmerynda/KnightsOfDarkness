@@ -1,4 +1,4 @@
-import { ApiError, get, post, setToken } from "./client";
+import { ApiError, get, getTrial, post, setToken, setTrial } from "./client";
 import type {
   ActionResult,
   Alliance,
@@ -36,7 +36,40 @@ export const api = {
   },
   register: (email: string, kingdomName: string, password: string): Promise<{ message: string }> =>
     post("/auth/register", { email, kingdomName, password }),
-  signOut: (): void => setToken(null),
+  /** founds a kingdom with only its name and keeps the trial account in this browser */
+  startTrial: async (
+    kingdomName: string,
+  ): Promise<ActionResult<{ email: string; password: string; kingdomName: string; token: string }>> => {
+    const started = await post<ActionResult<{ email: string; password: string; kingdomName: string; token: string }>>("/auth/trial", {
+      kingdomName,
+    });
+    if (started.data) {
+      setTrial({ email: started.data.email, password: started.data.password });
+      setToken(started.data.token);
+    }
+    return started;
+  },
+  /** signs back in to the trial kingdom this browser keeps */
+  resumeTrial: async (): Promise<void> => {
+    const trial = getTrial();
+    if (!trial) throw new Error("This browser keeps no kingdom");
+    const { token } = await post<{ token: string }>("/auth/authenticate", trial);
+    setToken(token);
+  },
+  /** a trial ruler keeps the kingdom with an address and password of their own */
+  keepKingdom: async (email: string, password: string): Promise<ActionResult<string>> => {
+    const kept = await post<ActionResult<string>>("/auth/keep", { email, password });
+    if (kept.success && kept.data) {
+      setTrial(null);
+      setToken(kept.data);
+    }
+    return kept;
+  },
+  account: (): Promise<{ email: string; kingdomName: string; trial: boolean }> => get("/auth/account"),
+  signOut: (): void => {
+    setTrial(null);
+    setToken(null);
+  },
 
   config: (): Promise<GameConfig> => post("/config"),
   round: (): Promise<Round> => get("/game/round"),

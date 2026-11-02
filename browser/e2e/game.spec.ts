@@ -448,3 +448,35 @@ test("every page fits a phone screen", async ({ page }) => {
     expect(overflow, path).toEqual({ scroll: 0, squeezed: 0 });
   }
 });
+
+test("a ruler plays with only a kingdom name, then keeps the kingdom", async ({ page }) => {
+  const kingdomName = `Trial ${Date.now() % 1000000}`;
+  await page.goto("/");
+  await page.getByLabel("Play now with only a kingdom name").fill(kingdomName);
+  await page.getByRole("button", { name: "Play now" }).click();
+  await expect(page).toHaveURL(/\/kingdom\/overview$/);
+  await expect(page.locator("main h1")).toHaveText(kingdomName);
+  await expect(page.locator(".trial-notice")).toContainText("This kingdom lives only in this browser");
+
+  // the session runs out, and the browser signs back in with the account it keeps
+  await page.evaluate(() => localStorage.setItem("authToken", "expired"));
+  await page.reload();
+  await expect(page.locator("main h1")).toHaveText(kingdomName);
+
+  // signing out of a kingdom not yet kept asks first
+  page.once("dialog", dialog => void dialog.dismiss());
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expect(page.locator("main h1")).toHaveText(kingdomName);
+
+  const email = `keeper-${Date.now()}@example.com`;
+  await page.locator(".trial-notice").getByRole("link", { name: "Keep it" }).click();
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel(/^Password/).fill(password);
+  await page.getByRole("button", { name: "Keep it" }).click();
+  await expect(toast(page, "The kingdom is yours to keep")).toBeVisible();
+  await expect(page.locator(".trial-notice")).toHaveCount(0);
+
+  await signOut(page);
+  await signIn(page, email, password);
+  await expect(page.locator("main h1")).toHaveText(kingdomName);
+});
