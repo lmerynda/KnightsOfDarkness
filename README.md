@@ -2,13 +2,13 @@
 
 A browser strategy game of dark medieval kingdoms. Each player rules one kingdom: build on land, train workers and soldiers, trade on the market, send carriers to allies, spy on rivals and march armies to take land or plunder stores. Kingdoms swear to alliances, write letters, and compete for land until the round ends; then the largest kingdom and alliance are remembered and every realm starts again.
 
-- `backend/`: Spring Boot game server (Java 21, Gradle). Game rules live in `kingdom/model`, numbers in `src/main/resources/gameconfig.json`.
+- `backend/`: Spring Boot game server (Java 25, Gradle). Game rules live in `kingdom/model`, numbers in `src/main/resources/gameconfig.json`.
 - `browser/`: React and Vite client. Art and its prompts are in `browser/art` and `browser/public/art`.
 - `simulation/`: a harness that plays whole worlds against the server over HTTP, for invariants, balance checks and A/B balance reports.
 
 ## Run it locally
 
-Two terminals:
+You need JDK 25 and Node.js 26; the Gradle wrapper fetches Gradle itself and finds JDK 25 on its own, while the simulation harness runs the server with the Java that `JAVA_HOME` names, or else the one on the path. Two terminals:
 
 ```bash
 cd backend && ./gradlew bootRun
@@ -68,6 +68,8 @@ Black-box scenarios drive the installed Chrome against the real server; they sta
 ```bash
 cd browser && npm run test:e2e
 ```
+
+CI (`.github/workflows/ci.yml`) runs all three, the server tests, the browser build, lint and scenarios, and the simulated worlds, on every push to master and every pull request, on the same Java and Node versions. Dependabot opens one grouped pull request a week per ecosystem (Actions, Gradle, both npm projects, Docker images, the dev container) to keep them current.
 
 ## Simulate worlds
 

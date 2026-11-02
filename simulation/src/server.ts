@@ -102,7 +102,9 @@ export const startServer = async (overrides: ConfigOverrides = {}): Promise<Game
   const configPath = join(configDirectory, "gameconfig.json");
   writeFileSync(configPath, JSON.stringify(applyOverrides(readBaseConfig(), overrides), null, 2));
 
-  const child = spawn("java", ["-jar", jar, "--spring.profiles.active=simulation", `--server.port=${port}`, `--game.config-path=${configPath}`], {
+  // the Java that JAVA_HOME names, as Gradle uses it, or else the one on the path
+  const java = process.env.JAVA_HOME ? join(process.env.JAVA_HOME, "bin", "java") : "java";
+  const child = spawn(java, ["-jar", jar, "--spring.profiles.active=simulation", `--server.port=${port}`, `--game.config-path=${configPath}`], {
     stdio: ["ignore", "pipe", "pipe"],
   });
   let log = "";

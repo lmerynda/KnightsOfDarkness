@@ -1,12 +1,49 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for more information:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-# https://containers.dev/guide/dependabot
+# Weekly pull requests that keep every dependency current, one per ecosystem with all its updates grouped; CI runs on
+# each, so a green one is safe to merge.
 
 version: 2
 updates:
- - package-ecosystem: "devcontainers"
-   directory: "/"
-   schedule:
-     interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: gradle
+    directory: /backend
+    schedule:
+      interval: weekly
+    groups:
+      gradle:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /browser
+    schedule:
+      interval: weekly
+    groups:
+      browser:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /simulation
+    schedule:
+      interval: weekly
+    groups:
+      simulation:
+        patterns: ["*"]
+
+  - package-ecosystem: docker
+    directories: ["/", "/backend", "/browser"]
+    schedule:
+      interval: weekly
+    groups:
+      images:
+        patterns: ["*"]
+
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: weekly

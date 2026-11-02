@@ -5,9 +5,6 @@ plugins {
     id("com.adarshr.test-logger") version "4.0.0"
     id("org.springframework.boot") version "4.0.8"
     id("io.spring.dependency-management") version "1.1.7"
-    id("jacoco")
-    id("org.sonarqube") version "7.5.0.8588"
-    id("com.github.ben-manes.versions") version "0.51.0"
 }
 
 group = "com.knightsofdarkness"
@@ -15,7 +12,7 @@ version = project.findProperty("version")?.toString() ?: "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 
@@ -61,28 +58,8 @@ tasks.withType<Test> {
     }
 }
 
-// Preserve coverage diagnostics when an assertion fails.
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport)
-}
-
-tasks.jacocoTestReport {
-    mustRunAfter(tasks.test)
-    reports {
-        xml.required.set(true)
-    }
-}
-
 testlogger {
     theme = ThemeType.MOCHA_PARALLEL
     showSummary = true
 }
 
-sonar {
-  properties {
-    property("sonar.projectKey", "Uprzejmy_KnightsOfDarkness")
-    property("sonar.organization", "uprzejmy")
-    property("sonar.host.url", "https://sonarcloud.io")
-    property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
-  }
-}

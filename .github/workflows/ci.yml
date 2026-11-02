@@ -1,0 +1,110 @@
+# Every check the game has, on every push to master and every pull request into it: the server's tests, the browser's
+# build and lint, and the black-box scenarios that drive the real server through simulated worlds and through Chrome.
+
+name: CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+permissions:
+  contents: read
+
+# a newer push to the same branch or pull request makes the older run moot
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  JAVA_VERSION: "25"
+  NODE_VERSION: "26.13.0"
+
+jobs:
+  server:
+    name: Server tests
+    runs-on: ubuntu-26.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: zulu
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      - name: Build and test
+        run: ./gradlew build
+        working-directory: backend
+      - name: Keep the test reports of a failed run
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: server-test-reports
+          retention-days: 7
+          path: backend/build/reports/tests/test/
+
+  browser:
+    name: Browser build, lint and scenarios
+    runs-on: ubuntu-26.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: zulu
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: browser/package-lock.json
+      - run: npm ci
+        working-directory: browser
+      - run: npm run build
+        working-directory: browser
+      - run: npm run ci:lint
+        working-directory: browser
+      # the runner image ships Google Chrome, which the scenarios drive; Playwright starts the server and the dev server
+      - name: Browser scenarios
+        run: npm run test:e2e
+        working-directory: browser
+      - name: Keep the traces of failed scenarios
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: browser-scenario-traces
+          retention-days: 7
+          path: browser/test-results/
+
+  simulation:
+    name: Simulated worlds
+    runs-on: ubuntu-26.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: zulu
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: simulation/package-lock.json
+      - run: npm ci
+        working-directory: simulation
+      - run: npm run typecheck
+        working-directory: simulation
+      # the harness builds the server jar itself
+      - name: Simulate worlds
+        run: npm test
+        working-directory: simulation
