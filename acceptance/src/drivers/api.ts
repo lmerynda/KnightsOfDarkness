@@ -11,10 +11,23 @@ import type {
   MarketResource,
   Notification,
   SignedIn,
+  SpecialBuildingType,
   SpyReport,
+  UnitName,
 } from "../api/types.ts";
 import type { components } from "../api/schema.ts";
-import { defaultWeaponsShare, whole, type Buildings, type Credentials, type GateDriver, type Outcome, type RulerDriver, type Units } from "../dsl/driver.ts";
+import {
+  defaultWeaponsShare,
+  whole,
+  type Battle,
+  type Buildings,
+  type Credentials,
+  type GateDriver,
+  type Goal,
+  type Outcome,
+  type RulerDriver,
+  type Units,
+} from "../dsl/driver.ts";
 import type { Visitors } from "../dsl/game.ts";
 
 type Schemas = components["schemas"];
@@ -81,6 +94,40 @@ class ApiRuler implements RulerDriver {
     return whole(units, await this.post("/kingdom/train", units));
   }
 
+  public async demolish(buildings: Buildings): Promise<Outcome> {
+    return whole(buildings, await this.post("/kingdom/demolish", buildings));
+  }
+
+  public async dismiss(units: Units): Promise<Outcome> {
+    return whole(units, await this.post("/kingdom/fire", units));
+  }
+
+  public async unitsAtHome(unit: UnitName): Promise<number> {
+    return (await this.kingdom()).units.availableUnits[unit];
+  }
+
+  public beginGreatWork(type: SpecialBuildingType): Promise<Outcome> {
+    return this.act("/kingdom/start-special-building", { name: type });
+  }
+
+  private async greatWork(type: SpecialBuildingType): Promise<string | undefined> {
+    return (await this.kingdom()).specialBuildings.find(work => work.buildingType === type)?.id;
+  }
+
+  public async investInGreatWork(type: SpecialBuildingType, buildingPoints: number): Promise<Outcome> {
+    const id = await this.greatWork(type);
+    return id ? this.act("/kingdom/build-special-building", { id, buildingPoints }) : { done: false, message: `No ${type} begun` };
+  }
+
+  public async tearDownGreatWork(type: SpecialBuildingType): Promise<Outcome> {
+    const id = await this.greatWork(type);
+    return id ? this.act("/kingdom/demolish-special-building", { id }) : { done: false, message: `No ${type} begun` };
+  }
+
+  public async greatWorks(): Promise<{ type: SpecialBuildingType; level: number }[]> {
+    return (await this.kingdom()).specialBuildings.map(work => ({ type: work.buildingType, level: work.level }));
+  }
+
   public async buildingCount(building: BuildingName): Promise<number> {
     return (await this.kingdom()).buildings[building];
   }
@@ -97,8 +144,13 @@ class ApiRuler implements RulerDriver {
     return (await this.get<KingdomDetails>(`/kingdom/details?weaponsProductionPercentage=${defaultWeaponsShare}`)).forecast.goldUpkeep;
   }
 
-  public march(target: string, units: Units): Promise<Outcome> {
-    return this.act("/kingdom/send-attack", { destinationKingdomName: target, attackType: "land", units });
+  public march(target: string, units: Units, goal: Goal): Promise<Outcome> {
+    return this.act("/kingdom/send-attack", { destinationKingdomName: target, attackType: goal === "land" ? "land" : "economy", units });
+  }
+
+  public async recallArmy(target: string): Promise<Outcome> {
+    const army = (await this.kingdom()).ongoingAttacks.find(attack => attack.to === target);
+    return army ? this.act("/kingdom/withdraw-attack", army.id) : { done: false, message: `No army marches on ${target}` };
   }
 
   public async joinStrike(leader: string, target: string, units: Units): Promise<Outcome> {
@@ -120,8 +172,14 @@ class ApiRuler implements RulerDriver {
     }));
   }
 
-  public async battles(): Promise<{ attacker: string; defender: string; attackerWon: boolean }[]> {
-    return (await this.get<BattleReport[]>("/war/battle-reports")).map(({ attacker, defender, attackerWon }) => ({ attacker, defender, attackerWon }));
+  public async battles(): Promise<Battle[]> {
+    return (await this.get<BattleReport[]>("/war/battle-reports")).map(report => ({
+      attacker: report.attacker,
+      defender: report.defender,
+      attackerWon: report.attackerWon,
+      landTaken: report.attackerWon && report.attackType === "land" ? report.landCaptured : 0,
+      plundered: report.attackerWon && Object.values(report.plunder).some(count => (count ?? 0) > 0),
+    }));
   }
 
   public sendSpies(target: string, spies: number): Promise<Outcome> {
@@ -163,6 +221,24 @@ class ApiRuler implements RulerDriver {
     return this.act(`/market/${cheapest.id}/buy`, { count });
   }
 
+  public async buyFrom(seller: string, resource: MarketResource, count: number): Promise<Outcome> {
+    const offer = (await this.get<MarketOffer[]>(`/market/${resource}`)).find(candidate => candidate.sellerName === seller);
+    return offer ? this.act(`/market/${offer.id}/buy`, { count }) : { done: false, message: `${seller} offers no ${resource}` };
+  }
+
+  public offer(resource: MarketResource, count: number, price: number): Promise<Outcome> {
+    return this.act("/market/create", { resource, count, price });
+  }
+
+  public async ownOffers(): Promise<{ resource: MarketResource; count: number; price: number }[]> {
+    return (await this.kingdom()).marketOffers.map(({ resource, count, price }) => ({ resource, count, price }));
+  }
+
+  public async withdrawOffer(resource: MarketResource): Promise<Outcome> {
+    const offer = (await this.kingdom()).marketOffers.find(candidate => candidate.resource === resource);
+    return offer ? this.act(`/market/${offer.id}/withdraw`) : { done: false, message: `No ${resource} on the market` };
+  }
+
   public async askAlliesForGold(gold: number): Promise<Outcome> {
     const kingdom = await this.kingdom();
     const pledge = marketResources.find(resource => kingdom.resources[resource] > 0);
@@ -187,6 +263,16 @@ class ApiRuler implements RulerDriver {
   public async carriersOut(): Promise<{ to: string; resource: MarketResource; count: number }[]> {
     const kingdom = await this.kingdom();
     return kingdom.carriersOnTheMove.filter(load => load.from === kingdom.name).map(({ to, resource, count }) => ({ to, resource, count }));
+  }
+
+  public async recallCarriers(to: string): Promise<Outcome> {
+    const kingdom = await this.kingdom();
+    const load = kingdom.carriersOnTheMove.find(candidate => candidate.from === kingdom.name && candidate.to === to);
+    return load ? this.act("/kingdom/withdraw-carriers", load.id) : { done: false, message: `No carriers on the road to ${to}` };
+  }
+
+  public writeToAlliance(body: string): Promise<Outcome> {
+    return this.act("/messages/send-alliance", { body });
   }
 
   public writeLetter(to: string, body: string): Promise<Outcome> {
@@ -219,6 +305,23 @@ class ApiRuler implements RulerDriver {
     const invitation = (await this.get<AllianceInvitation[]>("/alliance/invitations")).find(candidate => candidate.allianceName === allianceName);
     if (!invitation) return { done: false, message: `No invitation to ${allianceName}` };
     return this.act("/alliance/accept", { invitationId: invitation.id });
+  }
+
+  public async decline(allianceName: string): Promise<Outcome> {
+    const invitation = (await this.get<AllianceInvitation[]>("/alliance/invitations")).find(candidate => candidate.allianceName === allianceName);
+    return invitation ? this.act("/alliance/reject", { invitationId: invitation.id }) : { done: false, message: `No invitation to ${allianceName}` };
+  }
+
+  public leaveAlliance(): Promise<Outcome> {
+    return this.act("/alliance/leave");
+  }
+
+  public removeMember(kingdomName: string): Promise<Outcome> {
+    return this.act("/alliance/remove", { kingdomName });
+  }
+
+  public raiseVassal(name: string): Promise<Outcome> {
+    return this.act("/alliance/add-bot", { botName: name });
   }
 
   public async alliance(): Promise<{ name: string; members: string[] } | null> {

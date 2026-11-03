@@ -1,4 +1,4 @@
-import type { BuildingName, MarketResource } from "../api/types.ts";
+import type { BuildingName, MarketResource, SpecialBuildingType, UnitName } from "../api/types.ts";
 import type { Buildings, Credentials, Outcome, RulerDriver, Units } from "./driver.ts";
 
 /** checks again until it holds or time is up, since a page may still be catching up with the game */
@@ -14,6 +14,12 @@ export const eventually = async (what: string, check: () => Promise<boolean>, ti
 const done = (what: string, outcome: Outcome): Outcome => {
   if (!outcome.done) throw new Error(`${what} was refused: ${outcome.message}`);
   return outcome;
+};
+
+const refused = (what: string, outcome: Outcome, reason: string | RegExp): void => {
+  if (outcome.done) throw new Error(`${what} went through, but should have been refused`);
+  const matches = typeof reason === "string" ? outcome.message.includes(reason) : reason.test(outcome.message);
+  if (!matches) throw new Error(`${what} was refused with "${outcome.message}", not ${reason}`);
 };
 
 const soldiers = (units: Units): number => Object.values(units).reduce((sum, count) => sum + (count ?? 0), 0);
@@ -57,6 +63,44 @@ export class Ruler {
     done(`${this.name} training ${JSON.stringify(units)}`, await this.act.train(units));
   }
 
+  public async tearsDown(buildings: Buildings): Promise<void> {
+    done(`${this.name} tearing down ${JSON.stringify(buildings)}`, await this.act.demolish(buildings));
+  }
+
+  public async dismisses(units: Units): Promise<void> {
+    done(`${this.name} dismissing ${JSON.stringify(units)}`, await this.act.dismiss(units));
+  }
+
+  public unitsAtHome(unit: UnitName): Promise<number> {
+    return this.act.unitsAtHome(unit);
+  }
+
+  public async hasAtHome(count: number, unit: UnitName): Promise<void> {
+    await eventually(`${this.name} has ${count} ${unit} at home`, async () => (await this.act.unitsAtHome(unit)) === count);
+  }
+
+  public async beginsAGreatWork(type: SpecialBuildingType): Promise<void> {
+    done(`${this.name} beginning a ${type}`, await this.act.beginGreatWork(type));
+  }
+
+  public async investsIn(type: SpecialBuildingType, buildingPoints: number): Promise<void> {
+    done(`${this.name} investing ${buildingPoints} points in the ${type}`, await this.act.investInGreatWork(type, buildingPoints));
+  }
+
+  public async tearsDownTheGreatWork(type: SpecialBuildingType): Promise<void> {
+    done(`${this.name} tearing down the ${type}`, await this.act.tearDownGreatWork(type));
+  }
+
+  public async hasAGreatWork(type: SpecialBuildingType, level: number): Promise<void> {
+    await eventually(`${this.name} has a ${type} at level ${level}`, async () =>
+      (await this.act.greatWorks()).some(work => work.type === type && work.level === level),
+    );
+  }
+
+  public async hasNoGreatWorks(): Promise<void> {
+    await eventually(`${this.name} has no great works`, async () => (await this.act.greatWorks()).length === 0);
+  }
+
   public buildingsOf(building: BuildingName): Promise<number> {
     return this.act.buildingCount(building);
   }
@@ -80,7 +124,19 @@ export class Ruler {
   // war
 
   public async marchesOn(target: Ruler, units: Units): Promise<void> {
-    done(`${this.name} marching on ${target.name}`, await this.act.march(target.name, units));
+    done(`${this.name} marching on ${target.name}`, await this.act.march(target.name, units, "land"));
+  }
+
+  public async marchesToPlunder(target: Ruler, units: Units): Promise<void> {
+    done(`${this.name} marching to plunder ${target.name}`, await this.act.march(target.name, units, "plunder"));
+  }
+
+  public async mayNotMarchOn(target: Ruler, units: Units, reason: string | RegExp): Promise<void> {
+    refused(`${this.name} marching on ${target.name}`, await this.act.march(target.name, units, "land"), reason);
+  }
+
+  public async callsBackTheArmyFrom(target: Ruler): Promise<void> {
+    done(`${this.name} calling back the army from ${target.name}`, await this.act.recallArmy(target.name));
   }
 
   public async joinsTheStrike(leader: Ruler, target: Ruler, units: Units): Promise<void> {
@@ -106,6 +162,20 @@ export class Ruler {
   public async hasDefeated(target: Ruler): Promise<void> {
     await eventually(`${this.name} has defeated ${target.name}`, async () =>
       (await this.act.battles()).some(battle => battle.attacker === this.name && battle.defender === target.name && battle.attackerWon),
+    );
+  }
+
+  public async hasTakenLandFrom(target: Ruler): Promise<void> {
+    await eventually(`${this.name} has taken land from ${target.name}`, async () =>
+      (await this.act.battles()).some(battle => battle.attacker === this.name && battle.defender === target.name && battle.landTaken > 0),
+    );
+  }
+
+  public async hasPlundered(target: Ruler): Promise<void> {
+    await eventually(`${this.name} has plundered ${target.name}`, async () =>
+      (await this.act.battles()).some(
+        battle => battle.attacker === this.name && battle.defender === target.name && battle.plundered && battle.landTaken === 0,
+      ),
     );
   }
 
@@ -156,6 +226,28 @@ export class Ruler {
     done(`${this.name} buying ${count} ${resource}`, await this.act.buy(resource, count));
   }
 
+  public async buysFrom(seller: Ruler, count: number, resource: MarketResource): Promise<void> {
+    done(`${this.name} buying ${count} ${resource} from ${seller.name}`, await this.act.buyFrom(seller.name, resource, count));
+  }
+
+  public async offersForSale(count: number, resource: MarketResource, price: number): Promise<void> {
+    done(`${this.name} offering ${count} ${resource}`, await this.act.offer(resource, count, price));
+  }
+
+  public async hasOnTheMarket(count: number, resource: MarketResource): Promise<void> {
+    await eventually(`${this.name} has ${count} ${resource} on the market`, async () =>
+      (await this.act.ownOffers()).some(offer => offer.resource === resource && offer.count === count),
+    );
+  }
+
+  public async hasNothingOnTheMarket(): Promise<void> {
+    await eventually(`${this.name} has nothing on the market`, async () => (await this.act.ownOffers()).length === 0);
+  }
+
+  public async withdrawsTheOfferOf(resource: MarketResource): Promise<void> {
+    done(`${this.name} withdrawing the ${resource}`, await this.act.withdrawOffer(resource));
+  }
+
   public async asksAlliesFor(gold: number): Promise<void> {
     done(`${this.name} asking allies for ${gold} gold`, await this.act.askAlliesForGold(gold));
   }
@@ -184,6 +276,10 @@ export class Ruler {
     );
   }
 
+  public async callsBackTheCarriersFrom(to: Ruler): Promise<void> {
+    done(`${this.name} calling back the carriers from ${to.name}`, await this.act.recallCarriers(to.name));
+  }
+
   public async hasNoCarriersOut(): Promise<void> {
     await eventually(`${this.name} has no carriers out`, async () => (await this.act.carriersOut()).length === 0);
   }
@@ -192,6 +288,10 @@ export class Ruler {
 
   public async writesTo(to: Ruler, body: string): Promise<void> {
     done(`${this.name} writing to ${to.name}`, await this.act.writeLetter(to.name, body));
+  }
+
+  public async writesToTheAlliance(body: string): Promise<void> {
+    done(`${this.name} writing to the alliance`, await this.act.writeToAlliance(body));
   }
 
   public async hasUnreadLetters(): Promise<void> {
@@ -224,6 +324,35 @@ export class Ruler {
 
   public async joins(allianceName: string): Promise<void> {
     done(`${this.name} joining ${allianceName}`, await this.act.join(allianceName));
+  }
+
+  public async declinesTheInvitationTo(allianceName: string): Promise<void> {
+    done(`${this.name} declining ${allianceName}`, await this.act.decline(allianceName));
+  }
+
+  public async leavesTheAlliance(): Promise<void> {
+    done(`${this.name} leaving the alliance`, await this.act.leaveAlliance());
+  }
+
+  public async removesFromTheAlliance(member: Ruler): Promise<void> {
+    done(`${this.name} removing ${member.name}`, await this.act.removeMember(member.name));
+  }
+
+  public async raisesAVassal(name: string): Promise<void> {
+    done(`${this.name} raising the vassal ${name}`, await this.act.raiseVassal(name));
+  }
+
+  public async isInNoAlliance(): Promise<void> {
+    await eventually(`${this.name} is in no alliance`, async () => (await this.act.alliance()) === null);
+  }
+
+  /** the alliance has exactly these members by name, vassals the game runs among them */
+  public async leadsAllianceOf(allianceName: string, ...members: string[]): Promise<void> {
+    const expected = [this.name, ...members].sort();
+    await eventually(`${this.name} leads ${allianceName} of ${expected.join(", ")}`, async () => {
+      const alliance = await this.act.alliance();
+      return alliance?.name === allianceName && JSON.stringify([...alliance.members].sort()) === JSON.stringify(expected);
+    });
   }
 
   public async isInAllianceWith(allianceName: string, ...members: Ruler[]): Promise<void> {

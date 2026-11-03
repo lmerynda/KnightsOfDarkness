@@ -1,10 +1,15 @@
-import type { BuildingName, Counts, MarketResource, UnitName } from "../api/types.ts";
+import type { BuildingName, Counts, MarketResource, SpecialBuildingType, UnitName } from "../api/types.ts";
 
 // The seam between the domain language and the game: a driver reaches the game one way (the HTTP API, or Chrome
 // through the real pages) and answers in the game's own terms. The DSL above never knows which one it talks to.
 
 export type Units = Partial<Counts<UnitName>>;
 export type Buildings = Partial<Counts<BuildingName>>;
+
+/** what an army marches for: to take land, or to plunder the stores */
+export type Goal = "land" | "plunder";
+
+export type Battle = { attacker: string; defender: string; attackerWon: boolean; landTaken: number; plundered: boolean };
 
 /** what the game answered when a ruler tried something: whether it went through and what it said */
 export type Outcome = { done: boolean; message: string };
@@ -44,14 +49,23 @@ export interface RulerDriver {
 
   passTurn(): Promise<Outcome>;
   build(buildings: Buildings): Promise<Outcome>;
+  demolish(buildings: Buildings): Promise<Outcome>;
   train(units: Units): Promise<Outcome>;
+  dismiss(units: Units): Promise<Outcome>;
   buildingCount(building: BuildingName): Promise<number>;
+  unitsAtHome(unit: UnitName): Promise<number>;
+  beginGreatWork(type: SpecialBuildingType): Promise<Outcome>;
+  investInGreatWork(type: SpecialBuildingType, buildingPoints: number): Promise<Outcome>;
+  tearDownGreatWork(type: SpecialBuildingType): Promise<Outcome>;
+  greatWorks(): Promise<{ type: SpecialBuildingType; level: number }[]>;
   landPrice(acres: number): Promise<number>;
   buyLand(acres: number): Promise<Outcome>;
   /** the gold soldiers will be paid next turn */
   soldiersPay(): Promise<number>;
 
-  march(target: string, units: Units): Promise<Outcome>;
+  march(target: string, units: Units, goal: Goal): Promise<Outcome>;
+  /** calls back the army on the march to the target */
+  recallArmy(target: string): Promise<Outcome>;
   /** sends an army to wait at the target's border and strike right after an ally's army lands */
   joinStrike(leader: string, target: string, units: Units): Promise<Outcome>;
   /** armies marching on this kingdom, as its scouts report them */
@@ -59,7 +73,7 @@ export interface RulerDriver {
   /** our own armies out on the march, each with its target, whose strike it joins, and whether it waits at the border */
   armiesOut(): Promise<{ to: string; joining: string | null; atTheBorder: boolean }[]>;
   /** battles fought, newest first */
-  battles(): Promise<{ attacker: string; defender: string; attackerWon: boolean }[]>;
+  battles(): Promise<Battle[]>;
   sendSpies(target: string, spies: number): Promise<Outcome>;
   /** the newest spy report: whose kingdom, and whether it saw the stores */
   latestIntel(): Promise<{ about: string; stores: boolean } | null>;
@@ -73,6 +87,11 @@ export interface RulerDriver {
 
   /** buys from the cheapest offer of a good */
   buy(resource: MarketResource, count: number): Promise<Outcome>;
+  /** buys from the named seller's offer of a good */
+  buyFrom(seller: string, resource: MarketResource, count: number): Promise<Outcome>;
+  offer(resource: MarketResource, count: number, price: number): Promise<Outcome>;
+  ownOffers(): Promise<{ resource: MarketResource; count: number; price: number }[]>;
+  withdrawOffer(resource: MarketResource): Promise<Outcome>;
   /** asks allies for gold: one piece of goods on the market at that price */
   askAlliesForGold(gold: number): Promise<Outcome>;
   /** the gold allies ask for, by ally */
@@ -82,8 +101,11 @@ export interface RulerDriver {
 
   sendCarriers(to: string, resource: MarketResource, count: number): Promise<Outcome>;
   carriersOut(): Promise<{ to: string; resource: MarketResource; count: number }[]>;
+  /** calls back the carriers on the road to the kingdom */
+  recallCarriers(to: string): Promise<Outcome>;
 
   writeLetter(to: string, body: string): Promise<Outcome>;
+  writeToAlliance(body: string): Promise<Outcome>;
   unreadLetters(): Promise<number>;
   letters(): Promise<{ from: string; body: string }[]>;
   sentLetters(): Promise<{ to: string; body: string }[]>;
@@ -92,6 +114,12 @@ export interface RulerDriver {
   invite(kingdomName: string): Promise<Outcome>;
   /** accepts the invitation to the named alliance */
   join(allianceName: string): Promise<Outcome>;
+  /** turns down the invitation to the named alliance */
+  decline(allianceName: string): Promise<Outcome>;
+  leaveAlliance(): Promise<Outcome>;
+  removeMember(kingdomName: string): Promise<Outcome>;
+  /** raises a kingdom the game runs, into the alliance */
+  raiseVassal(name: string): Promise<Outcome>;
   alliance(): Promise<{ name: string; members: string[] } | null>;
   /** allied armies on the march, as the war room shows them */
   warRoomMarches(): Promise<{ from: string; to: string }[]>;

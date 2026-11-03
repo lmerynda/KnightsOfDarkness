@@ -71,3 +71,43 @@ scenario("an ally asks for gold and another sends it through the market", async 
   await emperor.seesNoAsks();
   await squire.readsInTheChronicle(/for 50,000 gold/);
 });
+
+scenario("a letter to the alliance reaches every other member", async game => {
+  const { emperor, squire } = await alliance(game, "Herald");
+  const body = `To all of us, from ${emperor}`;
+  await emperor.writesToTheAlliance(body);
+  await squire.hasALetterFrom(emperor, body);
+});
+
+scenario("an invitation may be declined", async game => {
+  const squire = await game.foundsAKingdom("Squire");
+  const emperor = await game.foundsAKingdom("Emperor");
+  const name = `Lonely ${Math.random().toString(36).slice(2, 7)}`;
+  await emperor.foundsAlliance(name);
+  await emperor.invites(squire);
+  await squire.declinesTheInvitationTo(name);
+  await squire.isInNoAlliance();
+  await emperor.leadsAllianceOf(name);
+});
+
+scenario("a member leaves, and the emperor sends another away", async game => {
+  const { name, emperor, squire } = await alliance(game, "Brittle");
+  const knight = await game.foundsAKingdom("Knight");
+  await emperor.invites(knight);
+  await knight.joins(name);
+  await emperor.leadsAllianceOf(name, squire.name, knight.name);
+  await squire.leavesTheAlliance();
+  await squire.isInNoAlliance();
+  await emperor.removesFromTheAlliance(knight);
+  await knight.isInNoAlliance();
+  await emperor.leadsAllianceOf(name);
+});
+
+scenario("an emperor raises a vassal that fills a place in the alliance", async game => {
+  const emperor = await game.foundsAKingdom("Emperor");
+  const name = `Liege ${Math.random().toString(36).slice(2, 7)}`;
+  await emperor.foundsAlliance(name);
+  const vassal = `Vassal ${Math.random().toString(36).slice(2, 7)}`;
+  await emperor.raisesAVassal(vassal);
+  await emperor.leadsAllianceOf(name, vassal);
+});

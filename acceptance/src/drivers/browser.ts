@@ -2,8 +2,18 @@ import { mkdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type Browser, type BrowserContext, type Locator, type Page } from "playwright-core";
-import type { BuildingName, MarketResource, UnitName } from "../api/types.ts";
-import { whole, type Buildings, type Credentials, type GateDriver, type Outcome, type RulerDriver, type Units } from "../dsl/driver.ts";
+import type { BuildingName, MarketResource, SpecialBuildingType, UnitName } from "../api/types.ts";
+import {
+  whole,
+  type Battle,
+  type Buildings,
+  type Credentials,
+  type GateDriver,
+  type Goal,
+  type Outcome,
+  type RulerDriver,
+  type Units,
+} from "../dsl/driver.ts";
 import type { Visitors } from "../dsl/game.ts";
 import { startUi, type Ui } from "../ui.ts";
 
@@ -42,6 +52,16 @@ const unitPlural: Record<UnitName, string> = {
 };
 
 const resourceLabel: Record<MarketResource, string> = { food: "Food", iron: "Iron", tools: "Tools", weapons: "Weapons" };
+
+const greatWorkLabel: Record<SpecialBuildingType, string> = {
+  goldShaft: "Gold shaft",
+  ironShaft: "Iron shaft",
+  granary: "Granary",
+  forge: "Forge",
+  warehouse: "Warehouse",
+};
+
+const marketResources = Object.keys(resourceLabel) as MarketResource[];
 
 const entries = <K extends string>(counts: Partial<Record<K, number>>): [K, number][] =>
   (Object.entries(counts) as [K, number][]).filter(([, count]) => count > 0);
@@ -136,6 +156,65 @@ class BrowserRuler implements RulerDriver {
     return whole(units, await this.reply(/^\/api\/kingdom\/train$/, () => this.page.getByRole("button", { name: button, exact: true }).click()));
   }
 
+  public async demolish(buildings: Buildings): Promise<Outcome> {
+    await this.open("build");
+    await this.page.getByRole("group", { name: "Build or tear down" }).getByRole("button", { name: "Tear down" }).click();
+    const order = entries<BuildingName>(buildings);
+    for (const [building, count] of order) await this.page.getByLabel(`${buildingPlural[building]} to tear down`, { exact: true }).fill(String(count));
+    const button = order.length === 1 ? `Tear down ${buildingPlural[order[0][0]].toLowerCase()}` : "Tear all down";
+    return whole(buildings, await this.reply(/^\/api\/kingdom\/demolish$/, () => this.page.getByRole("button", { name: button, exact: true }).click()));
+  }
+
+  public async dismiss(units: Units): Promise<Outcome> {
+    await this.open("train");
+    await this.page.getByRole("group", { name: "Train or dismiss" }).getByRole("button", { name: "Dismiss" }).click();
+    const order = entries<UnitName>(units);
+    for (const [unit, count] of order) await this.page.getByLabel(`${unitPlural[unit]} to dismiss`, { exact: true }).fill(String(count));
+    const button = order.length === 1 ? `Dismiss ${unitPlural[order[0][0]].toLowerCase()}` : "Dismiss all";
+    return whole(units, await this.reply(/^\/api\/kingdom\/fire$/, () => this.page.getByRole("button", { name: button, exact: true }).click()));
+  }
+
+  public async unitsAtHome(unit: UnitName): Promise<number> {
+    await this.open("train");
+    return number(await this.page.locator(`.plate-count[title="${unitPlural[unit]} at home"]`).innerText());
+  }
+
+  private greatWorkRow(type: SpecialBuildingType): Locator {
+    return this.panel("Great works").locator("ul.specials > li").filter({ has: this.page.getByRole("heading", { name: greatWorkLabel[type], exact: true }) });
+  }
+
+  public async beginGreatWork(type: SpecialBuildingType): Promise<Outcome> {
+    await this.open("build");
+    await this.panel("Great works").getByRole("combobox", { name: /^Begin a new great work/ }).selectOption(type);
+    return this.answer(/^\/api\/kingdom\/start-special-building$/, () => this.panel("Great works").getByRole("button", { name: "Begin" }).click());
+  }
+
+  public async investInGreatWork(type: SpecialBuildingType, buildingPoints: number): Promise<Outcome> {
+    await this.open("build");
+    const work = this.greatWorkRow(type);
+    await work.getByLabel("Points to invest").fill(String(buildingPoints));
+    return this.answer(/^\/api\/kingdom\/build-special-building$/, () => work.getByRole("button", { name: "Invest" }).click());
+  }
+
+  public async tearDownGreatWork(type: SpecialBuildingType): Promise<Outcome> {
+    await this.open("build");
+    this.page.once("dialog", dialog => void dialog.accept());
+    return this.answer(/^\/api\/kingdom\/demolish-special-building$/, () => this.greatWorkRow(type).getByRole("button", { name: "Tear down" }).click());
+  }
+
+  public async greatWorks(): Promise<{ type: SpecialBuildingType; level: number }[]> {
+    await this.open("build");
+    await this.panel("Great works").waitFor();
+    const works: { type: SpecialBuildingType; level: number }[] = [];
+    for (const row of await this.panel("Great works").locator("ul.specials > li").all()) {
+      const label = (await row.locator("h3").innerText()).trim();
+      const type = (Object.keys(greatWorkLabel) as SpecialBuildingType[]).find(candidate => greatWorkLabel[candidate] === label);
+      const level = /^Level (\d+)/.exec((await row.locator(".pips").getAttribute("aria-label")) ?? "")?.[1];
+      if (type && level) works.push({ type, level: Number(level) });
+    }
+    return works;
+  }
+
   public async buildingCount(building: BuildingName): Promise<number> {
     await this.open("build");
     return number(await this.page.locator(`.plate-count[title="${buildingPlural[building]} you own"]`).innerText());
@@ -167,11 +246,26 @@ class BrowserRuler implements RulerDriver {
     for (const [unit, count] of entries<UnitName>(units)) await this.page.getByLabel(label(unit), { exact: typeof label(unit) === "string" }).fill(String(count));
   }
 
-  public async march(target: string, units: Units): Promise<Outcome> {
+  public async march(target: string, units: Units, goal: Goal): Promise<Outcome> {
     await this.open("war");
+    // the page lets nobody pick a kingdom that may not be attacked, and says why beside its name
+    const option = this.page.getByRole("combobox", { name: /^Target/ }).locator(`option[value="${target}"]`);
+    await option.waitFor({ state: "attached" });
+    // the rankings, which say who is protected, may come after the list of kingdoms
+    await this.page.waitForLoadState("networkidle");
+    if (await option.isDisabled()) return { done: false, message: (await option.innerText()).trim() };
     await this.page.getByRole("combobox", { name: /^Target/ }).selectOption(target);
+    await this.page.getByRole("group", { name: "Goal of the attack" }).getByRole("button", { name: goal === "land" ? "Take land" : "Plunder stores" }).click();
     await this.fillArmy(units, unit => `${unitPlural[unit]} to send`);
-    return this.answer(/^\/api\/kingdom\/send-attack$/, () => this.page.getByRole("button", { name: "March" }).click());
+    const march = this.page.getByRole("button", { name: "March" });
+    if (await march.isDisabled()) return { done: false, message: (await this.panel("Send an army").innerText()).replace(/\s+/g, " ") };
+    return this.answer(/^\/api\/kingdom\/send-attack$/, () => march.click());
+  }
+
+  public async recallArmy(target: string): Promise<Outcome> {
+    await this.open("war");
+    const army = this.panel("Armies on the march").locator("tbody tr").filter({ hasText: target });
+    return this.answer(/^\/api\/kingdom\/withdraw-attack$/, () => army.getByRole("button", { name: "Call back" }).click());
   }
 
   public async joinStrike(leader: string, target: string, units: Units): Promise<Outcome> {
@@ -203,19 +297,24 @@ class BrowserRuler implements RulerDriver {
     return armies;
   }
 
-  public async battles(): Promise<{ attacker: string; defender: string; attackerWon: boolean }[]> {
+  public async battles(): Promise<Battle[]> {
     await this.open("war");
     const me = await this.kingdomName();
-    return (await this.lines(this.page.locator(".battle h3"))).flatMap((title): { attacker: string; defender: string; attackerWon: boolean }[] => {
+    const battles: Battle[] = [];
+    for (const report of await this.page.locator(".battle").all()) {
+      const title = (await report.locator("h3").innerText()).trim();
+      const facts = (await report.locator(".battle-facts").innerText()).replace(/\s+/g, " ");
+      const spoils = { landTaken: number(/(?:Took|Lost) ([\d,]+) acres?/.exec(facts)?.[1] ?? "0"), plundered: /\b(?:Plundered|Stolen)\b/.test(facts) };
       const won = /^Victory over (.+)$/.exec(title);
-      if (won) return [{ attacker: me, defender: won[1], attackerWon: true }];
       const lost = /^Defeat at (.+)$/.exec(title);
-      if (lost) return [{ attacker: me, defender: lost[1], attackerWon: false }];
       const repelled = /^(.+) was repelled$/.exec(title);
-      if (repelled) return [{ attacker: repelled[1], defender: me, attackerWon: false }];
       const broke = /^(.+) broke through$/.exec(title);
-      return broke ? [{ attacker: broke[1], defender: me, attackerWon: true }] : [];
-    });
+      if (won) battles.push({ attacker: me, defender: won[1], attackerWon: true, ...spoils });
+      else if (lost) battles.push({ attacker: me, defender: lost[1], attackerWon: false, ...spoils });
+      else if (repelled) battles.push({ attacker: repelled[1], defender: me, attackerWon: false, ...spoils });
+      else if (broke) battles.push({ attacker: broke[1], defender: me, attackerWon: true, ...spoils });
+    }
+    return battles;
   }
 
   public async sendSpies(target: string, spies: number): Promise<Outcome> {
@@ -272,6 +371,47 @@ class BrowserRuler implements RulerDriver {
     return this.answer(/^\/api\/market\/[^/]+\/buy$/, () => offer.getByRole("button", { name: /^Buy/ }).click());
   }
 
+  private async openMarketFor(resource: MarketResource): Promise<void> {
+    await this.open("market");
+    await this.page.getByRole("tab", { name: new RegExp(resourceLabel[resource]) }).click();
+    await this.panel(`${resourceLabel[resource]} for sale`).waitFor();
+  }
+
+  public async buyFrom(seller: string, resource: MarketResource, count: number): Promise<Outcome> {
+    await this.openMarketFor(resource);
+    const offer = this.page.locator("main tbody tr").filter({ hasText: seller }).filter({ has: this.page.getByRole("spinbutton") }).first();
+    await offer.getByRole("spinbutton").fill(String(count));
+    return this.answer(/^\/api\/market\/[^/]+\/buy$/, () => offer.getByRole("button", { name: /^Buy/ }).click());
+  }
+
+  public async offer(resource: MarketResource, count: number, price: number): Promise<Outcome> {
+    await this.openMarketFor(resource);
+    const sell = this.panel(`Sell ${resourceLabel[resource].toLowerCase()}`);
+    await sell.getByLabel(/^Amount, [\d,]+ in store/).fill(String(count));
+    await sell.getByLabel(/^Gold each/).fill(String(price));
+    return this.answer(/^\/api\/market\/create$/, () => sell.getByRole("button", { name: /^Offer for/ }).click());
+  }
+
+  public async ownOffers(): Promise<{ resource: MarketResource; count: number; price: number }[]> {
+    const offers: { resource: MarketResource; count: number; price: number }[] = [];
+    for (const resource of marketResources) {
+      await this.openMarketFor(resource);
+      // the page lists the offers once they have come, or says there are none
+      await this.page.waitForLoadState("networkidle");
+      for (const row of await this.page.locator("main tbody tr").filter({ has: this.page.getByRole("button", { name: "Withdraw" }) }).all()) {
+        const cells = await row.locator("td").allInnerTexts();
+        offers.push({ resource, count: number(cells[1]), price: number(cells[2]) });
+      }
+    }
+    return offers;
+  }
+
+  public async withdrawOffer(resource: MarketResource): Promise<Outcome> {
+    await this.openMarketFor(resource);
+    const own = this.page.locator("main tbody tr").getByRole("button", { name: "Withdraw" }).first();
+    return this.answer(/^\/api\/market\/[^/]+\/withdraw$/, () => own.click());
+  }
+
   public async askAlliesForGold(gold: number): Promise<Outcome> {
     await this.open("alliance");
     await this.page.getByLabel("Gold to ask for").fill(String(gold));
@@ -314,6 +454,19 @@ class BrowserRuler implements RulerDriver {
       if (resource) loads.push({ to: cells[0].trim(), resource, count: number(amount) });
     }
     return loads;
+  }
+
+  public async recallCarriers(to: string): Promise<Outcome> {
+    await this.open("carriers");
+    const load = this.panel("On the road").locator("tbody tr").filter({ hasText: to });
+    return this.answer(/^\/api\/kingdom\/withdraw-carriers$/, () => load.getByRole("button", { name: "Call back" }).click());
+  }
+
+  public async writeToAlliance(body: string): Promise<Outcome> {
+    await this.open("letters");
+    await this.page.getByRole("combobox", { name: /^To/ }).selectOption("__alliance__");
+    await this.page.getByLabel(/Letter, \d+ of \d+ characters/).fill(body);
+    return this.answer(/^\/api\/messages\/send-alliance$/, () => this.page.getByRole("button", { name: "Seal and send" }).click());
   }
 
   public async writeLetter(to: string, body: string): Promise<Outcome> {
@@ -364,6 +517,31 @@ class BrowserRuler implements RulerDriver {
     await this.open("alliance");
     const invitation = this.panel("Invitations").locator("li").filter({ hasText: allianceName });
     return this.answer(/^\/api\/alliance\/accept$/, () => invitation.getByRole("button", { name: "Join" }).click());
+  }
+
+  public async decline(allianceName: string): Promise<Outcome> {
+    await this.open("alliance");
+    const invitation = this.panel("Invitations").locator("li").filter({ hasText: allianceName });
+    return this.answer(/^\/api\/alliance\/reject$/, () => invitation.getByRole("button", { name: "Decline" }).click());
+  }
+
+  public async leaveAlliance(): Promise<Outcome> {
+    await this.open("alliance");
+    this.page.once("dialog", dialog => void dialog.accept());
+    return this.answer(/^\/api\/alliance\/leave$/, () => this.page.getByRole("button", { name: /^Leave/ }).click());
+  }
+
+  public async removeMember(kingdomName: string): Promise<Outcome> {
+    await this.open("alliance");
+    const member = this.page.locator("main table").first().locator("tbody tr").filter({ hasText: kingdomName });
+    this.page.once("dialog", dialog => void dialog.accept());
+    return this.answer(/^\/api\/alliance\/remove$/, () => member.getByRole("button", { name: "Remove" }).click());
+  }
+
+  public async raiseVassal(name: string): Promise<Outcome> {
+    await this.open("alliance");
+    await this.page.getByLabel("Vassal name").fill(name);
+    return this.answer(/^\/api\/alliance\/add-bot$/, () => this.page.getByRole("button", { name: "Raise vassal" }).click());
   }
 
   public async alliance(): Promise<{ name: string; members: string[] } | null> {
