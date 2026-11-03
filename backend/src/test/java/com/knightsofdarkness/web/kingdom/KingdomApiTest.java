@@ -11,11 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
-import org.springframework.boot.persistence.autoconfigure.EntityScan;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -24,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.jayway.jsonpath.JsonPath;
+import com.knightsofdarkness.web.GameServerTest;
 import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
@@ -34,18 +30,7 @@ import com.knightsofdarkness.web.round.RoundService;
 /**
  * Requests as the browser sends them: unit, building and resource maps are flat objects keyed by name.
  */
-@SpringBootTest(properties = {
-    "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
-    "spring.jpa.hibernate.ddl-auto=create-drop",
-    "app.jwt.secret=dependency-upgrade-test-only-key-0123456789012345678901234567890123456789",
-    "app.jwt.expiration.minutes=5"
-})
-@AutoConfigureMockMvc
-@AutoConfigureTestDatabase
-@ComponentScan(basePackages =
-{ "com.knightsofdarkness.*" })
-@EntityScan(basePackages =
-{ "com.knightsofdarkness.*" })
+@GameServerTest
 class KingdomApiTest {
     @Autowired
     private MockMvc mockMvc;

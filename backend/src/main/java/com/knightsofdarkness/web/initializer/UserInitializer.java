@@ -33,11 +33,9 @@ public class UserInitializer implements CommandLineRunner {
     @Override
     public void run(String... args)
     {
-        USERS.forEach(user ->
-        {
-            user.password = passwordEncoder.encode(user.password);
-            userService.saveUser(user);
-        });
+        // the accounts outlive the server, so a restart keeps them as they are
+        USERS.stream().filter(user -> !userService.hasUserWithEmail(user.email))
+                .forEach(user -> userService.saveUser(new UserEntity(user.email, user.kingdomName, passwordEncoder.encode(user.password))));
         log.info("users initialized");
     }
 

@@ -8,26 +8,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.persistence.autoconfigure.EntityScan;
-import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(properties = {
-    "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
-    "spring.jpa.hibernate.ddl-auto=create-drop",
-    "app.jwt.secret=dependency-upgrade-test-only-key-0123456789012345678901234567890123456789",
-    "app.jwt.expiration.minutes=5"
-})
-@AutoConfigureMockMvc
-@AutoConfigureTestDatabase
-@ComponentScan(basePackages =
-{ "com.knightsofdarkness.*" })
-@EntityScan(basePackages =
-{ "com.knightsofdarkness.*" })
+@GameServerTest
 class WebTests {
     @Autowired
     private MockMvc mockMvc;

@@ -8,7 +8,7 @@ A browser strategy game of dark medieval kingdoms. Each player rules one kingdom
 
 ## Run it locally
 
-You need JDK 25 and Node.js 26; the Gradle wrapper fetches Gradle itself and finds JDK 25 on its own, while the simulation harness runs the server with the Java that `JAVA_HOME` names, or else the one on the path. Two terminals:
+You need JDK 25, Node.js 26 and Docker; the Gradle wrapper fetches Gradle itself and finds JDK 25 on its own, while the simulation harness runs the server with the Java that `JAVA_HOME` names, or else the one on the path. Two terminals:
 
 ```bash
 cd backend && ./gradlew bootRun
@@ -18,7 +18,7 @@ cd backend && ./gradlew bootRun
 cd browser && npm install && npm run dev
 ```
 
-Open http://localhost:3000. The page asks its own origin for `/api`, as in production, and the dev server forwards that to the game server on 8080 (`GAME_SERVER` to point elsewhere), so another device on your network can play at `http://<this machine>:3000`. Locally the server uses an in-memory H2 database, so every restart begins a fresh world. Local development, and only local development (`game.seed-dev-accounts`), seeds two player kingdoms in the alliance Legion, both with a small garrison and spies:
+Open http://localhost:3000. The page asks its own origin for `/api`, as in production, and the dev server forwards that to the game server on 8080 (`GAME_SERVER` to point elsewhere), so another device on your network can play at `http://<this machine>:3000`. The world lasts across restarts, locally as in production (see [The world's database](#the-worlds-database)). Local development, and only local development (`game.seed-dev-accounts`), seeds two player kingdoms in the alliance Legion, both with a small garrison and spies:
 
 | Sign in as | Password |
 |---|---|
@@ -53,6 +53,14 @@ Allies pass gold through the market, since carriers cannot carry it. A member as
 
 The browser and the simulation drive the same HTTP API, and so can any other client. The server describes it as OpenAPI at `GET /v3/api-docs`, and the description is kept in `api/openapi.json`; the browser and the simulation generate their types from that file (`npm run api:types` in each), so a field the server renames or drops breaks their build instead of the game. When the API changes, the server tests rewrite `api/openapi.json` and fail once; regenerate both clients' types and commit the three together. CI checks all three agree. Every field is always present; a field is null only when it is an `Optional` or marked `@Nullable`, and a count map carries every key only when marked `@EveryKey`. Every action answers in one shape, `{ message, success, data }`: `success` says whether it went through, `message` is ready to show a player, and `data` is what it produced (the buildings raised, the turn report, the spy report, a purchase), or null. An action that cannot go through still answers 200 with `success: false`; 401 means no valid token, and 404 that the signed-in kingdom no longer exists.
 
+## The world's database
+
+The world lives in PostgreSQL and outlives every restart and deploy. Locally, `bootRun` starts PostgreSQL from `backend/compose.yaml` and keeps the world in a Docker volume; `docker compose -f backend/compose.yaml down -v` throws it away for a fresh one. In production the `prod` profile connects to the database that `DB_HOST`, `DB_NAME`, `DB_USER` and `DB_PASSWORD` name, and its first start needs an empty database.
+
+Flyway builds the schema from the migrations in `backend/src/main/resources/db/migration`, and Hibernate only checks that the entities match it. A change to an entity needs a new migration beside the others (`V2__what_changed.sql`, never an edit to one already shipped); without it every server test fails on the missing or extra column. Enum columns are plain text, so a new enum value needs no migration. The server tests run on the same PostgreSQL image in a container, each test context in a fresh database migrated as production's would be, and one starts the server twice on one database to check that a restart finds everything as it was. Simulated worlds alone run in memory, built from the entities, since each is short and thrown away.
+
+The game clock counts ticks, not hours: while the server is down no turns come and the round does not move, for every kingdom alike, so a restart costs nobody anything.
+
 ## Test
 
 ```bash
@@ -69,7 +77,7 @@ Black-box scenarios drive the installed Chrome against the real server; they sta
 cd browser && npm run test:e2e
 ```
 
-CI (`.github/workflows/ci.yml`) runs all three, the server tests, the browser build, lint and scenarios, and the simulated worlds, on every push to master and every pull request, on the same Java and Node versions. Dependabot opens one grouped pull request a week per ecosystem (Actions, Gradle, both npm projects, Docker images, the dev container) to keep them current. It holds back two major versions on purpose: TypeScript 7, the native compiler, lacks the JavaScript API that openapi-typescript and typescript-eslint need, so both npm projects stay on TypeScript 6; and the server image stays on Java 25, the long-term release, until a move to a newer Java changes the Gradle toolchain and the dev container with it.
+CI (`.github/workflows/ci.yml`) runs all three, the server tests, the browser build, lint and scenarios, and the simulated worlds, on every push to master and every pull request, on the same Java and Node versions. Dependabot opens one grouped pull request a week per ecosystem (Actions, Gradle, both npm projects, Docker images, the local PostgreSQL, the dev container) to keep them current. It holds back three major versions on purpose: TypeScript 7, the native compiler, lacks the JavaScript API that openapi-typescript and typescript-eslint need, so both npm projects stay on TypeScript 6; and the server image stays on Java 25, the long-term release, until a move to a newer Java changes the Gradle toolchain and the dev container with it; and PostgreSQL stays on 18, since a new major cannot open an older one's data without an upgrade that has to be planned for production.
 
 ## Simulate worlds
 

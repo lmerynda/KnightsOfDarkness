@@ -11,9 +11,10 @@ spring:
     password: ${DB_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
 
+  # the world must outlive every deploy: Flyway migrates the schema, Hibernate never changes it
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
 
 app:
   jwt:

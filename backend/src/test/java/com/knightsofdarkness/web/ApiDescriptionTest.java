@@ -12,11 +12,6 @@ import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
-import org.springframework.boot.persistence.autoconfigure.EntityScan;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,18 +22,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * serves: when they differ the file is rewritten and the test fails, and the change is committed with the clients'
  * regenerated types (npm run api:types in browser/ and simulation/)
  */
-@SpringBootTest(properties = {
-    "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
-    "spring.jpa.hibernate.ddl-auto=create-drop",
-    "app.jwt.secret=dependency-upgrade-test-only-key-0123456789012345678901234567890123456789",
-    "app.jwt.expiration.minutes=5"
-})
-@AutoConfigureMockMvc
-@AutoConfigureTestDatabase
-@ComponentScan(basePackages =
-{ "com.knightsofdarkness.*" })
-@EntityScan(basePackages =
-{ "com.knightsofdarkness.*" })
+@GameServerTest
 class ApiDescriptionTest {
     private static final Path committed = Path.of("..", "api", "openapi.json");
 

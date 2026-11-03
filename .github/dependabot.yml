@@ -58,6 +58,19 @@ updates:
       - dependency-name: azul/zulu-openjdk-alpine
         update-types: ["version-update:semver-major"]
 
+  # the local world's PostgreSQL, whose image the server tests run on too
+  - package-ecosystem: docker-compose
+    directory: /backend
+    schedule:
+      interval: weekly
+    groups:
+      database:
+        patterns: ["*"]
+    # a new PostgreSQL major cannot open the older one's data without an upgrade, which production has to plan for
+    ignore:
+      - dependency-name: postgres
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: devcontainers
     directory: /
     schedule:

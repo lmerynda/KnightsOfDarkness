@@ -1,5 +1,16 @@
 # Used by the simulation harness: the wall clock is off and time moves only through POST /simulation/advance.
 # Pass game.config-path to run a balance variant of gameconfig.json.
+# Each simulated world is short and thrown away, so it lives in memory with the schema built from the entities; the
+# server tests check that the migrations build the same schema.
+spring:
+  datasource:
+    url: jdbc:h2:mem:world
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
 game:
   clock:
     enabled: false

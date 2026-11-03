@@ -1,11 +1,11 @@
 spring:
   application:
     name: knightofdarkness
-  datasource:
-    url: jdbc:h2:mem:testdb
-  h2:
-    console:
-      enabled: true
+  # the database is the PostgreSQL that compose.yaml describes, which bootRun starts; Flyway builds the schema from
+  # db/migration and Hibernate only checks that the entities still match it
+  jpa:
+    hibernate:
+      ddl-auto: validate
   output:
     ansi:
       enabled: always

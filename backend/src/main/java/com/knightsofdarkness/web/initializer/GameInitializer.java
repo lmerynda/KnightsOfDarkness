@@ -55,10 +55,12 @@ public class GameInitializer implements CommandLineRunner
         this.allianceRepository = allianceRepository;
     }
 
+    /**
+     * the world outlives the server, so a restart finds what an earlier start created and makes only what is missing
+     */
     @Override
     public void run(String... args)
     {
-
         if (seedDevAccounts)
         {
             createPlayerKingdom("uprzejmy");
@@ -79,6 +81,10 @@ public class GameInitializer implements CommandLineRunner
     @Transactional
     private void createAlliance(String allianceName, String emperor, String kingdom)
     {
+        if (allianceRepository.getAllianceByName(allianceName).isPresent())
+        {
+            return;
+        }
         var kingdomEntity = kingdomRepository.getKingdomByName(kingdom).get();
         var emperorEntity = kingdomRepository.getKingdomByName(emperor).get();
         var alliance = new AllianceEntity(allianceName, kingdomEntity.getName());
@@ -100,6 +106,10 @@ public class GameInitializer implements CommandLineRunner
      */
     void createPlayerKingdom(String name)
     {
+        if (kingdomRepository.getKingdomByName(name).isPresent())
+        {
+            return;
+        }
         log.info("Initializing kingdom {}", name);
         var kingdom = new KingdomCreator(gameConfig).createKingdom(name);
         kingdom.getBuildings().addCount(BuildingName.barracks, 1);
@@ -114,6 +124,10 @@ public class GameInitializer implements CommandLineRunner
     @Transactional
     void createBot(String name, SpecialBuildingType specialBuildingType)
     {
+        if (kingdomRepository.getKingdomByName(name).isPresent())
+        {
+            return;
+        }
         var kingdom = createKingdom(name);
         botRepository.add(new BotEntity(Id.generate(), kingdom));
         for (int i = 0; i < numberOfSpecialBuildings; i++)
