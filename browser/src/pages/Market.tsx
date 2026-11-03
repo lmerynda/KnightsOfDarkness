@@ -135,8 +135,11 @@ export const Market: React.FC = () => {
         .catch(() => setAlliesOffers([]));
   }, [resource, allied]);
 
+  // merchants and other rulers post all the time, so the open market keeps up with them
   useEffect(() => {
     load();
+    const timer = window.setInterval(load, 5000);
+    return () => window.clearInterval(timer);
   }, [load]);
 
   const ownOffers = kingdom.marketOffers.filter(offer => offer.resource === resource);
