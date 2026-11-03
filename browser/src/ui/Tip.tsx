@@ -7,7 +7,13 @@ const margin = 8;
 /**
  * the rules live here, out of the way: open on hover or focus, and on a tap for fingers
  */
-const useTip = () => {
+type TipParts = {
+  anchorRef: React.RefObject<HTMLElement | null>;
+  triggers: React.HTMLAttributes<HTMLElement>;
+  shown: (text: React.ReactNode) => React.ReactPortal | null;
+};
+
+const useTip = (): TipParts => {
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const [pinned, setPinned] = useState(false);
@@ -32,14 +38,14 @@ const useTip = () => {
 
   useEffect(() => {
     if (!open) return;
-    const close = (event: Event) => {
+    const close = (event: Event): void => {
       if (event instanceof KeyboardEvent && event.key !== "Escape") return;
       if (event.type === "pointerdown" && anchorRef.current?.contains(event.target as Node)) return;
       setPinned(false);
       setHovered(false);
       if (event instanceof KeyboardEvent) anchorRef.current?.blur();
     };
-    const hide = () => {
+    const hide = (): void => {
       setPinned(false);
       setHovered(false);
     };
@@ -73,7 +79,7 @@ const useTip = () => {
   };
 
   // the bubble lives at the root of the page, so no ancestor's filter or overflow can trap it
-  const shown = (text: React.ReactNode) =>
+  const shown = (text: React.ReactNode): React.ReactPortal | null =>
     open
       ? createPortal(
           <span
