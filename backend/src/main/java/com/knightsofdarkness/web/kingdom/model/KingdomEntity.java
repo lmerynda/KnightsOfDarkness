@@ -161,6 +161,7 @@ public class KingdomEntity
         reinforcements.clear();
         garrisons.clear();
         lastTurnReport = new KingdomTurnReport();
+        protectionTicks = 0;
     }
 
     public int getTotalPeopleCount()

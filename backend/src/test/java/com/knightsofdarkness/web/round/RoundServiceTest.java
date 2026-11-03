@@ -36,6 +36,8 @@ class RoundServiceTest {
         var roundBefore = roundService.getCurrentRound().number();
         var kingdom = kingdomRepository.getKingdomByName("uprzejmy").orElseThrow();
         kingdom.getResources().setCount(ResourceName.land, 5000);
+        // beaten just before the end: the protection belongs to the round that is over
+        kingdom.setProtectionTicks(3);
         kingdomRepository.update(kingdom);
 
         mockMvc.perform(get("/game/rankings"))
@@ -57,6 +59,7 @@ class RoundServiceTest {
 
         var resetKingdom = kingdomRepository.getKingdomByName("uprzejmy").orElseThrow();
         assertEquals(100, resetKingdom.getResources().getCount(ResourceName.land));
+        assertEquals(0, resetKingdom.getProtectionTicks());
         for (var resource : MarketResource.values())
         {
             assertEquals(0, marketService.getOffersByResource(resource).size());
