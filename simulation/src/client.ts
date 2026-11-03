@@ -75,14 +75,6 @@ export class World {
     return call(`${this.url}/game/round`);
   }
 
-  public finishedRounds(): Promise<Round[]> {
-    return call(`${this.url}/game/rounds`);
-  }
-
-  public offers(resource: MarketResource): Promise<MarketOffer[]> {
-    return call(`${this.url}/market/${resource}`);
-  }
-
   /** registers a kingdom through the public sign-up and signs in as its ruler */
   public async foundKingdom(kingdomName: string): Promise<Player> {
     const email = `${kingdomName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}@simulation.test`;
@@ -119,6 +111,10 @@ export class Player {
 
   public details(weaponsPercentage = 0): Promise<KingdomDetails> {
     return this.get(`/kingdom/details?weaponsProductionPercentage=${weaponsPercentage}`);
+  }
+
+  public offers(resource: MarketResource): Promise<MarketOffer[]> {
+    return this.get(`/market/${resource}`);
   }
 
   public passTurn(weaponsPercentage = 0): Promise<ActionResult> {

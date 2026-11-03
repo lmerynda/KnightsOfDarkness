@@ -1,6 +1,7 @@
 package com.knightsofdarkness.web.round;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,7 +49,7 @@ class RoundServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.number").value(roundBefore + 1))
                 .andExpect(jsonPath("$.ticksElapsed").value(0));
-        mockMvc.perform(get("/game/rounds"))
+        mockMvc.perform(get("/game/rounds").with(user("uprzejmy")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].number").value(roundBefore))
                 .andExpect(jsonPath("$[0].finalRankings.kingdoms[0].kingdomName").value("uprzejmy"))

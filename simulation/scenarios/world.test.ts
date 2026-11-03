@@ -58,6 +58,8 @@ test("merchant bots stay within their limits after every run", async () => {
   // players may buy from a bot between its runs, so the stores are checked right after the bots have acted
   const world = new World(server.url);
   const config = await world.config();
+  // the market is open to signed-in rulers only, so a ruler looks at it
+  const watcher = await world.foundKingdom("Market Watcher");
   await world.advance(1);
   const rankings = await world.rankings();
   const bots = (await world.kingdoms()).filter(kingdom => rankings.kingdoms.some(rank => rank.bot && rank.kingdomName === kingdom.name));
@@ -69,7 +71,7 @@ test("merchant bots stay within their limits after every run", async () => {
     }
   }
   for (const resource of ["food", "iron", "tools", "weapons"] as const) {
-    for (const offer of (await world.offers(resource)).filter(candidate => bots.some(bot => bot.name === candidate.sellerName))) {
+    for (const offer of (await watcher.offers(resource)).filter(candidate => bots.some(bot => bot.name === candidate.sellerName))) {
       assert.ok(offer.count <= (config.bots.maxOffer[resource] ?? Infinity), `${offer.sellerName} offers ${offer.count} ${resource}`);
     }
   }

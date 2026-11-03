@@ -2,13 +2,14 @@ package com.knightsofdarkness.web.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,29 +21,31 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * everything asks for a signed-in ruler except what a visitor needs: the health check, signing in or founding a
+     * kingdom, and the landing page's round and rankings
+     */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter, Environment environment) throws Exception
     {
         return http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/health").permitAll()
-                        .requestMatchers("/auth/authenticate").permitAll()
-                        .requestMatchers("/auth/register").permitAll()
-                        .requestMatchers("/auth/trial").permitAll()
-                        .requestMatchers("/auth/keep").authenticated()
-                        .requestMatchers("/auth/account").authenticated()
-                        .requestMatchers("/auth/validate-token").authenticated()
-                        .requestMatchers("/auth/refresh").authenticated()
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/**").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(requests ->
+                {
+                    requests.requestMatchers(HttpMethod.GET, "/health", "/game/round", "/game/rankings").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/auth/authenticate", "/auth/register", "/auth/trial").permitAll()
+                            .requestMatchers("/error").permitAll();
+                    // the simulation harness drives its throwaway worlds without signing in
+                    if (environment.matchesProfiles("simulation"))
+                    {
+                        requests.requestMatchers("/simulation/**").permitAll();
+                    }
+                    requests.anyRequest().authenticated();
+                })
                 .sessionManagement(management -> management
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
                 .build();
     }
 

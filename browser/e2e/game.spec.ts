@@ -158,14 +158,26 @@ test("an army marches, fights and leaves a battle report", async ({ page, browse
 });
 
 test("spies bring back intel about another kingdom", async ({ page }) => {
-  await signIn(page, "uprzejmy", "uprzejmy_password");
-  await goTo(page, "Spies");
+  // a new spymaster against a new target, since the world lasts and a seeded kingdom's spies run out
+  const { kingdomName: target } = await foundKingdom(page, "Target");
+  await signOut(page);
+  await foundKingdom(page, "Spymaster");
 
-  await page.getByRole("combobox", { name: /^Target/ }).selectOption("FarmerBot");
-  await page.getByLabel(/Spies, \d+ at home/).fill("3");
+  await goTo(page, "Build");
+  await page.getByLabel("Spy guilds to raise", { exact: true }).fill("1");
+  await page.getByRole("button", { name: "Raise spy guilds", exact: true }).click();
+  await expect(toast(page, "Raised 1 building")).toBeVisible();
+  await goTo(page, "Train");
+  await page.getByLabel("Spies to train", { exact: true }).fill("2");
+  await page.getByRole("button", { name: "Train spies", exact: true }).click();
+  await expect(toast(page, "Trained 2 recruits")).toBeVisible();
+
+  await goTo(page, "Spies");
+  await page.getByRole("combobox", { name: /^Target/ }).selectOption(target);
+  await page.getByLabel(/Spies, \d+ at home/).fill("2");
   await page.getByRole("button", { name: "Send spies", exact: true }).click();
 
-  await expect(page.locator(".intel").first()).toContainText("FarmerBot");
+  await expect(page.locator(".intel").first()).toContainText(target);
   await expect(page.locator(".intel").first()).toContainText("Stores");
 });
 

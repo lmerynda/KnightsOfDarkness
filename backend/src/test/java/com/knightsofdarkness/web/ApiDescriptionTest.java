@@ -1,6 +1,7 @@
 package com.knightsofdarkness.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.nio.charset.StandardCharsets;
@@ -32,7 +33,7 @@ class ApiDescriptionTest {
     @Test
     void theCommittedApiDescription_shouldBeTheOneTheServerServes() throws Exception
     {
-        var served = mockMvc.perform(get("/v3/api-docs")).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        var served = mockMvc.perform(get("/v3/api-docs").with(user("api-reader"))).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         var mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
         var described = mapper.writeValueAsString(sorted(mapper.readValue(served, Object.class))).replace("\r\n", "\n") + "\n";
         var before = Files.exists(committed) ? Files.readString(committed).replace("\r\n", "\n") : "";
