@@ -156,13 +156,13 @@
     },
     "common": {
         "specialBuildingPerLevelProductionBonus": 0.2,
-        "maxTurns": 36,
+        "maxTurns": 48,
         "foodUpkeepPerUnit": 10,
         "ironConsumptionPerProductionUnit": 1,
         "specialBuildingMaxCount": 5,
         "specialBuildingMaxLevel": 5,
         "starvationLeaveRatio": 0.1,
-        "newTurnPeriodicity": 10000,
+        "newTurnPeriodicity": 3600000,
         "maxNotificationsCount": 15,
         "turnsToDeliverResources": 2,
         "kingdomBaseHousingCapacity": 30,
@@ -208,7 +208,7 @@
         "failedMissionLossRatio": 0.5
     },
     "round": {
-        "lengthInTicks": 4320
+        "lengthInTicks": 672
     },
     "bots": {
         "maxLand": 400,

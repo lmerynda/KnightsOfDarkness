@@ -30,7 +30,7 @@ public class SchedulerConfig implements SchedulingConfigurer {
     public void configureTasks(@NonNull ScheduledTaskRegistrar taskRegistrar)
     {
         Duration newTurnPeriodicity = Duration.ofMillis(gameConfig.common().newTurnPeriodicity());
-        taskRegistrar.addFixedRateTask(turnAdd::addTurnPeriodically, newTurnPeriodicity);
+        taskRegistrar.addTriggerTask(turnAdd::addTurnPeriodically, new WallClockTrigger(newTurnPeriodicity));
 
         Duration marketAveragePeriodicity = Duration.ofMillis(gameConfig.market().marketAveragePeriodicity());
         taskRegistrar.addFixedRateTask(marketDataUpdater::updateMarketData, marketAveragePeriodicity);
