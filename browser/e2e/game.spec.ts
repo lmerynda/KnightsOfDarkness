@@ -173,11 +173,21 @@ test("food can be bought from a merchant on the market", async ({ page }) => {
   await foundKingdom(page);
   await goTo(page, "Market");
 
-  const offer = page.locator("tbody tr").filter({ hasNotText: "(you)" }).first();
-  await expect(offer).toBeVisible();
-  await offer.getByRole("textbox").or(offer.getByRole("spinbutton")).fill("10");
+  // the merchants' offers turn up while the page is open, even on a world that has only just started
+  const offer = page
+    .locator("main tbody tr")
+    .filter({ has: page.getByRole("spinbutton", { name: /^Amount of food to buy/ }) })
+    .first();
+  await expect(offer).toBeVisible({ timeout: 30_000 });
+  await offer.getByRole("spinbutton").fill("10");
   await offer.getByRole("button", { name: /^Buy/ }).click();
   await expect(toast(page, /Bought 10 food for [\d,]+ gold/)).toBeVisible();
+
+  // another good lists only its own offers
+  await page.getByRole("tab", { name: /Iron/ }).click();
+  await expect(page.getByRole("spinbutton", { name: /^Amount of food to buy/ })).toHaveCount(0);
+  await page.getByRole("tab", { name: /Food/ }).click();
+  await expect(offer).toBeVisible();
 });
 
 test("on a phone the market's buy field stays on screen", async ({ page }) => {
@@ -205,6 +215,9 @@ test("letters reach the other kingdom", async ({ page }) => {
   await page.getByLabel(/Letter, \d+ of 2000 characters/).fill(body);
   await page.getByRole("button", { name: "Seal and send" }).click();
   await expect(toast(page, "Message sent to Umbar")).toBeVisible();
+  await expect(page.getByText("No letters yet.")).toBeVisible();
+  await page.getByRole("tab", { name: "Sent" }).click();
+  await expect(page.locator(".letters")).toContainText("Umbar");
 
   await signOut(page);
   await signIn(page, "umbar", "umbar_password");
@@ -215,6 +228,8 @@ test("letters reach the other kingdom", async ({ page }) => {
     .first()
     .click();
   await expect(page.locator(".letter-body")).toContainText(body);
+  await page.getByRole("button", { name: `Reply to ${sender.kingdomName}` }).click();
+  await expect(page.getByRole("combobox", { name: /^To/ })).toHaveValue(sender.kingdomName);
 });
 
 test("carriers haul goods to another kingdom", async ({ page, browser }) => {

@@ -12,12 +12,14 @@ const maxLength = 2000;
 
 const Compose: React.FC<{ onSent: () => void; replyTo: string | null }> = ({ onSent, replyTo }) => {
   const { kingdom, rankings, act } = useGame();
-  const [recipient, setRecipient] = useState("");
+  const [recipient, setRecipient] = useState(replyTo ?? "");
   const [body, setBody] = useState("");
-
-  useEffect(() => {
+  // a reply to another letter addresses it to that sender, keeping what is written so far
+  const [repliedTo, setRepliedTo] = useState(replyTo);
+  if (replyTo !== repliedTo) {
+    setRepliedTo(replyTo);
     if (replyTo) setRecipient(replyTo);
-  }, [replyTo]);
+  }
 
   const send = async (): Promise<void> => {
     const result = await act(
@@ -110,21 +112,27 @@ const LetterItem: React.FC<{ letter: Letter; incoming: boolean; onOpen: (letter:
 export const Letters: React.FC = () => {
   const { refreshCounters } = useGame();
   const [box, setBox] = useState<"inbox" | "sent">("inbox");
-  const [letters, setLetters] = useState<Letter[] | null>(null);
+  // the letters remember which box they came from, so switching boxes shows nothing until the other box arrives
+  const [loaded, setLoaded] = useState<{ box: "inbox" | "sent"; letters: Letter[] } | null>(null);
+  const letters = loaded?.box === box ? loaded.letters : null;
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
   const load = useCallback(() => {
-    (box === "inbox" ? api.inbox() : api.sentLetters()).then(setLetters).catch(() => setLetters([]));
+    (box === "inbox" ? api.inbox() : api.sentLetters())
+      .then(list => setLoaded({ box, letters: list }))
+      .catch(() => setLoaded({ box, letters: [] }));
   }, [box]);
 
   useEffect(() => {
-    setLetters(null);
     load();
   }, [load]);
 
   const markRead = async (letter: Letter): Promise<void> => {
     await api.markLetterRead(letter.id).catch(() => undefined);
-    setLetters(current => current?.map(item => (item.id === letter.id ? { ...item, isRead: true } : item)) ?? null);
+    setLoaded(
+      current =>
+        current && { ...current, letters: current.letters.map(item => (item.id === letter.id ? { ...item, isRead: true } : item)) },
+    );
     refreshCounters();
   };
 

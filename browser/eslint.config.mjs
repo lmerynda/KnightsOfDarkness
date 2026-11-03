@@ -4,7 +4,6 @@ import js from "@eslint/js";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
-import importPlugin from "eslint-plugin-import";
 import tseslint from "typescript-eslint";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,20 +23,11 @@ export default tseslint.config(
         tsconfigRootDir: __dirname,
       },
     },
-    settings: {
-        "import/resolver": {
-          typescript: {
-            alwaysTryTypes: true,
-          },
-        },
-      },
     plugins: {
         "react-hooks": reactHooks,
         "react-refresh": reactRefresh,
-        import: importPlugin,
       },
     rules: {
-      "import/no-unresolved": "warn",
       "no-undef": "warn",
       "no-return-await": "warn",
       "@typescript-eslint/await-thenable": "warn",

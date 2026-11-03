@@ -117,15 +117,17 @@ const SellPanel: React.FC<{ resource: MarketResource; onDone: () => void }> = ({
 export const Market: React.FC = () => {
   const { kingdom, config } = useGame();
   const [resource, setResource] = useState<MarketResource>("food");
-  const [offers, setOffers] = useState<MarketOffer[] | null>(null);
+  // the offers remember which good they list, so switching goods shows nothing until the other good's offers arrive
+  const [loaded, setLoaded] = useState<{ resource: MarketResource; offers: MarketOffer[] } | null>(null);
+  const offers = loaded?.resource === resource ? loaded.offers : null;
   const [alliesOffers, setAlliesOffers] = useState<MarketOffer[]>([]);
   const allied = kingdom.allianceName !== null;
 
   const load = useCallback(() => {
     api
       .offers(resource)
-      .then(list => setOffers([...list].sort((a, b) => a.price - b.price)))
-      .catch(() => setOffers([]));
+      .then(list => setLoaded({ resource, offers: [...list].sort((a, b) => a.price - b.price) }))
+      .catch(() => setLoaded({ resource, offers: [] }));
     if (allied)
       api
         .alliesOffers()
@@ -134,7 +136,6 @@ export const Market: React.FC = () => {
   }, [resource, allied]);
 
   useEffect(() => {
-    setOffers(null);
     load();
   }, [load]);
 

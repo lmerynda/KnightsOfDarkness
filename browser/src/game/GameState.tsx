@@ -177,7 +177,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode; fallback: (erro
     ],
   );
 
-  if (!value) {
+  if (!kingdom || !details || !config) {
     return <>{fallback(loadError)}</>;
   }
 

@@ -26,6 +26,11 @@ updates:
     groups:
       browser:
         patterns: ["*"]
+    # TypeScript 7 is the native compiler without the JavaScript API that openapi-typescript and typescript-eslint call;
+    # stay on 6 until they support it
+    ignore:
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     directory: /simulation
@@ -34,6 +39,11 @@ updates:
     groups:
       simulation:
         patterns: ["*"]
+    # TypeScript 7 is the native compiler without the JavaScript API that openapi-typescript calls; stay on 6
+    # until it supports it
+    ignore:
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: docker
     directories: ["/", "/backend", "/browser"]
@@ -42,6 +52,11 @@ updates:
     groups:
       images:
         patterns: ["*"]
+    # the server is built and run on Java 25, the long-term release; a new Java comes in as a deliberate move with the
+    # Gradle toolchain and the dev container, not as an image bump
+    ignore:
+      - dependency-name: azul/zulu-openjdk-alpine
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: devcontainers
     directory: /

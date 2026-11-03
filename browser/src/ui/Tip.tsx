@@ -11,18 +11,18 @@ const useTip = () => {
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const [pinned, setPinned] = useState(false);
-  const anchor = useRef<HTMLElement | null>(null);
+  const anchorRef = useRef<HTMLElement | null>(null);
   const bubble = useRef<HTMLSpanElement | null>(null);
   const [place, setPlace] = useState<{ top: number; left: number } | null>(null);
   const id = useId();
   const open = hovered || focused || pinned;
 
   useLayoutEffect(() => {
-    if (!open || !anchor.current || !bubble.current) {
+    if (!open || !anchorRef.current || !bubble.current) {
       setPlace(null);
       return;
     }
-    const at = anchor.current.getBoundingClientRect();
+    const at = anchorRef.current.getBoundingClientRect();
     const size = bubble.current.getBoundingClientRect();
     const below = at.bottom + gap;
     const top = below + size.height > window.innerHeight - margin ? Math.max(margin, at.top - gap - size.height) : below;
@@ -34,10 +34,10 @@ const useTip = () => {
     if (!open) return;
     const close = (event: Event) => {
       if (event instanceof KeyboardEvent && event.key !== "Escape") return;
-      if (event.type === "pointerdown" && anchor.current?.contains(event.target as Node)) return;
+      if (event.type === "pointerdown" && anchorRef.current?.contains(event.target as Node)) return;
       setPinned(false);
       setHovered(false);
-      if (event instanceof KeyboardEvent) anchor.current?.blur();
+      if (event instanceof KeyboardEvent) anchorRef.current?.blur();
     };
     const hide = () => {
       setPinned(false);
@@ -89,17 +89,17 @@ const useTip = () => {
         )
       : null;
 
-  return { anchor, triggers, shown };
+  return { anchorRef, triggers, shown };
 };
 
 /** a small mark beside a heading that holds the rules of what is under it */
 export const Tip: React.FC<{ about: string; children: React.ReactNode }> = ({ about, children }) => {
-  const { anchor, triggers, shown } = useTip();
+  const { anchorRef, triggers, shown } = useTip();
   return (
     <>
       <button
         ref={element => {
-          anchor.current = element;
+          anchorRef.current = element;
         }}
         type="button"
         className="tip-mark"
@@ -120,12 +120,12 @@ export const Term: React.FC<{ tip: React.ReactNode; children: React.ReactNode; c
   className = "term",
   label,
 }) => {
-  const { anchor, triggers, shown } = useTip();
+  const { anchorRef, triggers, shown } = useTip();
   return (
     <>
       <span
         ref={element => {
-          anchor.current = element;
+          anchorRef.current = element;
         }}
         className={className}
         tabIndex={0}

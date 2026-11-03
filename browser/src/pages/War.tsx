@@ -553,15 +553,16 @@ export const War: React.FC = () => {
     setJoining(march);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  // the steward's Join the strike link names the march; take it up once the war room has loaded
+  // the steward's Join the strike link names the march; take it up once the war room has loaded, then drop it from the address
+  const asked = search.get("join");
+  const askedMarch = asked ? warRoom?.marching.find(candidate => candidate.id === asked) : undefined;
+  if (askedMarch && joining?.id !== askedMarch.id) {
+    setTarget(askedMarch.to);
+    setJoining(askedMarch);
+  }
   useEffect(() => {
-    const asked = search.get("join");
-    const march = asked ? warRoom?.marching.find(candidate => candidate.id === asked) : undefined;
-    if (!march) return;
-    setTarget(march.to);
-    setJoining(march);
-    setSearch({}, { replace: true });
-  }, [search, setSearch, warRoom]);
+    if (askedMarch) setSearch({}, { replace: true });
+  }, [askedMarch, setSearch]);
   // another target leaves the strike behind
   const chooseTarget = (next: string): void => {
     setTarget(next);

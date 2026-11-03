@@ -69,7 +69,7 @@ Black-box scenarios drive the installed Chrome against the real server; they sta
 cd browser && npm run test:e2e
 ```
 
-CI (`.github/workflows/ci.yml`) runs all three, the server tests, the browser build, lint and scenarios, and the simulated worlds, on every push to master and every pull request, on the same Java and Node versions. Dependabot opens one grouped pull request a week per ecosystem (Actions, Gradle, both npm projects, Docker images, the dev container) to keep them current.
+CI (`.github/workflows/ci.yml`) runs all three, the server tests, the browser build, lint and scenarios, and the simulated worlds, on every push to master and every pull request, on the same Java and Node versions. Dependabot opens one grouped pull request a week per ecosystem (Actions, Gradle, both npm projects, Docker images, the dev container) to keep them current. It holds back two major versions on purpose: TypeScript 7, the native compiler, lacks the JavaScript API that openapi-typescript and typescript-eslint need, so both npm projects stay on TypeScript 6; and the server image stays on Java 25, the long-term release, until a move to a newer Java changes the Gradle toolchain and the dev container with it.
 
 ## Simulate worlds
 

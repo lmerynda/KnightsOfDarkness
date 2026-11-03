@@ -13,13 +13,11 @@ import { formatNumber, plural } from "../ui/format";
 const LandPurchase: React.FC = () => {
   const { kingdom, details, act } = useGame();
   const [count, setCount] = useState(0);
-  const [quote, setQuote] = useState<LandTransaction | null>(null);
+  const [fetchedQuote, setQuote] = useState<LandTransaction | null>(null);
+  const quote = count > 0 ? fetchedQuote : null;
 
   useEffect(() => {
-    if (count <= 0) {
-      setQuote(null);
-      return;
-    }
+    if (count <= 0) return;
     const timer = window.setTimeout(() => {
       api
         .landQuote(count)
