@@ -1,4 +1,4 @@
-import type { Player, World } from "./client.ts";
+import type { Player, World } from "../api/client.ts";
 import {
   armyAtHome,
   armyPower,
@@ -10,7 +10,7 @@ import {
   type Strategy,
   type TurnContext,
 } from "./strategies.ts";
-import { militaryUnits, type Counts, type UnitName } from "./types.ts";
+import { militaryUnits, type Counts, type UnitName } from "../api/types.ts";
 import { foundRulers, type Ruler } from "./world.ts";
 
 /**

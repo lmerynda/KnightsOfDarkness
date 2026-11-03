@@ -1,3 +1,6 @@
 node_modules
 *.json.out
 stages
+test-results
+hs_err_pid*.log
+replay_pid*.log

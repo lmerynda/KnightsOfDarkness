@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
-import { World } from "../src/client.ts";
+import { World } from "../src/api/client.ts";
 import { startServer, type GameServer } from "../src/server.ts";
-import { economist, idle, turtle, warlord } from "../src/strategies.ts";
-import { finalSnapshot, foundRulers, runWorld, type WorldRun } from "../src/world.ts";
+import { economist, idle, turtle, warlord } from "../src/simulation/strategies.ts";
+import { finalSnapshot, foundRulers, runWorld, type WorldRun } from "../src/simulation/world.ts";
 
 // One busy world shared by the checks below: four rulers and the merchant bots, 40 turns.
 let server: GameServer;

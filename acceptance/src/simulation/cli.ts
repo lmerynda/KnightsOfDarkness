@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
-import { World } from "./client.ts";
-import { startServer, type ConfigOverrides } from "./server.ts";
+import { World } from "../api/client.ts";
+import { startServer, type ConfigOverrides } from "../server.ts";
 import { strategies } from "./strategies.ts";
 import { finalSnapshot, foundRulers, runWorld, type WorldRun } from "./world.ts";
 

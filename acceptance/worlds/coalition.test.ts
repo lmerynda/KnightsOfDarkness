@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { World } from "../src/client.ts";
-import { askingWarlord, coalitionWarlord, foundCoalition, guardian, treasurer } from "../src/coalition.ts";
+import { World } from "../src/api/client.ts";
+import { askingWarlord, coalitionWarlord, foundCoalition, guardian, treasurer } from "../src/simulation/coalition.ts";
 import { startServer } from "../src/server.ts";
-import { economist, raider, turtle, warlord } from "../src/strategies.ts";
-import { foundRulers, runWorld, unevenPace } from "../src/world.ts";
+import { economist, raider, turtle, warlord } from "../src/simulation/strategies.ts";
+import { foundRulers, runWorld, unevenPace } from "../src/simulation/world.ts";
 
 // Two small coalitions at war: Order strikes together and guards its own, Horde plays every kingdom for itself.
 test("coalitions fight, guard each other and keep every rule", async () => {

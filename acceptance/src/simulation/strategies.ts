@@ -1,6 +1,6 @@
-import type { Player, World } from "./client.ts";
-import type { BuildingName, Counts, GameConfig, Kingdom, KingdomDetails, Rankings, SpecialBuildingType, SpyReport, UnitName } from "./types.ts";
-import { militaryUnits } from "./types.ts";
+import type { Player, World } from "../api/client.ts";
+import type { BuildingName, Counts, GameConfig, Kingdom, KingdomDetails, Rankings, SpecialBuildingType, SpyReport, UnitName } from "../api/types.ts";
+import { militaryUnits } from "../api/types.ts";
 
 /** everything a ruler can know at the start of their turn, gathered through the public API */
 export type TurnContext = {

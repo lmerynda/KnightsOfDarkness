@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { World } from "../src/client.ts";
+import { World } from "../src/api/client.ts";
 import { startServer } from "../src/server.ts";
-import { raider, turtle } from "../src/strategies.ts";
-import { foundRulers, runWorld } from "../src/world.ts";
+import { raider, turtle } from "../src/simulation/strategies.ts";
+import { foundRulers, runWorld } from "../src/simulation/world.ts";
 
 // A raider of infantry and cavalry charges a turtle that defends with bowmen and infantry: arrows first, then melee.
 test("a charge into a garrison with bowmen bleeds both sides", async () => {

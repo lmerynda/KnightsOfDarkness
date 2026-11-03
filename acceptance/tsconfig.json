@@ -9,7 +9,15 @@
     "noEmit": true,
     "strict": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src", "scenarios"]
+  "include": [
+    "src",
+    "scenarios",
+    "worlds",
+    "ui",
+    "long"
+  ]
 }

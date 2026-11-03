@@ -19,9 +19,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
- * the browser and the simulation generate their API types from api/openapi.json, so it must be the API the server
+ * the browser and the acceptance tests generate their API types from api/openapi.json, so it must be the API the server
  * serves: when they differ the file is rewritten and the test fails, and the change is committed with the clients'
- * regenerated types (npm run api:types in browser/ and simulation/)
+ * regenerated types (npm run api:types in browser/ and acceptance/)
  */
 @GameServerTest
 class ApiDescriptionTest {

@@ -1,6 +1,6 @@
 # Balance record
 
-What simulated worlds measured about the rules, and the decisions taken from it. Measurements come from `simulation/` (`npm run coalitions`, `npm run sim`); scripted rulers are a rough stand-in for players, so every number here is to be checked again once real players exist.
+What simulated worlds measured about the rules, and the decisions taken from it. Measurements come from the simulation tools in `acceptance/` (`npm run coalitions`, `npm run sim`); scripted rulers are a rough stand-in for players, so every number here is to be checked again once real players exist.
 
 ## Coalitions
 

@@ -1,6 +1,5 @@
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,22 +36,19 @@ export const applyOverrides = (config: Record<string, unknown>, overrides: Confi
   return result;
 };
 
-const freePort = (): Promise<number> =>
-  new Promise((resolvePort, reject) => {
-    const probe = createServer();
-    probe.once("error", reject);
-    probe.listen(0, () => {
-      const address = probe.address();
-      probe.close(() => (typeof address === "object" && address ? resolvePort(address.port) : reject(new Error("No port"))));
-    });
-  });
+/** brings the server jar up to date with the backend sources; Gradle skips the work when nothing changed */
+export const buildServer = (): string => {
+  const gradle = process.platform === "win32" ? ".\\gradlew.bat" : "./gradlew";
+  const build = spawnSync(`${gradle} bootJar --console=plain -q`, { cwd: backend, stdio: "inherit", shell: true });
+  if (build.status !== 0 || !existsSync(defaultJar)) {
+    throw new Error(`Could not build the server jar at ${defaultJar}`);
+  }
+  return defaultJar;
+};
 
 let jarBuilt = false;
 
-/**
- * brings the server jar up to date with the backend sources once per process (Gradle skips the work when nothing
- * changed), KOD_SERVER_JAR points at a prebuilt one instead
- */
+/** the jar KOD_SERVER_JAR names, which the test runner builds once for every test file, or one built here */
 const serverJar = (): string => {
   const prebuilt = process.env.KOD_SERVER_JAR;
   if (prebuilt) {
@@ -62,27 +58,29 @@ const serverJar = (): string => {
     return prebuilt;
   }
   if (!jarBuilt) {
-    const gradle = process.platform === "win32" ? ".\\gradlew.bat" : "./gradlew";
-    const build = spawnSync(`${gradle} bootJar --console=plain -q`, { cwd: backend, stdio: "inherit", shell: true });
-    if (build.status !== 0 || !existsSync(defaultJar)) {
-      throw new Error(`Could not build the server jar at ${defaultJar}`);
-    }
+    buildServer();
     jarBuilt = true;
   }
   return defaultJar;
 };
 
-const waitUntilReady = async (url: string, process: ChildProcess, output: () => string): Promise<void> => {
+/** the server picks a free port itself and says which in its log, so worlds started side by side never collide */
+const listeningOn = (output: string): string | null => {
+  const port = /Tomcat started on port (\d+)/.exec(output)?.[1];
+  return port ? `http://localhost:${port}` : null;
+};
+
+const waitUntilReady = async (process: ChildProcess, output: () => string): Promise<string> => {
   const deadline = Date.now() + 120_000;
   while (Date.now() < deadline) {
     if (process.exitCode !== null) {
       throw new Error(`The game server exited with ${process.exitCode}:\n${output()}`);
     }
+    const url = listeningOn(output());
     try {
-      const response = await fetch(`${url}/health`);
-      if (response.ok) return;
+      if (url && (await fetch(`${url}/health`)).ok) return url;
     } catch {
-      // not listening yet
+      // not answering yet
     }
     await new Promise(wait => setTimeout(wait, 250));
   }
@@ -94,7 +92,6 @@ const waitUntilReady = async (url: string, process: ChildProcess, output: () => 
  * gameconfig.json with the given overrides
  */
 export const startServer = async (overrides: ConfigOverrides = {}): Promise<GameServer> => {
-  const port = await freePort();
   const configDirectory = mkdtempSync(join(tmpdir(), "kod-sim-"));
   // each world runs its own copy of the jar, so a rebuild for another run cannot pull it from under this one
   const jar = join(configDirectory, "server.jar");
@@ -104,7 +101,7 @@ export const startServer = async (overrides: ConfigOverrides = {}): Promise<Game
 
   // the Java that JAVA_HOME names, as Gradle uses it, or else the one on the path
   const java = process.env.JAVA_HOME ? join(process.env.JAVA_HOME, "bin", "java") : "java";
-  const child = spawn(java, ["-jar", jar, "--spring.profiles.active=simulation", `--server.port=${port}`, `--game.config-path=${configPath}`], {
+  const child = spawn(java, ["-jar", jar, "--spring.profiles.active=simulation", "--server.port=0", "--logging.level.org.springframework.boot.tomcat=INFO", `--game.config-path=${configPath}`], {
     stdio: ["ignore", "pipe", "pipe"],
   });
   let log = "";
@@ -114,8 +111,7 @@ export const startServer = async (overrides: ConfigOverrides = {}): Promise<Game
   child.stdout?.on("data", keep);
   child.stderr?.on("data", keep);
 
-  const url = `http://localhost:${port}`;
-  await waitUntilReady(url, child, () => log);
+  const url = await waitUntilReady(child, () => log);
 
   const cleanUp = (): void => rmSync(configDirectory, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
   return {

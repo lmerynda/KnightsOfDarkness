@@ -10,11 +10,10 @@
         "build:watch": "tsc -b --watch",
         "lint": "eslint \"src/**/*.{js,mjs,cjs,ts,jsx,tsx}\"",
         "lint:fix": "eslint \"src/**/*.{js,mjs,cjs,ts,jsx,tsx}\" --fix",
-        "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\" \"e2e/**/*.ts\" playwright.config.ts",
+        "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
         "ci:lint": "npm run lint && npm run format:check",
-        "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\" \"e2e/**/*.ts\" playwright.config.ts",
+        "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
         "preview": "vite preview",
-        "test:e2e": "playwright test",
         "api:types": "openapi-typescript ../api/openapi.json --output src/api/schema.ts && prettier --write src/api/schema.ts",
         "api:check": "npm run api:types && git diff --exit-code -- src/api/schema.ts"
     },
@@ -28,7 +27,6 @@
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
-        "@playwright/test": "1.64.1",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.2",

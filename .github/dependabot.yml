@@ -33,11 +33,11 @@ updates:
         update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
-    directory: /simulation
+    directory: /acceptance
     schedule:
       interval: weekly
     groups:
-      simulation:
+      acceptance:
         patterns: ["*"]
     # TypeScript 7 is the native compiler without the JavaScript API that openapi-typescript calls; stay on 6
     # until it supports it

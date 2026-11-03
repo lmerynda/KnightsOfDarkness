@@ -1,8 +1,8 @@
 import { writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
-import { World } from "./client.ts";
+import { World } from "../api/client.ts";
 import { askingWarlord, coalitionWarlord, foundCoalition, guardian, treasurer, type Coalition, type Council } from "./coalition.ts";
-import { startServer, type ConfigOverrides } from "./server.ts";
+import { startServer, type ConfigOverrides } from "../server.ts";
 import { economist, turtle, warlord, type Strategy } from "./strategies.ts";
 import { finalSnapshot, foundRulers, runWorld, unevenPace, type Ruler, type WorldRun } from "./world.ts";
 

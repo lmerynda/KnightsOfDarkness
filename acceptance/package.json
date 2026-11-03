@@ -1,17 +1,19 @@
 {
-    "name": "knights-of-darkness-simulation",
+    "name": "knights-of-darkness-acceptance",
     "private": true,
     "version": "0.1.0",
     "type": "module",
-    "description": "Drives the game server over HTTP to simulate whole worlds: invariants, balance checks and A/B balance reports",
+    "description": "Black-box tests of the whole game in its own words: domain scenarios through the HTTP API and through Chrome, worlds of scripted rulers, and months of rounds",
     "scripts": {
-        "test": "node --test --test-concurrency=1 \"scenarios/*.test.ts\"",
-        "sim": "node src/cli.ts",
-        "stages": "node src/stages.ts",
-        "coalitions": "node src/coalitions.ts",
+        "test": "node src/run.ts api",
+        "test:browser": "node src/run.ts browser",
+        "test:long": "node src/run.ts long",
+        "sim": "node src/simulation/cli.ts",
+        "stages": "node src/simulation/stages.ts",
+        "coalitions": "node src/simulation/coalitions.ts",
         "typecheck": "tsc --noEmit",
-        "api:types": "openapi-typescript ../api/openapi.json --output src/schema.ts",
-        "api:check": "npm run api:types && git diff --exit-code -- src/schema.ts"
+        "api:types": "openapi-typescript ../api/openapi.json --output src/api/schema.ts",
+        "api:check": "npm run api:types && git diff --exit-code -- src/api/schema.ts"
     },
     "devDependencies": {
         "@types/node": "26.6.6",

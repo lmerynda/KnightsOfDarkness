@@ -1,7 +1,7 @@
-import type { Player, World } from "./client.ts";
+import type { Player, World } from "../api/client.ts";
 import type { Strategy } from "./strategies.ts";
-import type { BattleReport, GameConfig, Kingdom } from "./types.ts";
-import { buildingNames, militaryUnits, resourceNames, unitNames } from "./types.ts";
+import type { BattleReport, GameConfig, Kingdom } from "../api/types.ts";
+import { buildingNames, militaryUnits, resourceNames, unitNames } from "../api/types.ts";
 
 export type Ruler = { player: Player; strategy: Strategy; memory: Record<string, unknown> };
 
@@ -95,7 +95,7 @@ export const runWorld = async (
   world: World,
   rulers: Ruler[],
   turns: number,
-  options: { bots?: boolean; afterTurn?: (turn: number) => Promise<void>; pace?: Pace } = {},
+  options: { bots?: boolean; afterTick?: (turn: number) => Promise<void>; afterTurn?: (turn: number) => Promise<void>; pace?: Pace } = {},
 ): Promise<WorldRun> => {
   const config = await world.config();
   const timeline: Snapshot[] = [];
@@ -103,6 +103,8 @@ export const runWorld = async (
 
   for (let turn = 1; turn <= turns; turn++) {
     await world.advance(1, options.bots ?? true);
+    // a look at the world as the clock left it, before anyone plays
+    await options.afterTick?.(turn);
     const rankings = await world.rankings();
     for (const [index, ruler] of rulers.entries()) {
       for (let play = 0; play < (options.pace?.(index, turn) ?? 1); play++) {

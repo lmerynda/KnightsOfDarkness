@@ -1,4 +1,5 @@
-const apiBase: string = import.meta.env.VITE_GAME_API;
+// the game server answers on the same origin as the pages, under /api, wherever they are served
+const apiBase = "/api";
 const tokenKey = "authToken";
 const refreshEveryMillis = 10 * 60 * 1000;
 

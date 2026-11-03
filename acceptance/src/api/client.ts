@@ -30,7 +30,7 @@ export class ApiError extends Error {
   }
 }
 
-const call = async <T>(url: string, init: { method?: string; body?: unknown; token?: string } = {}): Promise<T> => {
+export const call = async <T>(url: string, init: { method?: string; body?: unknown; token?: string } = {}): Promise<T> => {
   const response = await fetch(url, {
     method: init.method ?? "GET",
     headers: { "Content-Type": "application/json", ...(init.token ? { Authorization: `Bearer ${init.token}` } : {}) },
@@ -111,6 +111,11 @@ export class Player {
 
   public details(weaponsPercentage = 0): Promise<KingdomDetails> {
     return this.get(`/kingdom/details?weaponsProductionPercentage=${weaponsPercentage}`);
+  }
+
+  /** the hall of fame: every finished round with its final rankings, newest first */
+  public finishedRounds(): Promise<Round[]> {
+    return this.get("/game/rounds");
   }
 
   public offers(resource: MarketResource): Promise<MarketOffer[]> {
