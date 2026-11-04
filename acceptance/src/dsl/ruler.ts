@@ -55,6 +55,14 @@ export class Ruler {
     for (let turn = 0; turn < count; turn++) done(`${this.name} passing a turn`, await this.act.passTurn());
   }
 
+  public async mayNotPassATurn(reason: string | RegExp): Promise<void> {
+    refused(`${this.name} passing a turn`, await this.act.passTurn(), reason);
+  }
+
+  public async hasTurnsStored(count: number): Promise<void> {
+    await eventually(`${this.name} has ${count} turns stored`, async () => (await this.act.turnsStored()) === count);
+  }
+
   public async raises(buildings: Buildings): Promise<void> {
     done(`${this.name} raising ${JSON.stringify(buildings)}`, await this.act.build(buildings));
   }
@@ -171,6 +179,24 @@ export class Ruler {
   public async hasDefeated(target: Ruler): Promise<void> {
     await eventually(`${this.name} has defeated ${target.name}`, async () =>
       (await this.act.battles()).some(battle => battle.attacker === this.name && battle.defender === target.name && battle.attackerWon),
+    );
+  }
+
+  /** the army lost the battle at the target and came home with nothing */
+  public async hasBeenBeatenBackBy(target: Ruler): Promise<void> {
+    await eventually(`${this.name} has been beaten back by ${target.name}`, async () =>
+      (await this.act.battles()).some(
+        battle => battle.attacker === this.name && battle.defender === target.name && !battle.attackerWon && battle.landTaken === 0 && battle.goldPlundered === 0,
+      ),
+    );
+  }
+
+  /** the kingdom stood against an attack and lost nothing */
+  public async hasRepelled(attacker: Ruler): Promise<void> {
+    await eventually(`${this.name} has repelled ${attacker.name}`, async () =>
+      (await this.act.battles()).some(
+        battle => battle.attacker === attacker.name && battle.defender === this.name && !battle.attackerWon && battle.landTaken === 0 && battle.goldPlundered === 0,
+      ),
     );
   }
 

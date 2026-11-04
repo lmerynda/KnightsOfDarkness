@@ -87,6 +87,10 @@ class ApiRuler implements RulerDriver {
     return this.act("/kingdom/pass-turn", defaultWeaponsShare);
   }
 
+  public async turnsStored(): Promise<number> {
+    return (await this.kingdom()).resources.turns;
+  }
+
   public async build(buildings: Buildings): Promise<Outcome> {
     return whole(buildings, await this.post("/kingdom/build", buildings));
   }

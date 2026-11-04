@@ -51,6 +51,8 @@ export interface RulerDriver {
   isTrial(): Promise<boolean>;
 
   passTurn(): Promise<Outcome>;
+  /** turns the clock has brought that the ruler has not played yet */
+  turnsStored(): Promise<number>;
   build(buildings: Buildings): Promise<Outcome>;
   demolish(buildings: Buildings): Promise<Outcome>;
   train(units: Units): Promise<Outcome>;

@@ -108,3 +108,18 @@ scenario("spies bring back what another kingdom holds", async game => {
   await spymaster.sendsSpies(target, 2);
   await spymaster.hasIntelOnTheStoresOf(target);
 });
+
+scenario("an army too weak is beaten back, takes nothing, and both sides hear of it", async game => {
+  const target = await game.foundsAKingdom("Target");
+  const attacker = await game.foundsAKingdom("Attacker");
+  await attacker.passesTurns(5);
+  // two foot soldiers strike with 4; a new kingdom's five guards stand behind its castle and towers with about 6
+  await attacker.trains({ infantry: 2 });
+  await attacker.marchesOn(target, { infantry: 2 });
+  await attacker.passesTurns(4);
+  await attacker.hasBeenBeatenBackBy(target);
+  await target.hasRepelled(attacker);
+  await attacker.readsInTheChronicle(new RegExp(`Our army was repelled by ${target}`));
+  await target.readsInTheChronicle(new RegExp(`We repelled an attack from ${attacker}`));
+  await attacker.hasNoArmyOut();
+});

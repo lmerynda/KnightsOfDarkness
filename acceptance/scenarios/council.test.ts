@@ -111,3 +111,26 @@ scenario("an emperor raises a vassal that fills a place in the alliance", async 
   await emperor.raisesAVassal(vassal);
   await emperor.leadsAllianceOf(name, vassal);
 });
+
+scenario("an ally's guards turn back an army that beats a kingdom standing alone", async game => {
+  const { emperor, squire } = await alliance(game, "Bulwark");
+  const lone = await game.foundsAKingdom("Lone");
+  const raiders = [await game.foundsAKingdom("Raider"), await game.foundsAKingdom("Raider")];
+  await squire.passesTurns(5);
+  await squire.trains({ infantry: 10 });
+  await squire.sendsToStandGuard(emperor, { infantry: 10 });
+  await squire.passesTurns(2);
+  await emperor.isGuardedBy(squire, { infantry: 10 });
+  for (const raider of raiders) {
+    await raider.passesTurns(5);
+    await raider.trains({ infantry: 10 });
+  }
+  // two armies alike: one meets the emperor and the squire's soldiers, the other a kingdom with only its own guards
+  await raiders[0].marchesOn(emperor, { infantry: 10 });
+  await raiders[1].marchesOn(lone, { infantry: 10 });
+  for (const raider of raiders) await raider.passesTurns(4);
+  await raiders[0].hasBeenBeatenBackBy(emperor);
+  await emperor.hasRepelled(raiders[0]);
+  await raiders[1].hasDefeated(lone);
+  await squire.readsInTheChronicle(new RegExp(`Our soldiers at ${emperor} helped repel ${raiders[0]}`));
+});

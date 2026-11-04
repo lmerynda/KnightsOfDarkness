@@ -98,7 +98,7 @@ scenario("an army marches, is seen coming, and wins", async game => {
 
 The layers, top to bottom:
 
-- `scenarios/`: what a ruler does and expects, one file per part of the game (gate, realm, war, trade, council).
+- `scenarios/`: what a ruler does and expects, one file per part of the game (gate, realm, war, trade, council, clock).
 - `src/dsl/`: the language. `Game` founds kingdoms and lets time pass; `Ruler` holds every verb (`raises`, `marchesOn`, `joinsTheStrike`, `asksAlliesFor`) and every expectation (`hasDefeated`, `isGuardedBy`, `readsInTheChronicle`). An action must go through in full (an order the game fills only in part fails), and an expectation is waited for, so a page catching up is never a failure.
 - `src/dsl/driver.ts`: the seam. A driver reaches the game one way and answers in the game's terms.
 - `src/drivers/api.ts` plays through the HTTP API with exactly the calls the browser makes; `src/drivers/browser.ts` plays through Chrome on the built pages, filling in and clicking what a player would and reading what they see.

@@ -39,7 +39,7 @@ public class KingdomTurnAction {
         var weaponsProductionPercentage = Math.clamp(requestedWeaponsPercentage, 0, 100);
         if (kingdom.getResources().getCount(ResourceName.turns) <= 0)
         {
-            return ActionResult.failure("Not enough turns");
+            return ActionResult.failure("No turns left");
         }
 
         kingdom.getResources().subtractCount(ResourceName.turns, 1);

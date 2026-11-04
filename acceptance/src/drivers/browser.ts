@@ -140,7 +140,19 @@ class BrowserRuler implements RulerDriver {
   }
 
   public async passTurn(): Promise<Outcome> {
-    return this.answer(/^\/api\/kingdom\/pass-turn$/, () => this.page.getByRole("button", { name: /^Pass turn/ }).click());
+    const seal = this.page.getByRole("button", { name: /^(Pass turn|No turns left)/ });
+    // the page asks for new turns every half minute; a ruler who sees none looks again before giving up
+    if ((await seal.getAttribute("aria-label")) === "No turns left") await this.page.reload();
+    if ((await seal.getAttribute("aria-label")) === "No turns left") return { done: false, message: "No turns left" };
+    return this.answer(/^\/api\/kingdom\/pass-turn$/, () => seal.click());
+  }
+
+  public async turnsStored(): Promise<number> {
+    await this.open("overview");
+    // the innermost of the boxes that hold the words: its own figure reads "20 / 48"
+    const box = this.page.locator(".panel div").filter({ has: this.page.getByText("turns stored", { exact: true }) }).last();
+    const stored = box.locator(":scope > strong");
+    return number((await stored.innerText()).split("/")[0]);
   }
 
   public async build(buildings: Buildings): Promise<Outcome> {
