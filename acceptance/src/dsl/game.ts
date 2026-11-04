@@ -74,4 +74,11 @@ export class Game {
   public async timePasses(ticks = 1): Promise<void> {
     await this.world.advance(ticks);
   }
+
+  /** the clock runs on to the round's last tick, which ends it */
+  public async theRoundRunsOut(): Promise<void> {
+    const round = await this.world.round();
+    const next = await this.world.advance(round.lengthInTicks - round.ticksElapsed);
+    if (next.number !== round.number + 1) throw new Error(`Round ${round.number} ran its ${round.lengthInTicks} ticks, and round ${next.number} followed`);
+  }
 }

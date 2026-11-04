@@ -17,6 +17,8 @@ import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.KingdomService;
 import com.knightsofdarkness.web.round.RoundService;
 
+import jakarta.persistence.EntityManager;
+
 /**
  * The edge a simulation harness drives the world through. It exists only in the simulation profile, where the wall
  * clock is off: time moves only when the harness advances it.
@@ -30,13 +32,15 @@ public class SimulationController
     private final RoundService roundService;
     private final Scheduler botScheduler;
     private final GameConfig gameConfig;
+    private final EntityManager entityManager;
 
-    public SimulationController(KingdomService kingdomService, RoundService roundService, Scheduler botScheduler, GameConfig gameConfig)
+    public SimulationController(KingdomService kingdomService, RoundService roundService, Scheduler botScheduler, GameConfig gameConfig, EntityManager entityManager)
     {
         this.kingdomService = kingdomService;
         this.roundService = roundService;
         this.botScheduler = botScheduler;
         this.gameConfig = gameConfig;
+        this.entityManager = entityManager;
     }
 
     /**
@@ -48,6 +52,9 @@ public class SimulationController
     {
         for (int tick = 0; tick < ticks; tick++)
         {
+            // the wall clock reads every tick afresh; this request keeps one session across all its ticks, which would hold
+            // kingdoms read before the turn's bulk update and write them back later as a conflict
+            entityManager.clear();
             kingdomService.addTurnForEveryone();
             roundService.tick();
             if (bots)
