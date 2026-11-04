@@ -9,7 +9,10 @@ export type Buildings = Partial<Counts<BuildingName>>;
 /** what an army marches for: to take land, or to plunder the stores */
 export type Goal = "land" | "plunder";
 
-export type Battle = { attacker: string; defender: string; attackerWon: boolean; landTaken: number; plundered: boolean };
+/** what a kingdom keeps in its stores, and what its people bring in each turn */
+export type Store = "gold" | MarketResource;
+
+export type Battle = { attacker: string; defender: string; attackerWon: boolean; landTaken: number; goldPlundered: number };
 
 /** what the game answered when a ruler tried something: whether it went through and what it said */
 export type Outcome = { done: boolean; message: string };
@@ -62,6 +65,10 @@ export interface RulerDriver {
   buyLand(acres: number): Promise<Outcome>;
   /** the gold soldiers will be paid next turn */
   soldiersPay(): Promise<number>;
+  /** how much of a good the kingdom holds */
+  stores(store: Store): Promise<number>;
+  /** how much of a good the kingdom's people will bring in next turn */
+  nextYield(store: Store): Promise<number>;
 
   march(target: string, units: Units, goal: Goal): Promise<Outcome>;
   /** calls back the army on the march to the target */
@@ -75,8 +82,8 @@ export interface RulerDriver {
   /** battles fought, newest first */
   battles(): Promise<Battle[]>;
   sendSpies(target: string, spies: number): Promise<Outcome>;
-  /** the newest spy report: whose kingdom, and whether it saw the stores */
-  latestIntel(): Promise<{ about: string; stores: boolean } | null>;
+  /** the newest spy report: whose kingdom, whether it saw the stores, and how many spies never came back */
+  latestIntel(): Promise<{ about: string; stores: boolean; spiesLost: number } | null>;
 
   sendGuards(ally: string, units: Units): Promise<Outcome>;
   /** soldiers of ours standing guard with allies */

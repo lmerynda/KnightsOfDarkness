@@ -12,6 +12,7 @@ import {
   type Goal,
   type Outcome,
   type RulerDriver,
+  type Store,
   type Units,
 } from "../dsl/driver.ts";
 import type { Visitors } from "../dsl/game.ts";
@@ -52,6 +53,8 @@ const unitPlural: Record<UnitName, string> = {
 };
 
 const resourceLabel: Record<MarketResource, string> = { food: "Food", iron: "Iron", tools: "Tools", weapons: "Weapons" };
+
+const storeLabel: Record<Store, string> = { gold: "Gold", ...resourceLabel };
 
 const greatWorkLabel: Record<SpecialBuildingType, string> = {
   goldShaft: "Gold shaft",
@@ -242,6 +245,19 @@ class BrowserRuler implements RulerDriver {
     return pay ? number(pay[1]) : 0;
   }
 
+  public async stores(store: Store): Promise<number> {
+    await this.open("overview");
+    const item = this.page.getByRole("button", { name: new RegExp(`^${storeLabel[store]} [\\d,]+$`) }).first();
+    return number(((await item.getAttribute("aria-label")) ?? "").replace(storeLabel[store], ""));
+  }
+
+  public async nextYield(store: Store): Promise<number> {
+    await this.open("overview");
+    const forecast = this.panel("If the turn passed now");
+    const row = forecast.locator("tr").filter({ has: this.page.locator("td:first-child", { hasText: new RegExp(`^\\s*${storeLabel[store]}\\s*$`) }) });
+    return number(await row.locator("td.number").first().innerText());
+  }
+
   private async fillArmy(units: Units, label: (unit: UnitName) => string | RegExp): Promise<void> {
     for (const [unit, count] of entries<UnitName>(units)) await this.page.getByLabel(label(unit), { exact: typeof label(unit) === "string" }).fill(String(count));
   }
@@ -304,7 +320,10 @@ class BrowserRuler implements RulerDriver {
     for (const report of await this.page.locator(".battle").all()) {
       const title = (await report.locator("h3").innerText()).trim();
       const facts = (await report.locator(".battle-facts").innerText()).replace(/\s+/g, " ");
-      const spoils = { landTaken: number(/(?:Took|Lost) ([\d,]+) acres?/.exec(facts)?.[1] ?? "0"), plundered: /\b(?:Plundered|Stolen)\b/.test(facts) };
+      const spoils = {
+        landTaken: number(/(?:Took|Lost) ([\d,]+) acres?/.exec(facts)?.[1] ?? "0"),
+        goldPlundered: number(/(?:Plundered|Stolen) ([\d,]+) gold/.exec(facts)?.[1] ?? "0"),
+      };
       const won = /^Victory over (.+)$/.exec(title);
       const lost = /^Defeat at (.+)$/.exec(title);
       const repelled = /^(.+) was repelled$/.exec(title);
@@ -324,13 +343,14 @@ class BrowserRuler implements RulerDriver {
     return this.answer(/^\/api\/war\/send-spies$/, () => this.page.getByRole("button", { name: "Send spies", exact: true }).click());
   }
 
-  public async latestIntel(): Promise<{ about: string; stores: boolean } | null> {
+  public async latestIntel(): Promise<{ about: string; stores: boolean; spiesLost: number } | null> {
     await this.open("spies");
     const report = this.page.locator(".intel").first();
     if (!(await report.count())) return null;
     const title = (await report.locator("h3").innerText()).trim();
     const about = /^(?:Inside|Caught in) (.+)$/.exec(title)?.[1] ?? title;
-    return { about, stores: (await report.getByRole("heading", { name: "Stores" }).count()) > 0 };
+    const lost = /([\d,]+) (?:spy|spies) never came back/.exec(await report.locator("header").innerText())?.[1] ?? "0";
+    return { about, stores: (await report.getByRole("heading", { name: "Stores" }).count()) > 0, spiesLost: number(lost) };
   }
 
   public async sendGuards(ally: string, units: Units): Promise<Outcome> {

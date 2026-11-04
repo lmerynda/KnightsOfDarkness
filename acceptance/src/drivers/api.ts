@@ -26,6 +26,7 @@ import {
   type Goal,
   type Outcome,
   type RulerDriver,
+  type Store,
   type Units,
 } from "../dsl/driver.ts";
 import type { Visitors } from "../dsl/game.ts";
@@ -144,6 +145,15 @@ class ApiRuler implements RulerDriver {
     return (await this.get<KingdomDetails>(`/kingdom/details?weaponsProductionPercentage=${defaultWeaponsShare}`)).forecast.goldUpkeep;
   }
 
+  public async stores(store: Store): Promise<number> {
+    return (await this.kingdom()).resources[store];
+  }
+
+  public async nextYield(store: Store): Promise<number> {
+    const details = await this.get<KingdomDetails>(`/kingdom/details?weaponsProductionPercentage=${defaultWeaponsShare}`);
+    return details.forecast.resourcesProduced[store] ?? 0;
+  }
+
   public march(target: string, units: Units, goal: Goal): Promise<Outcome> {
     return this.act("/kingdom/send-attack", { destinationKingdomName: target, attackType: goal === "land" ? "land" : "economy", units });
   }
@@ -178,7 +188,7 @@ class ApiRuler implements RulerDriver {
       defender: report.defender,
       attackerWon: report.attackerWon,
       landTaken: report.attackerWon && report.attackType === "land" ? report.landCaptured : 0,
-      plundered: report.attackerWon && Object.values(report.plunder).some(count => (count ?? 0) > 0),
+      goldPlundered: report.attackerWon ? (report.plunder.gold ?? 0) : 0,
     }));
   }
 
@@ -186,9 +196,9 @@ class ApiRuler implements RulerDriver {
     return this.act("/war/send-spies", { targetKingdomName: target, spies });
   }
 
-  public async latestIntel(): Promise<{ about: string; stores: boolean } | null> {
+  public async latestIntel(): Promise<{ about: string; stores: boolean; spiesLost: number } | null> {
     const [report] = await this.get<SpyReport[]>("/war/spy-reports");
-    return report ? { about: report.targetKingdomName, stores: report.success } : null;
+    return report ? { about: report.targetKingdomName, stores: report.success, spiesLost: report.spiesLost } : null;
   }
 
   public sendGuards(ally: string, units: Units): Promise<Outcome> {

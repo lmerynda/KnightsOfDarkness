@@ -1,42 +1,50 @@
 import assert from "node:assert/strict";
-import { after, before, test } from "node:test";
+import { after, test } from "node:test";
 import { World } from "../src/api/client.ts";
 import { startServer, type GameServer } from "../src/server.ts";
 import { economist, idle, turtle, warlord } from "../src/simulation/strategies.ts";
 import { finalSnapshot, foundRulers, runWorld, type WorldRun } from "../src/simulation/world.ts";
 
-// One busy world shared by the checks below: four rulers and the merchant bots, 40 turns.
-let server: GameServer;
-let run: WorldRun;
-let names: Record<string, string>;
+// One busy world shared by the checks below: four rulers and the merchant bots, 40 turns. The first check that runs
+// plays it out, since node does not wait for a before hook when a name filter skipped every check here.
+type Played = { server: GameServer; run: WorldRun; names: Record<string, string> };
 
-before(async () => {
-  server = await startServer();
-  const world = new World(server.url);
-  const rulers = await foundRulers(world, [economist, warlord(), turtle, idle], "World");
-  names = Object.fromEntries(rulers.map(ruler => [ruler.strategy.name, ruler.player.name]));
-  run = await runWorld(world, rulers, 40);
+let played: Promise<Played> | undefined;
+
+const busyWorld = (): Promise<Played> =>
+  (played ??= (async () => {
+    const server = await startServer();
+    const world = new World(server.url);
+    const rulers = await foundRulers(world, [economist, warlord(), turtle, idle], "World");
+    const names = Object.fromEntries(rulers.map(ruler => [ruler.strategy.name, ruler.player.name]));
+    return { server, names, run: await runWorld(world, rulers, 40) };
+  })());
+
+after(async () => {
+  if (played) await (await played).server.stop();
 });
 
-after(() => server.stop());
-
-test("no rule is broken in any kingdom on any turn", () => {
+test("no rule is broken in any kingdom on any turn", async () => {
+  const { run } = await busyWorld();
   assert.deepEqual(run.violations, []);
 });
 
-test("an economist outgrows a ruler who only passes turns", () => {
+test("an economist outgrows a ruler who only passes turns", async () => {
+  const { run, names } = await busyWorld();
   const grown = finalSnapshot(run, names.economist);
   const lazy = finalSnapshot(run, names.idle);
   assert.ok(grown.land >= 3 * lazy.land, `economist ${grown.land} land against idle ${lazy.land}`);
   assert.ok(grown.people >= 3 * lazy.people, `economist ${grown.people} people against idle ${lazy.people}`);
 });
 
-test("a kingdom that staffs its farms never starves", () => {
+test("a kingdom that staffs its farms never starves", async () => {
+  const { run, names } = await busyWorld();
   const hungryTurns = run.timeline.filter(entry => entry.kingdom === names.economist && entry.starved > 0);
   assert.deepEqual(hungryTurns, []);
 });
 
-test("the warlord raises an army and the turtle out-defends everyone", () => {
+test("the warlord raises an army and the turtle out-defends everyone", async () => {
+  const { run, names } = await busyWorld();
   const warlordEnd = finalSnapshot(run, names.warlord);
   const turtleEnd = finalSnapshot(run, names.turtle);
   assert.ok(warlordEnd.army > 0, "the warlord has no army");
@@ -45,7 +53,8 @@ test("the warlord raises an army and the turtle out-defends everyone", () => {
   }
 });
 
-test("the warlord wins battles and takes land", () => {
+test("the warlord wins battles and takes land", async () => {
+  const { run, names } = await busyWorld();
   const victories = run.battles.filter(battle => battle.attacker === names.warlord && battle.attackerWon);
   assert.ok(victories.length > 0, "no battle won");
   assert.ok(
@@ -55,6 +64,7 @@ test("the warlord wins battles and takes land", () => {
 });
 
 test("merchant bots stay within their limits after every run", async () => {
+  const { server } = await busyWorld();
   // players may buy from a bot between its runs, so the stores are checked right after the bots have acted
   const world = new World(server.url);
   const config = await world.config();
@@ -78,6 +88,7 @@ test("merchant bots stay within their limits after every run", async () => {
 });
 
 test("bots are listed but never ranked", async () => {
+  const { server } = await busyWorld();
   const rankings = await new World(server.url).rankings();
   const ranked = rankings.kingdoms.filter(rank => rank.rank > 0);
   assert.ok(ranked.every(rank => !rank.bot));

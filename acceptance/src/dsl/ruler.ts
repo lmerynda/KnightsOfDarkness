@@ -1,5 +1,5 @@
 import type { BuildingName, MarketResource, SpecialBuildingType, UnitName } from "../api/types.ts";
-import type { Buildings, Credentials, Outcome, RulerDriver, Units } from "./driver.ts";
+import type { Buildings, Credentials, Outcome, RulerDriver, Store, Units } from "./driver.ts";
 
 /** checks again until it holds or time is up, since a page may still be catching up with the game */
 export const eventually = async (what: string, check: () => Promise<boolean>, timeout = 10_000): Promise<void> => {
@@ -121,6 +121,15 @@ export class Ruler {
     await eventually(`${this.name} pays soldiers ${gold} gold a turn`, async () => (await this.act.soldiersPay()) === gold);
   }
 
+  public holds(store: Store): Promise<number> {
+    return this.act.stores(store);
+  }
+
+  /** what the kingdom's people will bring in of a good next turn */
+  public expectsToBringIn(store: Store): Promise<number> {
+    return this.act.nextYield(store);
+  }
+
   // war
 
   public async marchesOn(target: Ruler, units: Units): Promise<void> {
@@ -174,9 +183,16 @@ export class Ruler {
   public async hasPlundered(target: Ruler): Promise<void> {
     await eventually(`${this.name} has plundered ${target.name}`, async () =>
       (await this.act.battles()).some(
-        battle => battle.attacker === this.name && battle.defender === target.name && battle.plundered && battle.landTaken === 0,
+        battle => battle.attacker === this.name && battle.defender === target.name && battle.goldPlundered > 0 && battle.landTaken === 0,
       ),
     );
+  }
+
+  /** the gold carried off from the target in a won raid */
+  public async goldPlunderedFrom(target: Ruler): Promise<number> {
+    await this.hasPlundered(target);
+    const raid = (await this.act.battles()).find(battle => battle.attacker === this.name && battle.defender === target.name && battle.attackerWon);
+    return raid?.goldPlundered ?? 0;
   }
 
   public async hasFoughtAt(target: Ruler): Promise<void> {
@@ -193,6 +209,13 @@ export class Ruler {
     await eventually(`${this.name} knows the stores of ${target.name}`, async () => {
       const intel = await this.act.latestIntel();
       return intel?.about === target.name && intel.stores;
+    });
+  }
+
+  public async hasLostSpiesIn(target: Ruler, spies: number): Promise<void> {
+    await eventually(`${this.name} lost ${spies} spies in ${target.name}`, async () => {
+      const intel = await this.act.latestIntel();
+      return intel?.about === target.name && !intel.stores && intel.spiesLost === spies;
     });
   }
 

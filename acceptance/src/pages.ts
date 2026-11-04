@@ -1,6 +1,6 @@
 import { mkdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { after, before, test } from "node:test";
+import { after, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { chromium, type Browser, type BrowserContext, type Locator, type Page } from "playwright-core";
 import { World } from "./api/client.ts";
@@ -15,20 +15,24 @@ import { startUi, type Ui } from "./ui.ts";
 
 const evidence = join(resolve(dirname(fileURLToPath(import.meta.url)), ".."), "test-results");
 
-let server: GameServer | undefined;
-let ui: Ui | undefined;
-let browser: Browser | undefined;
+type Stage = { server: GameServer; ui: Ui; browser: Browser };
 
-before(async () => {
-  server = await startServer();
-  ui = await startUi(server.url);
-  browser = await chromium.launch({ channel: "chrome" });
-});
+let stage: Promise<Stage> | undefined;
+
+/** the file's world and browser, started by its first check, so a file whose checks a name filter skipped starts nothing */
+const world = (): Promise<Stage> =>
+  (stage ??= (async () => {
+    const server = await startServer();
+    const ui = await startUi(server.url);
+    return { server, ui, browser: await chromium.launch({ channel: "chrome" }) };
+  })());
 
 after(async () => {
-  await browser?.close();
-  await ui?.stop();
-  await server?.stop();
+  if (!stage) return;
+  const { server, ui, browser } = await stage;
+  await browser.close();
+  await ui.stop();
+  await server.stop();
 });
 
 const timeout = 10_000;
@@ -73,7 +77,7 @@ export type Looking = {
 /** a browser check on this file's world */
 export const pageCheck = (name: string, look: (looking: Looking) => Promise<void>): void => {
   test(name, { timeout: 120_000 }, async () => {
-    if (!server || !ui || !browser) throw new Error("The world or the browser never started");
+    const { server, ui, browser } = await world();
     const contexts: BrowserContext[] = [];
     const home = ui.url;
     const chrome = browser;

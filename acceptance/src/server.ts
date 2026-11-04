@@ -110,6 +110,11 @@ export const startServer = async (overrides: ConfigOverrides = {}): Promise<Game
   };
   child.stdout?.on("data", keep);
   child.stderr?.on("data", keep);
+  // the world goes when its test file does: node runs no after hook for a file whose tests a name filter skipped, and
+  // a server still running would keep the file from ever finishing
+  child.unref();
+  for (const stream of [child.stdout, child.stderr]) (stream as unknown as { unref?: () => void } | null)?.unref?.();
+  process.once("exit", () => child.kill());
 
   const url = await waitUntilReady(child, () => log);
 
@@ -127,6 +132,8 @@ export const startServer = async (overrides: ConfigOverrides = {}): Promise<Game
           cleanUp();
           done();
         });
+        // a stop the test waits for keeps the file running until the server is gone and its copy removed
+        child.ref();
         child.kill();
       }),
   };

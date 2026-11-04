@@ -49,6 +49,21 @@ scenario("a great work rises level by level and is lost when torn down", async g
   await ruler.hasNoGreatWorks();
 });
 
+scenario("a granary makes the farms bring in a fifth more food", async game => {
+  const plain = await game.foundsAKingdom("Plain");
+  const granary = await game.foundsAKingdom("Granary");
+  await granary.beginsAGreatWork("granary");
+  // the builders bring two turns' worth of points, as much as the first level takes
+  await granary.passesTurns(2);
+  await plain.passesTurns(2);
+  await granary.investsIn("granary", 50000);
+  await granary.hasAGreatWork("granary", 1);
+  const without = await plain.expectsToBringIn("food");
+  const raised = await granary.expectsToBringIn("food");
+  assert.ok(without > 0, "the farms bring in nothing");
+  assert.ok(Math.abs(raised - without * 1.2) <= 1, `the granary's farms bring in ${raised} food, the plain kingdom's ${without}`);
+});
+
 scenario("land is priced and bought", async game => {
   const ruler = await game.foundsAKingdom();
   assert.ok((await ruler.priceOfLand(5)) > 0, "land is free");
