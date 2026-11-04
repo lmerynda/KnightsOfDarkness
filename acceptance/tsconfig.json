@@ -18,6 +18,7 @@
     "scenarios",
     "worlds",
     "ui",
-    "long"
+    "long",
+    "robustness"
   ]
 }

@@ -233,7 +233,7 @@ public class AllianceTest
         var createResult = allianceService.createAlliance(new CreateAllianceDto("Test Alliance"), kingdom.getName());
         assertTrue(createResult.success());
 
-        var botName = "Bot-" + KingdomBuilder.generateName();
+        var botName = "Bot " + KingdomBuilder.generateName().substring(8, 16);
 
         var addResult = allianceService.createNewBotAndAddToAlliance(kingdom.getName(), botName);
         assertTrue(addResult.success());
@@ -252,12 +252,12 @@ public class AllianceTest
 
         for (int i = 0; i < game.getConfig().common().allianceMaxMembers() - 1; i++)
         {
-            var botName = "Bot-" + KingdomBuilder.generateName();
+            var botName = "Bot " + KingdomBuilder.generateName().substring(8, 16);
             var addResult = allianceService.createNewBotAndAddToAlliance(kingdom.getName(), botName);
             assertTrue(addResult.success());
         }
 
-        var botName = "Bot-" + KingdomBuilder.generateName();
+        var botName = "Bot " + KingdomBuilder.generateName().substring(8, 16);
         var addResult = allianceService.createNewBotAndAddToAlliance(kingdom.getName(), botName);
         assertFalse(addResult.success());
     }

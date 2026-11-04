@@ -279,4 +279,21 @@ class MarketTest {
         assertEquals(buyerGold, buyer.getResources().getCount(ResourceName.gold));
         assertEquals(100, offer.getCount());
     }
+
+    @Test
+    void buyingADearOffer_whoseTotalPassesWhatAnIntHolds_buysOnlyWhatTheGoldCovers()
+    {
+        var buyer = new KingdomBuilder(game).build();
+        game.addKingdom(buyer);
+        var price = 1_000_000_000;
+        var offer = market.createOffer(kingdom.getName(), MarketResource.food, 3, price).data().get();
+        var sellerGold = kingdom.getResources().getCount(ResourceName.gold);
+        var buyerGold = buyer.getResources().getCount(ResourceName.gold);
+
+        var bought = market.buyExistingOffer(market.findOfferById(offer.id()).get(), kingdom, buyer, 3);
+
+        assertEquals(buyerGold / price, bought.count());
+        assertEquals(buyerGold - bought.count() * price, buyer.getResources().getCount(ResourceName.gold));
+        assertEquals(sellerGold + bought.count() * price, kingdom.getResources().getCount(ResourceName.gold));
+    }
 }

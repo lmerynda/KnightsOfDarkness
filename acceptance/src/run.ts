@@ -9,8 +9,8 @@ import { buildUi } from "./ui.ts";
 type Suite = { driver: "api" | "browser"; files: string[]; ui: boolean };
 
 const suites: Record<string, Suite> = {
-  // the domain scenarios through the HTTP API, and the worlds scripted rulers play
-  api: { driver: "api", files: ["scenarios/*.test.ts", "worlds/*.test.ts"], ui: false },
+  // the domain scenarios through the HTTP API, the worlds scripted rulers play, and races and hostile requests
+  api: { driver: "api", files: ["scenarios/*.test.ts", "worlds/*.test.ts", "robustness/*.test.ts"], ui: false },
   // the same domain scenarios through Chrome, and the checks only a browser can make
   browser: { driver: "browser", files: ["scenarios/*.test.ts", "ui/*.test.ts"], ui: true },
   // months of rounds played out, on demand

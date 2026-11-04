@@ -222,7 +222,12 @@ public class AllianceService {
             return ActionResult.failure("Invitation does not belong to this kingdom");
         }
 
-        var alliance = invitation.getAlliance();
+        var maybeAlliance = allianceRepository.lockAllianceByName(invitation.getAlliance().getName());
+        if (maybeAlliance.isEmpty())
+        {
+            return ActionResult.failure("The alliance is gone");
+        }
+        var alliance = maybeAlliance.get();
         if (alliance.getMembersCount() >= gameConfig.common().allianceMaxMembers())
         {
             return ActionResult.failure("The alliance is full");
@@ -272,7 +277,7 @@ public class AllianceService {
         }
         var kingdom = maybeKingdom.get();
 
-        var alliance = kingdom.getAlliance();
+        var alliance = kingdom.getAlliance().flatMap(joined -> allianceRepository.lockAllianceByName(joined.getName()));
         if (alliance.isEmpty())
         {
             return ActionResult.failure("Requested emperor is not part of any alliance");
@@ -284,6 +289,10 @@ public class AllianceService {
             return ActionResult.failure("Alliance has reached maximum members limit");
         }
 
+        if (!KingdomCreator.isValidName(botName))
+        {
+            return ActionResult.failure(KingdomCreator.nameRule);
+        }
         var existingKingdom = kingdomRepository.getKingdomByName(botName);
         if (existingKingdom.isPresent())
         {

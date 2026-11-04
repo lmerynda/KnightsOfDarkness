@@ -11,6 +11,12 @@ import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
 public interface IAllianceRepository {
     Optional<AllianceEntity> getAllianceByName(String name);
 
+    /**
+     * the alliance, held until the transaction ends, so that two kingdoms joining at the same moment cannot both take its
+     * last place
+     */
+    Optional<AllianceEntity> lockAllianceByName(String name);
+
     void update(AllianceEntity alliance);
 
     void create(AllianceEntity alliance);

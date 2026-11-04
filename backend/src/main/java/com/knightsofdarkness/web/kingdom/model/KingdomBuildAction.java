@@ -42,9 +42,9 @@ public class KingdomBuildAction {
     {
         // TODO tests
         var buildingCost = gameConfig.buildingPointCosts().getCost(building);
-        var pointsToPutIntoBuilding = Math.min(kingdom.getResources().getCount(ResourceName.buildingPoints), count * buildingCost);
-        var fullBuildings = pointsToPutIntoBuilding / buildingCost;
-        var howManyToBuild = Math.min(fullBuildings, kingdom.getUnusedLand());
+        // counted in buildings, not points: a count times its cost could wrap past what an int holds
+        var fullBuildings = Math.min(count, kingdom.getResources().getCount(ResourceName.buildingPoints) / buildingCost);
+        var howManyToBuild = Math.max(0, Math.min(fullBuildings, kingdom.getUnusedLand()));
         assert howManyToBuild >= 0;
         kingdom.buildings.addCount(building, howManyToBuild);
         kingdom.resources.subtractCount(ResourceName.buildingPoints, howManyToBuild * buildingCost);

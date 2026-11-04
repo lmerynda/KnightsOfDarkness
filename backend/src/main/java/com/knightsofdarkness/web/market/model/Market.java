@@ -175,7 +175,7 @@ public class Market implements IMarket {
             var volume = transactions.stream().mapToInt(t -> t.count).sum();
             if (volume > 0)
             {
-                var weightedAveragePrice = transactions.stream().mapToInt(t -> t.price * t.count).sum() / volume;
+                var weightedAveragePrice = (int) (transactions.stream().mapToLong(t -> (long) t.price * t.count).sum() / volume);
                 log.info("[Market Data Update] Resource: {} volume: {} weighted average price: {}", resource, volume, weightedAveragePrice);
                 var averageSaleRecord = new MarketTransactionTimeRangeAveragesEntity(Id.generate(), resource, weightedAveragePrice, volume, from, to);
                 offersRepository.addTransactionTimeRangeAverage(averageSaleRecord);

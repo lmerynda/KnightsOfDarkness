@@ -38,10 +38,9 @@ public class KingdomMarketAction {
 
     public int reserveGoldForOffer(KingdomEntity buyer, int price, int count)
     {
-        var gold = buyer.getResources().getCount(ResourceName.gold);
-        var maxToSpend = Math.min(gold, count * price);
-        var amoutTobuy = maxToSpend / price; // notice the truncation, it is important as should only pay for what can be bought
-        maxToSpend = amoutTobuy * price;
+        // counted in pieces, not gold: a count times a dear price could wrap past what an int holds
+        var amountToBuy = Math.min(count, buyer.getResources().getCount(ResourceName.gold) / price);
+        var maxToSpend = amountToBuy * price;
         buyer.getResources().subtractCount(ResourceName.gold, maxToSpend);
 
         return maxToSpend;

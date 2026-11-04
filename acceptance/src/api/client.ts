@@ -43,6 +43,16 @@ export const call = async <T>(url: string, init: { method?: string; body?: unkno
   return (text ? JSON.parse(text) : undefined) as T;
 };
 
+/** a request sent as it is, whatever it holds, and the answer as it came: for checks that the server stands up to anything */
+export const send = async (url: string, init: { method?: string; body?: string; token?: string } = {}): Promise<{ status: number; text: string }> => {
+  const response = await fetch(url, {
+    method: init.method ?? "GET",
+    headers: { "Content-Type": "application/json", ...(init.token ? { Authorization: `Bearer ${init.token}` } : {}) },
+    body: init.body,
+  });
+  return { status: response.status, text: await response.text() };
+};
+
 /** what only the harness may do: move time and look at the whole world */
 export class World {
   public readonly url: string;
@@ -103,6 +113,11 @@ export class Player {
 
   private post<T>(path: string, body: unknown = {}): Promise<T> {
     return call(`${this.url}${path}`, { method: "POST", body, token: this.token });
+  }
+
+  /** any request as this ruler, with the body exactly as given */
+  public send(method: string, path: string, body?: string): Promise<{ status: number; text: string }> {
+    return send(`${this.url}${path}`, { method, body, token: this.token });
   }
 
   public kingdom(): Promise<Kingdom> {
@@ -187,6 +202,10 @@ export class Player {
 
   public postOffer(resource: MarketResource, count: number, price: number): Promise<ActionResult> {
     return this.post("/market/create", { resource, count, price });
+  }
+
+  public withdrawOffer(id: string): Promise<ActionResult> {
+    return this.post(`/market/${id}/withdraw`);
   }
 
   /** every offer the ruler's allies keep on the market, however dear */

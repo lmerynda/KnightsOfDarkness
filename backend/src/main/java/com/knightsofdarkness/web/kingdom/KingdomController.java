@@ -188,7 +188,7 @@ public class KingdomController
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return kingdomService.getKingdomDetails(currentUser.getKingdomName(), Math.clamp(weaponsProductionPercentage, 0, 100))
+        return kingdomService.getKingdomDetails(currentUser.getKingdomName(), weaponsProductionPercentage)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

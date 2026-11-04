@@ -11,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.kingdom.KingdomService;
+import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.security.RegisterRequestDto;
 import com.knightsofdarkness.web.user.model.UserEntity;
 
 @Service
 public class RegistrationService {
-    private static final Pattern kingdomNamePattern = Pattern.compile("[\\p{L}0-9][\\p{L}0-9 _'-]{1,22}[\\p{L}0-9]");
     private static final Pattern emailPattern = Pattern.compile("[^@\\s]+@[^@\\s]+\\.[^@\\s]+");
     public static final int minPasswordLength = 8;
     /** a trial account's address; .invalid is reserved, so no real address can collide with it */
@@ -130,9 +130,9 @@ public class RegistrationService {
 
     private Optional<String> kingdomNameProblem(String kingdomName)
     {
-        if (!kingdomNamePattern.matcher(kingdomName).matches())
+        if (!KingdomCreator.isValidName(kingdomName))
         {
-            return Optional.of("Kingdom name must be 3 to 24 letters, digits, spaces, dashes or apostrophes");
+            return Optional.of(KingdomCreator.nameRule);
         }
         if (kingdomRepository.getAllKingdoms().stream().anyMatch(kingdom -> kingdom.getName().equalsIgnoreCase(kingdomName)))
         {

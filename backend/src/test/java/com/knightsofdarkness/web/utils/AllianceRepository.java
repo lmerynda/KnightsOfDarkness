@@ -21,6 +21,12 @@ public class AllianceRepository implements IAllianceRepository {
     }
 
     @Override
+    public Optional<AllianceEntity> lockAllianceByName(String name)
+    {
+        return getAllianceByName(name);
+    }
+
+    @Override
     public void create(AllianceEntity alliance)
     {
         alliances.add(alliance);

@@ -126,4 +126,20 @@ class KingdomBuildTest {
 
         assertEquals(housesBeforeDemolish - 1, kingdom.getBuildings().getCount(BuildingName.house));
     }
+
+    @Test
+    void whenAskedForMoreBuildingsThanAnIntHoldsPoints_onlyTheAffordableAreRaised()
+    {
+        var points = kingdom.getResources().getCount(ResourceName.buildingPoints);
+        var farms = kingdom.getBuildings().getCount(BuildingName.farm);
+        var toBuild = new KingdomBuildingsDto();
+        toBuild.setCount(BuildingName.farm, Integer.MAX_VALUE);
+
+        var result = new KingdomBuildAction(kingdom, config).build(toBuild);
+
+        var raised = result.data().orElseGet(KingdomBuildingsDto::new).getCount(BuildingName.farm);
+        assertEquals(Math.min(points / config.buildingPointCosts().farm(), raised + kingdom.getUnusedLand()), raised);
+        assertEquals(farms + raised, kingdom.getBuildings().getCount(BuildingName.farm));
+        assertEquals(points - raised * config.buildingPointCosts().farm(), kingdom.getResources().getCount(ResourceName.buildingPoints));
+    }
 }

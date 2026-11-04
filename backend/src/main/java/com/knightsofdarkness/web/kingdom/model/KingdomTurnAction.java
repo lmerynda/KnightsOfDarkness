@@ -33,8 +33,10 @@ public class KingdomTurnAction {
         this.kingdomDetailsProvider = kingdomDetailsProvider;
     }
 
-    public ActionResult<KingdomTurnReport> passTurn(int weaponsProductionPercentage)
+    public ActionResult<KingdomTurnReport> passTurn(int requestedWeaponsPercentage)
     {
+        // blacksmiths split their work between tools and weapons, so a share outside 0..100 means all of one
+        var weaponsProductionPercentage = Math.clamp(requestedWeaponsPercentage, 0, 100);
         if (kingdom.getResources().getCount(ResourceName.turns) <= 0)
         {
             return ActionResult.failure("Not enough turns");

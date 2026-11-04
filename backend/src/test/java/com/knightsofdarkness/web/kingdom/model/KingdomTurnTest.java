@@ -447,4 +447,25 @@ class KingdomTurnTest {
         assertEquals(5, kingdom.getUnits().getMobileCount(UnitName.infantry));
         assertEquals(5, kingdom.getUnits().getMobileCount(UnitName.cavalry));
     }
+
+    @Test
+    void passTurn_withAWeaponsShareOutsideZeroToHundred_shouldWorkTheBlacksmithsAsAtTheNearestEnd()
+    {
+        for (var share : new int[] { -100, 101, Integer.MAX_VALUE, Integer.MIN_VALUE })
+        {
+            var kingdom = kingdomBuilder.withUnit(UnitName.blacksmith, 10).withLand(1000).withBuilding(BuildingName.workshop, 1000).build();
+            var twin = kingdomBuilder.withUnit(UnitName.blacksmith, 10).withLand(1000).withBuilding(BuildingName.workshop, 1000).build();
+            var nearestEnd = share < 0 ? 0 : 100;
+
+            var report = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider).passTurn(share).data().get();
+            var expected = new KingdomTurnAction(twin, kingdomInteractor, gameConfig, kingdomDetailsProvider).passTurn(nearestEnd).data().get();
+
+            assertEquals(nearestEnd, report.weaponsProductionPercentage);
+            assertEquals(expected.resourcesProduced, report.resourcesProduced);
+            for (var resource : new ResourceName[] { ResourceName.iron, ResourceName.tools, ResourceName.weapons })
+            {
+                assertTrue(kingdom.getResources().getCount(resource) >= 0, resource + " below zero with a share of " + share);
+            }
+        }
+    }
 }
