@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { chromium, type Browser, type BrowserContext, type Locator, type Page } from "playwright-core";
 import type { BuildingName, MarketResource, SpecialBuildingType, UnitName } from "../api/types.ts";
 import {
+  moreLandThanAnyTreasuryBuys,
   whole,
   type Battle,
   type Buildings,
@@ -247,6 +248,19 @@ class BrowserRuler implements RulerDriver {
     await this.open("build");
     await this.page.getByLabel("Acres to buy").fill(String(acres));
     return this.answer(/^\/api\/kingdom\/buy-land$/, () => this.page.getByRole("button", { name: "Buy land" }).click());
+  }
+
+  public async buyAllTheLandWeCanAfford(): Promise<Outcome> {
+    await this.open("build");
+    await this.page.getByLabel("Acres to buy").fill(String(moreLandThanAnyTreasuryBuys));
+    // the quote answers with what the gold pays for, and the purchase buys that much
+    await this.page.getByText(/^You can afford [\d,]+ acres?/).waitFor();
+    return this.answer(/^\/api\/kingdom\/buy-land$/, () => this.page.getByRole("button", { name: "Buy land" }).click());
+  }
+
+  public async land(): Promise<number> {
+    await this.open("build");
+    return number(/([\d,]+) acres, [\d,]+ free/.exec(await this.panel("Land").innerText())?.[1] ?? "");
   }
 
   public async soldiersPay(): Promise<number> {
@@ -596,6 +610,14 @@ class BrowserRuler implements RulerDriver {
   public async chronicle(): Promise<string[]> {
     await this.open("chronicle");
     return this.lines(this.page.locator("ol.chronicle > li"));
+  }
+
+  public async pastRounds(): Promise<{ round: number; winner: string | null }[]> {
+    await this.open("rankings");
+    return (await this.lines(this.panel("Past rounds").locator("li"))).map(line => {
+      const past = /^Round (\d+): (.+?) with [\d,]+ land/.exec(line);
+      return { round: number(/^Round (\d+)/.exec(line)?.[1] ?? ""), winner: past?.[2] ?? null };
+    });
   }
 }
 

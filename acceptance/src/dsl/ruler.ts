@@ -55,6 +55,10 @@ export class Ruler {
     for (let turn = 0; turn < count; turn++) done(`${this.name} passing a turn`, await this.act.passTurn());
   }
 
+  public async spendsTheTreasuryOnLand(): Promise<void> {
+    done(`${this.name} spending the treasury on land`, await this.act.buyAllTheLandWeCanAfford());
+  }
+
   public async mayNotPassATurn(reason: string | RegExp): Promise<void> {
     refused(`${this.name} passing a turn`, await this.act.passTurn(), reason);
   }
@@ -420,6 +424,34 @@ export class Ruler {
 
   public async readsInTheChronicle(pattern: RegExp): Promise<void> {
     await eventually(`${this.name}'s chronicle tells ${pattern}`, async () => (await this.act.chronicle()).some(entry => pattern.test(entry)));
+  }
+
+  // the round
+
+  public async seesInTheHallOfFame(round: number, winner: Ruler): Promise<void> {
+    await eventually(`${this.name} sees ${winner.name} remembered for round ${round}`, async () =>
+      (await this.act.pastRounds()).some(past => past.round === round && past.winner === winner.name),
+    );
+  }
+
+  /** what a kingdom holds when it starts: land, gold, turns, houses, builders and soldiers */
+  private async standing(): Promise<number[]> {
+    return [
+      await this.act.land(),
+      await this.act.stores("gold"),
+      await this.act.turnsStored(),
+      await this.act.buildingCount("house"),
+      await this.act.unitsAtHome("builder"),
+      await this.act.unitsAtHome("infantry"),
+    ];
+  }
+
+  /** holds exactly what the other kingdom holds, as two kingdoms just begun do */
+  public async standsLevelWith(other: Ruler): Promise<void> {
+    const [mine, theirs] = [await this.standing(), await other.standing()];
+    if (JSON.stringify(mine) !== JSON.stringify(theirs)) {
+      throw new Error(`${this.name} holds ${mine.join(", ")} in land, gold, turns, houses, builders and infantry, ${other.name} ${theirs.join(", ")}`);
+    }
   }
 
   // the account

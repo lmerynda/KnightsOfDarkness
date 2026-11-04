@@ -10,6 +10,7 @@ import type {
   MarketOffer,
   MarketResource,
   Notification,
+  Round,
   SignedIn,
   SpecialBuildingType,
   SpyReport,
@@ -18,6 +19,7 @@ import type {
 import type { components } from "../api/schema.ts";
 import {
   defaultWeaponsShare,
+  moreLandThanAnyTreasuryBuys,
   whole,
   type Battle,
   type Buildings,
@@ -143,6 +145,14 @@ class ApiRuler implements RulerDriver {
 
   public buyLand(acres: number): Promise<Outcome> {
     return this.act("/kingdom/buy-land", acres);
+  }
+
+  public buyAllTheLandWeCanAfford(): Promise<Outcome> {
+    return this.act("/kingdom/buy-land", moreLandThanAnyTreasuryBuys);
+  }
+
+  public async land(): Promise<number> {
+    return (await this.kingdom()).resources.land;
   }
 
   public async soldiersPay(): Promise<number> {
@@ -351,6 +361,10 @@ class ApiRuler implements RulerDriver {
 
   public async chronicle(): Promise<string[]> {
     return (await this.get<Notification[]>("/kingdom/notifications")).map(note => note.message);
+  }
+
+  public async pastRounds(): Promise<{ round: number; winner: string | null }[]> {
+    return (await this.get<Round[]>("/game/rounds")).map(past => ({ round: past.number, winner: past.finalRankings?.kingdoms[0]?.kingdomName ?? null }));
   }
 }
 

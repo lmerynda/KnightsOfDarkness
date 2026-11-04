@@ -85,4 +85,19 @@ class KingdomEventsTest
 
         assertEquals(1000 - (int) (1000 * config.events().lossShare()), kingdom.getResources().getCount(ResourceName.tools));
     }
+
+    @Test
+    void fortuneThatMovesNothing_shouldBeNoNews()
+    {
+        var idle = new KingdomTurnReport();
+        kingdom.getResources().setCount(ResourceName.food, 0);
+        kingdom.getResources().setCount(ResourceName.tools, 0);
+        kingdom.getResources().setCount(ResourceName.gold, 0);
+
+        for (var event : KingdomEvent.values())
+        {
+            assertTrue(events.happen(kingdom, idle, 0, event).isEmpty(), event + " made the news without changing anything");
+        }
+        assertEquals(null, idle.event);
+    }
 }

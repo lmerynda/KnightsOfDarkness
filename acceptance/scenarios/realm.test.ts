@@ -69,3 +69,22 @@ scenario("land is priced and bought", async game => {
   assert.ok((await ruler.priceOfLand(5)) > 0, "land is free");
   await ruler.buysLand(5);
 });
+
+scenario("a kingdom without farmers goes hungry, and the chronicle tells who left", async game => {
+  const ruler = await game.foundsAKingdom("Hungry");
+  await ruler.dismisses({ farmer: 10 });
+  // some ninety-five mouths eat a new kingdom's 2,000 food in two turns, and nobody brings in more
+  await ruler.passesTurns(3);
+  await ruler.readsInTheChronicle(/^Hard times: \d+ people left for lack of food/);
+});
+
+scenario("soldiers left unpaid desert, and the chronicle tells how many", async game => {
+  const ruler = await game.foundsAKingdom("Unpaid");
+  await ruler.passesTurns(5);
+  await ruler.trains({ infantry: 10 });
+  await ruler.dismisses({ goldMiner: 30 });
+  await ruler.spendsTheTreasuryOnLand();
+  // ten foot soldiers ask 1,500 gold a turn; the gold short of another acre pays them for a few turns, and no more
+  await ruler.passesTurns(Math.floor((await ruler.holds("gold")) / 1500) + 1);
+  await ruler.readsInTheChronicle(/\d+ soldiers? deserted for lack of pay/);
+});

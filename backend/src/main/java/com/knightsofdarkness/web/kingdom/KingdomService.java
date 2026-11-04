@@ -184,6 +184,33 @@ public class KingdomService
         return Optional.of(unitsFired);
     }
 
+    /**
+     * who left in the turn just played, for the chronicle: a ruler who passes many turns at once sees only the last turn
+     * summed up, and one who comes back later sees none
+     */
+    static Optional<String> hardship(KingdomTurnReport report)
+    {
+        var departures = new ArrayList<String>();
+        if (report.starvedPeople > 0)
+        {
+            departures.add(people(report.starvedPeople) + " left for lack of food");
+        }
+        if (report.exiledPeople > 0)
+        {
+            departures.add(people(report.exiledPeople) + " left for lack of houses");
+        }
+        if (report.desertedSoldiers > 0)
+        {
+            departures.add(report.desertedSoldiers + (report.desertedSoldiers == 1 ? " soldier" : " soldiers") + " deserted for lack of pay");
+        }
+        return departures.isEmpty() ? Optional.empty() : Optional.of("Hard times: " + String.join(", ", departures));
+    }
+
+    private static String people(int count)
+    {
+        return count == 1 ? "1 person" : count + " people";
+    }
+
     @Transactional
     public Optional<ActionResult<KingdomTurnReport>> passTurn(String name, int weaponsProductionPercentage)
     {
@@ -200,6 +227,7 @@ public class KingdomService
 
         if (result.success())
         {
+            result.data().flatMap(KingdomService::hardship).ifPresent(news -> notificationSystem.create(name, NotificationKind.hardship, news));
             var kinds = KingdomEvent.values();
             result.data().flatMap(report -> events.happen(kingdom, report, dice.nextDouble(), kinds[dice.nextInt(kinds.length)]))
                     .ifPresent(event -> notificationSystem.create(name, NotificationKind.event, event));

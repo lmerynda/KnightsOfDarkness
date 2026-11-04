@@ -2393,7 +2393,7 @@
         "type" : "object"
       },
       "NotificationKind" : {
-        "enum" : [ "victory", "defeat", "repelled", "breached", "spies", "trade", "delivery", "alliance", "round", "event", "threat" ],
+        "enum" : [ "victory", "defeat", "repelled", "breached", "spies", "trade", "delivery", "alliance", "round", "event", "threat", "hardship" ],
         "type" : "string"
       },
       "OngoingAttackDto" : {

@@ -36,34 +36,35 @@ public class KingdomEvents
 
         var text = switch (event)
         {
-            case harvest -> {
-                var extra = windfall(report, ResourceName.food);
-                kingdom.getResources().addCount(ResourceName.food, extra);
-                yield Utils.format("A bountiful harvest brought in {} more food", extra);
-            }
-            case goldVein -> {
-                var extra = windfall(report, ResourceName.gold);
-                kingdom.getResources().addCount(ResourceName.gold, extra);
-                yield Utils.format("Our miners struck a rich vein, {} more gold", extra);
-            }
-            case rats -> Utils.format("Rats got into the granaries, {} food is lost", lose(kingdom, ResourceName.food));
-            case fire -> Utils.format("A fire swept through the workshops and burned {} tools", lose(kingdom, ResourceName.tools));
+            case harvest -> news(gain(kingdom, report, ResourceName.food), "A bountiful harvest brought in {} more food");
+            case goldVein -> news(gain(kingdom, report, ResourceName.gold), "Our miners struck a rich vein, {} more gold");
+            case rats -> news(lose(kingdom, ResourceName.food), "Rats got into the granaries, {} food is lost");
+            case fire -> news(lose(kingdom, ResourceName.tools), "A fire swept through the workshops and burned {} tools");
             case bandits -> {
                 var guardsNeeded = (int) Math.ceil(kingdom.getResources().getCount(ResourceName.land) * config.events().guardsPerAcreAgainstBandits());
                 if (kingdom.getUnits().getAvailableCount(UnitName.guard) >= guardsNeeded)
                 {
-                    yield "Bandits came to our roads, but the guards drove them off";
+                    yield Optional.of("Bandits came to our roads, but the guards drove them off");
                 }
-                yield Utils.format("Bandits robbed our roads of {} gold, {} guards would have kept them away", lose(kingdom, ResourceName.gold), guardsNeeded);
+                var robbed = lose(kingdom, ResourceName.gold);
+                yield robbed == 0 ? Optional.<String>empty() : Optional.of(Utils.format("Bandits robbed our roads of {} gold, {} guards would have kept them away", robbed, guardsNeeded));
             }
         };
-        report.event = text;
-        return Optional.of(text);
+        text.ifPresent(news -> report.event = news);
+        return text;
     }
 
-    private int windfall(KingdomTurnReport report, ResourceName resource)
+    /** fortune that moves nothing, a windfall on a kingdom that produced none or a loss from empty stores, is no news */
+    private static Optional<String> news(int amount, String template)
     {
-        return (int) (report.resourcesProduced.getOrDefault(resource, 0) * config.events().windfallShare());
+        return amount == 0 ? Optional.empty() : Optional.of(Utils.format(template, amount));
+    }
+
+    private int gain(KingdomEntity kingdom, KingdomTurnReport report, ResourceName resource)
+    {
+        var extra = (int) (report.resourcesProduced.getOrDefault(resource, 0) * config.events().windfallShare());
+        kingdom.getResources().addCount(resource, extra);
+        return extra;
     }
 
     private int lose(KingdomEntity kingdom, ResourceName resource)

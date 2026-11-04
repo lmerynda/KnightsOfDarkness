@@ -20,6 +20,9 @@ export type Outcome = { done: boolean; message: string };
 /** the share of the forges that makes weapons, as a new ruler leaves it */
 export const defaultWeaponsShare = 20;
 
+/** acres a ruler asks for to spend the whole treasury on land: the game sells as many as the gold pays for */
+export const moreLandThanAnyTreasuryBuys = 100_000;
+
 /** an order went through only when all of it did: the game raises or trains what it can and says how many */
 export const whole = (ordered: Partial<Record<string, number>>, answer: { success?: boolean; message?: string; data?: unknown }): Outcome => {
   const made = (answer.data ?? {}) as Record<string, number>;
@@ -65,6 +68,9 @@ export interface RulerDriver {
   greatWorks(): Promise<{ type: SpecialBuildingType; level: number }[]>;
   landPrice(acres: number): Promise<number>;
   buyLand(acres: number): Promise<Outcome>;
+  /** as many acres as the treasury pays for */
+  buyAllTheLandWeCanAfford(): Promise<Outcome>;
+  land(): Promise<number>;
   /** the gold soldiers will be paid next turn */
   soldiersPay(): Promise<number>;
   /** how much of a good the kingdom holds */
@@ -135,4 +141,6 @@ export interface RulerDriver {
 
   /** the chronicle: what happened to the kingdom, newest first */
   chronicle(): Promise<string[]>;
+  /** the hall of fame: every finished round and the kingdom that ruled the most land in it, newest first */
+  pastRounds(): Promise<{ round: number; winner: string | null }[]>;
 }

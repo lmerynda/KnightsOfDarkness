@@ -1956,7 +1956,18 @@ export interface components {
     };
     /** @enum {string} */
     NotificationKind:
-      "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round" | "event" | "threat";
+      | "victory"
+      | "defeat"
+      | "repelled"
+      | "breached"
+      | "spies"
+      | "trade"
+      | "delivery"
+      | "alliance"
+      | "round"
+      | "event"
+      | "threat"
+      | "hardship";
     OngoingAttackDto: {
       attackType: components["schemas"]["AttackType"];
       from: string;

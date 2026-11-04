@@ -433,4 +433,18 @@ class KingdomApiTest {
         assertEquals(allyGold + 50000, kingdomRepository.getKingdomByName(allyName).orElseThrow().getResources().getCount(ResourceName.gold));
         mockMvc.perform(get("/market/allies").header("Authorization", "Bearer " + token)).andExpect(jsonPath("$.length()").value(0));
     }
+
+    @Test
+    void aTurnInWhichPeopleLeaveHungry_isWrittenIntoTheChronicle() throws Exception
+    {
+        var kingdom = kingdomRepository.getKingdomByName(kingdomName).orElseThrow();
+        kingdom.getResources().setCount(ResourceName.food, 0);
+        kingdom.getUnits().subtractAvailableCount(UnitName.farmer, kingdom.getUnits().getAvailableCount(UnitName.farmer));
+        kingdomRepository.update(kingdom);
+
+        var starved = JsonPath.<Integer>read(postJson("/kingdom/pass-turn", "0").andReturn().getResponse().getContentAsString(), "$.data.starvedPeople");
+
+        mockMvc.perform(get("/kingdom/notifications").header("Authorization", "Bearer " + token))
+                .andExpect(jsonPath("$[?(@.kind == 'hardship')].message").value("Hard times: " + starved + " people left for lack of food"));
+    }
 }

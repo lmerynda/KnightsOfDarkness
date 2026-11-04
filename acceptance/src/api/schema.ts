@@ -1954,7 +1954,7 @@ export interface components {
             message: string;
         };
         /** @enum {string} */
-        NotificationKind: "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round" | "event" | "threat";
+        NotificationKind: "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round" | "event" | "threat" | "hardship";
         OngoingAttackDto: {
             attackType: components["schemas"]["AttackType"];
             from: string;
