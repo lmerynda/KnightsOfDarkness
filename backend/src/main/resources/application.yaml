@@ -6,6 +6,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+    # every read happens inside a service transaction, as the clock and the bots do; a session held open for the whole
+    # request let reads lean on it, and kept kingdoms stale across the simulation ticks of one request
+    open-in-view: false
   output:
     ansi:
       enabled: always

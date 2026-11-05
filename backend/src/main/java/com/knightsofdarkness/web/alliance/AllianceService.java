@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.alliance.model.AllianceInvitationEntity;
@@ -38,8 +39,6 @@ import com.knightsofdarkness.web.kingdom.model.KingdomReinforcementEntity;
 import com.knightsofdarkness.web.messaging.INotificationSystem;
 import com.knightsofdarkness.web.utils.Id;
 import com.knightsofdarkness.web.war.IWarReportRepository;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class AllianceService {
@@ -241,6 +240,7 @@ public class AllianceService {
         return ActionResult.success("You've joined the alliance");
     }
 
+    @Transactional(readOnly = true)
     public List<AllianceInvitationDto> getInvitations(String kingdomName)
     {
         return allianceRepository.getInvitationsByKingdomName(kingdomName).stream().map(AllianceInvitationEntity::toDto).toList();
@@ -308,12 +308,14 @@ public class AllianceService {
         return ActionResult.success("Bot kingdom created and added to alliance");
     }
 
+    @Transactional(readOnly = true)
     public List<AllianceDto> getAlliances()
     {
         var alliances = allianceRepository.getAlliances();
         return alliances.stream().map(alliance -> new AllianceDto(alliance.getName(), alliance.getEmperor())).toList();
     }
 
+    @Transactional(readOnly = true)
     public Optional<AllianceWithMembersDto> getKingdomAlliance(String kingdomName)
     {
         var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);

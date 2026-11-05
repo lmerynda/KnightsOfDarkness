@@ -6,11 +6,10 @@ import java.time.temporal.ChronoUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.market.IMarket;
-
-import jakarta.transaction.Transactional;
 
 @Component
 public class MarketDataUpdater

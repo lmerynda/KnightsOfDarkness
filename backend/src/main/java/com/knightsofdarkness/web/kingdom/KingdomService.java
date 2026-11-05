@@ -98,6 +98,7 @@ public class KingdomService
         return kingdomRepository.add(kingdom);
     }
 
+    @Transactional(readOnly = true)
     public Optional<KingdomDto> getKingdomByName(String name)
     {
         var maybeKingdom = kingdomReadRepository.getKingdomByName(name);

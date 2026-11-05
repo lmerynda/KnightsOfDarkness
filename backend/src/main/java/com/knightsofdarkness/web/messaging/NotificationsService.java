@@ -6,10 +6,9 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.web.common.messaging.NotificationDto;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class NotificationsService {
@@ -21,6 +20,7 @@ public class NotificationsService {
         this.notificationSystem = notificationSystem;
     }
 
+    @Transactional(readOnly = true)
     public List<NotificationDto> getNotifications(String kingdomName)
     {
         log.info("Getting all notifications for kingdom {}", kingdomName);
@@ -34,6 +34,7 @@ public class NotificationsService {
         notificationSystem.markNotificationAsRead(kingdomName, notificationId);
     }
 
+    @Transactional(readOnly = true)
     public long countKingdomUnreadNotifications(String kingdomName)
     {
         log.info("Counting unread notifications for kingdom {}", kingdomName);

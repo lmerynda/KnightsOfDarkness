@@ -90,16 +90,19 @@ public class MessageService {
         return null;
     }
 
+    @Transactional(readOnly = true)
     public List<MessageDto> getInbox(String kingdomName)
     {
         return messageRepository.findByRecipientOrderByDateDesc(kingdomName, PageRequest.of(0, pageSize)).stream().map(MessageEntity::toDto).toList();
     }
 
+    @Transactional(readOnly = true)
     public List<MessageDto> getSent(String kingdomName)
     {
         return messageRepository.findBySenderOrderByDateDesc(kingdomName, PageRequest.of(0, pageSize)).stream().map(MessageEntity::toDto).toList();
     }
 
+    @Transactional(readOnly = true)
     public long countUnread(String kingdomName)
     {
         return messageRepository.countByRecipientAndIsReadFalse(kingdomName);

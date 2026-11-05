@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.web.alliance.IAllianceRepository;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
@@ -28,8 +29,6 @@ import com.knightsofdarkness.web.kingdom.KingdomService;
 import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.utils.Id;
-
-import jakarta.transaction.Transactional;
 
 @Component
 public class GameInitializer implements CommandLineRunner
@@ -135,6 +134,5 @@ public class GameInitializer implements CommandLineRunner
             kingdomService.startSpecialBuilding(name, new KingdomSpecialBuildingStartDto(specialBuildingType));
         }
     }
-
 
 }

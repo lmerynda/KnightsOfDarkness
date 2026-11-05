@@ -2,7 +2,6 @@ package com.knightsofdarkness.web.market;
 
 import java.util.Optional;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -47,20 +46,7 @@ public class MarketService
         return market.createOffer(sellerName, offer.resource(), offer.count(), offer.price());
     }
 
-    @Deprecated
-    public List<MarketOfferDto> getAllOffers()
-    {
-        log.info("Getting all offers");
-        var allOffers = new ArrayList<MarketOfferDto>();
-        allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.food));
-        allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.iron));
-        allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.tools));
-        allOffers.addAll(marketOfferReadRepository.getOffersByResource(MarketResource.weapons));
-        log.info("Found {} offers", allOffers.size());
-
-        return allOffers;
-    }
-
+    @Transactional(readOnly = true)
     public List<MarketOfferDto> getOffersByResource(MarketResource resource)
     {
         log.info("Getting last 7 offers for {}", resource);

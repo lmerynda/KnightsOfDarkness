@@ -53,6 +53,7 @@ public class RoundService {
         return currentRound().toDto(gameConfig.common().newTurnPeriodicity());
     }
 
+    @Transactional(readOnly = true)
     public List<RoundDto> getFinishedRounds()
     {
         return roundRepository.findByEndedAtIsNotNullOrderByNumberDesc().stream().map(round -> round.toDto(gameConfig.common().newTurnPeriodicity())).toList();
