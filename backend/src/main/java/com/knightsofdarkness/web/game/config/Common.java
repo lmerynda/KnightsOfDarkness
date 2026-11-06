@@ -14,5 +14,10 @@ public record Common(
         int kingdomBaseHousingCapacity,
         int allianceMaxMembers,
         int turnsToReinforce,
-        double soldierUpkeepRatio) {
+        double soldierUpkeepRatio,
+        /*
+         * the extra production share of a kingdom built on 100 acres or fewer, fading to none at 1000 acres: 4 makes a
+         * small kingdom produce five times as much
+         */
+        double smallKingdomProductionBonus) {
 }

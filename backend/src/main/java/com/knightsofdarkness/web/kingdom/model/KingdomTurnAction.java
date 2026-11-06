@@ -400,16 +400,16 @@ public class KingdomTurnAction {
     }
 
     /**
-     * the bonus factor decreases exponentially, max is 5 at 100 land, min is 1 at
-     * 1000 land, formula is made up based on manual curve tweaking
-     * 
-     * @param land
-     * @return
+     * the bonus decreases exponentially from the configured share at 100 land to none at 1000 land; the shape is made
+     * up by manual curve tweaking
      */
     double getBonusFactorBasedOnLand(int land)
     {
-        var bonus = 6.5 * Math.exp(-0.0047 * land) - 0.06;
-        var minBonus = Math.max(0, bonus);
-        return 1 + minBonus;
+        return 1 + config.common().smallKingdomProductionBonus() * Math.max(0, bonusCurve(land)) / bonusCurve(100);
+    }
+
+    private static double bonusCurve(int land)
+    {
+        return 6.5 * Math.exp(-0.0047 * land) - 0.06;
     }
 }

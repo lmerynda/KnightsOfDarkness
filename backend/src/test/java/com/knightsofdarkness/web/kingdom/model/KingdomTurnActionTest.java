@@ -73,6 +73,7 @@ class KingdomTurnActionTest {
         assertEquals(bonusAt1000, bonusOver1000);
 
         assertEquals(5.0, bonusAt100, 0.01);
+        assertEquals(1 + gameConfig.common().smallKingdomProductionBonus(), bonusAt100, 1e-9);
 
         double bonusAt200 = kingdomTurnAction.getKingdomSizeProductionBonus(200);
         assertEquals(3.47, bonusAt200, 0.01);

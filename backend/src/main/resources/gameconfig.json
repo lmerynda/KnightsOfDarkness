@@ -168,7 +168,8 @@
         "kingdomBaseHousingCapacity": 30,
         "allianceMaxMembers": 10,
         "turnsToReinforce": 2,
-        "soldierUpkeepRatio": 0.01
+        "soldierUpkeepRatio": 0.01,
+        "smallKingdomProductionBonus": 4.0
     },
     "attack": {
         "turnsToArrive": 4,

@@ -1462,6 +1462,8 @@ export interface components {
       /** Format: int32 */
       newTurnPeriodicity: number;
       /** Format: double */
+      smallKingdomProductionBonus: number;
+      /** Format: double */
       soldierUpkeepRatio: number;
       /** Format: int32 */
       specialBuildingMaxCount: number;

@@ -1266,6 +1266,10 @@
             "format" : "int32",
             "type" : "integer"
           },
+          "smallKingdomProductionBonus" : {
+            "format" : "double",
+            "type" : "number"
+          },
           "soldierUpkeepRatio" : {
             "format" : "double",
             "type" : "number"
@@ -1295,7 +1299,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "allianceMaxMembers", "foodUpkeepPerUnit", "ironConsumptionPerProductionUnit", "kingdomBaseHousingCapacity", "maxNotificationsCount", "maxTurns", "newTurnPeriodicity", "soldierUpkeepRatio", "specialBuildingMaxCount", "specialBuildingMaxLevel", "specialBuildingPerLevelProductionBonus", "starvationLeaveRatio", "turnsToDeliverResources", "turnsToReinforce" ],
+        "required" : [ "allianceMaxMembers", "foodUpkeepPerUnit", "ironConsumptionPerProductionUnit", "kingdomBaseHousingCapacity", "maxNotificationsCount", "maxTurns", "newTurnPeriodicity", "smallKingdomProductionBonus", "soldierUpkeepRatio", "specialBuildingMaxCount", "specialBuildingMaxLevel", "specialBuildingPerLevelProductionBonus", "starvationLeaveRatio", "turnsToDeliverResources", "turnsToReinforce" ],
         "type" : "object"
       },
       "CreateAllianceDto" : {
