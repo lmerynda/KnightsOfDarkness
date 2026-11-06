@@ -41,7 +41,6 @@ public class GameInitializer implements CommandLineRunner
     private final KingdomService kingdomService;
     private final GameConfig gameConfig;
     private final boolean seedDevAccounts;
-    private final int numberOfSpecialBuildings = 5;
 
     public GameInitializer(KingdomService kingdomService, IKingdomRepository kingdomRepository, IBotRepository botRepository, IAllianceRepository allianceRepository, GameConfig gameConfig,
             @Value("${game.seed-dev-accounts:false}") boolean seedDevAccounts)
@@ -129,10 +128,8 @@ public class GameInitializer implements CommandLineRunner
         }
         var kingdom = createKingdom(name);
         botRepository.add(new BotEntity(Id.generate(), kingdom));
-        for (int i = 0; i < numberOfSpecialBuildings; i++)
-        {
-            kingdomService.startSpecialBuilding(name, new KingdomSpecialBuildingStartDto(specialBuildingType));
-        }
+        // a bot raises the one great work of its trade
+        kingdomService.startSpecialBuilding(name, new KingdomSpecialBuildingStartDto(specialBuildingType));
     }
 
 }

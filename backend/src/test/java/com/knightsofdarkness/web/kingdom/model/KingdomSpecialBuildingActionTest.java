@@ -3,6 +3,8 @@ package com.knightsofdarkness.web.kingdom.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,17 +48,38 @@ class KingdomSpecialBuildingActionTest {
     @Test
     void whenKingdomHasMaxSpecialBuildings_startingNew_shouldNotAddNewSpecialBuilding()
     {
-        int maxSpecialBuildings = gameConfig.common().specialBuildingMaxCount();
         var action = new KingdomSpecialBuildingAction(kingdom, gameConfig);
-        for (int i = 0; i < maxSpecialBuildings; i++)
+        for (var type : SpecialBuildingType.values())
         {
-            action.startSpecialBuilding(SpecialBuildingType.goldShaft);
+            assertTrue(action.startSpecialBuilding(type).isPresent(), type.toString());
         }
-        int specialBuildingsCount = kingdom.getSpecialBuildings().size();
+        assertEquals(gameConfig.common().specialBuildingMaxCount(), kingdom.getSpecialBuildings().size());
 
-        action.startSpecialBuilding(SpecialBuildingType.goldShaft);
+        assertEquals(Optional.of("No place for another great work"), action.whyNotStart(SpecialBuildingType.warehouse));
+        assertTrue(action.startSpecialBuilding(SpecialBuildingType.warehouse).isEmpty());
+        assertEquals(gameConfig.common().specialBuildingMaxCount(), kingdom.getSpecialBuildings().size());
+    }
 
-        assertEquals(specialBuildingsCount, kingdom.getSpecialBuildings().size());
+    @Test
+    void aSecondGreatWorkOfAProducingKind_isRefused()
+    {
+        var action = new KingdomSpecialBuildingAction(kingdom, gameConfig);
+        action.startSpecialBuilding(SpecialBuildingType.goldShaft).orElseThrow();
+
+        assertEquals(Optional.of("The kingdom already has a gold shaft, and only warehouses may be raised twice"), action.whyNotStart(SpecialBuildingType.goldShaft));
+        assertTrue(action.startSpecialBuilding(SpecialBuildingType.goldShaft).isEmpty());
+        assertEquals(1, kingdom.getSpecialBuildings().size());
+    }
+
+    @Test
+    void warehouses_mayBeRaisedUntilThePlacesRunOut()
+    {
+        var action = new KingdomSpecialBuildingAction(kingdom, gameConfig);
+        for (int i = 0; i < gameConfig.common().specialBuildingMaxCount(); i++)
+        {
+            assertTrue(action.startSpecialBuilding(SpecialBuildingType.warehouse).isPresent());
+        }
+        assertTrue(kingdom.getSpecialBuildings().stream().allMatch(building -> building.buildingType == SpecialBuildingType.warehouse));
     }
 
     @Test

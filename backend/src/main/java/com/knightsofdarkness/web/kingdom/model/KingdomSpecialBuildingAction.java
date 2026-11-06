@@ -9,6 +9,7 @@ import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.SpecialBuildingType;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.utils.Id;
+import com.knightsofdarkness.web.utils.Utils;
 
 public class KingdomSpecialBuildingAction {
     private final KingdomEntity kingdom;
@@ -20,14 +21,29 @@ public class KingdomSpecialBuildingAction {
         this.gameConfig = gameConfig;
     }
 
-    public Optional<KingdomSpecialBuildingEntity> startSpecialBuilding(SpecialBuildingType buildingType)
+    /**
+     * why a great work of this kind may not be begun, if it may not
+     */
+    public Optional<String> whyNotStart(SpecialBuildingType buildingType)
     {
         if (buildingType == null)
         {
-            return Optional.empty();
+            return Optional.of("No such great work");
         }
-
         if (kingdom.getSpecialBuildings().size() >= gameConfig.common().specialBuildingMaxCount())
+        {
+            return Optional.of("No place for another great work");
+        }
+        if (!buildingType.mayBeRaisedTwice() && kingdom.getSpecialBuildings().stream().anyMatch(building -> building.buildingType == buildingType))
+        {
+            return Optional.of(Utils.format("The kingdom already has a {}, and only warehouses may be raised twice", buildingType.name().replaceAll("([A-Z])", " $1").toLowerCase()));
+        }
+        return Optional.empty();
+    }
+
+    public Optional<KingdomSpecialBuildingEntity> startSpecialBuilding(SpecialBuildingType buildingType)
+    {
+        if (whyNotStart(buildingType).isPresent())
         {
             return Optional.empty();
         }

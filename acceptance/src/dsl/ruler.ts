@@ -95,6 +95,10 @@ export class Ruler {
     done(`${this.name} beginning a ${type}`, await this.act.beginGreatWork(type));
   }
 
+  public async cannotBeginAGreatWork(type: SpecialBuildingType, reason: string | RegExp): Promise<void> {
+    refused(`${this.name} beginning a ${type}`, await this.act.beginGreatWork(type), reason);
+  }
+
   public async investsIn(type: SpecialBuildingType, buildingPoints: number): Promise<void> {
     done(`${this.name} investing ${buildingPoints} points in the ${type}`, await this.act.investInGreatWork(type, buildingPoints));
   }

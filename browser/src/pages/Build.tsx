@@ -154,13 +154,17 @@ const SpecialBuildingRow: React.FC<{ building: SpecialBuilding }> = ({ building 
 
 const SpecialBuildings: React.FC = () => {
   const { kingdom, config, act } = useGame();
-  const [choice, setChoice] = useState<SpecialBuildingType>("goldShaft");
+  // one great work of each kind; warehouses alone may be raised more than once, as the server rules
+  const raised = (type: SpecialBuildingType): boolean => type !== "warehouse" && kingdom.specialBuildings.some(building => building.buildingType === type);
+  const open = specialBuildingTypes.filter(type => !raised(type));
+  const [picked, setChoice] = useState<SpecialBuildingType>("goldShaft");
+  const choice = open.includes(picked) ? picked : open[0];
   const slotsLeft = config.common.specialBuildingMaxCount - kingdom.specialBuildings.length;
 
   return (
     <Panel
       title="Great works"
-      help={`Up to ${config.common.specialBuildingMaxCount} great works, each raised level by level with building points. Every level costs twice the one before; tearing one down loses its levels.`}
+      help={`Up to ${config.common.specialBuildingMaxCount} great works, one of each kind, though warehouses may be raised more than once. Each is raised level by level with building points; every level costs twice the one before, and tearing one down loses its levels.`}
     >
       {kingdom.specialBuildings.length > 0 ? (
         <ul className="specials">
@@ -177,8 +181,10 @@ const SpecialBuildings: React.FC = () => {
             </span>
             <select className="select" value={choice} onChange={event => setChoice(event.target.value as SpecialBuildingType)}>
               {specialBuildingTypes.map(type => (
-                <option key={type} value={type}>
-                  {specialBuildingLore[type].label}, first level {formatNumber(config.specialBuildingCosts[type])} points
+                <option key={type} value={type} disabled={raised(type)}>
+                  {raised(type)
+                    ? `${specialBuildingLore[type].label}, already raised: one of each kind`
+                    : `${specialBuildingLore[type].label}, first level ${formatNumber(config.specialBuildingCosts[type])} points`}
                 </option>
               ))}
             </select>

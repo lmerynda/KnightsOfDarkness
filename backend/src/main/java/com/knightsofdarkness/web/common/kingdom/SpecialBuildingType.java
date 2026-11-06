@@ -7,6 +7,15 @@ public enum SpecialBuildingType
     goldShaft, ironShaft, granary, forge, warehouse;
 
     /**
+     * a kingdom raises one great work of each kind, so production bonuses never pile up; warehouses alone may be raised
+     * more than once, since their shields add up to a cap one warehouse cannot reach
+     */
+    public boolean mayBeRaisedTwice()
+    {
+        return this == warehouse;
+    }
+
+    /**
      * the great work that raises a resource's production, if any does
      */
     public static Optional<SpecialBuildingType> fromResource(ResourceName resourceName)

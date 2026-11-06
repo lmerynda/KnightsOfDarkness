@@ -72,6 +72,9 @@ const entries = <K extends string>(counts: Partial<Record<K, number>>): [K, numb
 
 const number = (text: string): number => Number(text.replace(/[^\d]/g, ""));
 
+/** whether the page offers a choice but will not let it be picked; Playwright's isDisabled calls every option enabled */
+const optionDisabled = (option: Locator): Promise<boolean> => option.evaluate(element => (element as HTMLOptionElement).disabled);
+
 /** the soldiers in a list such as "10 infantry, 5 cavalry" */
 const soldiersIn = (text: string): number => [...text.matchAll(/([\d,]+) [a-z]/g)].reduce((sum, match) => sum + number(match[1]), 0);
 
@@ -201,7 +204,10 @@ class BrowserRuler implements RulerDriver {
 
   public async beginGreatWork(type: SpecialBuildingType): Promise<Outcome> {
     await this.open("build");
-    await this.panel("Great works").getByRole("combobox", { name: /^Begin a new great work/ }).selectOption(type);
+    const choice = this.panel("Great works").getByRole("combobox", { name: /^Begin a new great work/ });
+    const option = choice.locator(`option[value="${type}"]`);
+    if (await optionDisabled(option)) return { done: false, message: (await option.innerText()).trim() };
+    await choice.selectOption(type);
     return this.answer(/^\/api\/kingdom\/start-special-building$/, () => this.panel("Great works").getByRole("button", { name: "Begin" }).click());
   }
 
@@ -295,7 +301,7 @@ class BrowserRuler implements RulerDriver {
     await option.waitFor({ state: "attached" });
     // the rankings, which say who is protected, may come after the list of kingdoms
     await this.page.waitForLoadState("networkidle");
-    if (await option.isDisabled()) return { done: false, message: (await option.innerText()).trim() };
+    if (await optionDisabled(option)) return { done: false, message: (await option.innerText()).trim() };
     await this.page.getByRole("combobox", { name: /^Target/ }).selectOption(target);
     await this.page.getByRole("group", { name: "Goal of the attack" }).getByRole("button", { name: goal === "land" ? "Take land" : "Plunder stores" }).click();
     await this.fillArmy(units, unit => `${unitPlural[unit]} to send`);

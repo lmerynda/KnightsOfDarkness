@@ -108,14 +108,14 @@ const developEconomy = async (start: TurnContext, plan: Plan, workers: UnitName[
 const economyWorkers: UnitName[] = ["farmer", "goldMiner", "ironMiner", "blacksmith"];
 
 /** the great works a ruler raises, in order, with the building points left once the land is built on */
-const greatWorks: SpecialBuildingType[] = ["goldShaft", "warehouse", "granary", "goldShaft", "forge"];
+const greatWorks: SpecialBuildingType[] = ["goldShaft", "warehouse", "granary", "forge", "ironShaft"];
 
 /** building points are lost when the turn passes, so whatever the land could not take goes into a great work */
 const raiseGreatWorks = async ({ player, config }: TurnContext): Promise<void> => {
   let kingdom = await player.kingdom();
   let unfinished = kingdom.specialBuildings.find(work => !work.isMaxLevel);
   if (!unfinished && kingdom.specialBuildings.length < config.common.specialBuildingMaxCount) {
-    await player.startGreatWork(greatWorks[kingdom.specialBuildings.length] ?? "goldShaft");
+    await player.startGreatWork(greatWorks[kingdom.specialBuildings.length]);
     kingdom = await player.kingdom();
     unfinished = kingdom.specialBuildings.find(work => !work.isMaxLevel);
   }

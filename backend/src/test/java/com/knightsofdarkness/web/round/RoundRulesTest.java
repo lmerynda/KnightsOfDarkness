@@ -74,12 +74,12 @@ class RoundRulesTest {
         var bot = new KingdomBuilder(game).withName("FarmerBot").build();
         var action = new KingdomSpecialBuildingAction(bot, config);
         action.startSpecialBuilding(SpecialBuildingType.granary);
-        action.startSpecialBuilding(SpecialBuildingType.granary);
+        action.startSpecialBuilding(SpecialBuildingType.warehouse);
 
         RoundReset.reset(List.of(bot), Set.of("FarmerBot"), config);
 
-        assertEquals(2, bot.getSpecialBuildings().size());
-        assertTrue(bot.getSpecialBuildings().stream().allMatch(building -> building.getBuildingType() == SpecialBuildingType.granary && building.toDto().level() == 0));
+        assertEquals(List.of(SpecialBuildingType.granary, SpecialBuildingType.warehouse), bot.getSpecialBuildings().stream().map(building -> building.getBuildingType()).toList());
+        assertTrue(bot.getSpecialBuildings().stream().allMatch(building -> building.toDto().level() == 0));
     }
 
     @Test

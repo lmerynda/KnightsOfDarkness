@@ -296,10 +296,14 @@ public class KingdomService
 
         var kingdom = maybeKingdom.get();
         var action = new KingdomSpecialBuildingAction(kingdom, gameConfig);
-        Optional<KingdomSpecialBuildingEntity> specialBuilding = action.startSpecialBuilding(specialBuildingStartDto.name());
+        var refusal = action.whyNotStart(specialBuildingStartDto.name());
+        if (refusal.isPresent())
+        {
+            return Optional.of(ActionResult.failure(refusal.get()));
+        }
+        var started = action.startSpecialBuilding(specialBuildingStartDto.name()).orElseThrow();
         kingdomRepository.update(kingdom);
-        return Optional.of(specialBuilding.map(started -> ActionResult.success(Utils.format("Ground broken for a {}", specialBuildingStartDto.name()), started.getId()))
-                .orElseGet(() -> ActionResult.failure("No place for another great work")));
+        return Optional.of(ActionResult.success(Utils.format("Ground broken for a {}", specialBuildingStartDto.name()), started.getId()));
     }
 
     @Transactional

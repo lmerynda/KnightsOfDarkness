@@ -49,6 +49,16 @@ scenario("a great work rises level by level and is lost when torn down", async g
   await ruler.hasNoGreatWorks();
 });
 
+scenario("a kingdom raises one great work of each kind, but as many warehouses as it has places for", async game => {
+  const ruler = await game.foundsAKingdom();
+  await ruler.beginsAGreatWork("goldShaft");
+  await ruler.cannotBeginAGreatWork("goldShaft", /already/);
+  await ruler.beginsAGreatWork("warehouse");
+  await ruler.beginsAGreatWork("warehouse");
+  await ruler.hasAGreatWork("goldShaft", 0);
+  await ruler.hasAGreatWork("warehouse", 0);
+});
+
 scenario("a granary makes the farms bring in a fifth more food", async game => {
   const plain = await game.foundsAKingdom("Plain");
   const granary = await game.foundsAKingdom("Granary");
