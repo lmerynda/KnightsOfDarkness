@@ -228,9 +228,9 @@
         },
         "prices": {
             "food": 15,
-            "iron": 25,
-            "tools": 60,
-            "weapons": 60
+            "iron": 100,
+            "tools": 200,
+            "weapons": 200
         }
     },
     "events": {

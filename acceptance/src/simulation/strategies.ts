@@ -35,7 +35,8 @@ const workerHomes: [UnitName, BuildingName][] = [
   ["spy", "spyGuild"],
 ];
 
-const foodBalance = (details: KingdomDetails): number => (details.forecast.resourcesProduced.food ?? 0) - details.forecast.foodConsumed;
+/** food grown less food needed; the forecast's foodConsumed is only what the stores can cover, so a starving kingdom would look fed */
+const foodBalance = (details: KingdomDetails): number => (details.forecast.resourcesProduced.food ?? 0) - details.foodUpkeep;
 
 /** turns of soldiers' pay a ruler keeps in the treasury, whatever else it buys */
 const payReserveTurns = 10;

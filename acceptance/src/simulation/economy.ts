@@ -4,23 +4,26 @@ import { World } from "../api/client.ts";
 import type { MarketTrade } from "../api/types.ts";
 import { startServer, type ConfigOverrides } from "../server.ts";
 import { foundCoalition } from "./coalition.ts";
-import { selfSufficient, specialist, tradeShares, type Craft } from "./trade.ts";
+import { coalitionOf, parseCraft, selfSufficient, tradeShares, type Craft } from "./trade.ts";
 import { finalSnapshot, runWorld, type WorldRun } from "./world.ts";
 
-const usage = `Play coalitions that feed, tool and arm themselves, and report where their market purchases came from.
+const usage = `Play coalitions that trade goods, and report how each fares and where its market purchases came from.
 
-  node src/simulation/economy.ts [--crafts gold,gold,gold,gold,food,tools,tools,iron] [--coalitions 2] [--turns 120] [--set path=value ...] [--compare] [--out run.json]
+  node src/simulation/economy.ts [--coalition Name=craft,craft,... ...] [--turns 120] [--set path=value ...] [--compare] [--out run.json]
 
-Every coalition has the same make-up, one kingdom per craft: gold producers buy what they eat and the tools they train
-with, the farmer sells food, blacksmiths sell tools and buy iron, the iron miner sells iron. Each buys from its allies
-first and from anyone else on the market for the rest. The merchant bots play too. The report gives each kingdom's land
-and gold, and for each coalition the pieces of every good its members bought from allies, from the bots and from other
-kingdoms; the point of a coalition is that most of its market stays inside it.`;
+Each --coalition founds one coalition with one kingdom per craft; without any, two self-sufficient coalitions play
+(Guild and Hanse, each ${selfSufficient.join(",")}). Crafts: gold producers buy what they eat and the tools they train
+with; food, tools and iron craftsmen sell their good (blacksmiths buy iron) and grow gold mines instead while their good
+piles up unsold; corner:iron (or corner:food, corner:tools) is a gold producer that buys every piece rivals and
+merchants offer and resells it at twice the merchants' price, and the coalition's own iron miners then ask that price
+too. A coalition may leave a craft out and rely on the market. Each buys from its allies first and from anyone else for
+the rest, and grows its own food when it cannot buy enough. The merchant bots play too. The report gives each
+kingdom's land and gold, each coalition's land and its craftsmen's land against its gold producers', and the pieces of
+every good each coalition bought from allies, from the bots and from other kingdoms.`;
 
 const { values } = parseArgs({
   options: {
-    crafts: { type: "string", default: selfSufficient.join(",") },
-    coalitions: { type: "string", default: "2" },
+    coalition: { type: "string", multiple: true, default: [] },
     turns: { type: "string", default: "120" },
     set: { type: "string", multiple: true, default: [] },
     compare: { type: "boolean", default: false },
@@ -33,14 +36,19 @@ if (values.help) {
   process.exit(0);
 }
 
-const crafts = values.crafts.split(",").map(craft => craft.trim()) as Craft[];
-const unknown = crafts.filter(craft => !["gold", "food", "tools", "iron"].includes(craft));
-if (unknown.length) {
-  console.error(`Unknown crafts: ${unknown.join(", ")}\n\n${usage}`);
+const makeUps: [string, Craft[]][] = [];
+try {
+  const given = values.coalition.length ? values.coalition : [`Guild=${selfSufficient.join(",")}`, `Hanse=${selfSufficient.join(",")}`];
+  for (const entry of given) {
+    const [name, crafts] = entry.split("=");
+    if (!name || !crafts) throw new Error(`A coalition is written Name=craft,craft,..., not "${entry}"`);
+    makeUps.push([name.trim(), crafts.split(",").map(parseCraft)]);
+  }
+} catch (error) {
+  console.error(`${error instanceof Error ? error.message : error}\n\n${usage}`);
   process.exit(2);
 }
 const turns = Number(values.turns);
-const names = ["Guild", "Hanse", "League", "Union"].slice(0, Number(values.coalitions));
 const overrides: ConfigOverrides = Object.fromEntries(
   values.set.map(entry => {
     const [path, ...rest] = entry.split("=");
@@ -60,7 +68,7 @@ export const simulate = async (configOverrides: ConfigOverrides): Promise<Econom
   try {
     const world = new World(server.url);
     const coalitions = [];
-    for (const name of names) coalitions.push(await foundCoalition(world, name, () => crafts.map(specialist)));
+    for (const [name, crafts] of makeUps) coalitions.push(await foundCoalition(world, name, () => coalitionOf(crafts)));
     const rulers = coalitions.flatMap(coalition => coalition.rulers);
     const run = await runWorld(world, rulers, turns);
     const bots = (await world.rankings()).kingdoms.filter(rank => rank.bot).map(rank => rank.kingdomName);
@@ -82,6 +90,14 @@ const report = (title: string, { run, trades, groups, bots }: EconomyRun): void 
       }),
   );
   for (const [name, members] of Object.entries(groups)) {
+    const lands = members.map(kingdom => ({ craft: kingdom.replace(`${name} `, "").replace(/ \d+$/, ""), land: finalSnapshot(run, kingdom).land }));
+    const average = (craft: string): number => {
+      const of = lands.filter(entry => entry.craft === craft);
+      return of.reduce((sum, entry) => sum + entry.land, 0) / of.length;
+    };
+    const gold = average("gold specialist");
+    const crafts = [...new Set(lands.map(entry => entry.craft))].map(craft => `${craft} ${Math.round(average(craft))} (${Math.round((100 * average(craft)) / gold)}%)`);
+    console.log(`${name} holds ${lands.reduce((sum, entry) => sum + entry.land, 0).toLocaleString("en-US")} acres; average land by craft against its gold producers: ${crafts.join(", ")}`);
     const shares = tradeShares(trades, members, bots);
     console.log(`${name} bought ${Math.round(shares.fromAllies * 100)}% of its pieces from its own members`);
     console.table(Object.fromEntries(Object.entries(shares.bought).filter(([, row]) => row.allies + row.bots + row.others > 0)));

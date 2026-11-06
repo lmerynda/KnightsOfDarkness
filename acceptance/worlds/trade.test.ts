@@ -3,14 +3,14 @@ import { test } from "node:test";
 import { World } from "../src/api/client.ts";
 import { startServer } from "../src/server.ts";
 import { foundCoalition } from "../src/simulation/coalition.ts";
-import { selfSufficient, specialist, tradeShares } from "../src/simulation/trade.ts";
+import { coalitionOf, selfSufficient, tradeShares } from "../src/simulation/trade.ts";
 import { runWorld } from "../src/simulation/world.ts";
 
 test("a coalition of specialists buys most of what it needs from its own members", async () => {
   const server = await startServer();
   try {
     const world = new World(server.url);
-    const guild = await foundCoalition(world, "Guild", () => selfSufficient.map(specialist));
+    const guild = await foundCoalition(world, "Guild", () => coalitionOf(selfSufficient));
     const run = await runWorld(world, guild.rulers, 30);
     assert.deepEqual(run.violations, []);
 
@@ -21,6 +21,31 @@ test("a coalition of specialists buys most of what it needs from its own members
     assert.ok(shares.fromAllies > 0.5, `only ${Math.round(shares.fromAllies * 100)}% of the pieces bought came from members: ${JSON.stringify(shares.bought)}`);
     // nobody starves while the farmer sells
     assert.deepEqual(run.timeline.filter(entry => entry.starved > 0), []);
+  } finally {
+    await server.stop();
+  }
+});
+
+test("a coalition without an iron miner buys its iron outside, and a rival that corners iron sells it only dear", async () => {
+  const server = await startServer();
+  try {
+    const world = new World(server.url);
+    const guild = await foundCoalition(world, "Guild", () => coalitionOf(["gold", "gold", "corner:iron", "food", "tools", "iron"]));
+    const hanse = await foundCoalition(world, "Hanse", () => coalitionOf(["gold", "gold", "gold", "food", "tools"]));
+    const run = await runWorld(world, [...guild.rulers, ...hanse.rulers], 30);
+    assert.deepEqual(run.violations, []);
+
+    const config = await world.config();
+    const trades = await world.trades();
+    const guildNames = new Set(guild.rulers.map(ruler => ruler.player.name));
+    const hanseNames = new Set(hanse.rulers.map(ruler => ruler.player.name));
+    const ironToHanse = trades.filter(trade => trade.resource === "iron" && hanseNames.has(trade.buyer));
+    assert.ok(ironToHanse.length > 0, "Hanse's blacksmith bought no iron at all");
+    const fromGuild = ironToHanse.filter(trade => guildNames.has(trade.seller));
+    assert.ok(fromGuild.length > 0, "Guild sold Hanse no iron");
+    assert.deepEqual([...new Set(fromGuild.map(trade => trade.price))], [2 * (config.bots.prices.iron ?? 0)]);
+    const cornered = trades.filter(trade => trade.resource === "iron" && trade.buyer === guild.rulers[2]?.player.name && !guildNames.has(trade.seller));
+    assert.ok(cornered.length > 0, "the cornerer bought no iron outside its coalition");
   } finally {
     await server.stop();
   }
