@@ -214,6 +214,11 @@ export class Player {
     return this.post(`/market/${id}/withdraw`);
   }
 
+  /** sends goods to another kingdom by carriers, as many as the idle carriers hold; they arrive after a few turns */
+  public sendCarriers(to: string, resource: MarketResource, count: number): Promise<ActionResult<{ destinationKingdomName: string; resource: MarketResource; count: number }>> {
+    return this.post("/kingdom/send-carriers", { destinationKingdomName: to, resource, count });
+  }
+
   /** every offer the ruler's allies keep on the market, however dear */
   public alliesOffers(): Promise<MarketOffer[]> {
     return this.get("/market/allies");

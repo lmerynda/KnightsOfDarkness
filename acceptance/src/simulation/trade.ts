@@ -138,12 +138,40 @@ const sell = async (context: TurnContext, resource: MarketResource, keep: number
   await player.postOffer(resource, surplus, price ?? (await marketPrice(context, resource)));
 };
 
-/** buys what the ruler lacks of every good it does not make itself */
-const buyWants = async (context: TurnContext, want: Partial<Record<MarketResource, number>>, makes: Good[] = []): Promise<void> => {
+/** goods carriers are bringing to the ruler */
+const incoming = (context: TurnContext, resource: MarketResource): number =>
+  context.kingdom.carriersOnTheMove.filter(load => load.to === context.kingdom.name && load.resource === resource).reduce((sum, load) => sum + load.count, 0);
+
+/**
+ * what a coalition that corners a good shares among its members: each member writes down how much of the cornered goods
+ * it lacks, and whoever holds them ships it by carriers, so the coalition's own goods never pass the market where the
+ * cornering price would charge its members too; a stand-in for players telling each other what they need
+ */
+type Ledger = {
+  cornered: Good[];
+  needs: Map<string, Partial<Record<Good, number>>>;
+  /** gold each member owes each shipper for the loads it received, at the merchants' price: debtor, then shipper */
+  owed: Map<string, Map<string, number>>;
+  /** the one-piece offers shippers post to be paid through, priced at what the debtor owes: offer id, then debtor */
+  bills: Map<string, string>;
+};
+
+/** the share of its land a shipper turns into markets, which house the carriers */
+const shipperMarketShare = 0.04;
+
+/**
+ * buys what the ruler lacks of every good it does not make itself, counting what carriers are bringing, and never above
+ * the cornering price; goods its coalition corners come by carriers only
+ */
+const buyWants = async (context: TurnContext, want: Partial<Record<MarketResource, number>>, makes: Good[] = [], ledger?: Ledger): Promise<void> => {
   for (const resource of goods) {
     if (makes.includes(resource)) continue;
-    const missing = (want[resource] ?? 0) - held(context, resource);
-    if (missing > 0) await buy(context.player, resource, missing, (await context.player.kingdom()).resources.gold * spendShare);
+    const missing = (want[resource] ?? 0) - held(context, resource) - incoming(context, resource);
+    if (ledger?.cornered.includes(resource)) {
+      ledger.needs.set(context.kingdom.name, { ...ledger.needs.get(context.kingdom.name), [resource]: Math.max(0, missing) });
+      continue;
+    }
+    if (missing > 0) await buy(context.player, resource, missing, (await context.player.kingdom()).resources.gold * spendShare, { maxPrice: cornerMarkup * merchantsPrice(context.config, resource) });
   }
 };
 
@@ -176,13 +204,77 @@ const thisTurn = async (context: TurnContext, calling: Calling, unsold: boolean)
   return { plan: { ...plan, farm: (plan.farm ?? 0) + selfFeedShare }, workers: [...workers, "farmer"] };
 };
 
+/** ships the good to the members who wrote down they lack it, most lacking first, keeping what the shipper needs itself */
+const ship = async (context: TurnContext, good: Good, keep: number, ledger: Ledger): Promise<void> => {
+  let spare = (await context.player.kingdom()).resources[good] - keep;
+  const lacking = [...ledger.needs.entries()].filter(([name, needs]) => name !== context.kingdom.name && (needs[good] ?? 0) > 0).sort(([, one], [, other]) => (other[good] ?? 0) - (one[good] ?? 0));
+  for (const [name, needs] of lacking) {
+    if (spare <= 0) return;
+    const sent = await context.player.sendCarriers(name, good, Math.min(spare, needs[good] ?? 0));
+    if (!sent.success || !sent.data) return;
+    spare -= sent.data.count;
+    ledger.needs.set(name, { ...needs, [good]: (needs[good] ?? 0) - sent.data.count });
+    const debts = ledger.owed.get(name) ?? new Map<string, number>();
+    debts.set(context.kingdom.name, (debts.get(context.kingdom.name) ?? 0) + sent.data.count * merchantsPrice(context.config, good));
+    ledger.owed.set(name, debts);
+  }
+};
+
+/** the allies who owe the shipper enough to bill */
+const debtors = (context: TurnContext, ledger: Ledger): [string, number][] =>
+  [...ledger.owed.entries()].map(([debtor, debts]): [string, number] => [debtor, Math.floor(debts.get(context.kingdom.name) ?? 0)]).filter(([, due]) => due >= context.config.market.minPrice);
+
 /**
- * the rulers of one coalition, one per craft; when the coalition corners a good its own craftsmen of that good ask the
- * cornerer's dear price too, so rivals cannot buy it cheaply from them, while allies' payments stay in the coalition
+ * posts one piece of the good for each ally that owes the shipper, priced at the debt, so the ally pays by buying it, the
+ * way allies pass gold through the market; old bills went with the shipper's other offers of the good when it sold, which
+ * kept a piece back for each
+ */
+const bill = async (context: TurnContext, good: Good, ledger: Ledger): Promise<void> => {
+  for (const [debtor, due] of debtors(context, ledger)) {
+    const posted = await context.player.postOffer(good, 1, due);
+    const offer = posted.data as { id?: string } | null;
+    if (posted.success && offer?.id) ledger.bills.set(offer.id, debtor);
+  }
+};
+
+/** pays the bills its shippers posted for it, as far as half the treasury goes */
+const payBills = async (context: TurnContext, ledger: Ledger): Promise<void> => {
+  const name = context.kingdom.name;
+  for (const offer of await context.player.alliesOffers()) {
+    if (ledger.bills.get(offer.id) !== name) continue;
+    if (offer.price > (await context.player.kingdom()).resources.gold * spendShare) continue;
+    const paid = await context.player.buyOffer(offer.id, 1);
+    if (!paid.success) continue;
+    ledger.bills.delete(offer.id);
+    const debts = ledger.owed.get(name);
+    debts?.set(offer.sellerName, Math.max(0, (debts.get(offer.sellerName) ?? 0) - offer.price));
+  }
+};
+
+/** a shipper keeps markets for its carriers on top of its calling */
+const withCarriers = (calling: Calling): Calling => ({ ...calling, plan: { ...calling.plan, market: shipperMarketShare } });
+
+/**
+ * trains the carriers the allies' written needs call for, before the turn's workers take the idle people; carriers are
+ * away for a few turns, so a shipper keeps that many loads' worth
+ */
+const hireCarriers = async (context: TurnContext, good: Good, ledger: Ledger): Promise<void> => {
+  const { config, details, kingdom } = context;
+  const need = [...ledger.needs.entries()].filter(([name]) => name !== kingdom.name).reduce((sum, [, needs]) => sum + (needs[good] ?? 0), 0);
+  const capacity = config.carrierCapacity[good] ?? 1;
+  const wanted = Math.ceil(need / capacity) * config.common.turnsToDeliverResources - kingdom.units.availableUnits.carrier - kingdom.units.mobileUnits.carrier;
+  const room = (details.buildingCapacity.market ?? 0) - (details.buildingOccupancy.market ?? 0);
+  if (Math.min(wanted, room) > 0) await context.player.train({ carrier: Math.min(wanted, room) });
+};
+
+/**
+ * the rulers of one coalition, one per craft. When the coalition corners a good, its members get it by carriers from the
+ * cornerer and from their own craftsmen of that good, and those ask the cornerer's dear price on the market, so rivals
+ * cannot buy it cheaply from them
  */
 export const coalitionOf = (crafts: Craft[]): Strategy[] => {
-  const cornered = crafts.filter(craft => craft.startsWith("corner:")).map(craft => craft.slice("corner:".length) as Good);
-  return crafts.map(craft => (craft.startsWith("corner:") ? cornerer(craft.slice("corner:".length) as Good) : craftsman(craft as CallingName, cornered)));
+  const ledger: Ledger = { cornered: crafts.filter(craft => craft.startsWith("corner:")).map(craft => craft.slice("corner:".length) as Good), needs: new Map(), owed: new Map(), bills: new Map() };
+  return crafts.map(craft => (craft.startsWith("corner:") ? cornerer(craft.slice("corner:".length) as Good, ledger) : craftsman(craft as CallingName, ledger)));
 };
 
 /**
@@ -191,14 +283,17 @@ export const coalitionOf = (crafts: Craft[]): Strategy[] => {
  * of tools and weapons sold out, in proportion to what is left unsold of the other; a warrior arms soldiers with bought
  * weapons and strikes the largest kingdom it may attack every few turns
  */
-const craftsman = (craft: CallingName, cornered: Good[]): Strategy => {
-  const calling = callings[craft];
+const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
+  const ships = callings[craft].sells.filter(good => ledger.cornered.includes(good));
+  const calling = ships.length ? withCarriers(callings[craft]) : callings[craft];
   const strategy: Strategy = {
     name: craft,
     weaponsPercentage: calling.sells.includes("weapons") ? 50 : 0,
     play: async context => {
       const want = wants(context, calling);
-      await buyWants(context, want, calling.sells);
+      await payBills(context, ledger);
+      await buyWants(context, want, calling.sells, ledger);
+      for (const good of ships) await hireCarriers(context, good, ledger);
       const output = calling.sells.reduce((sum, good) => sum + (context.details.forecast.resourcesProduced[good] ?? 0), 0);
       const surplus = calling.sells.reduce((sum, good) => sum + stock(context, good) - (want[good] ?? 0), 0);
       const unsold = calling.sells.length > 0 && surplus > unsoldTurns * output;
@@ -215,8 +310,10 @@ const craftsman = (craft: CallingName, cornered: Good[]): Strategy => {
       const { plan, workers } = await thisTurn(context, calling, unsold);
       await developEconomy(await refreshed(context), plan, workers);
       for (const good of calling.sells) {
-        const dear = cornered.includes(good) ? cornerMarkup * merchantsPrice(context.config, good) : undefined;
-        await sell(context, good, want[good] ?? 0, dear);
+        if (ships.includes(good)) await ship(context, good, want[good] ?? 0, ledger);
+        const dear = ships.includes(good) ? cornerMarkup * merchantsPrice(context.config, good) : undefined;
+        await sell(context, good, (want[good] ?? 0) + (ships.includes(good) ? debtors(context, ledger).length : 0), dear);
+        if (ships.includes(good)) await bill(context, good, ledger);
       }
       await topUpFood(context, calling);
       if (calling.army) await strikeLargest(await refreshed(context));
@@ -227,22 +324,29 @@ const craftsman = (craft: CallingName, cornered: Good[]): Strategy => {
 
 /**
  * a gold producer that corners one good: each turn it buys every piece rivals and merchants offer up to twice the
- * merchants' price, so a rival coalition that relies on the market for that good finds little, and offers what it holds
- * at that dear price; its allies buy from their own craftsman first, and what they pay the cornerer stays in the coalition
+ * merchants' price, so a rival coalition that relies on the market for that good finds little, ships what its allies
+ * lack by carriers, and offers the rest at that dear price
  */
-const cornerer = (good: Good): Strategy => {
-  const calling = callings.gold;
+const cornerer = (good: Good, ledger: Ledger): Strategy => {
+  const calling = withCarriers(callings.gold);
   return {
     name: `corner ${good}`,
     weaponsPercentage: 0,
     play: async context => {
       const want = wants(context, calling);
-      await buyWants(context, want);
+      await payBills(context, ledger);
+      await buyWants(context, want, [], ledger);
+      await hireCarriers(context, good, ledger);
       const ceiling = cornerMarkup * merchantsPrice(context.config, good);
-      await buy(context.player, good, Number.MAX_SAFE_INTEGER, (await context.player.kingdom()).resources.gold * spendShare, { fromAllies: false, maxPrice: ceiling });
+      // buys rivals' supply off the market, but stops at a few turns of what its allies lack, as more is gold sunk
+      const allies = [...ledger.needs.entries()].filter(([name]) => name !== context.kingdom.name).reduce((sum, [, needs]) => sum + (needs[good] ?? 0), 0);
+      const room = Math.max(0, unsoldTurns * allies - stock(context, good));
+      if (room > 0) await buy(context.player, good, room, (await context.player.kingdom()).resources.gold * spendShare, { fromAllies: false, maxPrice: ceiling });
       const { plan, workers } = await thisTurn(context, calling, false);
       await developEconomy(await refreshed(context), plan, workers);
-      await sell(context, good, want[good] ?? 0, ceiling);
+      await ship(context, good, want[good] ?? 0, ledger);
+      await sell(context, good, (want[good] ?? 0) + debtors(context, ledger).length, ceiling);
+      await bill(context, good, ledger);
       await topUpFood(context, calling);
     },
   };

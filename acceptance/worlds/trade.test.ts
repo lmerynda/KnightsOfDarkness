@@ -31,14 +31,24 @@ test("a coalition of specialists buys most of what it needs from its own members
   }
 });
 
-test("a coalition without an iron miner buys its iron outside, and a rival that corners iron sells it only dear", async () => {
+test("a coalition without an iron miner buys its iron outside, and a rival that corners iron sells it only dear and carries its own", async () => {
   const server = await startServer();
   try {
     const world = new World(server.url);
     const guild = await foundCoalition(world, "Guild", () => coalitionOf(["gold", "gold", "corner:iron", "food", "smith", "iron"]));
     const hanse = await foundCoalition(world, "Hanse", () => coalitionOf(["gold", "gold", "gold", "food", "smith"]));
-    const run = await runWorld(world, [...guild.rulers, ...hanse.rulers], 30);
+    const smith = guild.rulers.find(ruler => ruler.strategy.name === "smith")?.player.name;
+    const carriedToSmith: number[] = [];
+    const run = await runWorld(world, [...guild.rulers, ...hanse.rulers], 30, {
+      afterTurn: async () => {
+        for (const ruler of guild.rulers) {
+          const loads = (await ruler.player.kingdom()).carriersOnTheMove.filter(load => load.to === smith && load.resource === "iron" && load.from === ruler.player.name);
+          carriedToSmith.push(...loads.map(load => load.count));
+        }
+      },
+    });
     assert.deepEqual(run.violations, []);
+    assert.ok(carriedToSmith.length > 0, "nobody in Guild carried iron to its smith");
 
     const config = await world.config();
     const trades = await world.trades();
@@ -51,6 +61,10 @@ test("a coalition without an iron miner buys its iron outside, and a rival that 
     assert.deepEqual([...new Set(fromGuild.map(trade => trade.price))], [2 * (config.bots.prices.iron ?? 0)]);
     const cornered = trades.filter(trade => trade.resource === "iron" && trade.buyer === guild.rulers[2]?.player.name && !guildNames.has(trade.seller));
     assert.ok(cornered.length > 0, "the cornerer bought no iron outside its coalition");
+    // inside Guild iron changes hands only as one-piece bills, through which the smith pays for what it was carried
+    const ironWithinGuild = trades.filter(trade => trade.resource === "iron" && guildNames.has(trade.buyer) && guildNames.has(trade.seller));
+    assert.deepEqual(ironWithinGuild.filter(trade => trade.count !== 1), [], "Guild's members bought cornered iron from each other at the dear price");
+    assert.ok(ironWithinGuild.some(trade => trade.buyer === smith && trade.price > 2 * (config.bots.prices.iron ?? 0)), "Guild's smith never paid for the iron it was carried");
   } finally {
     await server.stop();
   }

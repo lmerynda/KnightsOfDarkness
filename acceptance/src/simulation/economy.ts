@@ -16,12 +16,13 @@ Each --coalition founds one coalition with one kingdom per craft; without any, t
 with; a farmer (food), a smith (tools and weapons, as either sells, buying iron) and an iron miner (iron) sell their
 goods and grow gold mines instead while their goods pile up unsold; a warrior arms an army with bought weapons and
 strikes the largest kingdom it may attack every six turns; corner:iron (or corner: with food, tools or weapons) is a
-gold producer that buys every piece rivals and merchants offer and resells it at twice the merchants' price, and the
-coalition's own craftsmen of that good then ask that price too. A coalition may leave a craft out and rely on the market. Each buys from its allies first and from anyone else for
-the rest, and grows its own food when it cannot buy enough. Rulers play in a new random order every turn, so no
-coalition always meets the market and the armies first. The merchant bots play too. The report gives each
-kingdom's land and gold, each coalition's land and its craftsmen's land against its gold producers', and the pieces of
-every good each coalition bought from allies, from the bots and from other kingdoms.`;
+gold producer that buys every piece rivals and merchants offer and asks twice the merchants' price on the market; the
+coalition's own craftsmen of that good ask that price too, and the coalition passes the good to its members by
+carriers instead, billed at the merchants' price. A coalition may leave a craft out and rely on the market. Each buys
+from its allies first and from anyone else for the rest, and grows its own food when it cannot buy enough. Rulers play
+in a new random order every turn, so no coalition always meets the market and the armies first. The merchant bots play
+too. The report gives each kingdom's land, gold and army, each coalition's land and its craftsmen's land against its
+gold producers', and the pieces of every good each coalition bought from allies, from the bots and from other kingdoms.`;
 
 const { values } = parseArgs({
   options: {
