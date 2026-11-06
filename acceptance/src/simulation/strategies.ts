@@ -138,6 +138,29 @@ export const economist: Strategy = {
   play: context => developEconomy(context, economyPlan, economyWorkers),
 };
 
+/** more acres than any treasury buys, so a purchase takes all the land the gold pays for */
+const allTheLandItBuys = 100_000;
+
+/**
+ * stays on its starting land for half the round, filling the workplaces it has, so small kingdoms' production bonus never
+ * fades; then spends the whole treasury on land at once and grows as the economist does
+ */
+export const hoarder: Strategy = {
+  name: "hoarder",
+  weaponsPercentage: 0,
+  play: async context => {
+    if (context.turn < context.config.round.lengthInTicks / 2) {
+      await staffBuildings(context, economyWorkers);
+      return;
+    }
+    if (!context.memory.spent) {
+      await context.player.buyLand(allTheLandItBuys);
+      context.memory.spent = true;
+    }
+    await developEconomy(context, economyPlan, economyWorkers);
+  },
+};
+
 /** walls, towers and guards on top of a smaller economy, bowmen behind the walls and infantry to hold them in melee */
 export const turtle: Strategy = {
   name: "turtle",
@@ -261,6 +284,7 @@ export const raider: Strategy = {
 export const strategies: Record<string, () => Strategy> = {
   idle: () => idle,
   economist: () => economist,
+  hoarder: () => hoarder,
   turtle: () => turtle,
   warlord: () => warlord(),
   raider: () => raider,

@@ -9,7 +9,8 @@ const usage = `Simulate a world on a fresh game server and report how each ruler
 
   node src/cli.ts [--players economist,warlord,turtle,idle] [--turns 60] [--set path=value ...] [--compare] [--no-bots] [--out report.json]
 
-  --players   strategies to play, one kingdom each: ${Object.keys(strategies).join(", ")}
+  --players   strategies to play, one kingdom each: ${Object.keys(strategies).join(", ")};
+              name@turn founds that kingdom later, on the given turn, for example economist@300
   --turns     turns to play
   --set       override gameconfig.json, for example --set attack.maxLandCaptureRatio=0.2 (repeatable)
   --compare   run the base config and the overridden one with the same rulers and print both
@@ -41,8 +42,11 @@ if (values.help) {
   process.exit(0);
 }
 
-const playerNames = values.players.split(",").map(name => name.trim());
-const unknown = playerNames.filter(name => !(name in strategies));
+const players = values.players.split(",").map((entry, index) => {
+  const [name, joins] = entry.trim().split("@");
+  return { name, index, joinsOnTurn: joins === undefined ? 1 : Number(joins) };
+});
+const unknown = players.filter(({ name, joinsOnTurn }) => !(name in strategies) || !(joinsOnTurn >= 1)).map(({ name }) => name);
 if (unknown.length) {
   console.error(`Unknown strategies: ${unknown.join(", ")}\n\n${usage}`);
   process.exit(2);
@@ -59,12 +63,16 @@ const simulate = async (label: string, configOverrides: ConfigOverrides): Promis
   const server = await startServer(configOverrides);
   try {
     const world = new World(server.url);
+    const founders = players.filter(({ joinsOnTurn }) => joinsOnTurn === 1);
     const rulers = await foundRulers(
       world,
-      playerNames.map(name => strategies[name]()),
+      founders.map(({ name }) => strategies[name]()),
     );
+    const newcomers = players
+      .filter(({ joinsOnTurn }) => joinsOnTurn > 1)
+      .map(({ name, index, joinsOnTurn }) => ({ name: `Sim ${name} ${index + 1} late ${joinsOnTurn}`, strategy: strategies[name](), joinsOnTurn }));
     const started = Date.now();
-    const run = await runWorld(world, rulers, turns, { bots: !values["no-bots"] });
+    const run = await runWorld(world, rulers, turns, { bots: !values["no-bots"], newcomers });
     console.error(`${label}: ${turns} turns in ${((Date.now() - started) / 1000).toFixed(1)} s`);
     return run;
   } finally {

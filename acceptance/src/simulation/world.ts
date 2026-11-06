@@ -5,6 +5,8 @@ import { buildingNames, militaryUnits, resourceNames, unitNames } from "../api/t
 
 export type Ruler = { player: Player; strategy: Strategy; memory: Record<string, unknown> };
 
+export type Newcomer = { name: string; strategy: Strategy; joinsOnTurn: number };
+
 export type Snapshot = {
   turn: number;
   kingdom: string;
@@ -95,13 +97,24 @@ export const runWorld = async (
   world: World,
   rulers: Ruler[],
   turns: number,
-  options: { bots?: boolean; afterTick?: (turn: number) => Promise<void>; afterTurn?: (turn: number) => Promise<void>; pace?: Pace } = {},
+  options: {
+    bots?: boolean;
+    afterTick?: (turn: number) => Promise<void>;
+    afterTurn?: (turn: number) => Promise<void>;
+    pace?: Pace;
+    /** rulers who found their kingdom later in the round, just before the clock ticks on the given turn */
+    newcomers?: Newcomer[];
+  } = {},
 ): Promise<WorldRun> => {
   const config = await world.config();
   const timeline: Snapshot[] = [];
   const violations: string[] = [];
+  rulers = [...rulers];
 
   for (let turn = 1; turn <= turns; turn++) {
+    for (const newcomer of options.newcomers?.filter(candidate => candidate.joinsOnTurn === turn) ?? []) {
+      rulers.push({ player: await world.foundKingdom(newcomer.name), strategy: newcomer.strategy, memory: {} });
+    }
     await world.advance(1, options.bots ?? true);
     // a look at the world as the clock left it, before anyone plays
     await options.afterTick?.(turn);
