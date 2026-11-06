@@ -131,13 +131,21 @@ cd acceptance && npm run coalitions -- --turns 120
 
 `--guard` turns the coordinated coalition's turtles into guardians who send soldiers to allies under threat; `--fund` has its warlords ask for gold on the market and its economists pay half of their spare gold into those asks. `--mirror` makes Horde play exactly as the coordinated coalition does, to see whether one of two equal coalitions runs away with the round. `--uneven` has rulers play in bursts of one to three turns at different ticks, as players who come back at different times; the war council's warlords join the first army's strike so their armies land together, and `--solo-strikes` has them march alone instead, to see what joining is worth.
 
-Real coalitions try to feed, tool and arm themselves, so most of their market should stay inside them; others bet on buying a good cheaply instead of making it, and a rival can answer by buying that good off the market. To see how these play out, play coalitions of specialists: gold producers who buy what they eat and train with, farmers, blacksmiths and iron miners, each buying from allies first and from anyone else for the rest. Every `--coalition` gives one coalition's make-up; `corner:iron` is a member who buys up every piece of iron rivals and merchants offer and resells it at twice the merchants' price:
+Real coalitions try to feed, tool and arm themselves, so most of their market should stay inside them; others bet on buying a good cheaply instead of making it, and a rival can answer by buying that good off the market. To see how these play out, play coalitions of specialists, each buying from allies first and from anyone else for the rest:
+
+- gold producers buy what they eat and train with;
+- farmers (`food`) sell food;
+- smiths make tools or weapons, whichever sells, from bought iron;
+- iron miners sell iron;
+- warriors arm an army with bought weapons and strike the largest kingdom within reach.
+
+Every `--coalition` gives one coalition's make-up. `corner:iron` is a member who buys up every piece of iron rivals and merchants offer and resells it at twice the merchants' price:
 
 ```bash
-cd acceptance && npm run economy -- --turns 120 --coalition Guild=gold,gold,gold,corner:iron,food,tools,tools,iron --coalition Hanse=gold,gold,gold,gold,gold,food,tools,tools --set bots.prices.tools=150 --compare
+cd acceptance && npm run economy -- --turns 120 --coalition Guild=gold,gold,gold,corner:iron,food,smith,smith,iron,warrior --coalition Hanse=gold,gold,gold,gold,gold,food,smith,smith,warrior --set bots.prices.weapons=150 --compare
 ```
 
-It prints every kingdom's land and gold, each coalition's land with its craftsmen's land against its gold producers', and the pieces of every good each coalition bought from allies, from the merchant bots and from other kingdoms. The bots' asking prices (`bots.prices` in `gameconfig.json`) anchor what goods are worth to everyone else.
+It prints every kingdom's land, gold and army, each coalition's land with its craftsmen's land against its gold producers', and the pieces of every good each coalition bought from allies, from the merchant bots and from other kingdoms. The bots' asking prices (`bots.prices` in `gameconfig.json`) anchor what goods are worth to everyone else.
 
 To see how the game looks as a world unfolds, play one and photograph the built pages along the way (needs `npm install` in `browser/` and an installed Chrome):
 

@@ -194,7 +194,7 @@ export const estimatedDefense = (report: SpyReport, config: GameConfig): number 
  * trains soldiers into free barracks places in the given proportions, spending at most the budget when one is given, and
  * only as many as the gold income, with the treasury spread over `payReserveTurns`, can pay every turn
  */
-const fillBarracks = async ({ player, config }: TurnContext, mix: Partial<Counts<UnitName>>, budget = Infinity): Promise<void> => {
+export const fillBarracks = async ({ player, config }: TurnContext, mix: Partial<Counts<UnitName>>, budget = Infinity): Promise<void> => {
   const details = await player.details();
   const { gold } = (await player.kingdom()).resources;
   const total = Object.values(mix).reduce((sum, share) => sum + (share ?? 0), 0);
@@ -228,30 +228,37 @@ export const attackableKingdoms = ({ kingdom, config, rankings }: TurnContext): 
 export const armyAtHome = (kingdom: Kingdom): Partial<Counts<UnitName>> =>
   Object.fromEntries(militaryUnits.map(unit => [unit, kingdom.units.availableUnits[unit]])) as Partial<Counts<UnitName>>;
 
+/**
+ * every few turns scouts the largest kingdom it may attack and marches with the whole army at home when that army is
+ * clearly stronger than the defense its spies saw
+ */
+export const strikeLargest = async (context: TurnContext, options: { attackEvery?: number; margin?: number } = {}): Promise<void> => {
+  const { player, config, turn, kingdom } = context;
+  if (kingdom.ongoingAttacks.length > 0 || turn % (options.attackEvery ?? 6) !== 0) return;
+  const target = attackableKingdoms(context)[0];
+  if (!target) return;
+
+  const army = armyAtHome(kingdom);
+  const power = armyPower(army, config);
+  if (power <= 0) return;
+
+  let defense = Infinity;
+  if (kingdom.units.availableUnits.spy > 0) {
+    const { data: report } = await player.sendSpies(target.kingdomName, kingdom.units.availableUnits.spy);
+    if (report?.success) defense = estimatedDefense(report, config);
+  }
+  if (power > defense * (options.margin ?? 1.3)) {
+    await player.sendAttack(target.kingdomName, "land", army);
+  }
+};
+
 /** scouts the largest kingdom it may attack and marches when its army is clearly stronger than the defense its spies saw */
 export const warlord = (options: { attackEvery?: number; margin?: number } = {}): Strategy => ({
   name: "warlord",
   weaponsPercentage: 70,
   play: async context => {
-    const { player, kingdom, config, turn } = context;
     await raiseArmy(context);
-
-    if (kingdom.ongoingAttacks.length > 0 || turn % (options.attackEvery ?? 6) !== 0) return;
-    const target = attackableKingdoms(context)[0];
-    if (!target) return;
-
-    const army = armyAtHome(kingdom);
-    const power = armyPower(army, config);
-    if (power <= 0) return;
-
-    let defense = Infinity;
-    if (kingdom.units.availableUnits.spy > 0) {
-      const { data: report } = await player.sendSpies(target.kingdomName, kingdom.units.availableUnits.spy);
-      if (report?.success) defense = estimatedDefense(report, config);
-    }
-    if (power > defense * (options.margin ?? 1.3)) {
-      await player.sendAttack(target.kingdomName, "land", army);
-    }
+    await strikeLargest(context, options);
   },
 });
 

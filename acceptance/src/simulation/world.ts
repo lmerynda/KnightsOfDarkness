@@ -104,6 +104,11 @@ export const runWorld = async (
     pace?: Pace;
     /** rulers who found their kingdom later in the round, just before the clock ticks on the given turn */
     newcomers?: Newcomer[];
+    /**
+     * plays the rulers in a new random order every turn; in a fixed order whoever acts first always meets the market and
+     * the armies first, which in a war between coalitions decides more than the rules being measured
+     */
+    shuffle?: boolean;
   } = {},
 ): Promise<WorldRun> => {
   const config = await world.config();
@@ -119,7 +124,14 @@ export const runWorld = async (
     // a look at the world as the clock left it, before anyone plays
     await options.afterTick?.(turn);
     const rankings = await world.rankings();
-    for (const [index, ruler] of rulers.entries()) {
+    const order = [...rulers.entries()];
+    if (options.shuffle) {
+      for (let last = order.length - 1; last > 0; last--) {
+        const pick = Math.floor(Math.random() * (last + 1));
+        [order[last], order[pick]] = [order[pick]!, order[last]!];
+      }
+    }
+    for (const [index, ruler] of order) {
       for (let play = 0; play < (options.pace?.(index, turn) ?? 1); play++) {
         const [kingdom, details] = await Promise.all([ruler.player.kingdom(), ruler.player.details(ruler.strategy.weaponsPercentage)]);
         await ruler.strategy.play({ player: ruler.player, world, config, kingdom, details, rankings, turn, memory: ruler.memory });

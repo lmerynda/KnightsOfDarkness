@@ -13,11 +13,13 @@ const usage = `Play coalitions that trade goods, and report how each fares and w
 
 Each --coalition founds one coalition with one kingdom per craft; without any, two self-sufficient coalitions play
 (Guild and Hanse, each ${selfSufficient.join(",")}). Crafts: gold producers buy what they eat and the tools they train
-with; food, tools and iron craftsmen sell their good (blacksmiths buy iron) and grow gold mines instead while their good
-piles up unsold; corner:iron (or corner:food, corner:tools) is a gold producer that buys every piece rivals and
-merchants offer and resells it at twice the merchants' price, and the coalition's own iron miners then ask that price
-too. A coalition may leave a craft out and rely on the market. Each buys from its allies first and from anyone else for
-the rest, and grows its own food when it cannot buy enough. The merchant bots play too. The report gives each
+with; a farmer (food), a smith (tools and weapons, as either sells, buying iron) and an iron miner (iron) sell their
+goods and grow gold mines instead while their goods pile up unsold; a warrior arms an army with bought weapons and
+strikes the largest kingdom it may attack every six turns; corner:iron (or corner: with food, tools or weapons) is a
+gold producer that buys every piece rivals and merchants offer and resells it at twice the merchants' price, and the
+coalition's own craftsmen of that good then ask that price too. A coalition may leave a craft out and rely on the market. Each buys from its allies first and from anyone else for
+the rest, and grows its own food when it cannot buy enough. Rulers play in a new random order every turn, so no
+coalition always meets the market and the armies first. The merchant bots play too. The report gives each
 kingdom's land and gold, each coalition's land and its craftsmen's land against its gold producers', and the pieces of
 every good each coalition bought from allies, from the bots and from other kingdoms.`;
 
@@ -70,7 +72,7 @@ export const simulate = async (configOverrides: ConfigOverrides): Promise<Econom
     const coalitions = [];
     for (const [name, crafts] of makeUps) coalitions.push(await foundCoalition(world, name, () => coalitionOf(crafts)));
     const rulers = coalitions.flatMap(coalition => coalition.rulers);
-    const run = await runWorld(world, rulers, turns);
+    const run = await runWorld(world, rulers, turns, { shuffle: true });
     const bots = (await world.rankings()).kingdoms.filter(rank => rank.bot).map(rank => rank.kingdomName);
     const groups = Object.fromEntries(coalitions.map(coalition => [coalition.name, coalition.rulers.map(ruler => ruler.player.name)]));
     return { run, trades: await world.trades(), groups, bots };
@@ -86,7 +88,7 @@ const report = (title: string, { run, trades, groups, bots }: EconomyRun): void 
       .flat()
       .map(kingdom => {
         const last = finalSnapshot(run, kingdom);
-        return { kingdom, land: last.land, gold: last.gold.toLocaleString("en-US"), food: last.food.toLocaleString("en-US"), people: last.people, starved: run.timeline.filter(entry => entry.kingdom === kingdom).reduce((sum, entry) => sum + entry.starved, 0) };
+        return { kingdom, land: last.land, gold: last.gold.toLocaleString("en-US"), food: last.food.toLocaleString("en-US"), people: last.people, army: last.army, starved: run.timeline.filter(entry => entry.kingdom === kingdom).reduce((sum, entry) => sum + entry.starved, 0) };
       }),
   );
   for (const [name, members] of Object.entries(groups)) {
@@ -95,7 +97,7 @@ const report = (title: string, { run, trades, groups, bots }: EconomyRun): void 
       const of = lands.filter(entry => entry.craft === craft);
       return of.reduce((sum, entry) => sum + entry.land, 0) / of.length;
     };
-    const gold = average("gold specialist");
+    const gold = average("gold");
     const crafts = [...new Set(lands.map(entry => entry.craft))].map(craft => `${craft} ${Math.round(average(craft))} (${Math.round((100 * average(craft)) / gold)}%)`);
     console.log(`${name} holds ${lands.reduce((sum, entry) => sum + entry.land, 0).toLocaleString("en-US")} acres; average land by craft against its gold producers: ${crafts.join(", ")}`);
     const shares = tradeShares(trades, members, bots);

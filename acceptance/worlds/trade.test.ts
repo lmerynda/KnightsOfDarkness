@@ -17,8 +17,13 @@ test("a coalition of specialists buys most of what it needs from its own members
     const bots = (await world.rankings()).kingdoms.filter(rank => rank.bot).map(rank => rank.kingdomName);
     const shares = tradeShares(await world.trades(), guild.rulers.map(ruler => ruler.player.name), bots);
     assert.ok(shares.bought.food.allies > 0, "no member bought food from the guild's farmer");
-    assert.ok(shares.bought.iron.allies > 0, "no blacksmith bought iron from the guild's miner");
+    assert.ok(shares.bought.iron.allies > 0, "no smith bought iron from the guild's miner");
+    assert.ok(shares.bought.weapons.allies > 0, "the warrior bought no weapons from the guild's smiths");
     assert.ok(shares.fromAllies > 0.5, `only ${Math.round(shares.fromAllies * 100)}% of the pieces bought came from members: ${JSON.stringify(shares.bought)}`);
+    const warrior = guild.rulers.find(ruler => ruler.strategy.name === "warrior");
+    assert.ok(warrior, "the guild has no warrior");
+    const last = run.timeline.filter(entry => entry.kingdom === warrior.player.name).at(-1);
+    assert.ok((last?.army ?? 0) > 0, "the warrior raised no army from bought weapons");
     // nobody starves while the farmer sells
     assert.deepEqual(run.timeline.filter(entry => entry.starved > 0), []);
   } finally {
@@ -30,8 +35,8 @@ test("a coalition without an iron miner buys its iron outside, and a rival that 
   const server = await startServer();
   try {
     const world = new World(server.url);
-    const guild = await foundCoalition(world, "Guild", () => coalitionOf(["gold", "gold", "corner:iron", "food", "tools", "iron"]));
-    const hanse = await foundCoalition(world, "Hanse", () => coalitionOf(["gold", "gold", "gold", "food", "tools"]));
+    const guild = await foundCoalition(world, "Guild", () => coalitionOf(["gold", "gold", "corner:iron", "food", "smith", "iron"]));
+    const hanse = await foundCoalition(world, "Hanse", () => coalitionOf(["gold", "gold", "gold", "food", "smith"]));
     const run = await runWorld(world, [...guild.rulers, ...hanse.rulers], 30);
     assert.deepEqual(run.violations, []);
 

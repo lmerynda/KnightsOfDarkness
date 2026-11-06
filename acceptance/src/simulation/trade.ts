@@ -1,6 +1,6 @@
 import type { Player } from "../api/client.ts";
-import type { BuildingName, MarketResource, MarketTrade, UnitName } from "../api/types.ts";
-import { developEconomy, type Plan, type Strategy, type TurnContext } from "./strategies.ts";
+import type { BuildingName, Counts, MarketResource, MarketTrade, UnitName } from "../api/types.ts";
+import { developEconomy, fillBarracks, strikeLargest, type Plan, type Strategy, type TurnContext } from "./strategies.ts";
 
 /**
  * Rulers of coalitions that trade: each lives by one trade and buys the rest, from its allies first and from anyone
@@ -8,28 +8,35 @@ import { developEconomy, type Plan, type Strategy, type TurnContext } from "./st
  * market should stay inside it; the merchant bots are a backstop. A coalition may also leave a craft out and rely on the
  * market for it, or corner a good to starve a rival that does.
  */
-export type Good = "food" | "tools" | "iron";
-/** a ruler's trade: gold, one of the goods, or cornering a good, which means buying up what rivals offer and reselling it dear */
-export type Craft = "gold" | Good | `corner:${Good}`;
+export type Good = MarketResource;
+/**
+ * a ruler's trade: gold producer, farmer, smith (tools and weapons), iron miner, warrior (an army fed by bought weapons),
+ * or cornering a good, which means buying up what rivals offer and reselling it dear
+ */
+export type Craft = "gold" | "food" | "smith" | "iron" | "warrior" | `corner:${Good}`;
 
-export const goods: Good[] = ["food", "tools", "iron"];
+export const goods: Good[] = ["food", "tools", "weapons", "iron"];
+const callingNames = ["gold", "food", "smith", "iron", "warrior"] as const;
+type CallingName = (typeof callingNames)[number];
 
 export const parseCraft = (text: string): Craft => {
   const craft = text.trim();
   const [kind, good] = craft.split(":");
-  if (good === undefined && (kind === "gold" || (goods as string[]).includes(kind ?? ""))) return craft as Craft;
+  if (good === undefined && (callingNames as readonly string[]).includes(kind ?? "")) return craft as Craft;
   if (kind === "corner" && (goods as string[]).includes(good ?? "")) return craft as Craft;
-  throw new Error(`Unknown craft "${craft}": use gold, food, tools, iron, corner:food, corner:tools or corner:iron`);
+  throw new Error(`Unknown craft "${craft}": use ${callingNames.join(", ")}, or corner: with one of ${goods.join(", ")}`);
 };
 
-type Calling = { plan: Plan; workers: UnitName[]; sells?: Good };
+type Calling = { plan: Plan; workers: UnitName[]; sells: Good[]; army?: Partial<Counts<UnitName>> };
 
 /** every calling keeps houses for its workers and a few gold mines, since land is bought with gold */
-const callings: Record<"gold" | Good, Calling> = {
-  gold: { plan: { house: 0.4, goldMine: 0.5 }, workers: ["goldMiner"] },
-  food: { plan: { house: 0.4, farm: 0.4, goldMine: 0.1 }, workers: ["farmer", "goldMiner"], sells: "food" },
-  tools: { plan: { house: 0.4, workshop: 0.4, goldMine: 0.1 }, workers: ["blacksmith", "goldMiner"], sells: "tools" },
-  iron: { plan: { house: 0.4, ironMine: 0.4, goldMine: 0.1 }, workers: ["ironMiner", "goldMiner"], sells: "iron" },
+const callings: Record<CallingName, Calling> = {
+  gold: { plan: { house: 0.4, goldMine: 0.5 }, workers: ["goldMiner"], sells: [] },
+  food: { plan: { house: 0.4, farm: 0.4, goldMine: 0.1 }, workers: ["farmer", "goldMiner"], sells: ["food"] },
+  smith: { plan: { house: 0.4, workshop: 0.4, goldMine: 0.1 }, workers: ["blacksmith", "goldMiner"], sells: ["tools", "weapons"] },
+  iron: { plan: { house: 0.4, ironMine: 0.4, goldMine: 0.1 }, workers: ["ironMiner", "goldMiner"], sells: ["iron"] },
+  // the warlords' barracks share on a gold economy; it makes no weapons, every soldier is armed from the market
+  warrior: { plan: { house: 0.3, goldMine: 0.45, barracks: 0.12, spyGuild: 0.01 }, workers: ["goldMiner"], sells: [], army: { infantry: 2, cavalry: 1 } },
 };
 
 const workplace: Partial<Record<UnitName, BuildingName>> = { goldMiner: "goldMine", farmer: "farm", blacksmith: "workshop", ironMiner: "ironMine" };
@@ -42,22 +49,53 @@ const spendShare = 0.5;
 const unsoldTurns = 5;
 /** how many times the merchants' price a cornerer pays at most, and asks for what it bought */
 const cornerMarkup = 2;
+/** spies a warrior keeps, so it can see its target's defense */
+const warriorSpies = 12;
+/**
+ * the share of its gold income a warrior spends on soldiers' pay; a warrior that pays out everything stops buying land,
+ * conquers acres it cannot build on or feed, and starves
+ */
+const armyPayShare = 0.3;
 
-/** how much of each good the ruler wants in store before it develops: a few turns of food, tools for the free workplaces, iron for the forges */
+/** trains soldiers while their pay stays within the warrior's share of its income */
+const raiseSoldiers = async (context: TurnContext, army: Partial<Counts<UnitName>>): Promise<void> => {
+  const { details, config, kingdom } = context;
+  const payRoom = armyPayShare * (details.forecast.resourcesProduced.gold ?? 0) - details.forecast.goldUpkeep;
+  if (payRoom <= 0) return;
+  await fillBarracks(context, army, Math.min(kingdom.resources.gold / 2, payRoom / config.common.soldierUpkeepRatio));
+};
+
+/**
+ * how much of each good the ruler wants in store before it develops: a few turns of food, tools for the free workplaces,
+ * iron for the forges, weapons for the free barracks places and missing spies
+ */
 const wants = (context: TurnContext, calling: Calling): Partial<Record<MarketResource, number>> => {
   const { details, config, kingdom } = context;
   const hungry = Math.max(0, details.foodUpkeep - (details.forecast.resourcesProduced.food ?? 0));
+  const free = (building: BuildingName): number => Math.max(0, (details.buildingCapacity[building] ?? 0) - (details.buildingOccupancy[building] ?? 0));
   const freePlaces = (unit: UnitName): number => {
     const home = workplace[unit];
-    return home ? Math.max(0, (details.buildingCapacity[home] ?? 0) - (details.buildingOccupancy[home] ?? 0)) : 0;
+    return home ? free(home) : 0;
   };
   const builders = Math.max(0, Math.floor(kingdom.resources.land / 10) - kingdom.units.availableUnits.builder);
   const tools = calling.workers.reduce((sum, unit) => sum + freePlaces(unit) * config.trainingCost[unit].tools, 0) + builders * config.trainingCost.builder.tools;
   const iron = kingdom.units.availableUnits.blacksmith * config.production.blacksmith.rate * config.common.ironConsumptionPerProductionUnit;
-  return { food: foodTurns * hungry, tools, iron: 2 * iron };
+  let weapons = 0;
+  if (calling.army) {
+    const shares = Object.entries(calling.army) as [UnitName, number][];
+    const total = shares.reduce((sum, [, share]) => sum + share, 0);
+    const perSoldier = shares.reduce((sum, [unit, share]) => sum + (config.trainingCost[unit].weapons * share) / total, 0);
+    const spies = Math.max(0, warriorSpies - kingdom.units.availableUnits.spy);
+    weapons = Math.ceil(free("barracks") * perSoldier) + spies * config.trainingCost.spy.weapons;
+  }
+  return { food: foodTurns * hungry, tools, iron: 2 * iron, weapons };
 };
 
 const held = (context: TurnContext, resource: MarketResource): number => context.kingdom.resources[resource];
+
+/** what the ruler has of a good, in store and still on offer from earlier turns */
+const stock = (context: TurnContext, resource: MarketResource): number =>
+  held(context, resource) + context.kingdom.marketOffers.filter(offer => offer.resource === resource).reduce((sum, offer) => sum + offer.count, 0);
 
 /** buys up to the count, cheapest allies' offers first (unless told to leave them), then anyone's; spends at most the budget */
 const buy = async (player: Player, resource: MarketResource, count: number, budget: number, { fromAllies = true, maxPrice = Infinity } = {}): Promise<void> => {
@@ -101,9 +139,9 @@ const sell = async (context: TurnContext, resource: MarketResource, keep: number
 };
 
 /** buys what the ruler lacks of every good it does not make itself */
-const buyWants = async (context: TurnContext, want: Partial<Record<MarketResource, number>>, makes?: Good): Promise<void> => {
+const buyWants = async (context: TurnContext, want: Partial<Record<MarketResource, number>>, makes: Good[] = []): Promise<void> => {
   for (const resource of goods) {
-    if (resource === makes) continue;
+    if (makes.includes(resource)) continue;
     const missing = (want[resource] ?? 0) - held(context, resource);
     if (missing > 0) await buy(context.player, resource, missing, (await context.player.kingdom()).resources.gold * spendShare);
   }
@@ -111,16 +149,24 @@ const buyWants = async (context: TurnContext, want: Partial<Record<MarketResourc
 
 const refreshed = async (context: TurnContext): Promise<TurnContext> => ({ ...context, kingdom: await context.player.kingdom(), details: await context.player.details() });
 
+/** buys food again once the turn's recruits are trained, since every worker and soldier raises the upkeep */
+const topUpFood = async (context: TurnContext, calling: Calling): Promise<void> => {
+  if (calling.sells.includes("food")) return;
+  const now = await refreshed(context);
+  const missing = (wants(now, calling).food ?? 0) - held(now, "food");
+  if (missing > 0) await buy(now.player, "food", missing, now.kingdom.resources.gold * spendShare);
+};
+
 /** the share of its land a ruler turns into farms when the market leaves it short of food */
 const selfFeedShare = 0.05;
 /**
- * turns of food below which a ruler grows its own: starving cuts production so hard that a kingdom which waits until
- * its stores are empty can no longer afford the farms
+ * turns of food below which a ruler grows its own, which is whenever the market could not fill its store: starving cuts
+ * production so hard that a kingdom which waits until its stores are empty can no longer afford the farms
  */
-const selfFeedBelowTurns = 2;
+const selfFeedBelowTurns = foodTurns;
 
 /**
- * what the ruler builds and staffs this turn: its calling, gold mines instead while its good piles up unsold, and farms
+ * what the ruler builds and staffs this turn: its calling, gold mines instead while its goods pile up unsold, and farms
  * of its own when it could not buy enough food, as a player does who will not starve waiting for the coalition's farmer
  */
 const thisTurn = async (context: TurnContext, calling: Calling, unsold: boolean): Promise<{ plan: Plan; workers: UnitName[] }> => {
@@ -136,31 +182,47 @@ const thisTurn = async (context: TurnContext, calling: Calling, unsold: boolean)
  */
 export const coalitionOf = (crafts: Craft[]): Strategy[] => {
   const cornered = crafts.filter(craft => craft.startsWith("corner:")).map(craft => craft.slice("corner:".length) as Good);
-  return crafts.map(craft => (craft.startsWith("corner:") ? cornerer(craft.slice("corner:".length) as Good) : craftsman(craft as "gold" | Good, cornered)));
+  return crafts.map(craft => (craft.startsWith("corner:") ? cornerer(craft.slice("corner:".length) as Good) : craftsman(craft as CallingName, cornered)));
 };
 
 /**
- * lives by one craft and buys the rest; when its good piles up unsold it grows gold mines instead of workplaces until
- * the market takes the stock, as a player would rather than make what nobody buys
+ * lives by one craft and buys the rest; when its goods pile up unsold it grows gold mines instead of workplaces until
+ * the market takes the stock, as a player would rather than make what nobody buys. A smith turns its forges to whichever
+ * of tools and weapons sold out, in proportion to what is left unsold of the other; a warrior arms soldiers with bought
+ * weapons and strikes the largest kingdom it may attack every few turns
  */
-const craftsman = (craft: "gold" | Good, cornered: Good[]): Strategy => {
+const craftsman = (craft: CallingName, cornered: Good[]): Strategy => {
   const calling = callings[craft];
-  return {
-    name: `${craft} specialist`,
-    weaponsPercentage: 0,
+  const strategy: Strategy = {
+    name: craft,
+    weaponsPercentage: calling.sells.includes("weapons") ? 50 : 0,
     play: async context => {
       const want = wants(context, calling);
       await buyWants(context, want, calling.sells);
-      const output = calling.sells ? (context.details.forecast.resourcesProduced[calling.sells] ?? 0) : 0;
-      const unsold = calling.sells !== undefined && held(context, calling.sells) - (want[calling.sells] ?? 0) > unsoldTurns * output;
+      const output = calling.sells.reduce((sum, good) => sum + (context.details.forecast.resourcesProduced[good] ?? 0), 0);
+      const surplus = calling.sells.reduce((sum, good) => sum + stock(context, good) - (want[good] ?? 0), 0);
+      const unsold = calling.sells.length > 0 && surplus > unsoldTurns * output;
+      if (calling.sells.includes("weapons")) {
+        const left = (good: Good): number => context.kingdom.marketOffers.filter(offer => offer.resource === good).reduce((sum, offer) => sum + offer.count, 0);
+        const [tools, weapons] = [left("tools"), left("weapons")];
+        if (tools + weapons > 0) strategy.weaponsPercentage = Math.round((100 * tools) / (tools + weapons));
+      }
+      if (calling.army) {
+        const spies = warriorSpies - context.kingdom.units.availableUnits.spy;
+        if (spies > 0) await context.player.train({ spy: spies });
+        await raiseSoldiers(await refreshed(context), calling.army);
+      }
       const { plan, workers } = await thisTurn(context, calling, unsold);
       await developEconomy(await refreshed(context), plan, workers);
-      if (calling.sells) {
-        const dear = cornered.includes(calling.sells) ? cornerMarkup * merchantsPrice(context.config, calling.sells) : undefined;
-        await sell(context, calling.sells, want[calling.sells] ?? 0, dear);
+      for (const good of calling.sells) {
+        const dear = cornered.includes(good) ? cornerMarkup * merchantsPrice(context.config, good) : undefined;
+        await sell(context, good, want[good] ?? 0, dear);
       }
+      await topUpFood(context, calling);
+      if (calling.army) await strikeLargest(await refreshed(context));
     },
   };
+  return strategy;
 };
 
 /**
@@ -171,7 +233,7 @@ const craftsman = (craft: "gold" | Good, cornered: Good[]): Strategy => {
 const cornerer = (good: Good): Strategy => {
   const calling = callings.gold;
   return {
-    name: `${good} cornerer`,
+    name: `corner ${good}`,
     weaponsPercentage: 0,
     play: async context => {
       const want = wants(context, calling);
@@ -181,12 +243,13 @@ const cornerer = (good: Good): Strategy => {
       const { plan, workers } = await thisTurn(context, calling, false);
       await developEconomy(await refreshed(context), plan, workers);
       await sell(context, good, want[good] ?? 0, ceiling);
+      await topUpFood(context, calling);
     },
   };
 };
 
-/** a coalition that feeds, arms and tools itself: a few gold producers, a farmer, blacksmiths and an iron miner */
-export const selfSufficient: Craft[] = ["gold", "gold", "gold", "gold", "food", "tools", "tools", "iron"];
+/** a coalition that feeds, arms and tools itself: a few gold producers, a farmer, smiths, an iron miner and a warrior */
+export const selfSufficient: Craft[] = ["gold", "gold", "gold", "gold", "food", "smith", "smith", "iron", "warrior"];
 
 export type TradeShares = {
   /** pieces of each good the group's members bought, by where they came from */
