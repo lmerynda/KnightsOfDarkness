@@ -11,6 +11,7 @@ import type {
   LandTransaction,
   MarketOffer,
   MarketPurchase,
+  MarketTrade,
   MarketResource,
   Notification,
   Rankings,
@@ -75,6 +76,11 @@ export class World {
 
   public config(): Promise<GameConfig> {
     return call(`${this.url}/simulation/config`);
+  }
+
+  /** every sale the market has seen, which no player can list */
+  public trades(): Promise<MarketTrade[]> {
+    return call(`${this.url}/simulation/trades`);
   }
 
   public rankings(): Promise<Rankings> {

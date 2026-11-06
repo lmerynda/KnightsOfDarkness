@@ -23,7 +23,7 @@ export type Strategy = {
 };
 
 /** shares of the land each building type should cover */
-type Plan = Partial<Counts<BuildingName>>;
+export type Plan = Partial<Counts<BuildingName>>;
 
 const workerHomes: [UnitName, BuildingName][] = [
   ["farmer", "farm"],
@@ -93,7 +93,7 @@ const keepBuilders = async ({ player, kingdom }: TurnContext): Promise<void> => 
 
 const economyPlan: Plan = { house: 0.34, farm: 0.14, goldMine: 0.22, ironMine: 0.06, workshop: 0.08 };
 
-const developEconomy = async (start: TurnContext, plan: Plan, workers: UnitName[]): Promise<void> => {
+export const developEconomy = async (start: TurnContext, plan: Plan, workers: UnitName[]): Promise<void> => {
   await growLand(start);
   const context = { ...start, kingdom: await start.player.kingdom() };
   const urgent: BuildingName[] = foodBalance(context.details) < 0 ? ["farm"] : [];

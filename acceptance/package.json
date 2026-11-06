@@ -11,6 +11,7 @@
         "sim": "node src/simulation/cli.ts",
         "stages": "node src/simulation/stages.ts",
         "coalitions": "node src/simulation/coalitions.ts",
+        "economy": "node src/simulation/economy.ts",
         "typecheck": "tsc --noEmit",
         "api:types": "openapi-typescript ../api/openapi.json --output src/api/schema.ts",
         "api:check": "npm run api:types && git diff --exit-code -- src/api/schema.ts"

@@ -1072,9 +1072,30 @@
               }
             },
             "type" : "object"
+          },
+          "prices" : {
+            "properties" : {
+              "food" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "iron" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "tools" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "weapons" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
           }
         },
-        "required" : [ "maxLand", "maxOffer", "maxStock" ],
+        "required" : [ "maxLand", "maxOffer", "maxStock", "prices" ],
         "type" : "object"
       },
       "BuildingCapacity" : {

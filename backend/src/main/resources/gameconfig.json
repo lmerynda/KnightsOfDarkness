@@ -225,6 +225,12 @@
             "iron": 5000,
             "tools": 3000,
             "weapons": 3000
+        },
+        "prices": {
+            "food": 15,
+            "iron": 25,
+            "tools": 60,
+            "weapons": 60
         }
     },
     "events": {

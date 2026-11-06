@@ -105,7 +105,7 @@ The layers, top to bottom:
 
 `npm test` runs every scenario through the API, the worlds and the robustness checks below; `npm run test:browser` runs the same scenarios through Chrome, plus `ui/`, the checks only a browser can make (help marks, phone layouts, the steward's links, forms filled in for the player). The browser suite builds the pages and serves them as production does, with `/api` passed to the test's world, and drives the installed Chrome; screenshots of a failed scenario land in `acceptance/test-results`. To play some scenarios only, name them: `npm test -- --test-name-pattern="granary|spy"`; a file whose scenarios are all skipped starts no world. A new rule of the game gets a scenario; a new verb goes into `Ruler` and both drivers.
 
-`worlds/` plays whole worlds with scripted rulers (`economist`, `warlord`, `turtle`, `raider`, `idle`, a `hoarder` who stays small for half the round and then buys land with everything, newcomers who found their kingdom mid-round, and coalitions with a war council) and checks rule invariants for every kingdom on every turn (no negative stocks, no buildings beyond land, marching armies match soldiers away), growth, starvation, battles, bot limits, rankings, and that a balance change does what it claims.
+`worlds/` plays whole worlds with scripted rulers (`economist`, `warlord`, `turtle`, `raider`, `idle`, a `hoarder` who stays small for half the round and then buys land with everything, newcomers who found their kingdom mid-round, coalitions with a war council, and coalitions of specialists who trade with each other) and checks rule invariants for every kingdom on every turn (no negative stocks, no buildings beyond land, marching armies match soldiers away), growth, starvation, battles, bot limits, rankings, and that a balance change does what it claims.
 
 `robustness/` checks that the server stands up to players. `races.test.ts` sends requests at the same moment, as from two tabs or two players reaching for one thing: buyers racing for one offer, a buyer racing the seller's withdrawal, turns passed and gold spent from ten tabs, one kingdom or alliance name claimed twice, the last places in an alliance. Nothing may be spent twice, made out of nothing or lost, and the loser of a race is told so (a refusal, or 409), never a server error. `hostile.test.ts` sends some 900 seeded requests from three rulers, the signed-out and a forger to every endpoint, with numbers below zero and past what an int holds, text where numbers go, other players' names and ids, and bodies that are not JSON; once with no time passing, where the world's gold may only change hands or be spent, and once with turns passed at any weapons share in between. No answer may be a server error and every rule must hold after every batch. A failure names its seed; `KOD_FUZZ_SEED=7 npm test -- --test-name-pattern=hostile` plays that run again, or another one.
 
@@ -130,6 +130,14 @@ cd acceptance && npm run coalitions -- --turns 120
 ```
 
 `--guard` turns the coordinated coalition's turtles into guardians who send soldiers to allies under threat; `--fund` has its warlords ask for gold on the market and its economists pay half of their spare gold into those asks. `--mirror` makes Horde play exactly as the coordinated coalition does, to see whether one of two equal coalitions runs away with the round. `--uneven` has rulers play in bursts of one to three turns at different ticks, as players who come back at different times; the war council's warlords join the first army's strike so their armies land together, and `--solo-strikes` has them march alone instead, to see what joining is worth.
+
+Real coalitions try to feed, tool and arm themselves, so most of their market should stay inside them. To see whether it does, play coalitions of specialists: gold producers who buy what they eat and train with, a farmer, blacksmiths and an iron miner, each buying from allies first and from anyone else for the rest:
+
+```bash
+cd acceptance && npm run economy -- --turns 120 --crafts gold,gold,gold,gold,food,tools,iron --set bots.prices.iron=100
+```
+
+It prints every kingdom's land and gold, and for each coalition the pieces of every good its members bought from allies, from the merchant bots and from other kingdoms. The bots' asking prices (`bots.prices` in `gameconfig.json`) anchor what goods are worth to everyone else.
 
 To see how the game looks as a world unfolds, play one and photograph the built pages along the way (needs `npm install` in `browser/` and an installed Chrome):
 

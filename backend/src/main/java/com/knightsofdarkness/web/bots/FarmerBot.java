@@ -73,7 +73,7 @@ public class FarmerBot extends Bot
 
         if (countToOffer > 0)
         {
-            botFunctions.postOffer(kingdom, market, MarketResource.food, countToOffer, 15);
+            botFunctions.postOffer(kingdom, market, MarketResource.food, countToOffer, gameConfig.bots().getPrice(MarketResource.food));
         }
 
         return countToOffer;

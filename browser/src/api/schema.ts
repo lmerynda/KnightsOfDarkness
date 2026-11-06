@@ -1371,6 +1371,16 @@ export interface components {
         /** Format: int32 */
         weapons?: number;
       };
+      prices: {
+        /** Format: int32 */
+        food?: number;
+        /** Format: int32 */
+        iron?: number;
+        /** Format: int32 */
+        tools?: number;
+        /** Format: int32 */
+        weapons?: number;
+      };
     };
     BuildingCapacity: {
       /** Format: int32 */

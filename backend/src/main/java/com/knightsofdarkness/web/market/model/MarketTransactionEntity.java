@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import com.knightsofdarkness.web.common.market.MarketResource;
+import com.knightsofdarkness.web.common.market.MarketTradeDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,6 +36,11 @@ public class MarketTransactionEntity {
         this.price = price;
         this.count = count;
         this.date = date;
+    }
+
+    public MarketTradeDto toTradeDto()
+    {
+        return new MarketTradeDto(resource, seller, buyer, price, count);
     }
 
     public MarketResource getResource()

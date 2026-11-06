@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.knightsofdarkness.web.bots.Scheduler;
 import com.knightsofdarkness.web.common.game.RoundDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomDto;
+import com.knightsofdarkness.web.common.market.MarketTradeDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.KingdomService;
+import com.knightsofdarkness.web.market.model.MarketTransactionJpaRepository;
 import com.knightsofdarkness.web.round.RoundService;
 
 /**
@@ -30,9 +32,11 @@ public class SimulationController
     private final RoundService roundService;
     private final Scheduler botScheduler;
     private final GameConfig gameConfig;
+    private final MarketTransactionJpaRepository trades;
 
-    public SimulationController(KingdomService kingdomService, RoundService roundService, Scheduler botScheduler, GameConfig gameConfig)
+    public SimulationController(KingdomService kingdomService, RoundService roundService, Scheduler botScheduler, GameConfig gameConfig, MarketTransactionJpaRepository trades)
     {
+        this.trades = trades;
         this.kingdomService = kingdomService;
         this.roundService = roundService;
         this.botScheduler = botScheduler;
@@ -72,6 +76,15 @@ public class SimulationController
     ResponseEntity<List<KingdomDto>> kingdoms()
     {
         return ResponseEntity.ok(kingdomService.getAllKingdoms());
+    }
+
+    /**
+     * every sale the market has seen, for measuring who trades with whom
+     */
+    @GetMapping("/trades")
+    ResponseEntity<List<MarketTradeDto>> trades()
+    {
+        return ResponseEntity.ok(trades.findAll().stream().map(trade -> trade.toTradeDto()).toList());
     }
 
     @GetMapping("/config")

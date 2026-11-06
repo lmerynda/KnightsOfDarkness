@@ -1,7 +1,5 @@
 package com.knightsofdarkness.web.bots;
 
-import java.util.Random;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,11 +18,8 @@ public class BlacksmithBot extends Bot
     private static final Logger log = LoggerFactory.getLogger(BlacksmithBot.class);
     private static final double builderToSpecialistRatio = 0.07;
     private static final double housesToSpecialistBuildingRatio = 0.6;
-    private static final double toolsPriceIfUnknown = 140.0;
-    private static final int minimumMarketPrice = 5;
     private static final int weaponsProductionPercentage = 0;
     private final IMarket market;
-    private final Random random = new Random();
     private IKingdomInteractor kingdomInteractor;
 
     public BlacksmithBot(KingdomEntity kingdom, IMarket market, IKingdomInteractor kingdomInteractor, GameConfig gameConfig)
@@ -89,19 +84,10 @@ public class BlacksmithBot extends Bot
 
         if (toolsCount > 0)
         {
-            botFunctions.postOffer(kingdom, market, MarketResource.tools, (int) (toolsCount * percentage), runPricingAlgorithm());
+            botFunctions.postOffer(kingdom, market, MarketResource.tools, (int) (toolsCount * percentage), gameConfig.bots().getPrice(MarketResource.tools));
         }
 
         return toolsCount;
-    }
-
-    private int runPricingAlgorithm()
-    {
-        double average = market.getLast24TransactionAverages(MarketResource.tools).orElse(toolsPriceIfUnknown);
-        // final price is a average * random int [0.9,1.1]
-        int finalPrice = (int) Math.round(average * (0.9 + random.nextInt(21) / 100.0));
-        finalPrice = Math.max(finalPrice, minimumMarketPrice);
-        return finalPrice;
     }
 
     @Override
@@ -115,7 +101,6 @@ public class BlacksmithBot extends Bot
 
         runPrePassTurnActions();
         var action = new KingdomTurnAction(kingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
-        log.info("[BlacksmithBot] transaction average for last 24 entires for tools is {}", market.getLast24TransactionAverages(MarketResource.tools));
         action.passTurn(weaponsProductionPercentage);
     }
 

@@ -9,9 +9,14 @@ import com.knightsofdarkness.web.common.market.MarketResource;
  * Merchant bots play every turn the moment it arrives, so without limits they outgrow every player, flood the market and
  * hoard stores worth plundering. They stop buying land at maxLand, offer at most maxOffer of a good at a time, and once
  * all bots have acted they ship anything above maxStock to distant markets (player purchases until their next run can
- * lift them above it again).
+ * lift them above it again). They ask fixed prices, which anchor what the goods are worth to everyone else.
  */
-public record Bots(int maxLand, Map<ResourceName, Integer> maxStock, Map<MarketResource, Integer> maxOffer) {
+public record Bots(int maxLand, Map<ResourceName, Integer> maxStock, Map<MarketResource, Integer> maxOffer, Map<MarketResource, Integer> prices) {
+    public int getPrice(MarketResource resource)
+    {
+        return prices.get(resource);
+    }
+
     public int getMaxStock(ResourceName resource)
     {
         return maxStock.getOrDefault(resource, Integer.MAX_VALUE);
