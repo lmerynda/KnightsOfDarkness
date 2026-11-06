@@ -54,9 +54,11 @@ public class GameInitializer implements CommandLineRunner
     }
 
     /**
-     * the world outlives the server, so a restart finds what an earlier start created and makes only what is missing
+     * the world outlives the server, so a restart finds what an earlier start created and makes only what is missing; it
+     * is seeded in one transaction, since the helpers below are called from within this class, where no proxy opens one
      */
     @Override
+    @Transactional
     public void run(String... args)
     {
         if (seedDevAccounts)
@@ -76,7 +78,6 @@ public class GameInitializer implements CommandLineRunner
         }
     }
 
-    @Transactional
     private void createAlliance(String allianceName, String emperor, String kingdom)
     {
         if (allianceRepository.getAllianceByName(allianceName).isPresent())
@@ -92,8 +93,7 @@ public class GameInitializer implements CommandLineRunner
         allianceRepository.create(alliance);
     }
 
-    @Transactional
-    KingdomEntity createKingdom(String name)
+    private KingdomEntity createKingdom(String name)
     {
         log.info("Initializing kingdom {}", name);
         return kingdomService.createKingdom(name);
@@ -102,7 +102,7 @@ public class GameInitializer implements CommandLineRunner
     /**
      * development kingdoms get a small garrison so war and espionage can be tried right away
      */
-    void createPlayerKingdom(String name)
+    private void createPlayerKingdom(String name)
     {
         if (kingdomRepository.getKingdomByName(name).isPresent())
         {
@@ -119,8 +119,7 @@ public class GameInitializer implements CommandLineRunner
         kingdomRepository.add(kingdom);
     }
 
-    @Transactional
-    void createBot(String name, SpecialBuildingType specialBuildingType)
+    private void createBot(String name, SpecialBuildingType specialBuildingType)
     {
         if (kingdomRepository.getKingdomByName(name).isPresent())
         {

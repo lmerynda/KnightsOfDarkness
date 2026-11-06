@@ -9,13 +9,17 @@ import org.springframework.stereotype.Repository;
 
 import com.knightsofdarkness.web.alliance.IAllianceRepository;
 
+import jakarta.persistence.EntityManager;
+
 @Repository
 public class AllianceRepository implements IAllianceRepository {
     private final AllianceJpaRepository allianceJpaRepository;
     private final AllianceInvitationJpaRepository allianceInvitationRepository;
+    private final EntityManager entityManager;
 
-    public AllianceRepository(AllianceJpaRepository allianceJpaRepository, AllianceInvitationJpaRepository allianceInvitationRepository)
+    public AllianceRepository(AllianceJpaRepository allianceJpaRepository, AllianceInvitationJpaRepository allianceInvitationRepository, EntityManager entityManager)
     {
+        this.entityManager = entityManager;
         this.allianceJpaRepository = allianceJpaRepository;
         this.allianceInvitationRepository = allianceInvitationRepository;
     }
@@ -33,9 +37,14 @@ public class AllianceRepository implements IAllianceRepository {
     }
 
     @Override
+    /**
+     * inserts the alliance; its name is the key, so a second alliance of one name founded at the same moment breaks the
+     * key and is refused, where a save would quietly overwrite the first
+     */
     public void create(AllianceEntity alliance)
     {
-        allianceJpaRepository.save(alliance);
+        entityManager.persist(alliance);
+        entityManager.flush();
     }
 
     @Override
