@@ -24,6 +24,12 @@ test("a coalition of specialists buys most of what it needs from its own members
     assert.ok(warrior, "the guild has no warrior");
     const last = run.timeline.filter(entry => entry.kingdom === warrior.player.name).at(-1);
     assert.ok((last?.army ?? 0) > 0, "the warrior raised no army from bought weapons");
+    // a warrior that bought weapons for every free barracks place, more than its pay could ever arm, ended a run holding
+    // 150,000 of them
+    const config = await world.config();
+    const mostWeaponsASoldierTakes = Math.max(...(["infantry", "cavalry"] as const).map(unit => config.trainingCost[unit].weapons));
+    const hoard = (await warrior.player.kingdom()).resources.weapons;
+    assert.ok(hoard <= (last?.army ?? 0) * mostWeaponsASoldierTakes, `the warrior holds ${hoard} weapons for an army of ${last?.army}`);
     // craftsmen without a garrison held 2 to 6 defense, so every strike on them won and warriors took everyone's land
     const undefended = guild.rulers
       .filter(ruler => ruler !== warrior)
@@ -90,6 +96,27 @@ test("a coalition without an iron miner buys its iron outside, and a rival that 
       const army = (turn: number): number => run.timeline.find(entry => entry.kingdom === warrior && entry.turn === turn)?.army ?? 0;
       assert.ok(army(30) > army(20), `${coalition.name}'s warrior raised no soldiers after turn 20: ${army(20)} then ${army(30)}`);
     }
+  } finally {
+    await server.stop();
+  }
+});
+
+// A smith whose income collapsed when its iron was cornered kept paying its garrison, could buy neither food nor farmers,
+// and starved for forty turns; soldiers' pay here is 60% of their training cost, so ten infantry outgrow a gold producer's
+// income
+test("a craftsman whose soldiers' pay outgrows its income dismisses soldiers", async () => {
+  const server = await startServer({ "common.soldierUpkeepRatio": 0.6, "kingdomStartConfiguration.resources.weapons": 1_000 });
+  try {
+    const world = new World(server.url);
+    const solo = await foundCoalition(world, "Solo", () => coalitionOf(["gold"]));
+    const ruler = solo.rulers[0];
+    assert.ok(ruler, "the coalition has no ruler");
+    assert.ok((await ruler.player.train({ infantry: 10 })).success, "the ruler could not train infantry");
+    const run = await runWorld(world, solo.rulers, 1, { bots: false });
+    assert.deepEqual(run.violations, []);
+    assert.equal(run.timeline.at(-1)?.deserted, 0, "the soldiers deserted before the ruler could dismiss them");
+    const infantry = (await ruler.player.kingdom()).units.availableUnits.infantry;
+    assert.ok(infantry < 10, `the ruler kept all ${infantry} infantry it could not pay`);
   } finally {
     await server.stop();
   }
