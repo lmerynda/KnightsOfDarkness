@@ -144,7 +144,7 @@ Every member but the warrior keeps a garrison of bowmen and infantry in barracks
 Every `--coalition` gives one coalition's make-up. `corner:iron` is a member who buys up every piece of iron rivals and merchants offer and asks twice the merchants' price for it; the coalition then passes its iron to its own members by carriers, billed at the merchants' price, so only rivals pay the doubled price:
 
 ```bash
-cd acceptance && npm run economy -- --turns 120 --coalition Guild=gold,gold,gold,corner:iron,food,smith,smith,iron,warrior --coalition Hanse=gold,gold,gold,gold,gold,food,smith,smith,warrior --set bots.prices.weapons=150 --compare
+cd acceptance && npm run economy -- --turns 120 --coalition Guild=gold,gold,gold,corner:iron,food,smith,smith,iron,warrior --coalition Hanse=gold,gold,gold,gold,gold,food,smith,smith,warrior --set bots.prices.weapons=250 --compare
 ```
 
 It prints every kingdom's land, gold and army, each coalition's land with its craftsmen's land against its gold producers', and the pieces of every good each coalition bought from allies, from the merchant bots and from other kingdoms. The bots' asking prices (`bots.prices` in `gameconfig.json`) anchor what goods are worth to everyone else.

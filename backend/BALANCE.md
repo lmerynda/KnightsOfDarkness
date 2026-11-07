@@ -61,4 +61,15 @@ What simulated worlds measured about the rules, and the decisions taken from it.
    - Sized by a share of the gold it mines, a smith or iron miner, who earn their gold on the market, kept a token garrison and were struck most; with every craftsman's garrison sized by its land, smiths end at 64 to 96% and iron miners at 71 to 98% of a gold producer's land.
    - With war paying less, crafts pay less than gold again and the make-up with the most gold producers wins: an iron-less coalition (five gold producers) ends 5 to 7% larger than a self-sufficient one in all three runs, cornering ends even with it (97 to 103%) and 10 to 11% smaller than a self-sufficient coalition. The merchants' prices were set while warriors bought most of the weapons and need setting again.
    - Matches are noisier than without garrisons: the mirror match ends at 89 to 109%.
+1. The merchants' prices are iron 150, tools and weapons 300 instead of 100 and 200 (`bots.prices`, decided 2026-11-07), so that crafts pay like gold again with garrisons. Measured the day before (120 turns, two runs per match; Hanse's land against Guild's):
+
+   | Prices (iron/tools/weapons) | Iron-less against self-sufficient | Iron-less against cornering | Self-sufficient against cornering | Mirror |
+   |---|---|---|---|---|
+   | 100/200/200 (three runs) | 105 to 107% | 97 to 103% | 110 to 111% | 89 to 109% |
+   | 125/250/250 | 102%, 105% | 101%, 102% | 117%, 120% | 106% |
+   | 150/300/300 | 98%, 98% | 95%, 95% | 108%, 117% | 100% |
+   | 150/300/250 | 101%, 101% | 95%, 103% | 111%, 118% | |
+
+   - At 150/300 the make-ups stand in the circle again: leaving out the iron miner ends even, cornering beats the iron-less coalition by about 5% and loses to a self-sufficient one by 8 to 17%. The iron miner ends at 78 to 122% of a gold producer's land and the farmer at 92 to 105%; smiths spread from 39 to 87%, lowest where iron is cornered.
+   - Warriors now pay less than gold: 53 to 110% of a gold producer's land, and a coalition with a gold producer in the warrior's place ends 3 to 4% larger (two runs; 1 and 7% with weapons at 250). Weapons at 250 did not help the warrior (66 to 75%). The warrior is the next thing to tune.
 1. Balance over 300 simulated turns (2026-10-31): before today economy with defense won clearly (turtle 1,833 acres, economist 1,690, warlord 1,453). With 15% land capture, raid protection, random events, great works at ten times the price and rulers that raise them, the three styles end within 16% of each other: turtle 2,332, economist 2,120, warlord 2,010. Scripted rulers are a rough stand-in; check again once real players exist.
