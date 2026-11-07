@@ -224,9 +224,17 @@ export class Ruler {
 
   /** the gold carried off from the target in a won raid */
   public async goldPlunderedFrom(target: Ruler): Promise<number> {
-    await this.hasPlundered(target);
-    const raid = (await this.act.battles()).find(battle => battle.attacker === this.name && battle.defender === target.name && battle.attackerWon);
-    return raid?.goldPlundered ?? 0;
+    // the gold comes from the same reading that showed the raid: a second look at the war page while it was still
+    // rendering read 0 gold in Chrome
+    let taken = 0;
+    await eventually(`${this.name} has plundered ${target.name}`, async () => {
+      const raid = (await this.act.battles()).find(
+        battle => battle.attacker === this.name && battle.defender === target.name && battle.goldPlundered > 0 && battle.landTaken === 0,
+      );
+      taken = raid?.goldPlundered ?? 0;
+      return taken > 0;
+    });
+    return taken;
   }
 
   public async hasFoughtAt(target: Ruler): Promise<void> {
