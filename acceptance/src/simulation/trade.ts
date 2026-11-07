@@ -285,8 +285,8 @@ export const coalitionOf = (crafts: Craft[]): Strategy[] => {
 /**
  * lives by one craft and buys the rest; when its goods pile up unsold it grows gold mines instead of workplaces until
  * the market takes the stock, as a player would rather than make what nobody buys. A smith turns its forges to whichever
- * of tools and weapons sold out, in proportion to what is left unsold of the other; a warrior arms soldiers with bought
- * weapons and strikes the largest kingdom it may attack every few turns
+ * of tools and weapons sold out, in proportion to what is left unsold of the other, and evenly when both sold out; a
+ * warrior arms soldiers with bought weapons and strikes the largest kingdom in reach it clearly beats every few turns
  */
 const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
   const ships = callings[craft].sells.filter(good => ledger.cornered.includes(good));
@@ -305,7 +305,9 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
       if (calling.sells.includes("weapons")) {
         const left = (good: Good): number => context.kingdom.marketOffers.filter(offer => offer.resource === good).reduce((sum, offer) => sum + offer.count, 0);
         const [tools, weapons] = [left("tools"), left("weapons")];
-        if (tools + weapons > 0) strategy.weaponsPercentage = Math.round((100 * tools) / (tools + weapons));
+        // with both sold out there is nothing to weigh, so the forges split evenly again; a smith that kept the last split
+        // made tools alone for the rest of a run in which iron ran short and everything it made sold
+        strategy.weaponsPercentage = tools + weapons > 0 ? Math.round((100 * tools) / (tools + weapons)) : 50;
       }
       if (calling.army) {
         const spies = warriorSpies - context.kingdom.units.availableUnits.spy;

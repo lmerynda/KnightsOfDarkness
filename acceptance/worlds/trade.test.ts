@@ -41,8 +41,8 @@ test("a coalition without an iron miner buys its iron outside, and a rival that 
   const server = await startServer();
   try {
     const world = new World(server.url);
-    const guild = await foundCoalition(world, "Guild", () => coalitionOf(["gold", "gold", "corner:iron", "food", "smith", "iron"]));
-    const hanse = await foundCoalition(world, "Hanse", () => coalitionOf(["gold", "gold", "gold", "food", "smith"]));
+    const guild = await foundCoalition(world, "Guild", () => coalitionOf(["gold", "gold", "corner:iron", "food", "smith", "iron", "warrior"]));
+    const hanse = await foundCoalition(world, "Hanse", () => coalitionOf(["gold", "gold", "gold", "food", "smith", "warrior"]));
     const smith = guild.rulers.find(ruler => ruler.strategy.name === "smith")?.player.name;
     const carriedToSmith: number[] = [];
     const run = await runWorld(world, [...guild.rulers, ...hanse.rulers], 30, {
@@ -71,6 +71,13 @@ test("a coalition without an iron miner buys its iron outside, and a rival that 
     const ironWithinGuild = trades.filter(trade => trade.resource === "iron" && guildNames.has(trade.buyer) && guildNames.has(trade.seller));
     assert.deepEqual(ironWithinGuild.filter(trade => trade.count !== 1), [], "Guild's members bought cornered iron from each other at the dear price");
     assert.ok(ironWithinGuild.some(trade => trade.buyer === smith && trade.price > 2 * (config.bots.prices.iron ?? 0)), "Guild's smith never paid for the iron it was carried");
+    // with iron short everything the smiths make sells; a smith that kept its last split of tools and weapons once both
+    // sold out made tools alone from then on, and the warriors it armed stopped growing for the rest of the run
+    for (const coalition of [guild, hanse]) {
+      const warrior = coalition.rulers.find(ruler => ruler.strategy.name === "warrior")?.player.name;
+      const army = (turn: number): number => run.timeline.find(entry => entry.kingdom === warrior && entry.turn === turn)?.army ?? 0;
+      assert.ok(army(30) > army(20), `${coalition.name}'s warrior raised no soldiers after turn 20: ${army(20)} then ${army(30)}`);
+    }
   } finally {
     await server.stop();
   }

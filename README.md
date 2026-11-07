@@ -137,7 +137,7 @@ Real coalitions try to feed, tool and arm themselves, so most of their market sh
 - farmers (`food`) sell food;
 - smiths make tools or weapons, whichever sells, from bought iron;
 - iron miners sell iron;
-- warriors arm an army with bought weapons and strike the largest kingdom within reach.
+- warriors arm an army with bought weapons and strike the largest kingdom within reach whose defense they clearly beat.
 
 Every `--coalition` gives one coalition's make-up. `corner:iron` is a member who buys up every piece of iron rivals and merchants offer and asks twice the merchants' price for it; the coalition then passes its iron to its own members by carriers, billed at the merchants' price, so only rivals pay the doubled price:
 

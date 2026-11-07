@@ -228,31 +228,34 @@ export const attackableKingdoms = ({ kingdom, config, rankings }: TurnContext): 
 export const armyAtHome = (kingdom: Kingdom): Partial<Counts<UnitName>> =>
   Object.fromEntries(militaryUnits.map(unit => [unit, kingdom.units.availableUnits[unit]])) as Partial<Counts<UnitName>>;
 
+/** how many kingdoms a ruler scouts on an attack turn before it gives up for the turn */
+const scoutedPerStrike = 3;
+
 /**
- * every few turns scouts the largest kingdom it may attack and marches with the whole army at home when that army is
- * clearly stronger than the defense its spies saw
+ * every few turns scouts the kingdoms it may attack, largest first, and marches with the whole army at home on the first
+ * whose defense its spies saw that army clearly beat. A ruler who looked only at the largest stopped striking for good
+ * once a rival's army grew past its own there, while that rival took the land of everyone else in its coalition
  */
 export const strikeLargest = async (context: TurnContext, options: { attackEvery?: number; margin?: number } = {}): Promise<void> => {
   const { player, config, turn, kingdom } = context;
   if (kingdom.ongoingAttacks.length > 0 || turn % (options.attackEvery ?? 6) !== 0) return;
-  const target = attackableKingdoms(context)[0];
-  if (!target) return;
 
   const army = armyAtHome(kingdom);
   const power = armyPower(army, config);
   if (power <= 0) return;
 
-  let defense = Infinity;
-  if (kingdom.units.availableUnits.spy > 0) {
-    const { data: report } = await player.sendSpies(target.kingdomName, kingdom.units.availableUnits.spy);
-    if (report?.success) defense = estimatedDefense(report, config);
-  }
-  if (power > defense * (options.margin ?? 1.3)) {
-    await player.sendAttack(target.kingdomName, "land", army);
+  for (const candidate of attackableKingdoms(context).slice(0, scoutedPerStrike)) {
+    const spies = (await player.kingdom()).units.availableUnits.spy;
+    if (spies <= 0) return;
+    const { data: report } = await player.sendSpies(candidate.kingdomName, spies);
+    if (report?.success && power > estimatedDefense(report, config) * (options.margin ?? 1.3)) {
+      await player.sendAttack(candidate.kingdomName, "land", army);
+      return;
+    }
   }
 };
 
-/** scouts the largest kingdom it may attack and marches when its army is clearly stronger than the defense its spies saw */
+/** every six turns marches on the largest kingdom in reach whose defense its spies saw its army clearly beat */
 export const warlord = (options: { attackEvery?: number; margin?: number } = {}): Strategy => ({
   name: "warlord",
   weaponsPercentage: 70,

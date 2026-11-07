@@ -15,7 +15,7 @@ Each --coalition founds one coalition with one kingdom per craft; without any, t
 (Guild and Hanse, each ${selfSufficient.join(",")}). Crafts: gold producers buy what they eat and the tools they train
 with; a farmer (food), a smith (tools and weapons, as either sells, buying iron) and an iron miner (iron) sell their
 goods and grow gold mines instead while their goods pile up unsold; a warrior arms an army with bought weapons and
-strikes the largest kingdom it may attack every six turns; corner:iron (or corner: with food, tools or weapons) is a
+strikes the largest kingdom in reach it clearly beats every six turns; corner:iron (or corner: with food, tools or weapons) is a
 gold producer that buys every piece rivals and merchants offer and asks twice the merchants' price on the market; the
 coalition's own craftsmen of that good ask that price too, and the coalition passes the good to its members by
 carriers instead, billed at the merchants' price. A coalition may leave a craft out and rely on the market. Each buys
