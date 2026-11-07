@@ -198,10 +198,10 @@
         }
     },
     "carrierCapacity": {
-        "iron": 10,
-        "food": 100,
-        "tools": 10,
-        "weapons": 10
+        "iron": 200,
+        "food": 2000,
+        "tools": 200,
+        "weapons": 200
     },
     "espionage": {
         "counterIntelligencePerSpy": 2,

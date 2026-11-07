@@ -55,6 +55,12 @@ test("a coalition without an iron miner buys its iron outside, and a rival that 
     });
     assert.deepEqual(run.violations, []);
     assert.ok(carriedToSmith.length > 0, "nobody in Guild carried iron to its smith");
+    // carrying the coalition's iron must not take the miner's people: shippers who hired carriers for the allies' whole
+    // need, ten iron to a carrier, ended with a hundred miners and fifteen hundred carriers
+    const miner = (await guild.rulers.find(ruler => ruler.strategy.name === "iron")?.player.kingdom())?.units;
+    assert.ok(miner, "Guild has no iron miner");
+    const carriers = miner.availableUnits.carrier + miner.mobileUnits.carrier;
+    assert.ok(miner.availableUnits.ironMiner > 2 * carriers, `Guild's iron miner keeps ${miner.availableUnits.ironMiner} miners and ${carriers} carriers`);
 
     const config = await world.config();
     const trades = await world.trades();

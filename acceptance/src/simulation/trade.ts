@@ -158,8 +158,11 @@ type Ledger = {
   budgets: Map<string, number>;
 };
 
-/** the share of its land a shipper turns into markets, which house the carriers */
-const shipperMarketShare = 0.04;
+/**
+ * the share of its land a shipper turns into markets, which house the carriers; a carrier holds what twenty workers make
+ * in a turn, so a few carriers keep a craft's goods moving
+ */
+const shipperMarketShare = 0.01;
 
 /**
  * buys what the ruler lacks of every good it does not make itself, counting what carriers are bringing, and never above
@@ -260,14 +263,17 @@ const payBills = async (context: TurnContext, ledger: Ledger): Promise<void> => 
 const withCarriers = (calling: Calling): Calling => ({ ...calling, plan: { ...calling.plan, market: shipperMarketShare } });
 
 /**
- * trains the carriers the allies' written needs call for, before the turn's workers take the idle people; carriers are
- * away for a few turns, so a shipper keeps that many loads' worth
+ * trains the carriers for what the shipper can send of what its allies wrote they lack (its stock and a turn's output),
+ * before the turn's workers take the idle people; carriers are away for a few turns, so a shipper keeps that many loads'
+ * worth. Shippers who hired for the allies' whole need put their people into carriers with nothing to carry, and the
+ * coalition's iron miner ended with a hundred miners and fifteen hundred carriers
  */
 const hireCarriers = async (context: TurnContext, good: Good, ledger: Ledger): Promise<void> => {
   const { config, details, kingdom } = context;
   const need = [...ledger.needs.entries()].filter(([name]) => name !== kingdom.name).reduce((sum, [, needs]) => sum + (needs[good] ?? 0), 0);
+  const supply = kingdom.resources[good] + (details.forecast.resourcesProduced[good] ?? 0);
   const capacity = config.carrierCapacity[good] ?? 1;
-  const wanted = Math.ceil(need / capacity) * config.common.turnsToDeliverResources - kingdom.units.availableUnits.carrier - kingdom.units.mobileUnits.carrier;
+  const wanted = Math.ceil(Math.min(need, supply) / capacity) * config.common.turnsToDeliverResources - kingdom.units.availableUnits.carrier - kingdom.units.mobileUnits.carrier;
   const room = (details.buildingCapacity.market ?? 0) - (details.buildingOccupancy.market ?? 0);
   if (Math.min(wanted, room) > 0) await context.player.train({ carrier: Math.min(wanted, room) });
 };
@@ -343,9 +349,9 @@ const cornerer = (good: Good, ledger: Ledger): Strategy => {
       const want = wants(context, calling);
       await payBills(context, ledger);
       await buyWants(context, want, [], ledger);
-      await hireCarriers(context, good, ledger);
       const ceiling = cornerMarkup * merchantsPrice(context.config, good);
       await buy(context.player, good, Number.MAX_SAFE_INTEGER, (await context.player.kingdom()).resources.gold * spendShare, { fromAllies: false, maxPrice: ceiling });
+      await hireCarriers(await refreshed(context), good, ledger);
       const { plan, workers } = await thisTurn(context, calling, false);
       await developEconomy(await refreshed(context), plan, workers);
       await ship(context, good, want[good] ?? 0, ledger);

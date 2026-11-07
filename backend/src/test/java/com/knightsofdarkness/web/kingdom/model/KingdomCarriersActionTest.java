@@ -96,17 +96,17 @@ class KingdomCarriersActionTest {
     @Test
     void whenKingdomHasCarriersButNotEnoughTotalCapacity_sendingCarriers_shouldSendResourcesUpToCapacity()
     {
-        kingdom.getUnits().setCount(UnitName.carrier, 1);
-        kingdom.getResources().setCount(ResourceName.food, 1000);
         int carrierCapacity = gameConfig.carrierCapacity().get(MarketResource.food);
+        kingdom.getUnits().setCount(UnitName.carrier, 1);
+        kingdom.getResources().setCount(ResourceName.food, 10 * carrierCapacity);
 
-        var sendCarriersDto = new SendCarriersDto("destination", MarketResource.food, 1000);
+        var sendCarriersDto = new SendCarriersDto("destination", MarketResource.food, 10 * carrierCapacity);
         var action = new KingdomCarriersAction(kingdom, gameConfig);
         var sendCarriersResult = action.sendCarriers(sendCarriersDto);
 
         assertTrue(sendCarriersResult.success());
         assertThat(sendCarriersResult.data().get().count()).isEqualTo(carrierCapacity);
-        assertEquals(900, kingdom.getResources().getCount(ResourceName.food));
+        assertEquals(9 * carrierCapacity, kingdom.getResources().getCount(ResourceName.food));
         assertEquals(0, kingdom.getUnits().getAvailableCount(UnitName.carrier));
     }
 
