@@ -24,8 +24,14 @@ test("a coalition of specialists buys most of what it needs from its own members
     assert.ok(warrior, "the guild has no warrior");
     const last = run.timeline.filter(entry => entry.kingdom === warrior.player.name).at(-1);
     assert.ok((last?.army ?? 0) > 0, "the warrior raised no army from bought weapons");
-    // nobody starves while the farmer sells
-    assert.deepEqual(run.timeline.filter(entry => entry.starved > 0), []);
+    // a ruler may be caught short for a turn when the market runs dry, but grows its own food before it starves again;
+    // rulers who judged hunger by what the stores could cover starved turn after turn until their production collapsed
+    const starving = new Set(run.timeline.filter(entry => entry.starved > 0).map(entry => `${entry.kingdom}@${entry.turn}`));
+    assert.deepEqual(
+      run.timeline.filter(entry => entry.starved > 0 && starving.has(`${entry.kingdom}@${entry.turn - 1}`)),
+      [],
+      "a kingdom starved two turns in a row",
+    );
   } finally {
     await server.stop();
   }

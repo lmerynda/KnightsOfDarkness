@@ -152,8 +152,10 @@ type Ledger = {
   needs: Map<string, Partial<Record<Good, number>>>;
   /** gold each member owes each shipper for the loads it received, at the merchants' price: debtor, then shipper */
   owed: Map<string, Map<string, number>>;
-  /** the one-piece offers shippers post to be paid through, priced at what the debtor owes: offer id, then debtor */
+  /** the one-piece offers shippers post to be paid through: offer id, then debtor */
   bills: Map<string, string>;
+  /** the gold each member says it can spend on a bill, so a large debt is paid in instalments */
+  budgets: Map<string, number>;
 };
 
 /** the share of its land a shipper turns into markets, which house the carriers */
@@ -220,12 +222,14 @@ const ship = async (context: TurnContext, good: Good, keep: number, ledger: Ledg
   }
 };
 
-/** the allies who owe the shipper enough to bill */
+/** the allies who owe the shipper enough to bill, with this turn's instalment: the debt, or what the ally can spend */
 const debtors = (context: TurnContext, ledger: Ledger): [string, number][] =>
-  [...ledger.owed.entries()].map(([debtor, debts]): [string, number] => [debtor, Math.floor(debts.get(context.kingdom.name) ?? 0)]).filter(([, due]) => due >= context.config.market.minPrice);
+  [...ledger.owed.entries()]
+    .map(([debtor, debts]): [string, number] => [debtor, Math.floor(Math.min(debts.get(context.kingdom.name) ?? 0, ledger.budgets.get(debtor) ?? 0))])
+    .filter(([, due]) => due >= context.config.market.minPrice);
 
 /**
- * posts one piece of the good for each ally that owes the shipper, priced at the debt, so the ally pays by buying it, the
+ * posts one piece of the good for each ally that owes the shipper, priced at the instalment, so the ally pays by buying it, the
  * way allies pass gold through the market; old bills went with the shipper's other offers of the good when it sold, which
  * kept a piece back for each
  */
@@ -237,9 +241,10 @@ const bill = async (context: TurnContext, good: Good, ledger: Ledger): Promise<v
   }
 };
 
-/** pays the bills its shippers posted for it, as far as half the treasury goes */
+/** pays the bills its shippers posted for it, as far as half the treasury goes, and says what it can spend next time */
 const payBills = async (context: TurnContext, ledger: Ledger): Promise<void> => {
   const name = context.kingdom.name;
+  ledger.budgets.set(name, context.kingdom.resources.gold * spendShare);
   for (const offer of await context.player.alliesOffers()) {
     if (ledger.bills.get(offer.id) !== name) continue;
     if (offer.price > (await context.player.kingdom()).resources.gold * spendShare) continue;
@@ -273,7 +278,7 @@ const hireCarriers = async (context: TurnContext, good: Good, ledger: Ledger): P
  * cannot buy it cheaply from them
  */
 export const coalitionOf = (crafts: Craft[]): Strategy[] => {
-  const ledger: Ledger = { cornered: crafts.filter(craft => craft.startsWith("corner:")).map(craft => craft.slice("corner:".length) as Good), needs: new Map(), owed: new Map(), bills: new Map() };
+  const ledger: Ledger = { cornered: crafts.filter(craft => craft.startsWith("corner:")).map(craft => craft.slice("corner:".length) as Good), needs: new Map(), owed: new Map(), bills: new Map(), budgets: new Map() };
   return crafts.map(craft => (craft.startsWith("corner:") ? cornerer(craft.slice("corner:".length) as Good, ledger) : craftsman(craft as CallingName, ledger)));
 };
 
@@ -338,10 +343,7 @@ const cornerer = (good: Good, ledger: Ledger): Strategy => {
       await buyWants(context, want, [], ledger);
       await hireCarriers(context, good, ledger);
       const ceiling = cornerMarkup * merchantsPrice(context.config, good);
-      // buys rivals' supply off the market, but stops at a few turns of what its allies lack, as more is gold sunk
-      const allies = [...ledger.needs.entries()].filter(([name]) => name !== context.kingdom.name).reduce((sum, [, needs]) => sum + (needs[good] ?? 0), 0);
-      const room = Math.max(0, unsoldTurns * allies - stock(context, good));
-      if (room > 0) await buy(context.player, good, room, (await context.player.kingdom()).resources.gold * spendShare, { fromAllies: false, maxPrice: ceiling });
+      await buy(context.player, good, Number.MAX_SAFE_INTEGER, (await context.player.kingdom()).resources.gold * spendShare, { fromAllies: false, maxPrice: ceiling });
       const { plan, workers } = await thisTurn(context, calling, false);
       await developEconomy(await refreshed(context), plan, workers);
       await ship(context, good, want[good] ?? 0, ledger);

@@ -222,7 +222,7 @@
         },
         "maxOffer": {
             "food": 50000,
-            "iron": 5000,
+            "iron": 1500,
             "tools": 3000,
             "weapons": 3000
         },
