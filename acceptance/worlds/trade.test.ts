@@ -24,6 +24,12 @@ test("a coalition of specialists buys most of what it needs from its own members
     assert.ok(warrior, "the guild has no warrior");
     const last = run.timeline.filter(entry => entry.kingdom === warrior.player.name).at(-1);
     assert.ok((last?.army ?? 0) > 0, "the warrior raised no army from bought weapons");
+    // craftsmen without a garrison held 2 to 6 defense, so every strike on them won and warriors took everyone's land
+    const undefended = guild.rulers
+      .filter(ruler => ruler !== warrior)
+      .map(ruler => run.timeline.filter(entry => entry.kingdom === ruler.player.name).at(-1))
+      .filter(entry => (entry?.defense ?? 0) < 100);
+    assert.deepEqual(undefended.map(entry => `${entry?.kingdom}: ${entry?.defense}`), [], "craftsmen kept no garrison");
     // a ruler may be caught short for a turn when the market runs dry, but grows its own food before it starves again;
     // rulers who judged hunger by what the stores could cover starved turn after turn until their production collapsed
     const starving = new Set(run.timeline.filter(entry => entry.starved > 0).map(entry => `${entry.kingdom}@${entry.turn}`));

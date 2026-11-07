@@ -139,6 +139,8 @@ Real coalitions try to feed, tool and arm themselves, so most of their market sh
 - iron miners sell iron;
 - warriors arm an army with bought weapons and strike the largest kingdom within reach whose defense they clearly beat.
 
+Every member but the warrior keeps a garrison of bowmen and infantry in barracks on 1% of its land, with towers for the full tower bonus.
+
 Every `--coalition` gives one coalition's make-up. `corner:iron` is a member who buys up every piece of iron rivals and merchants offer and asks twice the merchants' price for it; the coalition then passes its iron to its own members by carriers, billed at the merchants' price, so only rivals pay the doubled price:
 
 ```bash

@@ -57,6 +57,23 @@ const warriorSpies = 12;
  */
 const armyPayShare = 0.3;
 
+/** the soldiers a craftsman keeps at home against warriors: bowmen shoot first, infantry holds the walls */
+const garrison: Partial<Counts<UnitName>> = { bowman: 1, infantry: 1 };
+/**
+ * the share of its land every craftsman keeps in barracks for its garrison, the smallest share measured that holds a
+ * warrior to about a gold producer's land; every larger one cost more land than it saved
+ */
+const garrisonShare = 0.01;
+
+/**
+ * fills the garrison's barracks with what the treasury can train and pay. Sized by its gold income instead, a smith or an
+ * iron miner, who earn their gold on the market, kept a token garrison and became every warrior's easiest target
+ */
+const raiseGarrison = async (context: TurnContext): Promise<void> => {
+  const kingdom = await context.player.kingdom();
+  await fillBarracks(context, garrison, kingdom.resources.gold * spendShare);
+};
+
 /** trains soldiers while their pay stays within the warrior's share of its income */
 const raiseSoldiers = async (context: TurnContext, army: Partial<Counts<UnitName>>): Promise<void> => {
   const { details, config, kingdom } = context;
@@ -80,14 +97,11 @@ const wants = (context: TurnContext, calling: Calling): Partial<Record<MarketRes
   const builders = Math.max(0, Math.floor(kingdom.resources.land / 10) - kingdom.units.availableUnits.builder);
   const tools = calling.workers.reduce((sum, unit) => sum + freePlaces(unit) * config.trainingCost[unit].tools, 0) + builders * config.trainingCost.builder.tools;
   const iron = kingdom.units.availableUnits.blacksmith * config.production.blacksmith.rate * config.common.ironConsumptionPerProductionUnit;
-  let weapons = 0;
-  if (calling.army) {
-    const shares = Object.entries(calling.army) as [UnitName, number][];
-    const total = shares.reduce((sum, [, share]) => sum + share, 0);
-    const perSoldier = shares.reduce((sum, [unit, share]) => sum + (config.trainingCost[unit].weapons * share) / total, 0);
-    const spies = Math.max(0, warriorSpies - kingdom.units.availableUnits.spy);
-    weapons = Math.ceil(free("barracks") * perSoldier) + spies * config.trainingCost.spy.weapons;
-  }
+  const shares = Object.entries(calling.army ?? garrison) as [UnitName, number][];
+  const total = shares.reduce((sum, [, share]) => sum + share, 0);
+  const perSoldier = shares.reduce((sum, [unit, share]) => sum + (config.trainingCost[unit].weapons * share) / total, 0);
+  const spies = calling.army ? Math.max(0, warriorSpies - kingdom.units.availableUnits.spy) : 0;
+  const weapons = Math.ceil(free("barracks") * perSoldier) + spies * config.trainingCost.spy.weapons;
   return { food: foodTurns * hungry, tools, iron: 2 * iron, weapons };
 };
 
@@ -203,10 +217,20 @@ const selfFeedBelowTurns = foodTurns;
  * of its own when it could not buy enough food, as a player does who will not starve waiting for the coalition's farmer
  */
 const thisTurn = async (context: TurnContext, calling: Calling, unsold: boolean): Promise<{ plan: Plan; workers: UnitName[] }> => {
-  const { plan, workers } = unsold ? callings.gold : calling;
+  const { plan: craft, workers } = unsold ? callings.gold : calling;
+  const plan = calling.army ? craft : defended(context, craft);
   const hungry = context.details.foodUpkeep - (context.details.forecast.resourcesProduced.food ?? 0);
   if ((await context.player.kingdom()).resources.food >= selfFeedBelowTurns * hungry) return { plan, workers };
   return { plan: { ...plan, farm: (plan.farm ?? 0) + selfFeedShare }, workers: [...workers, "farmer"] };
+};
+
+/**
+ * a craftsman's plan with barracks for its garrison and towers for the full tower bonus; without them every strike on
+ * a craftsman won, and whichever coalition's warrior struck took its rivals' land
+ */
+const defended = ({ config, kingdom }: TurnContext, plan: Plan): Plan => {
+  const towers = Math.ceil(config.attack.maxTowerDefenseBonus / config.attack.towerDefenseBonusPerTower);
+  return { ...plan, barracks: (plan.barracks ?? 0) + garrisonShare, tower: Math.max(plan.tower ?? 0, Math.min(0.05, towers / kingdom.resources.land)) };
 };
 
 /** ships the good to the members who wrote down they lack it, most lacking first, keeping what the shipper needs itself */
@@ -319,6 +343,8 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
         const spies = warriorSpies - context.kingdom.units.availableUnits.spy;
         if (spies > 0) await context.player.train({ spy: spies });
         await raiseSoldiers(await refreshed(context), calling.army);
+      } else {
+        await raiseGarrison(context);
       }
       const { plan, workers } = await thisTurn(context, calling, unsold);
       await developEconomy(await refreshed(context), plan, workers);
@@ -352,6 +378,7 @@ const cornerer = (good: Good, ledger: Ledger): Strategy => {
       const ceiling = cornerMarkup * merchantsPrice(context.config, good);
       await buy(context.player, good, Number.MAX_SAFE_INTEGER, (await context.player.kingdom()).resources.gold * spendShare, { fromAllies: false, maxPrice: ceiling });
       await hireCarriers(await refreshed(context), good, ledger);
+      await raiseGarrison(context);
       const { plan, workers } = await thisTurn(context, calling, false);
       await developEconomy(await refreshed(context), plan, workers);
       await ship(context, good, want[good] ?? 0, ledger);
