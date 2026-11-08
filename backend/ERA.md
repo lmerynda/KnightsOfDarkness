@@ -80,20 +80,51 @@ The 10%, 20% and 40% leads are first guesses, to be tuned against what the long 
 - **A rival policy.** Once a rival monument passes a set stage, warriors strike it first. Rival alliances stagger their strikes a few turns apart, which simulates agreeing by letter.
 - **Load.** Keep long runs to about six at a time, with no test suite alongside them (see the memory on parallel load).
 
+## Measured
+
+Step 1, on 2026-11-08: two runs of four coalitions of nine over an era, with no round reset. The table is in `BALANCE.md`. Per coalition:
+
+| | Day 30 | Day 60 | Day 90 |
+|---|---|---|---|
+| Land | 50,000 to 65,000 | 73,000 to 107,000 | 93,000 to 135,000 |
+| Gold a turn | 170 to 190M | 250 to 300M | 320 to 410M |
+| Tools a turn | 15,000 | 12,000 to 13,000 | 11,000 |
+| Iron a turn, with a miner | 93,000 | 92,000 | 68,000 to 85,000 |
+| Food a turn | 1.7M | 3.3M | 3.4 to 4.6M |
+
+The figures give these starting prices. Step 7 tunes them.
+
+- **Stage cost:** 5 billion gold, 1.5 million iron and 200,000 tools a stage. Over 10 stages that is 50 billion gold, 15 million iron and 2 million tools. That's about a week of a leading coalition's whole output at day 60 for each good.
+- **How long that takes:** a coalition paying in a third of its output finishes in about:
+  - 33 days if it starts at day 30;
+  - 21 days at day 60;
+  - 15 days at day 90.
+
+  Income keeps growing, so a fixed price gets cheaper as the era goes on, and eras end even without a clock.
+- **Upkeep:** 7.5 million gold and 15,000 food per stage each tick. That's 75 million gold at 10 stages: a quarter of a leader's gold income at day 60, and 30% of an average coalition's. The food is about 5% of a coalition's harvest.
+
+**What the run showed beyond prices:**
+
+- **The build cost won't sort leaders from the rest.** A leader 40–50% ahead in land is only 10–25% ahead in gold, so it builds barely faster than an average coalition. The upkeep and rivals' assaults must do that sorting.
+- **Rivals can't break the leader's garrison.** In these runs the leader is the coalition with two warriors, and the pair holds 230,000–360,000 soldiers from day 60. Each rival's warrior holds 0–80,000. If the leader parks its warriors at the monument, two rivals can't break it. The price the leader pays is that parked soldiers take no land.
+- **Much of that gap is a scripted-ruler gap.** Simulated warriors keep no defense at home, so the pair breaks the rival warriors (21 strikes on them in 14 days). Players would keep a garrison.
+- **So before building, fix the simulated warriors' home defense and measure again.** Until then, balance target 3 can't be judged.
+
 ## Plan
 
 Each step lands with its scenarios, docs and checks, and is committed on its own.
 
-1. **Measure.** Play one long economy run to see the size and income of the simulated coalitions at months 1 to 4. Record the numbers in `BALANCE.md`.
-2. **Era.** Rename round to era. Add the clock cap and record the winning alliance and the way the era ended in the hall of fame. Update the `clock` and `round` scenarios and `npm run test:long`.
-3. **Monument.** Found it and pay into it. Add the stages, the upkeep and decay, the chronicle notices, and the public view. This needs:
+1. **Measure.** Done on 2026-11-08: see "Measured" above.
+2. **Warriors keep a garrison at home**, then measure the era again. The current numbers rest on undefended warriors.
+3. **Era.** Rename round to era. Add the clock cap and record the winning alliance and the way the era ended in the hall of fame. Update the `clock` and `round` scenarios and `npm run test:long`.
+4. **Monument.** Found it and pay into it. Add the stages, the upkeep and decay, the chronicle notices, and the public view. This needs:
    - the API, plus regenerated types in both clients;
    - an Alliance page section and a listing on the rankings;
    - scenarios.
-4. **Garrison and assault.** Add the `monument` attack type, the garrison as a reinforcement target, razing, and joined assaults. Add scenarios and battle reports.
-5. **Winning.** Add the hold period. The era ends by monument and the next era begins. Add scenarios, and a `test:long` world that ends by monument.
-6. **Balance.** Add the builder and rival policies to the simulation, then the four balance targets as worlds. Tune the costs, upkeep, raze ratio and hold time, and record them in `BALANCE.md`.
-7. **Pacts**, only if step 6 shows that alliances striking separately can't stop a leader.
+5. **Garrison and assault.** Add the `monument` attack type, the garrison as a reinforcement target, razing, and joined assaults. Add scenarios and battle reports.
+6. **Winning.** Add the hold period. The era ends by monument and the next era begins. Add scenarios, and a `test:long` world that ends by monument.
+7. **Balance.** Add the builder and rival policies to the simulation, then the four balance targets as worlds. Tune the costs, upkeep, raze ratio and hold time, and record them in `BALANCE.md`.
+8. **Pacts**, only if step 7 shows that alliances striking separately can't stop a leader.
 
 ## Open decisions
 

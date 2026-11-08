@@ -1,7 +1,7 @@
-import { writeFileSync } from "node:fs";
+import { appendFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { World } from "../api/client.ts";
-import type { MarketTrade } from "../api/types.ts";
+import { militaryUnits, type MarketTrade } from "../api/types.ts";
 import { startServer, type ConfigOverrides } from "../server.ts";
 import { foundCoalition } from "./coalition.ts";
 import { coalitionOf, parseCraft, selfSufficient, tradeShares, type Craft } from "./trade.ts";
@@ -9,7 +9,7 @@ import { finalSnapshot, runWorld, type WorldRun } from "./world.ts";
 
 const usage = `Play coalitions that trade goods, and report how each fares and where its market purchases came from.
 
-  node src/simulation/economy.ts [--coalition Name=craft,craft,... ...] [--turns 120] [--set path=value ...] [--compare] [--out run.json]
+  node src/simulation/economy.ts [--coalition Name=craft,craft,... ...] [--turns 120] [--set path=value ...] [--compare] [--out run.json] [--progress days.jsonl]
 
 Each --coalition founds one coalition with one kingdom per craft; without any, two self-sufficient coalitions play
 (Guild and Hanse, each ${selfSufficient.join(",")}). Crafts: gold producers buy what they eat and the tools they train
@@ -23,7 +23,10 @@ in barracks on 1% of its land, and 1% more for each strike it lost in the last 2
 from its allies first and from anyone else for the rest, and grows its own food when it cannot buy enough. Rulers play
 in a new random order every turn, so no coalition always meets the market and the armies first. The merchant bots play
 too. The report gives each kingdom's land, gold and army, each coalition's land and its craftsmen's land against its
-gold producers', and the pieces of every good each coalition bought from allies, from the bots and from other kingdoms.`;
+gold producers', and the pieces of every good each coalition bought from allies, from the bots and from other kingdoms.
+--progress appends one line per kingdom every 24 turns (a day of hourly turns) as the run goes: its land, gold, army,
+defense, the gold its soldiers cost and what it will produce next turn, so a run of months can be read while it plays and
+survives a crash.`;
 
 const { values } = parseArgs({
   options: {
@@ -32,6 +35,7 @@ const { values } = parseArgs({
     set: { type: "string", multiple: true, default: [] },
     compare: { type: "boolean", default: false },
     out: { type: "string" },
+    progress: { type: "string" },
     help: { type: "boolean", default: false },
   },
 });
@@ -53,6 +57,7 @@ try {
   process.exit(2);
 }
 const turns = Number(values.turns);
+const ticksPerDay = 24;
 const overrides: ConfigOverrides = Object.fromEntries(
   values.set.map(entry => {
     const [path, ...rest] = entry.split("=");
@@ -74,7 +79,31 @@ export const simulate = async (configOverrides: ConfigOverrides): Promise<Econom
     const coalitions = [];
     for (const [name, crafts] of makeUps) coalitions.push(await foundCoalition(world, name, () => coalitionOf(crafts)));
     const rulers = coalitions.flatMap(coalition => coalition.rulers);
-    const run = await runWorld(world, rulers, turns, { shuffle: true });
+    const coalitionOfKingdom = new Map(coalitions.flatMap(coalition => coalition.rulers.map(ruler => [ruler.player.name, coalition.name] as const)));
+    const progress = values.progress;
+    const afterTurn = progress
+      ? async (turn: number): Promise<void> => {
+          if (turn % ticksPerDay !== 0) return;
+          const lines = [];
+          for (const ruler of rulers) {
+            const [kingdom, details] = await Promise.all([ruler.player.kingdom(), ruler.player.details(ruler.strategy.weaponsPercentage)]);
+            const produced = details.forecast.resourcesProduced;
+            lines.push(JSON.stringify({
+              turn,
+              coalition: coalitionOfKingdom.get(ruler.player.name),
+              kingdom: ruler.player.name,
+              land: kingdom.resources.land,
+              gold: kingdom.resources.gold,
+              army: militaryUnits.reduce((sum, unit) => sum + kingdom.units.availableUnits[unit] + kingdom.units.mobileUnits[unit], 0),
+              defense: details.defensePower,
+              goldUpkeep: details.forecast.goldUpkeep,
+              produced: { gold: produced.gold ?? 0, food: produced.food ?? 0, iron: produced.iron ?? 0, tools: produced.tools ?? 0, weapons: produced.weapons ?? 0 },
+            }));
+          }
+          appendFileSync(progress, lines.join("\n") + "\n");
+        }
+      : undefined;
+    const run = await runWorld(world, rulers, turns, { shuffle: true, afterTurn });
     const bots = (await world.rankings()).kingdoms.filter(rank => rank.bot).map(rank => rank.kingdomName);
     const groups = Object.fromEntries(coalitions.map(coalition => [coalition.name, coalition.rulers.map(ruler => ruler.player.name)]));
     return { run, trades: await world.trades(), groups, bots };

@@ -147,7 +147,7 @@ Every `--coalition` gives one coalition's make-up. `corner:iron` is a member who
 cd acceptance && npm run economy -- --turns 120 --coalition Guild=gold,gold,gold,corner:iron,food,smith,smith,iron,warrior --coalition Hanse=gold,gold,gold,gold,gold,food,smith,smith,warrior --set bots.prices.weapons=250 --compare
 ```
 
-It prints every kingdom's land, gold and army, each coalition's land with its craftsmen's land against its gold producers', and the pieces of every good each coalition bought from allies, from the merchant bots and from other kingdoms. The bots' asking prices (`bots.prices` in `gameconfig.json`) anchor what goods are worth to everyone else.
+It prints every kingdom's land, gold and army, each coalition's land with its craftsmen's land against its gold producers', and the pieces of every good each coalition bought from allies, from the merchant bots and from other kingdoms. The bots' asking prices (`bots.prices` in `gameconfig.json`) anchor what goods are worth to everyone else. `--progress days.jsonl` appends one line per kingdom every 24 turns while the run plays: its coalition, land, gold, army, defense, soldiers' pay and next turn's production. A run as long as an era (2,880 turns, about an hour for four coalitions of nine) can then be read as it goes and survives a crash.
 
 To see how the game looks as a world unfolds, play one and photograph the built pages along the way (needs `npm install` in `browser/` and an installed Chrome):
 
