@@ -93,32 +93,56 @@ export class World {
 
   /** registers a kingdom through the public sign-up and signs in as its ruler */
   public async foundKingdom(kingdomName: string): Promise<Player> {
-    const email = `${kingdomName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}@simulation.test`;
-    const password = "simulation-password";
-    await call(`${this.url}/auth/register`, { method: "POST", body: { email, kingdomName, password } });
-    const { token } = await call<SignedIn>(`${this.url}/auth/authenticate`, { method: "POST", body: { email, password } });
-    return new Player(this.url, kingdomName, token);
+    const credentials = simulationCredentials(kingdomName);
+    await call(`${this.url}/auth/register`, { method: "POST", body: { ...credentials, kingdomName } });
+    return new Player(this.url, kingdomName, credentials, await signIn(this.url, credentials));
   }
 }
 
-/** a signed-in ruler, using exactly the endpoints the browser uses */
+export type Credentials = { email: string; password: string };
+
+/** the address and password a scripted ruler registers its kingdom with */
+export const simulationCredentials = (kingdomName: string): Credentials => ({
+  email: `${kingdomName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}@simulation.test`,
+  password: "simulation-password",
+});
+
+const signIn = async (url: string, credentials: Credentials): Promise<string> =>
+  (await call<SignedIn>(`${url}/auth/authenticate`, { method: "POST", body: credentials })).token;
+
+/**
+ * a signed-in ruler, using exactly the endpoints the browser uses; like the browser it signs in again when its session runs
+ * out, so a simulation can play longer than a token lasts (an hour)
+ */
 export class Player {
   public readonly name: string;
   private readonly url: string;
-  private readonly token: string;
+  private readonly credentials: Credentials;
+  private token: string;
 
-  public constructor(url: string, name: string, token: string) {
+  public constructor(url: string, name: string, credentials: Credentials, token: string) {
     this.url = url;
     this.name = name;
+    this.credentials = credentials;
     this.token = token;
   }
 
+  private async signedIn<T>(request: (token: string) => Promise<T>): Promise<T> {
+    try {
+      return await request(this.token);
+    } catch (error) {
+      if (!(error instanceof ApiError) || error.status !== 401) throw error;
+      this.token = await signIn(this.url, this.credentials);
+      return request(this.token);
+    }
+  }
+
   private get<T>(path: string): Promise<T> {
-    return call(`${this.url}${path}`, { token: this.token });
+    return this.signedIn(token => call(`${this.url}${path}`, { token }));
   }
 
   private post<T>(path: string, body: unknown = {}): Promise<T> {
-    return call(`${this.url}${path}`, { method: "POST", body, token: this.token });
+    return this.signedIn(token => call(`${this.url}${path}`, { method: "POST", body, token }));
   }
 
   /** any request as this ruler, with the body exactly as given */
