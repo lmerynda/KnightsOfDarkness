@@ -117,4 +117,30 @@ What simulated worlds measured about the rules, and the decisions taken from it.
    - The 120-turn runs understated the second warrior. Horde is even in the first week, then leads from day 10. Its two warriors reach 11,700 acres each by day 27, 23,000 to 26,000 by day 60 and 30,000 to 39,000 by day 105, five times any other warrior, with 230,000 to 360,000 soldiers between them. In a 14-day run they struck 40 and 43 times against 20 to 28 strikes by each lone warrior, won 150 of 151 battles all told, and struck the rival warriors 21 times. A warrior keeps no garrison and is its coalition's largest kingdom, so the pair breaks the rivals' warriors at home (Order's warrior had 0 soldiers at day 60 in one run). That is a scripted-ruler gap, not a rule result: a player keeps defense at home.
    - The lead is in land, not gold: Horde's land is 40 to 50% ahead, its gold income only 10 to 25%, since warriors' land feeds soldiers. A monument priced in gold alone would barely separate the leader from the rest.
    - In the default world, which resets every 28 days, Horde reaches 127 to 128% of the others by day 27 in two runs, so the runaway shows within today's four-week round too.
+1. Would a peace period or stronger towers curb warriors? Measured on 2026-11-08 with the same four coalitions, 672 turns, two runs each. There is no peace period in the game; the only protection is 24 turns after a defeat. The peace (warriors hold off for 336 turns) and the melee rule below were temporary patches, not kept.
+
+   | Rule | Horde's lead at day 27 | Craftsman's land | Land taken in battle | Attacks won |
+   |---|---|---|---|---|
+   | Today (+60%: 25 towers, 1 castle) | 127%, 128% | 5,170 to 5,240 | not logged | 150 of 151 in the first 14 days |
+   | 14-day peace | 112%, 129% | 5,210 to 5,400 | 47,000 to 53,000 | 232 of 238 |
+   | Towers up to +100% (x2.1) | 131%, 107% | 5,240 to 5,270 | 34,000 to 37,000 | 220 of 230 |
+   | Towers up to +200% (x3.1) | 96%, 97% | 6,000 | 2,100 to 2,200 | 46 of 52 |
+   | Bonus also protects in melee | 97%, 130% | 5,130 to 5,260 | 51,000 to 62,000 | 398 of 416 |
+   | Melee and peace | 124%, 108% | 5,150 to 5,320 | 50,000 to 56,000 | 254 of 268 |
+   | Melee and towers up to +100% | 102%, 126% | 5,170 to 5,370 | 38,000 to 40,000 | 207 of 218 |
+
+   - A peace only delays the war. At day 14 every warrior holds about 2,000 acres and 10,000 soldiers and the craftsmen 4,000 acres against 3,350 without it, but by day 27 the craftsmen's gain is gone and a warrior pair runs away again in one run of two. Scripted craftsmen do not arm up during the peace (11,000 defense at day 14 against 14,500 without it), so what a player could do with the time is not measured.
+   - The size of the bonus matters less than when it applies: towers and castles multiply only the defenders who survive the melee. Staged on the real server, 500 bowmen and 500 infantry against an army of 2 infantry to 1 cavalry:
+
+     | Defense bonus | Defense on paper | Smallest army that won (of those tried) | Its attack power |
+     |---|---|---|---|
+     | x1.6 (today) | 3,208 | 1,100 | 2,567 |
+     | x2.1 | 4,211 | 1,250 | 2,917 |
+     | x3.1 | 6,216 | 1,600 | 3,733 |
+     | x1.6, bonus also protects in melee | 3,208 | 1,250 | 2,917 |
+     | x2.1, bonus also protects in melee | 4,211 | 1,600 | 3,733 |
+
+   - So the x3.1 row of the first table does not show that +200% stops warriors. Warriors there judge by the paper number with a margin of 1.3, so they rarely march (21 to 31 battles, warriors end at 3,300 acres against the craftsmen's 6,000), though an army with 60% of the paper power would win. A player who learns that would strike anyway.
+   - Towers count per tower, not per acre: 25 towers give the whole +50% at any size, which is under 1% of a 3,000-acre kingdom. Castles add 10% each with no cap for 100,000 building points; scripted rulers keep their first one.
+   - In every world but x3.1 some warrior or pair reaches 10,000 to 13,000 acres, not always Horde's: lone warriors did in melee-only and in x2.1. Warriors with no soldiers left appear in most runs. The runaway follows whoever breaks the other warriors first, which points back at warriors keeping no garrison.
 1. Balance over 300 simulated turns (2026-10-31): before today economy with defense won clearly (turtle 1,833 acres, economist 1,690, warlord 1,453). With 15% land capture, raid protection, random events, great works at ten times the price and rulers that raise them, the three styles end within 16% of each other: turtle 2,332, economist 2,120, warlord 2,010. Scripted rulers are a rough stand-in; check again once real players exist.
