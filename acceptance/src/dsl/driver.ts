@@ -9,6 +9,15 @@ export type Buildings = Partial<Counts<BuildingName>>;
 /** an era in the hall of fame: the alliance that won it, if any, its largest kingdom and how it ended */
 export type PastEra = { era: number; winner: string | null; largest: string | null; endedBy: string | null };
 
+/** goods a monument's store holds or takes */
+export type MonumentGoods = { gold: number; iron: number; tools: number; food: number };
+
+/** what everyone sees of a monument */
+export type MonumentView = { alliance: string; seat: string; stages: number; complete: boolean };
+
+/** what an alliance's members see of their own */
+export type MonumentLedger = { stages: number; store: MonumentGoods; crumbling: boolean };
+
 /** what an army marches for: to take land, or to plunder the stores */
 export type Goal = "land" | "plunder";
 
@@ -139,6 +148,12 @@ export interface RulerDriver {
   /** raises a kingdom the game runs, into the alliance */
   raiseVassal(name: string): Promise<Outcome>;
   alliance(): Promise<{ name: string; members: string[] } | null>;
+  foundMonument(seat: string): Promise<Outcome>;
+  payIntoMonument(goods: Partial<MonumentGoods>): Promise<Outcome>;
+  /** the alliance's own monument, or null when it has none */
+  monumentLedger(): Promise<MonumentLedger | null>;
+  /** every monument in the world */
+  monuments(): Promise<MonumentView[]>;
   /** allied armies on the march, as the war room shows them */
   warRoomMarches(): Promise<{ from: string; to: string }[]>;
 

@@ -26,6 +26,9 @@ import {
   type Credentials,
   type GateDriver,
   type Goal,
+  type MonumentGoods,
+  type MonumentLedger,
+  type MonumentView,
   type Outcome,
   type PastEra,
   type RulerDriver,
@@ -347,6 +350,26 @@ class ApiRuler implements RulerDriver {
 
   public raiseVassal(name: string): Promise<Outcome> {
     return this.act("/alliance/add-bot", { botName: name });
+  }
+
+  public foundMonument(seat: string): Promise<Outcome> {
+    return this.act("/alliance/monument/found", { seat });
+  }
+
+  public payIntoMonument(goods: Partial<MonumentGoods>): Promise<Outcome> {
+    return this.act("/alliance/monument/contribute", { gold: 0, iron: 0, tools: 0, food: 0, ...goods });
+  }
+
+  public async monumentLedger(): Promise<MonumentLedger | null> {
+    const ledger = await this.get<Schemas["MonumentLedgerDto"]>("/alliance/monument").catch((failure: unknown) => {
+      if (failure instanceof ApiError && failure.status === 404) return null;
+      throw failure;
+    });
+    return ledger && { stages: ledger.monument.stages, store: ledger.store, crumbling: ledger.upkeepUnpaid };
+  }
+
+  public async monuments(): Promise<MonumentView[]> {
+    return (await this.get<Schemas["MonumentDto"][]>("/game/monuments")).map(monument => ({ alliance: monument.allianceName, seat: monument.seat, stages: monument.stages, complete: monument.complete }));
   }
 
   public async alliance(): Promise<{ name: string; members: string[] } | null> {

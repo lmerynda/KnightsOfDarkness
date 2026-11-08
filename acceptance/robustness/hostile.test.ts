@@ -114,6 +114,9 @@ const hostileRequests = (random: () => number) => {
       () => ({ method: "POST", path: "/alliance/leave" }),
       () => ({ method: "POST", path: "/alliance/add-bot", body: json({ botName: random() < 0.5 ? `Fuzz Bot ${Math.floor(random() * 1000)}` : name() }) }),
       () => ({ method: "GET", path: "/alliance/war-room" }),
+      () => ({ method: "POST", path: "/alliance/monument/found", body: json({ seat: name() }) }),
+      () => ({ method: "POST", path: "/alliance/monument/contribute", body: json(counts(["gold", "iron", "tools", "food"])) }),
+      () => ({ method: "GET", path: "/alliance/monument" }),
       () => ({ method: "POST", path: "/messages/send", body: json({ recipient: name(), body: pick(words) }) }),
       () => ({ method: "POST", path: "/messages/send-alliance", body: json({ recipient: name(), body: pick(words) }) }),
       () => ({ method: "POST", path: `/messages/${raw(id())}/mark-as-read` }),
@@ -121,7 +124,7 @@ const hostileRequests = (random: () => number) => {
       () => ({ method: "POST", path: "/auth/trial", body: json({ kingdomName: random() < 0.5 ? `Fuzz Trial ${Math.floor(random() * 1000)}` : name() }) }),
       () => ({ method: "POST", path: "/auth/authenticate", body: json({ email: pick(words), password: pick(words) }) }),
       () => ({ method: "POST", path: "/auth/keep", body: json({ email: pick([...words, "kept@simulation.test"]), password: pick(words) }) }),
-      () => ({ method: "GET", path: pick(["/kingdom", "/kingdom/notifications/count", "/war/battle-reports", "/war/spy-reports", "/messages/sent", "/messages/unread-count", "/alliance", "/alliance/all", "/auth/account", "/game/eras", "/game/era", "/game/rankings"]) }),
+      () => ({ method: "GET", path: pick(["/kingdom", "/kingdom/notifications/count", "/war/battle-reports", "/war/spy-reports", "/messages/sent", "/messages/unread-count", "/alliance", "/alliance/all", "/auth/account", "/game/eras", "/game/era", "/game/monuments", "/game/rankings"]) }),
     ];
     return pick(requests)();
   };

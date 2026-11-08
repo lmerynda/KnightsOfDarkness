@@ -28,6 +28,8 @@ scenario("an era runs out: the alliance with the most land wins it, and every ki
   await ally.joins(sworn);
   await smaller.passesTurns(5);
   await smaller.trains({ infantry: 10 });
+  await smaller.foundsAMonumentAt(ally);
+  await largest.seesTheMonumentOf(sworn, ally, 0);
 
   const ended = await game.theEraRunsOut();
 
@@ -37,6 +39,7 @@ scenario("an era runs out: the alliance with the most land wins it, and every ki
   const newcomer = await game.foundsAKingdom("Newcomer");
   await largest.standsLevelWith(newcomer);
   await smaller.standsLevelWith(newcomer);
+  await largest.seesNoMonumentOf(sworn);
   // alliances outlast the era
   await largest.leadsAllianceOf(lone);
 });

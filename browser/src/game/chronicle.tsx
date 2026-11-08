@@ -14,6 +14,7 @@ const kinds: Record<NotificationKind, { icon: IconName; tone: "gain" | "loss" | 
   trade: { icon: "gold", tone: "news", page: "/kingdom/market" },
   delivery: { icon: "food", tone: "news", page: "/kingdom/carriers" },
   alliance: { icon: "people", tone: "news", page: "/kingdom/alliance" },
+  monument: { icon: "land", tone: "news", page: "/kingdom/rankings" },
   era: { icon: "turns", tone: "news", page: "/kingdom/rankings" },
   event: { icon: "scroll", tone: "news", page: "/kingdom/overview" },
   threat: { icon: "warning", tone: "loss", page: "/kingdom/war" },

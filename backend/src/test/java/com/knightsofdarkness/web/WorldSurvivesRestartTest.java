@@ -24,7 +24,7 @@ import com.knightsofdarkness.web.kingdom.KingdomService;
  * as they left them, still signed in, and the server's own start-up creates nothing twice.
  */
 class WorldSurvivesRestartTest {
-    private static final List<String> tables = List.of("kingdom_entity", "bot_entity", "user_entity", "alliance_entity", "game_era_entity", "market_offer_entity");
+    private static final List<String> tables = List.of("kingdom_entity", "bot_entity", "user_entity", "alliance_entity", "monument_entity", "game_era_entity", "market_offer_entity");
 
     private final HttpClient http = HttpClient.newHttpClient();
 

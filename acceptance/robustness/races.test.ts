@@ -159,6 +159,29 @@ test("a kingdom accepting two alliances at once joins only one", async () => {
   assert.ok(alliance === `Left ${founded}` || alliance === `Right ${founded}`, `the joiner is in ${alliance}`);
 });
 
+test("members paying into a monument at once while the clock ticks lose nothing and make nothing", async () => {
+  const world = await sharedWorld();
+  const emperor = await found(world, "Mason Emperor");
+  const alliance = `Masons ${founded}`;
+  assert.ok((await emperor.createAlliance(alliance)).success);
+  const masons = [emperor];
+  for (let member = 0; member < 3; member++) {
+    const mason = await found(world, "Mason");
+    assert.ok((await emperor.invite(mason.name, alliance)).success);
+    assert.ok((await mason.acceptInvitation((await mason.invitations())[0].id)).success);
+    masons.push(mason);
+  }
+  assert.ok((await emperor.foundMonument(emperor.name)).success);
+  const before = await Promise.all(masons.map(async mason => (await mason.kingdom()).resources.gold));
+
+  const [outcomes] = await Promise.all([all(masons.length, index => masons[index].payIntoMonument({ gold: 100 })), world.advance(1, false)]);
+
+  const after = await Promise.all(masons.map(async mason => (await mason.kingdom()).resources.gold));
+  const given = before.reduce((sum, gold, index) => sum + gold - after[index], 0);
+  assert.equal(given, 100 * succeeded(outcomes).length, "a payment that was refused or lost the race cost gold, or one that went through cost none");
+  assert.equal((await emperor.monument()).store.gold, given);
+});
+
 test("the last places in an alliance go to as many kingdoms as there are places", async () => {
   const world = await sharedWorld();
   const maxMembers = (await world.config()).common.allianceMaxMembers;

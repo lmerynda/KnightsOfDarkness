@@ -3,6 +3,8 @@ import type {
   Account,
   ActionResult,
   Alliance,
+  Monument,
+  MonumentLedger,
   AllianceInvitation,
   AllianceSummary,
   AttackType,
@@ -76,6 +78,7 @@ export const api = {
   era: (): Promise<Era> => get("/game/era"),
   finishedEras: (): Promise<Era[]> => get("/game/eras"),
   rankings: (): Promise<Rankings> => get("/game/rankings"),
+  monuments: (): Promise<Monument[]> => get("/game/monuments"),
 
   kingdom: (): Promise<Kingdom> => get("/kingdom"),
   details: (weaponsPercentage: number): Promise<KingdomDetails> => get(`/kingdom/details?weaponsProductionPercentage=${weaponsPercentage}`),
@@ -154,6 +157,10 @@ export const api = {
   alliances: (): Promise<AllianceSummary[]> => get("/alliance/all"),
   invitations: (): Promise<AllianceInvitation[]> => get("/alliance/invitations"),
   createAlliance: (name: string): Promise<ActionResult> => post("/alliance/create", { name }),
+  /** the alliance's own view of its monument; a rejection means it has none */
+  monument: (): Promise<MonumentLedger> => get("/alliance/monument"),
+  foundMonument: (seat: string): Promise<ActionResult> => post("/alliance/monument/found", { seat }),
+  payIntoMonument: (goods: { gold: number; iron: number; tools: number; food: number }): Promise<ActionResult> => post("/alliance/monument/contribute", goods),
   leaveAlliance: (): Promise<ActionResult> => post("/alliance/leave"),
   invite: (kingdomName: string, allianceName: string): Promise<ActionResult> => post("/alliance/invite", { kingdomName, allianceName }),
   acceptInvitation: (invitationId: string): Promise<ActionResult> => post("/alliance/accept", { invitationId }),

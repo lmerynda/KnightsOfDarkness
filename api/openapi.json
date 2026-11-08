@@ -1441,6 +1441,15 @@
         "required" : [ "chancePerTurn", "guardsPerAcreAgainstBandits", "lossShare", "windfallShare" ],
         "type" : "object"
       },
+      "FoundMonumentDto" : {
+        "properties" : {
+          "seat" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "seat" ],
+        "type" : "object"
+      },
       "GameConfig" : {
         "properties" : {
           "attack" : {
@@ -1476,6 +1485,9 @@
           "market" : {
             "$ref" : "#/components/schemas/MarketConfig"
           },
+          "monument" : {
+            "$ref" : "#/components/schemas/Monument"
+          },
           "production" : {
             "$ref" : "#/components/schemas/Production"
           },
@@ -1486,7 +1498,7 @@
             "$ref" : "#/components/schemas/TrainingCost"
           }
         },
-        "required" : [ "attack", "bots", "buildingCapacity", "buildingPointCosts", "carrierCapacity", "common", "era", "espionage", "events", "kingdomStartConfiguration", "market", "production", "specialBuildingCosts", "trainingCost" ],
+        "required" : [ "attack", "bots", "buildingCapacity", "buildingPointCosts", "carrierCapacity", "common", "era", "espionage", "events", "kingdomStartConfiguration", "market", "monument", "production", "specialBuildingCosts", "trainingCost" ],
         "type" : "object"
       },
       "IncomingArmyDto" : {
@@ -2460,6 +2472,118 @@
         "required" : [ "body", "date", "id", "isRead", "recipient", "sender", "toAlliance" ],
         "type" : "object"
       },
+      "Monument" : {
+        "properties" : {
+          "decayRatio" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "stageCost" : {
+            "$ref" : "#/components/schemas/StageCost"
+          },
+          "stages" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "upkeepPerStage" : {
+            "$ref" : "#/components/schemas/Upkeep"
+          }
+        },
+        "required" : [ "decayRatio", "stageCost", "stages", "upkeepPerStage" ],
+        "type" : "object"
+      },
+      "MonumentContributionDto" : {
+        "properties" : {
+          "food" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "gold" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "iron" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tools" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "food", "gold", "iron", "tools" ],
+        "type" : "object"
+      },
+      "MonumentDto" : {
+        "properties" : {
+          "allianceName" : {
+            "type" : "string"
+          },
+          "complete" : {
+            "type" : "boolean"
+          },
+          "seat" : {
+            "type" : "string"
+          },
+          "stages" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "totalStages" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "allianceName", "complete", "seat", "stages", "totalStages" ],
+        "type" : "object"
+      },
+      "MonumentGoodsDto" : {
+        "properties" : {
+          "food" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "gold" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "iron" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "tools" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "food", "gold", "iron", "tools" ],
+        "type" : "object"
+      },
+      "MonumentLedgerDto" : {
+        "properties" : {
+          "monument" : {
+            "$ref" : "#/components/schemas/MonumentDto"
+          },
+          "nextStageCost" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/MonumentGoodsDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "store" : {
+            "$ref" : "#/components/schemas/MonumentGoodsDto"
+          },
+          "upkeep" : {
+            "$ref" : "#/components/schemas/MonumentGoodsDto"
+          },
+          "upkeepUnpaid" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "monument", "nextStageCost", "store", "upkeep", "upkeepUnpaid" ],
+        "type" : "object"
+      },
       "NotificationDto" : {
         "properties" : {
           "date" : {
@@ -2487,7 +2611,7 @@
         "type" : "object"
       },
       "NotificationKind" : {
-        "enum" : [ "victory", "defeat", "repelled", "breached", "spies", "trade", "delivery", "alliance", "era", "event", "threat", "hardship" ],
+        "enum" : [ "victory", "defeat", "repelled", "breached", "spies", "trade", "delivery", "alliance", "monument", "era", "event", "threat", "hardship" ],
         "type" : "string"
       },
       "OngoingAttackDto" : {
@@ -3069,6 +3193,24 @@
         "required" : [ "buildings", "date", "id", "kingdomName", "resources", "spiesLost", "spiesSent", "success", "targetKingdomName", "units" ],
         "type" : "object"
       },
+      "StageCost" : {
+        "properties" : {
+          "gold" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "iron" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "tools" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "gold", "iron", "tools" ],
+        "type" : "object"
+      },
       "TrainingCost" : {
         "properties" : {
           "blacksmith" : {
@@ -3168,6 +3310,20 @@
           }
         },
         "required" : [ "gold", "tools", "weapons" ],
+        "type" : "object"
+      },
+      "Upkeep" : {
+        "properties" : {
+          "food" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "gold" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "food", "gold" ],
         "type" : "object"
       }
     }
@@ -3366,6 +3522,80 @@
           }
         },
         "tags" : [ "alliance-controller" ]
+      }
+    },
+    "/alliance/monument" : {
+      "get" : {
+        "operationId" : "getLedger",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MonumentLedgerDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "monument-controller" ]
+      }
+    },
+    "/alliance/monument/contribute" : {
+      "post" : {
+        "operationId" : "contribute",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MonumentContributionDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "monument-controller" ]
+      }
+    },
+    "/alliance/monument/found" : {
+      "post" : {
+        "operationId" : "found",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/FoundMonumentDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "monument-controller" ]
       }
     },
     "/alliance/reject" : {
@@ -3663,6 +3893,27 @@
           }
         },
         "tags" : [ "game-controller" ]
+      }
+    },
+    "/game/monuments" : {
+      "get" : {
+        "operationId" : "getMonuments",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/MonumentDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "monument-controller" ]
       }
     },
     "/game/rankings" : {

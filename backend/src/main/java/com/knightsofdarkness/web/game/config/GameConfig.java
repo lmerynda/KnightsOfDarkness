@@ -13,6 +13,7 @@ public record GameConfig(
         Attack attack,
         Espionage espionage,
         Era era,
+        Monument monument,
         Bots bots,
         Events events) {
 }

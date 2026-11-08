@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { errorText, getTrial } from "../api/client";
 import { api } from "../api/endpoints";
-import type { Rankings, Era } from "../api/types";
+import type { Era, Monument, Rankings } from "../api/types";
 import { art } from "../game/lore";
-import { eraTimeLeft } from "../game/rules";
+import { eraTimeLeft, monumentStanding } from "../game/rules";
 import { Crest } from "../ui/Crest";
 import { formatNumber } from "../ui/format";
 
@@ -76,11 +76,16 @@ const PlayNow: React.FC = () => {
 export const Landing: React.FC = () => {
   const [era, setEra] = useState<Era | null>(null);
   const [rankings, setRankings] = useState<Rankings | null>(null);
+  const [monuments, setMonuments] = useState<Monument[]>([]);
 
   useEffect(() => {
     api
       .era()
       .then(setEra)
+      .catch(() => undefined);
+    api
+      .monuments()
+      .then(setMonuments)
       .catch(() => undefined);
     api
       .rankings()
@@ -117,6 +122,11 @@ export const Landing: React.FC = () => {
               ? `The clock ends it in ${eraTimeLeft(era)}. The alliance holding the most land then wins the era, and every realm starts again from nothing.`
               : "The clock ends an era after four months; the alliance holding the most land wins it and every realm starts again."}
           </p>
+          {monuments.map(monument => (
+            <p className="muted" key={monument.allianceName}>
+              The monument of {monument.allianceName} at {monument.seat}: {monumentStanding(monument).toLowerCase()}.
+            </p>
+          ))}
         </div>
         <ol className="landing-standings">
           {(rankings?.kingdoms ?? [])

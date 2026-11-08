@@ -21,6 +21,7 @@ import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.market.model.IMarketOfferRepository;
 import com.knightsofdarkness.web.messaging.INotificationSystem;
+import com.knightsofdarkness.web.monument.MonumentService;
 import com.knightsofdarkness.web.utils.Utils;
 import com.knightsofdarkness.web.war.IWarReportRepository;
 
@@ -33,11 +34,12 @@ public class EraService {
     private final IWarReportRepository warReportRepository;
     private final IBotRepository botRepository;
     private final INotificationSystem notificationSystem;
+    private final MonumentService monumentService;
     private final GameConfig gameConfig;
 
     @SuppressWarnings("java:S107")
     public EraService(GameEraJpaRepository eraRepository, KingdomRepository kingdomRepository, IMarketOfferRepository marketOfferRepository, IWarReportRepository warReportRepository, IBotRepository botRepository,
-            INotificationSystem notificationSystem, GameConfig gameConfig)
+            INotificationSystem notificationSystem, MonumentService monumentService, GameConfig gameConfig)
     {
         this.eraRepository = eraRepository;
         this.kingdomRepository = kingdomRepository;
@@ -45,6 +47,7 @@ public class EraService {
         this.warReportRepository = warReportRepository;
         this.botRepository = botRepository;
         this.notificationSystem = notificationSystem;
+        this.monumentService = monumentService;
         this.gameConfig = gameConfig;
     }
 
@@ -69,6 +72,7 @@ public class EraService {
     @Transactional
     public void tick()
     {
+        monumentService.tick();
         var era = currentEra();
         if (era.tick())
         {
@@ -88,6 +92,7 @@ public class EraService {
 
         marketOfferRepository.deleteAll();
         warReportRepository.deleteAll();
+        monumentService.clear();
         EraReset.reset(kingdoms, botNames, gameConfig);
         kingdoms.forEach(kingdomRepository::update);
 

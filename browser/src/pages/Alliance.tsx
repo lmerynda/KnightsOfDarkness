@@ -6,6 +6,7 @@ import { marketResources } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, marketResourceLabel } from "../game/lore";
 import { estimatedDefense } from "../game/rules";
+import { MonumentPanel } from "./MonumentPanel";
 import { Crest } from "../ui/Crest";
 import { CountField, Banner, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
@@ -476,6 +477,7 @@ export const AlliancePage: React.FC = () => {
         <p className="muted">Calling the council</p>
       ) : alliance ? (
         <div className="stack">
+          <MonumentPanel alliance={alliance} />
           <WarRoomPanel />
           <GoldPanel />
           <Members alliance={alliance} onChange={onChange} />

@@ -132,6 +132,54 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/alliance/monument": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["getLedger"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/alliance/monument/contribute": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations["contribute"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/alliance/monument/found": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations["found"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/alliance/reject": {
     parameters: {
       query?: never;
@@ -332,6 +380,22 @@ export interface paths {
       cookie?: never;
     };
     get: operations["getFinishedEras"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/game/monuments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["getMonuments"];
     put?: never;
     post?: never;
     delete?: never;
@@ -1536,6 +1600,9 @@ export interface components {
       /** Format: double */
       windfallShare: number;
     };
+    FoundMonumentDto: {
+      seat: string;
+    };
     GameConfig: {
       attack: components["schemas"]["Attack"];
       bots: components["schemas"]["Bots"];
@@ -1548,6 +1615,7 @@ export interface components {
       events: components["schemas"]["Events"];
       kingdomStartConfiguration: components["schemas"]["KingdomStartConfiguration"];
       market: components["schemas"]["MarketConfig"];
+      monument: components["schemas"]["Monument"];
       production: components["schemas"]["Production"];
       specialBuildingCosts: components["schemas"]["SpecialBuildingCosts"];
       trainingCost: components["schemas"]["TrainingCost"];
@@ -1983,6 +2051,50 @@ export interface components {
       sender: string;
       toAlliance: boolean;
     };
+    Monument: {
+      /** Format: double */
+      decayRatio: number;
+      stageCost: components["schemas"]["StageCost"];
+      /** Format: int32 */
+      stages: number;
+      upkeepPerStage: components["schemas"]["Upkeep"];
+    };
+    MonumentContributionDto: {
+      /** Format: int32 */
+      food: number;
+      /** Format: int32 */
+      gold: number;
+      /** Format: int32 */
+      iron: number;
+      /** Format: int32 */
+      tools: number;
+    };
+    MonumentDto: {
+      allianceName: string;
+      complete: boolean;
+      seat: string;
+      /** Format: double */
+      stages: number;
+      /** Format: int32 */
+      totalStages: number;
+    };
+    MonumentGoodsDto: {
+      /** Format: int64 */
+      food: number;
+      /** Format: int64 */
+      gold: number;
+      /** Format: int64 */
+      iron: number;
+      /** Format: int64 */
+      tools: number;
+    };
+    MonumentLedgerDto: {
+      monument: components["schemas"]["MonumentDto"];
+      nextStageCost: components["schemas"]["MonumentGoodsDto"] | null;
+      store: components["schemas"]["MonumentGoodsDto"];
+      upkeep: components["schemas"]["MonumentGoodsDto"];
+      upkeepUnpaid: boolean;
+    };
     NotificationDto: {
       /** Format: date-time */
       date: string;
@@ -2003,6 +2115,7 @@ export interface components {
       | "trade"
       | "delivery"
       | "alliance"
+      | "monument"
       | "era"
       | "event"
       | "threat"
@@ -2263,6 +2376,14 @@ export interface components {
         spy?: number;
       };
     };
+    StageCost: {
+      /** Format: int64 */
+      gold: number;
+      /** Format: int64 */
+      iron: number;
+      /** Format: int64 */
+      tools: number;
+    };
     TrainingCost: {
       blacksmith: components["schemas"]["UnitTrainingCost"];
       bowman: components["schemas"]["UnitTrainingCost"];
@@ -2300,6 +2421,12 @@ export interface components {
       tools: number;
       /** Format: int32 */
       weapons: number;
+    };
+    Upkeep: {
+      /** Format: int64 */
+      food: number;
+      /** Format: int64 */
+      gold: number;
     };
   };
   responses: never;
@@ -2474,6 +2601,74 @@ export interface operations {
       cookie?: never;
     };
     requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ActionResultVoid"];
+        };
+      };
+    };
+  };
+  getLedger: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["MonumentLedgerDto"];
+        };
+      };
+    };
+  };
+  contribute: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MonumentContributionDto"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ActionResultVoid"];
+        };
+      };
+    };
+  };
+  found: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FoundMonumentDto"];
+      };
+    };
     responses: {
       /** @description OK */
       200: {
@@ -2766,6 +2961,26 @@ export interface operations {
         };
         content: {
           "*/*": components["schemas"]["EraDto"][];
+        };
+      };
+    };
+  };
+  getMonuments: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["MonumentDto"][];
         };
       };
     };

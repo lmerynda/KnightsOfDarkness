@@ -23,7 +23,7 @@ public class SecurityConfig {
 
     /**
      * everything asks for a signed-in ruler except what a visitor needs: the health check, signing in or founding a
-     * kingdom, and the landing page's era and rankings
+     * kingdom, and the landing page's era, monuments and rankings
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter, Environment environment) throws Exception
@@ -31,7 +31,7 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests ->
                 {
-                    requests.requestMatchers(HttpMethod.GET, "/health", "/game/era", "/game/rankings").permitAll()
+                    requests.requestMatchers(HttpMethod.GET, "/health", "/game/era", "/game/monuments", "/game/rankings").permitAll()
                             .requestMatchers(HttpMethod.POST, "/auth/authenticate", "/auth/register", "/auth/trial").permitAll()
                             .requestMatchers("/error").permitAll();
                     // the simulation harness drives its throwaway worlds without signing in

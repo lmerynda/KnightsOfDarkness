@@ -25,6 +25,7 @@ import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
 import com.knightsofdarkness.web.utils.Id;
 import com.knightsofdarkness.web.legacy.TestGame;
+import com.knightsofdarkness.web.monument.MonumentService;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 public class AllianceTest
@@ -39,7 +40,7 @@ public class AllianceTest
         game = new TestGame().get();
         kingdom = new KingdomBuilder(game).build();
         game.addKingdom(kingdom);
-        allianceService = new AllianceService(game.getAllianceRepository(), game.getKingdomRepository(), game.getBotRepository(), game.getConfig(), game.getNotificationSystem(), game.getWarReportRepository());
+        allianceService = new AllianceService(game.getAllianceRepository(), game.getKingdomRepository(), game.getBotRepository(), game.getConfig(), game.getNotificationSystem(), game.getWarReportRepository(), org.mockito.Mockito.mock(MonumentService.class));
     }
 
     @Test

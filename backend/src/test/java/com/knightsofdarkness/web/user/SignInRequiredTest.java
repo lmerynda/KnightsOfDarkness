@@ -26,6 +26,7 @@ class SignInRequiredTest {
     private static final Set<String> open = Set.of(
             "GET /health",
             "GET /game/era",
+            "GET /game/monuments",
             "GET /game/rankings",
             "POST /auth/authenticate",
             "POST /auth/register",

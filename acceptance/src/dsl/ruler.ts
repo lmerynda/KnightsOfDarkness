@@ -1,5 +1,5 @@
 import type { BuildingName, MarketResource, SpecialBuildingType, UnitName } from "../api/types.ts";
-import type { Buildings, Credentials, Outcome, PastEra, RulerDriver, Store, Units } from "./driver.ts";
+import type { Buildings, Credentials, MonumentGoods, Outcome, PastEra, RulerDriver, Store, Units } from "./driver.ts";
 
 /** checks again until it holds or time is up, since a page may still be catching up with the game */
 export const eventually = async (what: string, check: () => Promise<boolean>, timeout = 10_000): Promise<void> => {
@@ -405,6 +405,59 @@ export class Ruler {
 
   public async raisesAVassal(name: string): Promise<void> {
     done(`${this.name} raising the vassal ${name}`, await this.act.raiseVassal(name));
+  }
+
+  // the monument
+
+  public async foundsAMonumentAt(seat: Ruler): Promise<void> {
+    done(`${this.name} founding a monument at ${seat.name}`, await this.act.foundMonument(seat.name));
+  }
+
+  public async isRefusedFoundingAMonumentAt(seat: Ruler, reason: string | RegExp): Promise<void> {
+    refused(`${this.name} founding a monument at ${seat.name}`, await this.act.foundMonument(seat.name), reason);
+  }
+
+  public async paysIntoTheMonument(goods: Partial<MonumentGoods>): Promise<void> {
+    done(`${this.name} paying ${JSON.stringify(goods)} into the monument`, await this.act.payIntoMonument(goods));
+  }
+
+  public async isRefusedPayingIntoTheMonument(goods: Partial<MonumentGoods>, reason: string | RegExp): Promise<void> {
+    refused(`${this.name} paying ${JSON.stringify(goods)} into the monument`, await this.act.payIntoMonument(goods), reason);
+  }
+
+  /** what the alliance's members see: how far their monument stands, and what its store holds */
+  public async seesOurMonumentAt(stages: number, store: MonumentGoods): Promise<void> {
+    const expected = JSON.stringify({ stages, store });
+    await eventually(`${this.name} sees our monument at ${expected}`, async () => {
+      const ledger = await this.act.monumentLedger();
+      return JSON.stringify({ stages: ledger?.stages, store: ledger?.store }) === expected;
+    });
+  }
+
+  public async seesOurMonumentCrumbling(crumbling: boolean): Promise<void> {
+    await eventually(`${this.name} sees our monument ${crumbling ? "crumbling" : "whole"}`, async () => (await this.act.monumentLedger())?.crumbling === crumbling);
+  }
+
+  /** what everyone sees */
+  public async seesTheMonumentOf(allianceName: string, seat: Ruler, stages: number): Promise<void> {
+    await eventually(`${this.name} sees the monument of ${allianceName} at ${seat.name}, stage ${stages}`, async () =>
+      (await this.act.monuments()).some(monument => monument.alliance === allianceName && monument.seat === seat.name && monument.stages === stages),
+    );
+  }
+
+  public async seesTheMonumentComplete(allianceName: string): Promise<void> {
+    await eventually(`${this.name} sees the monument of ${allianceName} complete`, async () =>
+      (await this.act.monuments()).some(monument => monument.alliance === allianceName && monument.complete),
+    );
+  }
+
+  public async seesNoMonumentOf(allianceName: string): Promise<void> {
+    await eventually(`${this.name} sees no monument of ${allianceName}`, async () => (await this.act.monuments()).every(monument => monument.alliance !== allianceName));
+  }
+
+  public async hasNotReadInTheChronicle(pattern: RegExp): Promise<void> {
+    const entries = await this.act.chronicle();
+    if (entries.some(entry => pattern.test(entry))) throw new Error(`${this.name}'s chronicle tells ${pattern}, and should not`);
   }
 
   public async isInNoAlliance(): Promise<void> {

@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../api/endpoints";
-import type { Era } from "../api/types";
+import type { Era, Monument } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art } from "../game/lore";
 import { Crest } from "../ui/Crest";
 import { Banner, Meter, Panel } from "../ui/parts";
 import { formatNumber, plural } from "../ui/format";
-import { eraEndings, eraTimeLeft } from "../game/rules";
+import { eraEndings, eraTimeLeft, monumentStanding } from "../game/rules";
 
 export const RankingsPage: React.FC = () => {
   const { kingdom, rankings } = useGame();
   const [era, setEra] = useState<Era | null>(null);
   const [history, setHistory] = useState<Era[]>([]);
+  const [monuments, setMonuments] = useState<Monument[] | null>(null);
 
   useEffect(() => {
     api
       .era()
       .then(setEra)
+      .catch(() => undefined);
+    api
+      .monuments()
+      .then(setMonuments)
       .catch(() => undefined);
     api
       .finishedEras()
@@ -109,6 +114,24 @@ export const RankingsPage: React.FC = () => {
                 </table>
               )}
             </Panel>
+            {monuments ? (
+              <Panel title="Monuments" help="Every alliance's monument, for all to see. Rivals may want to answer before one stands complete.">
+                {monuments.length === 0 ? (
+                  <p className="muted">No alliance has founded a monument this era.</p>
+                ) : (
+                  <ul className="plain-list">
+                    {monuments.map(monument => (
+                      <li key={monument.allianceName}>
+                        <span className="figure">
+                          <Crest name={monument.allianceName} size={26} /> {monument.allianceName} at {monument.seat}
+                        </span>
+                        <span className="muted">{monumentStanding(monument)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Panel>
+            ) : null}
             <Panel title="Past eras">
               {history.length === 0 ? (
                 <p className="muted">This is the first era. Its winner will be remembered here.</p>

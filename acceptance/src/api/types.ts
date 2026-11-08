@@ -34,6 +34,8 @@ export type SpyReport = Schemas["SpyReportDto"];
 export type KingdomRank = Schemas["KingdomRankDto"];
 export type Rankings = Schemas["RankingsDto"];
 export type Era = Schemas["EraDto"];
+export type Monument = Schemas["MonumentDto"];
+export type MonumentLedger = Schemas["MonumentLedgerDto"];
 export type MarketOffer = Schemas["MarketOfferDto"];
 /** one sale on the market, from the simulation profile's own edge, which the API description leaves out */
 export type MarketTrade = { resource: MarketResource; seller: string; buyer: string; price: number; count: number };

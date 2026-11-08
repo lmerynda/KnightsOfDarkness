@@ -37,6 +37,7 @@ import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomOngoingAttackEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomReinforcementEntity;
 import com.knightsofdarkness.web.messaging.INotificationSystem;
+import com.knightsofdarkness.web.monument.MonumentService;
 import com.knightsofdarkness.web.utils.Id;
 import com.knightsofdarkness.web.war.IWarReportRepository;
 
@@ -48,11 +49,13 @@ public class AllianceService {
     private final GameConfig gameConfig;
     private final INotificationSystem notificationSystem;
     private final IWarReportRepository warReportRepository;
+    private final MonumentService monumentService;
     private static final int warRoomReportsPerMember = 10;
 
     public AllianceService(IAllianceRepository allianceRepository, IKingdomRepository kingdomRepository, IBotRepository botRepository, GameConfig gameConfig, INotificationSystem notificationSystem,
-            IWarReportRepository warReportRepository)
+            IWarReportRepository warReportRepository, MonumentService monumentService)
     {
+        this.monumentService = monumentService;
         this.warReportRepository = warReportRepository;
         this.notificationSystem = notificationSystem;
         this.allianceRepository = allianceRepository;
@@ -113,6 +116,7 @@ public class AllianceService {
 
             kingdom.removeAlliance();
             kingdomRepository.update(kingdom);
+            monumentService.allianceDisbanded(alliance.get().getName());
             allianceRepository.delete(alliance.get());
             return ActionResult.success("You've left and the alliance was disbanded");
         }
@@ -120,6 +124,7 @@ public class AllianceService {
         var allianceEntity = alliance.get();
         kingdom.removeAlliance();
         kingdomRepository.update(kingdom);
+        monumentService.memberLeft(allianceEntity.getName(), allianceEntity.getEmperor(), kingdomName);
         notificationSystem.create(allianceEntity.getEmperor(), NotificationKind.alliance, kingdomName + " has left " + allianceEntity.getName());
         return ActionResult.success("You've left the alliance");
     }
@@ -144,10 +149,15 @@ public class AllianceService {
         {
             return ActionResult.failure("Only the emperor can remove kingdoms from the alliance");
         }
+        if (kingdomName.equals(emperor))
+        {
+            return ActionResult.failure("The emperor can leave only after every other member is gone");
+        }
 
         var allianceName = alliance.get().getName();
         kingdom.removeAlliance();
         kingdomRepository.update(kingdom);
+        monumentService.memberLeft(allianceName, emperor, kingdomName);
         notificationSystem.create(kingdomName, NotificationKind.alliance, "You were removed from " + allianceName);
         return ActionResult.success(String.format("Kingdom %s has been removed from the alliance", kingdomName));
     }

@@ -16,6 +16,8 @@ import type {
   Notification,
   Rankings,
   Era,
+  Monument,
+  MonumentLedger,
   SignedIn,
   SpecialBuildingType,
   SpyReport,
@@ -85,6 +87,10 @@ export class World {
 
   public era(): Promise<Era> {
     return call(`${this.url}/game/era`);
+  }
+
+  public monuments(): Promise<Monument[]> {
+    return call(`${this.url}/game/monuments`);
   }
 
   /** registers a kingdom through the public sign-up and signs in as its ruler */
@@ -246,6 +252,22 @@ export class Player {
 
   public createAlliance(name: string): Promise<ActionResult> {
     return this.post("/alliance/create", { name });
+  }
+
+  public removeFromAlliance(kingdomName: string): Promise<ActionResult> {
+    return this.post("/alliance/remove", { kingdomName });
+  }
+
+  public monument(): Promise<MonumentLedger> {
+    return this.get("/alliance/monument");
+  }
+
+  public foundMonument(seat: string): Promise<ActionResult> {
+    return this.post("/alliance/monument/found", { seat });
+  }
+
+  public payIntoMonument(goods: Partial<Record<"gold" | "iron" | "tools" | "food", number>>): Promise<ActionResult> {
+    return this.post("/alliance/monument/contribute", { gold: 0, iron: 0, tools: 0, food: 0, ...goods });
   }
 
   public invite(kingdomName: string, allianceName: string): Promise<ActionResult> {

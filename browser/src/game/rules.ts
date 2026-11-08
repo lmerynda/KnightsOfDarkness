@@ -1,4 +1,4 @@
-import type { BuildingName, Era, EraEnding, GameConfig, KingdomRank, SpyReport, UnitName } from "../api/types";
+import type { BuildingName, Era, EraEnding, GameConfig, KingdomRank, Monument, SpyReport, UnitName } from "../api/types";
 import { militaryUnits } from "../api/types";
 
 /** defense estimated from a spy report, using the same rules the battle uses */
@@ -51,6 +51,10 @@ export const landAtStake = (targetLand: number, ownLand: number, config: GameCon
   const sizeFactor = Math.min(1, targetLand / Math.max(1, ownLand)) ** config.attack.smallerTargetCaptureExponent;
   return { acres: Math.max(1, Math.floor(targetLand * config.attack.maxLandCaptureRatio * sizeFactor)), sizeFactor };
 };
+
+/** how far a monument stands, in everyone's words */
+export const monumentStanding = (monument: Monument): string =>
+  monument.complete ? "Stands complete" : `Stage ${monument.stages} of ${monument.totalStages}`;
 
 /** how the hall of fame tells the way an era ended */
 export const eraEndings: Record<EraEnding, string> = { clock: "when the clock ran out" };

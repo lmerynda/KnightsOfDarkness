@@ -1,6 +1,6 @@
 # Eras and the coalition monument
 
-Designed on 2026-11-07. An era ends when a coalition completes its monument. The era itself is built (2026-11-08): today it ends only by the clock, after 2,880 ticks (four months), and the alliance with the most land wins it. The monument is not built yet.
+Designed on 2026-11-07. An era ends when a coalition completes its monument. The era itself is built (2026-11-08): today it ends only by the clock, after 2,880 ticks (four months), and the alliance with the most land wins it. A monument can be founded, paid for, fed and watched (step 4), but it has no garrison yet, cannot be attacked and does not end the era.
 
 ## Why
 
@@ -31,11 +31,12 @@ Designed on 2026-11-07. An era ends when a coalition completes its monument. The
 ### Raising a monument
 
 - **One per alliance per era.** The emperor founds it in a member's kingdom, the seat. It does not use land or building points. Any alliance may try: the cost is what limits it.
-- **Stages.** It has `monument.stages` stages, 10 to start with. Each stage costs `monument.stageCost` in gold, iron and tools. That draws on every craft at once: gold producers, the iron miner and the smiths.
+- **Stages.** It has `monument.stages` stages, 10 to start with. Each stage costs `monument.stageCost` in gold, iron and tools. That draws on every craft at once: gold producers, the iron miner and the smiths. A stage is 5 billion gold, more than a kingdom's store can hold, so a monument's store and costs count in `long`.
 - **Contributions.** Members pay resources straight into the monument's store with `POST /alliance/monument/contribute`. A stage is raised as soon as the store covers its cost.
   - I'd skip carriers. Carrying would add a delay and another strike target, but it isn't needed to make the monument costly.
-- **Upkeep.** Each tick the monument eats `monument.upkeepPerStage` in gold and food for every stage built, so a nearly finished monument costs the most to keep. When the store can't pay, it loses `monument.decayRatio` of a stage that tick. Holding a monument without feeding it decays it.
-- **Visibility.** Everyone sees every monument: its alliance, seat, stage, and the size of its garrison to two figures, as with marching armies. The rankings and the landing page show this. The chronicle tells every kingdom when a monument is founded, at each stage from the half-way mark, and when it is complete. Rivals must know in time to band together.
+- **Upkeep.** Each tick the monument eats `monument.upkeepPerStage` in gold and food for every stage built, so a nearly finished monument costs the most to keep. When the store can't pay all of it, it pays nothing and loses `monument.decayRatio` of a stage that tick, 5% to start with. Holding a monument without feeding it decays it. Repairing a crumbled stage costs only the share that crumbled. Its members hear once when it starts to crumble.
+- **Visibility.** Everyone sees every monument: its alliance, seat, stage, and the size of its garrison to two figures, as with marching armies. The rankings and the landing page show this. The chronicle tells every kingdom when a monument is founded, at each stage from the half-way mark, and when it is complete. A stage repaired after crumbling is not news again unless a whole stage was lost. Rivals must know in time to band together. Only the alliance's members see its store.
+- **The seat.** A member's kingdom. If that member leaves, the seat moves to the emperor, who leaves last. A monument falls with its alliance.
 
 ### Defending it
 
@@ -123,10 +124,7 @@ Each step lands with its scenarios, docs and checks, and is committed on its own
 1. **Measure.** Done on 2026-11-08: see "Measured" above.
 2. **Warriors keep a garrison at home**, then measure the era again. Done on 2026-11-08: see "Measured" above.
 3. **Era.** Done on 2026-11-08: round is renamed to era, the clock cap is 2,880 ticks, and the hall of fame records the winning alliance and the way the era ended. The `era` scenarios play a short era of 120 ticks, and `npm run test:long` plays two at full length.
-4. **Monument.** Found it and pay into it. Add the stages, the upkeep and decay, the chronicle notices, and the public view. This needs:
-   - the API, plus regenerated types in both clients;
-   - an Alliance page section and a listing on the rankings;
-   - scenarios.
+4. **Monument.** Done on 2026-11-08: `POST /alliance/monument/found` and `/contribute`, `GET /alliance/monument` for members and `GET /game/monuments` for everyone, a section on the Alliance page, listings on the rankings and the landing page, and the `monument` scenarios. Completing one does nothing yet, and the prices are the starting ones from "Measured": no simulated ruler builds one until step 7.
 5. **Garrison and assault.** Add the `monument` attack type, the garrison as a reinforcement target, razing, and joined assaults. Add scenarios and battle reports.
 6. **Winning.** Add the hold period. The era ends by monument and the next era begins. Add scenarios, and a `test:long` world that ends by monument.
 7. **Balance.** Add the builder and rival policies to the simulation, then the four balance targets as worlds. Tune the costs, upkeep, raze ratio and hold time, and record them in `BALANCE.md`.

@@ -11,6 +11,9 @@ import {
   type Credentials,
   type GateDriver,
   type Goal,
+  type MonumentGoods,
+  type MonumentLedger,
+  type MonumentView,
   type Outcome,
   type PastEra,
   type RulerDriver,
@@ -595,6 +598,52 @@ class BrowserRuler implements RulerDriver {
     await this.open("alliance");
     await this.page.getByLabel("Vassal name").fill(name);
     return this.answer(/^\/api\/alliance\/add-bot$/, () => this.page.getByRole("button", { name: "Raise vassal" }).click());
+  }
+
+  public async foundMonument(seat: string): Promise<Outcome> {
+    await this.open("alliance");
+    await this.panel("Monument").waitFor();
+    const found = this.page.getByRole("button", { name: "Found the monument" });
+    if ((await found.count()) === 0) {
+      const built = (await this.page.getByRole("button", { name: "Pay in" }).count()) > 0;
+      return { done: false, message: built ? "already has its monument" : (await this.panel("Monument").innerText()).replace(/\s+/g, " ") };
+    }
+    await this.page.getByRole("combobox", { name: /^Seat of the monument/ }).selectOption(seat);
+    return this.answer(/^\/api\/alliance\/monument\/found$/, () => found.click());
+  }
+
+  public async payIntoMonument(goods: Partial<MonumentGoods>): Promise<Outcome> {
+    await this.open("alliance");
+    await this.panel("Monument").waitFor();
+    const pay = this.page.getByRole("button", { name: "Pay in" });
+    if ((await pay.count()) === 0) return { done: false, message: (await this.panel("Monument").innerText()).replace(/\s+/g, " ") };
+    for (const [good, count] of Object.entries(goods)) await this.page.getByLabel(new RegExp(`^${good} to pay`, "i")).fill(String(count));
+    if (await pay.isDisabled()) return { done: false, message: (await this.panel("Monument").locator(".warning").last().innerText()).replace(/\s+/g, " ") };
+    return this.answer(/^\/api\/alliance\/monument\/contribute$/, () => pay.click());
+  }
+
+  public async monumentLedger(): Promise<MonumentLedger | null> {
+    await this.open("alliance");
+    await this.panel("Monument").waitFor();
+    const panel = this.panel("Monument");
+    if ((await panel.getByRole("button", { name: "Pay in" }).count()) === 0) return null;
+    const stored = async (good: string): Promise<number> => number(await panel.locator("tbody tr").filter({ hasText: good }).locator("td").nth(1).innerText());
+    const text = await panel.innerText();
+    return {
+      stages: Number(/Stage ([\d.]+) of/.exec(text)?.[1] ?? Number(await panel.getByRole("meter").getAttribute("aria-valuenow"))),
+      store: { gold: await stored("Gold"), iron: await stored("Iron"), tools: await stored("Tools"), food: await stored("Food") },
+      crumbling: text.includes("the monument is crumbling"),
+    };
+  }
+
+  public async monuments(): Promise<MonumentView[]> {
+    await this.open("rankings");
+    await this.panel("Monuments").waitFor();
+    return (await this.lines(this.panel("Monuments").locator("li"))).map(line => {
+      const seen = /^(.+) at (.+?) (Stage ([\d.]+) of \d+|Stands complete)$/.exec(line);
+      if (!seen) throw new Error(`The rankings tell of a monument as "${line}"`);
+      return { alliance: seen[1], seat: seen[2], stages: Number(seen[4] ?? 0), complete: seen[3] === "Stands complete" };
+    });
   }
 
   public async alliance(): Promise<{ name: string; members: string[] } | null> {
