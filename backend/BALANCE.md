@@ -77,4 +77,16 @@ What simulated worlds measured about the rules, and the decisions taken from it.
    - The other crafts gain as the warrior stops sinking gold: farmers, smiths and iron miners end at about 90 to 100% of a gold producer's land (a smith choked of iron at 49 to 55%, an iron miner selling to a cornerer at 129%), and the mirror match ends at 96% and 100%.
    - The circle of make-ups holds: iron-less against self-sufficient 100%, cornering beats the iron-less coalition by 6 to 9% (three runs), and a self-sufficient coalition beats cornering by 9%.
    - Paying soldiers from 20% of income instead of 30% made war a coin flip again (warriors 66 to 144%, matches 85 to 119%), as a smaller army often finds no garrison it can beat; the share stays at 30%. A coalition with more than one warrior was not measured.
+1. More than one warrior, measured on 2026-11-07 (`npm run economy`, 120 turns; a self-sufficient coalition against one with a gold producer swapped for each extra warrior; Hanse's land against Guild's):
+
+   | Rules | Two warriors | Three warriors | No warrior |
+   |---|---|---|---|
+   | Capture 15%, garrison 1% of land (three runs each) | 115 to 123% | 127 to 133% | 87 to 89% |
+   | Capture 10% | 107%, 109% | 117%, 123% | 94%, 97% |
+   | Garrison grows after strikes | 100%, 118% | 102%, 111% | 86%, 89% |
+   | Both | 91%, 102% | 90%, 104% | 93%, 97% |
+   | Both, garrisons built first (final) | 99%, 100% | 93%, 102% | 100%, 101% |
+
+   - Warriors ran away: every strike in every run won (32 to 35 by three warriors), since a warrior marches only on a member its army clearly beats and with several warriors one always is. A won land strike now takes at most 10% of the target's land instead of 15% (`attack.maxLandCaptureRatio`, decided 2026-11-07), and a craftsman remembers each strike that took its land for 24 turns and keeps another 1% of its land in barracks for each, up to 4%, building its barracks and towers before the rest of its plan (in turn with the rest, the garrison's small share came last and a smith ended with barracks on 0.3% of its land). Buildings cannot be torn down, so a craftsman struck on fully built land walls up only as it gains land.
+   - Extra warriors no longer pay, and the warrior is now a free choice: a coalition ends the same size with or without one (100%, 101%), while the warrior itself ends at 56 to 109% of a gold producer's land, about 75% on average. The circle of make-ups holds: mirror 100% and 103%, iron-less against self-sufficient 100% and 107%, cornering beats the iron-less coalition (93%, 98%), a self-sufficient coalition beats cornering (108%, 109%).
 1. Balance over 300 simulated turns (2026-10-31): before today economy with defense won clearly (turtle 1,833 acres, economist 1,690, warlord 1,453). With 15% land capture, raid protection, random events, great works at ten times the price and rulers that raise them, the three styles end within 16% of each other: turtle 2,332, economist 2,120, warlord 2,010. Scripted rulers are a rough stand-in; check again once real players exist.

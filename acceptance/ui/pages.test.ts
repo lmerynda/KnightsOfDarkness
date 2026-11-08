@@ -125,7 +125,9 @@ pageCheck("the steward warns of an army on the way and points to the army", asyn
   const attackerPage = await open(attacker);
   await goTo(attackerPage, "Army");
   await attackerPage.getByRole("combobox", { name: /^Target/ }).selectOption(target.name);
-  await shows(attackerPage.locator("main"), "At stake: up to 15 acres");
+  // both hold 100 acres, so the share a won strike takes is the whole of what is at stake
+  const atStake = Math.floor(100 * (await game.rules()).attack.maxLandCaptureRatio);
+  await shows(attackerPage.locator("main"), `At stake: up to ${atStake} acres`);
 
   await attacker.marchesOn(target, { infantry: 10 });
   const targetPage = await open(target);

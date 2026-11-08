@@ -175,7 +175,7 @@
         "turnsToArrive": 4,
         "turnsToWaitAtBorder": 4,
         "minTargetLandRatio": 0.5,
-        "maxLandCaptureRatio": 0.15,
+        "maxLandCaptureRatio": 0.1,
         "maxPlunderRatio": 0.2,
         "towerDefenseBonusPerTower": 0.02,
         "maxTowerDefenseBonus": 0.5,

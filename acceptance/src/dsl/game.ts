@@ -1,4 +1,5 @@
 import type { World } from "../api/client.ts";
+import type { GameConfig } from "../api/types.ts";
 import type { Credentials, GateDriver, Outcome, RulerDriver } from "./driver.ts";
 import { Ruler } from "./ruler.ts";
 
@@ -71,6 +72,11 @@ export class Game {
   }
 
   /** the clock ticks: every kingdom gets a turn, the round moves on and the merchants trade */
+  /** the rules the world plays by, for checks whose numbers follow from them */
+  public rules(): Promise<GameConfig> {
+    return this.world.config();
+  }
+
   public async timePasses(ticks = 1): Promise<void> {
     await this.world.advance(ticks);
   }

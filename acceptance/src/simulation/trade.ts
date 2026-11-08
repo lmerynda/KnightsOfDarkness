@@ -270,13 +270,39 @@ const thisTurn = async (context: TurnContext, calling: Calling, unsold: boolean)
   return { plan: { ...plan, farm: (plan.farm ?? 0) + selfFeedShare }, workers: [...workers, "farmer"] };
 };
 
+/** turns a ruler remembers a strike on it by, and the most of its land it turns into barracks against strikes */
+const strikeMemoryTurns = 24;
+const mostGarrisonShare = 0.04;
+
 /**
  * a craftsman's plan with barracks for its garrison and towers for the full tower bonus; without them every strike on
- * a craftsman won, and whichever coalition's warrior struck took its rivals' land
+ * a craftsman won, and whichever coalition's warrior struck took its rivals' land. Each strike it remembers adds its
+ * garrison share again, as a player who loses land walls up: a coalition of three warriors took a third more land than
+ * the expected make-up while every garrison stayed at its first size
  */
-const defended = ({ config, kingdom }: TurnContext, plan: Plan): Plan => {
+const defended = ({ config, kingdom, memory, turn }: TurnContext, plan: Plan): Plan => {
   const towers = Math.ceil(config.attack.maxTowerDefenseBonus / config.attack.towerDefenseBonusPerTower);
-  return { ...plan, barracks: (plan.barracks ?? 0) + garrisonShare, tower: Math.max(plan.tower ?? 0, Math.min(0.05, towers / kingdom.resources.land)) };
+  const struck = ((memory.struck as number[] | undefined) ?? []).filter(when => when > turn - strikeMemoryTurns);
+  const share = Math.min(mostGarrisonShare, garrisonShare * (1 + struck.length));
+  return { ...plan, barracks: (plan.barracks ?? 0) + share, tower: Math.max(plan.tower ?? 0, Math.min(0.05, towers / kingdom.resources.land)) };
+};
+
+/**
+ * builds the barracks and towers its plan calls for before anything else; built in turn with the rest of the plan, the
+ * garrison's small share was always the smallest shortfall and came last, so a smith ended with barracks on 0.3% of its
+ * land instead of 1%
+ */
+const wallUp = async (context: TurnContext, plan: Plan): Promise<void> => {
+  const { kingdom } = await refreshed(context);
+  const missing = (building: "barracks" | "tower"): number => Math.max(0, Math.floor((plan[building] ?? 0) * kingdom.resources.land) - kingdom.buildings[building]);
+  if (missing("barracks") + missing("tower") > 0) await context.player.build({ barracks: missing("barracks"), tower: missing("tower") });
+};
+
+/** notes the turns on which the ruler's land shrank, which is when a strike on it won */
+const noteStrikes = ({ kingdom, memory, turn }: TurnContext): void => {
+  const before = memory.land as number | undefined;
+  if (before !== undefined && kingdom.resources.land < before) memory.struck = [...((memory.struck as number[] | undefined) ?? []), turn];
+  memory.land = kingdom.resources.land;
 };
 
 /** ships the good to the members who wrote down they lack it, most lacking first, keeping what the shipper needs itself */
@@ -371,6 +397,7 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
     name: craft,
     weaponsPercentage: calling.sells.includes("weapons") ? 50 : 0,
     play: async context => {
+      noteStrikes(context);
       await disbandUnpaid(context);
       const want = wants(context, calling);
       await payBills(context, ledger);
@@ -394,6 +421,7 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
         await raiseGarrison(context);
       }
       const { plan, workers } = await thisTurn(context, calling, unsold);
+      if (!calling.army) await wallUp(context, plan);
       await developEconomy(await refreshed(context), plan, workers);
       for (const good of calling.sells) {
         if (ships.includes(good)) await ship(context, good, want[good] ?? 0, ledger);
@@ -419,6 +447,7 @@ const cornerer = (good: Good, ledger: Ledger): Strategy => {
     name: `corner ${good}`,
     weaponsPercentage: 0,
     play: async context => {
+      noteStrikes(context);
       await disbandUnpaid(context);
       const want = wants(context, calling);
       await payBills(context, ledger);
@@ -428,6 +457,7 @@ const cornerer = (good: Good, ledger: Ledger): Strategy => {
       await hireCarriers(await refreshed(context), good, ledger);
       if (await fed(context)) await raiseGarrison(context);
       const { plan, workers } = await thisTurn(context, calling, false);
+      await wallUp(context, plan);
       await developEconomy(await refreshed(context), plan, workers);
       await ship(context, good, want[good] ?? 0, ledger);
       await sell(context, good, (want[good] ?? 0) + debtors(context, ledger).length, ceiling);

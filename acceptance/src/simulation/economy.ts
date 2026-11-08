@@ -19,7 +19,7 @@ strikes the largest kingdom in reach it clearly beats every six turns; corner:ir
 gold producer that buys every piece rivals and merchants offer and asks twice the merchants' price on the market; the
 coalition's own craftsmen of that good ask that price too, and the coalition passes the good to its members by
 carriers instead, billed at the merchants' price. Every member but the warrior keeps a garrison of bowmen and infantry
-in barracks on 1% of its land. A coalition may leave a craft out and rely on the market. Each buys
+in barracks on 1% of its land, and 1% more for each strike it lost in the last 24 turns, up to 4%. A coalition may leave a craft out and rely on the market. Each buys
 from its allies first and from anyone else for the rest, and grows its own food when it cannot buy enough. Rulers play
 in a new random order every turn, so no coalition always meets the market and the armies first. The merchant bots play
 too. The report gives each kingdom's land, gold and army, each coalition's land and its craftsmen's land against its

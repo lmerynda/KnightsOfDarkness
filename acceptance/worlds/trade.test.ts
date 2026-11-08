@@ -121,3 +121,34 @@ test("a craftsman whose soldiers' pay outgrows its income dismisses soldiers", a
     await server.stop();
   }
 });
+
+// Three warriors took a third more land than the expected make-up while every garrison stayed at 1% of land; a player who
+// loses land walls up, and so do these rulers
+test("a craftsman struck by warriors keeps more barracks", async () => {
+  const server = await startServer();
+  try {
+    const world = new World(server.url);
+    const guild = await foundCoalition(world, "Guild", () => coalitionOf(selfSufficient));
+    const horde = await foundCoalition(world, "Horde", () => coalitionOf(["gold", "gold", "food", "smith", "smith", "iron", "warrior", "warrior", "warrior"]));
+    const turns = 60;
+    const run = await runWorld(world, [...guild.rulers, ...horde.rulers], turns, { shuffle: true });
+    assert.deepEqual(run.violations, []);
+
+    const craftsmen = guild.rulers.filter(ruler => ruler.strategy.name !== "warrior").map(ruler => ruler.player.name);
+    const lostLand = (kingdom: string): boolean =>
+      run.timeline.some(entry => entry.kingdom === kingdom && entry.turn > turns - 20 && entry.land < (run.timeline.find(before => before.kingdom === kingdom && before.turn === entry.turn - 1)?.land ?? 0));
+    const struck = craftsmen.filter(lostLand);
+    assert.ok(struck.length > 0, "the warriors struck no craftsman late in the run");
+    const kingdoms = await world.kingdoms();
+    const share = (name: string): number => {
+      const kingdom = kingdoms.find(candidate => candidate.name === name);
+      return kingdom ? kingdom.buildings.barracks / kingdom.resources.land : 0;
+    };
+    // buildings cannot be torn down, so a craftsman struck on fully built land walls up only as it gains land; without
+    // walling up no craftsman keeps barracks on more than 1% of its land
+    const shares = struck.map(name => `${name}: ${share(name).toFixed(3)}`);
+    assert.ok(struck.some(name => share(name) > 0.015), `no struck craftsman walled up: ${shares.join(", ")}`);
+  } finally {
+    await server.stop();
+  }
+});
