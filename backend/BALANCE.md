@@ -143,4 +143,29 @@ What simulated worlds measured about the rules, and the decisions taken from it.
    - So the x3.1 row of the first table does not show that +200% stops warriors. Warriors there judge by the paper number with a margin of 1.3, so they rarely march (21 to 31 battles, warriors end at 3,300 acres against the craftsmen's 6,000), though an army with 60% of the paper power would win. A player who learns that would strike anyway.
    - Towers count per tower, not per acre: 25 towers give the whole +50% at any size, which is under 1% of a 3,000-acre kingdom. Castles add 10% each with no cap for 100,000 building points; scripted rulers keep their first one.
    - In every world but x3.1 some warrior or pair reaches 10,000 to 13,000 acres, not always Horde's: lone warriors did in melee-only and in x2.1. Warriors with no soldiers left appear in most runs. The runaway follows whoever breaks the other warriors first, which points back at warriors keeping no garrison.
+1. A two-week peace, towers for bowmen and castles for melee, measured on 2026-11-08. The rules, chosen by the game's designer after the entry above: every kingdom starts with 336 turns of protection; a tower has places for 50 bowmen, who loose twice the arrows; a castle shelters 500 infantry or cavalry, infantry first, who defend twice as strong and take twice the blows to fall. Guards and soldiers without a place gain nothing.
+
+   Staged on the real server, 500 bowmen and 500 infantry against an army of 2 infantry to 1 cavalry. The defense shown is now about what it takes to win, where the old +60% fell to 80% of the number shown:
+
+   | Defenders hold | Defense shown | Smallest army that won (of those tried) | Its attack power | Attackers lost | Defenders kept |
+   |---|---|---|---|---|---|
+   | Nothing | 2,005 | 900 | 2,100 | 241 | 297 + 365 |
+   | 10 towers | 2,005 | 1,000 | 2,333 | 331 | 295 + 364 |
+   | 1 castle | 3,005 | 1,200 | 2,800 | 241 | 222 + 408 |
+   | Both, +100% each (the rule) | 3,005 | 1,300 | 3,033 | 332 | 220 + 407 |
+   | Both, +200% arrows | 3,005 | 1,400 | 3,267 | 423 | 218 + 406 |
+   | Both, +200% castle | 4,005 | 1,600 | 3,733 | 332 | 145 + 422 |
+   | Both, +200% each | 4,005 | 1,800 | 4,200 | 423 | 118 + 415 |
+
+   Four coalitions of nine with no round reset, two runs each. Horde, the coalition with two warriors, against the average of the others:
+
+   | Rule | Land at day 14 | Day 27 | Day 40 | Day 60 | Gold at day 60 | Craftsman's land at day 14, day 60 | Strikes won |
+   |---|---|---|---|---|---|---|---|
+   | Before | 125 to 130% | 128 to 130% | 132 to 133% | 138 to 146% | 119 to 120% | 3,340, 7,990 | not logged |
+   | The rule | 96 to 97% | 106 to 112% | 101 to 116% | 126 to 128% | 115 to 116% | 3,960, 8,400 | 342 of 358 |
+   | +200% each | 96 to 97% | 108 to 133% | 104 to 134% | 124 to 138% | 112 to 122% | 3,960, 8,080 | 428 of 430 |
+
+   - The peace does what it was for: at day 14 no coalition leads, a craftsman holds 18% more land than before, and all warriors stand level at about 2,100 acres and 10,000 soldiers. Warriors spend it arming, though, while scripted craftsmen hold 8,000 defense against 14,500 before, since the bonus on guards and bowmen is gone and they add no soldiers for the peace.
+   - The lead is smaller than before at every date, but comes back by day 60, and larger bonuses do not help: scripted warriors march only on what they clearly beat, so a stronger wall only changes whom they pick. Win rates say little for the same reason.
+   - Each craftsman is struck about 4 times in the 46 days after the peace, the most struck 7 times. Warriors take far more, up to 18 strikes on one kingdom, and most runs have warriors at 0 soldiers: 52 to 57 of about 180 strikes land on the 5 warriors. That is still the scripted warriors leaving nobody at home.
 1. Balance over 300 simulated turns (2026-10-31): before today economy with defense won clearly (turtle 1,833 acres, economist 1,690, warlord 1,453). With 15% land capture, raid protection, random events, great works at ten times the price and rulers that raise them, the three styles end within 16% of each other: turtle 2,332, economist 2,120, warlord 2,010. Scripted rulers are a rough stand-in; check again once real players exist.
