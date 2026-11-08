@@ -122,10 +122,39 @@ test("a craftsman whose soldiers' pay outgrows its income dismisses soldiers", a
   }
 });
 
+// Warriors who marched with everyone were broken at home by rival warriors, a player leaves a guard behind
+test("a warrior leaves a guard of bowmen and infantry at home when it marches", async () => {
+  const server = await startServer(noPeace);
+  try {
+    const world = new World(server.url);
+    const guild = await foundCoalition(world, "Guild", () => coalitionOf(selfSufficient));
+    const horde = await foundCoalition(world, "Horde", () => coalitionOf(selfSufficient));
+    const run = await runWorld(world, [...guild.rulers, ...horde.rulers], 60, { shuffle: true });
+    assert.deepEqual(run.violations, []);
+
+    const warriors = [...guild.rulers, ...horde.rulers].filter(ruler => ruler.strategy.name === "warrior").map(ruler => ruler.player.name);
+    const strikes = run.battles.filter(battle => warriors.includes(battle.attacker));
+    assert.ok(strikes.length > 0, "the warriors never marched");
+    for (const strike of strikes) assert.equal(strike.unitsSent.bowman ?? 0, 0, `${strike.attacker} marched with its bowmen`);
+
+    const kingdoms = await world.kingdoms();
+    for (const name of warriors) {
+      const kingdom = kingdoms.find(candidate => candidate.name === name);
+      assert.ok(kingdom, `${name} is gone`);
+      const { bowman, infantry } = kingdom.units.availableUnits;
+      assert.ok(bowman + infantry > 0, `${name} has nobody at home`);
+      assert.ok(kingdom.buildings.tower > 4, `${name} raised no towers for its guard`);
+    }
+  } finally {
+    await server.stop();
+  }
+});
+
 // Three warriors took a third more land than the expected make-up while every garrison stayed at 1% of land; a player who
 // loses land walls up, and so do these rulers
 test("a craftsman struck by warriors keeps more barracks", async () => {
-  const server = await startServer(noPeace);
+  // strong riders, so that warriors who keep half their soldiers at home still strike within this short run
+  const server = await startServer({ ...noPeace, "attack.unitAttackPower.cavalry": 30 });
   try {
     const world = new World(server.url);
     const guild = await foundCoalition(world, "Guild", () => coalitionOf(selfSufficient));

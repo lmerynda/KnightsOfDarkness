@@ -37,9 +37,9 @@ const freshStartProblems = (kingdom: Kingdom, config: GameConfig, round: number)
     "carriers on the road": kingdom.carriersOnTheMove.length,
     "great works": kingdom.specialBuildings.length,
     "market offers": kingdom.marketOffers.length,
-    "turns of protection": kingdom.protectionTicks,
   };
   for (const [what, count] of Object.entries(leftovers)) if (count > 0) problems.push(`${where}: ${count} ${what} left from the last round`);
+  if (kingdom.protectionTicks !== config.attack.protectionTicksAtStart) problems.push(`${where}: ${kingdom.protectionTicks} turns of peace, not ${config.attack.protectionTicksAtStart}`);
   return problems;
 };
 

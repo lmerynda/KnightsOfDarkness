@@ -110,12 +110,18 @@ The figures give these starting prices. Step 7 tunes them.
 - **Much of that gap is a scripted-ruler gap.** Simulated warriors keep no defense at home, so the pair breaks the rival warriors (21 strikes on them in 14 days). Players would keep a garrison.
 - **So before building, fix the simulated warriors' home defense and measure again.** Until then, balance target 3 can't be judged.
 
+Step 2, on 2026-11-08, on top of the two-week peace and the towers and castles with fixed places: simulated warriors keep half their soldiers at home, half bowmen and half infantry, with towers and castles for them. Table in `BALANCE.md`.
+
+- **The leader is still the two-warrior coalition,** 22 to 29% ahead in land at day 60 and 12 to 16% in gold, where it was 38 to 46% and 19 to 20%. It now gets there by striking craftsmen, not rival warriors.
+- **Rivals can now fight back.** At day 60 each rival's warrior holds 27,000 to 90,000 soldiers against 86,000 to 103,000 for each of the leader's two, where rivals' warriors often stood at nothing before.
+- **The prices above were measured before these changes.** A coalition's land and gold at day 60 changed by under 10%, so they stand as starting prices.
+
 ## Plan
 
 Each step lands with its scenarios, docs and checks, and is committed on its own.
 
 1. **Measure.** Done on 2026-11-08: see "Measured" above.
-2. **Warriors keep a garrison at home**, then measure the era again. The current numbers rest on undefended warriors.
+2. **Warriors keep a garrison at home**, then measure the era again. Done on 2026-11-08: see "Measured" above.
 3. **Era.** Rename round to era. Add the clock cap and record the winning alliance and the way the era ended in the hall of fame. Update the `clock` and `round` scenarios and `npm run test:long`.
 4. **Monument.** Found it and pay into it. Add the stages, the upkeep and decay, the chronicle notices, and the public view. This needs:
    - the API, plus regenerated types in both clients;

@@ -168,4 +168,15 @@ What simulated worlds measured about the rules, and the decisions taken from it.
    - The peace does what it was for: at day 14 no coalition leads, a craftsman holds 18% more land than before, and all warriors stand level at about 2,100 acres and 10,000 soldiers. Warriors spend it arming, though, while scripted craftsmen hold 8,000 defense against 14,500 before, since the bonus on guards and bowmen is gone and they add no soldiers for the peace.
    - The lead is smaller than before at every date, but comes back by day 60, and larger bonuses do not help: scripted warriors march only on what they clearly beat, so a stronger wall only changes whom they pick. Win rates say little for the same reason.
    - Each craftsman is struck about 4 times in the 46 days after the peace, the most struck 7 times. Warriors take far more, up to 18 strikes on one kingdom, and most runs have warriors at 0 soldiers: 52 to 57 of about 180 strikes land on the 5 warriors. That is still the scripted warriors leaving nobody at home.
+1. Warriors who keep soldiers at home, measured on 2026-11-08 under the rules of the entry above, four coalitions of nine, 1,440 turns, two runs each. A simulated warrior now leaves a share of its soldiers at home, half bowmen and half infantry, with towers and castles for them, and marches with the rest:
+
+   | Left at home | Horde's land at day 27 | Day 40 | Day 60 | Gold at day 60 | Strikes | On warriors | Land taken in battle | Largest rival warrior at day 60 |
+   |---|---|---|---|---|---|---|---|---|
+   | Nobody | 106 to 112% | 101 to 116% | 126 to 128% | 115 to 116% | 176 to 182 | 52 to 57 | 77,000 to 81,000 | 18,100, 9,600 acres |
+   | A third | 109 to 115% | 107 to 125% | 111 to 135% | 104 to 116% | 130 to 176 | 38 to 50 | 56,000 to 80,000 | 10,400, 10,600 acres |
+   | Half (kept) | 116 to 120% | 126 to 127% | 122 to 129% | 112 to 116% | 129 to 133 | 4 to 26 | 50,000 to 58,000 | 17,400, 9,100 acres |
+
+   - With half at home warriors mostly stop breaking each other: one run of two has no strike by Horde on a warrior at all, and a warrior with no soldiers at a daily reading is rare. A third at home is not enough.
+   - The second warrior still pays. Horde's lead with half at home no longer comes from its rivals' warriors but from two warriors each taking land from craftsmen, about 30,000 acres between them over 46 days. Per the era design a lead is not a flaw in itself; whether rivals who band together can cut it down is what the monument's balance targets will test.
+   - Runs differ a lot, a third at home ends at 111% and 135%, so these are directions, not values.
 1. Balance over 300 simulated turns (2026-10-31): before today economy with defense won clearly (turtle 1,833 acres, economist 1,690, warlord 1,453). With 15% land capture, raid protection, random events, great works at ten times the price and rulers that raise them, the three styles end within 16% of each other: turtle 2,332, economist 2,120, warlord 2,010. Scripted rulers are a rough stand-in; check again once real players exist.

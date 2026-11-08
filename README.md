@@ -137,7 +137,7 @@ Real coalitions try to feed, tool and arm themselves, so most of their market sh
 - farmers (`food`) sell food;
 - smiths make tools or weapons, whichever sells, from bought iron;
 - iron miners sell iron;
-- warriors arm an army with bought weapons and strike the largest kingdom within reach whose defense they clearly beat.
+- warriors arm an army with bought weapons, keep half of it at home as a guard of bowmen and infantry, and strike with the rest on the largest kingdom within reach whose defense it clearly beats.
 
 A run shorter than the peace sees no war, so a short run about war adds `--set attack.protectionTicksAtStart=0`. Every member but the warrior keeps a garrison of bowmen and infantry in barracks on 1% of its land, with towers and castles that have a place for all of them, and builds them before the rest of its plan; each strike it lost in the last 24 turns adds another 1%, up to 4%.
 

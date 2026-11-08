@@ -240,15 +240,15 @@ export const armyAtHome = (kingdom: Kingdom): Partial<Counts<UnitName>> =>
 const scoutedPerStrike = 3;
 
 /**
- * every few turns scouts the kingdoms it may attack, largest first, and marches with the whole army at home on the first
- * whose defense its spies saw that army clearly beat. A ruler who looked only at the largest stopped striking for good
+ * every few turns scouts the kingdoms it may attack, largest first, and marches with the whole army at home, or the part
+ * of it the ruler sends out, on the first whose defense its spies saw that army clearly beat. A ruler who looked only at the largest stopped striking for good
  * once a rival's army grew past its own there, while that rival took the land of everyone else in its coalition
  */
-export const strikeLargest = async (context: TurnContext, options: { attackEvery?: number; margin?: number } = {}): Promise<void> => {
+export const strikeLargest = async (context: TurnContext, options: { attackEvery?: number; margin?: number; marchers?: (kingdom: Kingdom) => Partial<Counts<UnitName>> } = {}): Promise<void> => {
   const { player, config, turn, kingdom } = context;
   if (kingdom.ongoingAttacks.length > 0 || turn % (options.attackEvery ?? 6) !== 0) return;
 
-  const army = armyAtHome(kingdom);
+  const army = (options.marchers ?? armyAtHome)(kingdom);
   const power = armyPower(army, config);
   if (power <= 0) return;
 

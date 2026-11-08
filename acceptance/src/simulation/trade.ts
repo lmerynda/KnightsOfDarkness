@@ -1,5 +1,5 @@
 import type { Player } from "../api/client.ts";
-import { militaryUnits, type BuildingName, type Counts, type MarketResource, type MarketTrade, type UnitName } from "../api/types.ts";
+import { militaryUnits, type BuildingName, type Counts, type Kingdom, type MarketResource, type MarketTrade, type UnitName } from "../api/types.ts";
 import { developEconomy, fillBarracks, strikeLargest, walls, type Plan, type Strategy, type TurnContext } from "./strategies.ts";
 
 /**
@@ -29,6 +29,14 @@ export const parseCraft = (text: string): Craft => {
 
 type Calling = { plan: Plan; workers: UnitName[]; sells: Good[]; army?: Partial<Counts<UnitName>> };
 
+const warriorBarracks = 0.06;
+/**
+ * the share of its soldiers a warrior leaves at home, half bowmen and half infantry; the rest are its marchers, two
+ * infantry to a cavalryman. A warrior that marched with everyone was broken at home by every rival warrior, and with a
+ * third at home a third of the strikes still fell on warriors, against a tenth with half
+ */
+const homeGuard = 0.5;
+
 /** every calling keeps houses for its workers and a few gold mines, since land is bought with gold */
 const callings: Record<CallingName, Calling> = {
   gold: { plan: { house: 0.4, goldMine: 0.5 }, workers: ["goldMiner"], sells: [] },
@@ -37,7 +45,12 @@ const callings: Record<CallingName, Calling> = {
   iron: { plan: { house: 0.4, ironMine: 0.4, goldMine: 0.1 }, workers: ["ironMiner", "goldMiner"], sells: ["iron"] },
   // a gold economy with barracks for the army its pay share keeps; it makes no weapons, every soldier is armed from the
   // market. With the warlords' 12% of land in barracks most of them stood empty and the warrior paid less than gold
-  warrior: { plan: { house: 0.3, goldMine: 0.51, barracks: 0.06, spyGuild: 0.01 }, workers: ["goldMiner"], sells: [], army: { infantry: 2, cavalry: 1 } },
+  warrior: {
+    plan: { house: 0.3, goldMine: 0.51, barracks: warriorBarracks, spyGuild: 0.01 },
+    workers: ["goldMiner"],
+    sells: [],
+    army: { bowman: homeGuard / 2, infantry: homeGuard / 2 + ((1 - homeGuard) * 2) / 3, cavalry: (1 - homeGuard) / 3 },
+  },
 };
 
 const workplace: Partial<Record<UnitName, BuildingName>> = { goldMiner: "goldMine", farmer: "farm", blacksmith: "workshop", ironMiner: "ironMine" };
@@ -264,7 +277,7 @@ const selfFeedBelowTurns = foodTurns;
  */
 const thisTurn = async (context: TurnContext, calling: Calling, unsold: boolean): Promise<{ plan: Plan; workers: UnitName[] }> => {
   const { plan: craft, workers } = unsold ? callings.gold : calling;
-  const plan = calling.army ? craft : defended(context, craft);
+  const plan = calling.army ? { ...craft, ...walls(warriorBarracks * homeGuard, context.config) } : defended(context, craft);
   const hungry = context.details.foodUpkeep - (context.details.forecast.resourcesProduced.food ?? 0);
   if ((await context.player.kingdom()).resources.food >= selfFeedBelowTurns * hungry) return { plan, workers };
   return { plan: { ...plan, farm: (plan.farm ?? 0) + selfFeedShare }, workers: [...workers, "farmer"] };
@@ -383,6 +396,13 @@ export const coalitionOf = (crafts: Craft[]): Strategy[] => {
   return crafts.map(craft => (craft.startsWith("corner:") ? cornerer(craft.slice("corner:".length) as Good, ledger) : craftsman(craft as CallingName, ledger)));
 };
 
+/** a warrior's army on the march: its cavalry, and the infantry the home guard can spare beside the bowmen at home */
+const marchers = (kingdom: Kingdom): Partial<Counts<UnitName>> => {
+  const { bowman, infantry, cavalry } = kingdom.units.availableUnits;
+  const guard = Math.ceil((bowman + infantry + cavalry) * homeGuard);
+  return { infantry: Math.max(0, infantry - Math.max(0, guard - bowman)), cavalry };
+};
+
 /**
  * lives by one craft and buys the rest; when its goods pile up unsold it grows gold mines instead of workplaces until
  * the market takes the stock, as a player would rather than make what nobody buys. A smith turns its forges to whichever
@@ -420,7 +440,7 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
         await raiseGarrison(context);
       }
       const { plan, workers } = await thisTurn(context, calling, unsold);
-      if (!calling.army) await wallUp(context, plan);
+      await wallUp(context, plan);
       await developEconomy(await refreshed(context), plan, workers);
       for (const good of calling.sells) {
         if (ships.includes(good)) await ship(context, good, want[good] ?? 0, ledger);
@@ -429,7 +449,7 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
         if (ships.includes(good)) await bill(context, good, ledger);
       }
       await topUpFood(context, calling);
-      if (calling.army) await strikeLargest(await refreshed(context));
+      if (calling.army) await strikeLargest(await refreshed(context), { marchers });
     },
   };
   return strategy;
