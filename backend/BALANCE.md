@@ -89,4 +89,17 @@ What simulated worlds measured about the rules, and the decisions taken from it.
 
    - Warriors ran away: every strike in every run won (32 to 35 by three warriors), since a warrior marches only on a member its army clearly beats and with several warriors one always is. A won land strike now takes at most 10% of the target's land instead of 15% (`attack.maxLandCaptureRatio`, decided 2026-11-07), and a craftsman remembers each strike that took its land for 24 turns and keeps another 1% of its land in barracks for each, up to 4%, building its barracks and towers before the rest of its plan (in turn with the rest, the garrison's small share came last and a smith ended with barracks on 0.3% of its land). Buildings cannot be torn down, so a craftsman struck on fully built land walls up only as it gains land.
    - Extra warriors no longer pay, and the warrior is now a free choice: a coalition ends the same size with or without one (100%, 101%), while the warrior itself ends at 56 to 109% of a gold producer's land, about 75% on average. The circle of make-ups holds: mirror 100% and 103%, iron-less against self-sufficient 100% and 107%, cornering beats the iron-less coalition (93%, 98%), a self-sufficient coalition beats cornering (108%, 109%).
+1. A world of four coalitions, measured on 2026-11-07 (`npm run economy` with four `--coalition`s of nine, 120 turns, three runs): Guild self-sufficient, Hanse without an iron miner, Order cornering iron, Horde with a second warrior in a gold producer's place. Land against the average of the four:
+
+   | | Run a | Run b | Run c |
+   |---|---|---|---|
+   | Guild (self-sufficient) | 103% | 99% | 105% |
+   | Hanse (no iron miner) | 98% | 101% | 89% |
+   | Order (corners iron) | 96% | 93% | 98% |
+   | Horde (two warriors) | 104% | 106% | 108% |
+
+   - A second warrior pays again once there are many rivals: Horde ends first in all three runs and takes 1,800 to 2,900 acres a run, spread over all three rivals, where against a single rival it ended even. With 27 other kingdoms a warrior always finds one it clearly beats, and walling up after a strike only moves it on to the next.
+   - Cornering fails where several coalitions mine the good: Order's cornerer buys 1.7 to 2 million pieces of the other miners' iron at up to twice the merchants' price and ends at 65 to 93% of a gold producer's land, while the iron-less coalition still buys 1.3 to 1.5 million pieces from the miners left. Cornering pays only where supply is concentrated; the scripted cornerer corners regardless, which a player would not.
+   - Iron flows between coalitions: iron miners end at 97 to 124% of a gold producer's land selling to everyone, and the merchants sold each coalition only 5,000 to 77,000 iron over the run, so their 1,500 a turn matters little once several coalitions mine.
+   - No rule violations; two people starved across all three runs.
 1. Balance over 300 simulated turns (2026-10-31): before today economy with defense won clearly (turtle 1,833 acres, economist 1,690, warlord 1,453). With 15% land capture, raid protection, random events, great works at ten times the price and rulers that raise them, the three styles end within 16% of each other: turtle 2,332, economist 2,120, warlord 2,010. Scripted rulers are a rough stand-in; check again once real players exist.
