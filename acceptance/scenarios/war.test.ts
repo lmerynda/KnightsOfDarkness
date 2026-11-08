@@ -113,7 +113,7 @@ scenario("an army too weak is beaten back, takes nothing, and both sides hear of
   const target = await game.foundsAKingdom("Target");
   const attacker = await game.foundsAKingdom("Attacker");
   await attacker.passesTurns(5);
-  // two foot soldiers strike with 4; a new kingdom's five guards stand behind its castle and towers with about 6
+  // two foot soldiers strike with 4 against a new kingdom's five guards
   await attacker.trains({ infantry: 2 });
   await attacker.marchesOn(target, { infantry: 2 });
   await attacker.passesTurns(4);

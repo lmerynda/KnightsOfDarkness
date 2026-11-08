@@ -1075,7 +1075,7 @@ export interface components {
     };
     Attack: {
       /** Format: double */
-      castleDefenseBonusPerCastle: number;
+      castleSoldierBonus: number;
       /** Format: double */
       maxGuardLossRatio: number;
       /** Format: double */
@@ -1083,17 +1083,17 @@ export interface components {
       /** Format: double */
       maxPlunderRatio: number;
       /** Format: double */
-      maxTowerDefenseBonus: number;
-      /** Format: double */
       maxWarehousePlunderProtection: number;
       /** Format: double */
       minTargetLandRatio: number;
       /** Format: int32 */
       protectionTicksAfterDefeat: number;
+      /** Format: int32 */
+      protectionTicksAtStart: number;
       /** Format: double */
       smallerTargetCaptureExponent: number;
       /** Format: double */
-      towerDefenseBonusPerTower: number;
+      towerFireBonus: number;
       /** Format: int32 */
       turnsToArrive: number;
       /** Format: int32 */
@@ -1386,6 +1386,8 @@ export interface components {
       /** Format: int32 */
       barracks: number;
       /** Format: int32 */
+      castle: number;
+      /** Format: int32 */
       farm: number;
       /** Format: int32 */
       goldMine: number;
@@ -1399,6 +1401,8 @@ export interface components {
       market: number;
       /** Format: int32 */
       spyGuild: number;
+      /** Format: int32 */
+      tower: number;
       /** Format: int32 */
       workshop: number;
     };

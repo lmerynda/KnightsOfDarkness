@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { World } from "../src/api/client.ts";
-import { startServer } from "../src/server.ts";
+import { noPeace, startServer } from "../src/server.ts";
 import { raider, turtle } from "../src/simulation/strategies.ts";
 import { foundRulers, runWorld } from "../src/simulation/world.ts";
 
 // A raider of infantry and cavalry charges a turtle that defends with bowmen and infantry: arrows first, then melee.
 test("a charge into a garrison with bowmen bleeds both sides", async () => {
-  const server = await startServer();
+  const server = await startServer(noPeace);
   try {
     const world = new World(server.url);
     const rulers = await foundRulers(world, [raider, turtle], "Siege");

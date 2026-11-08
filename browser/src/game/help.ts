@@ -3,7 +3,7 @@ import type { GameConfig } from "../api/types";
 /** the rules a veteran knows and a newcomer can look up, shown on hover where the number they explain appears */
 
 export const defenseHelp =
-  "Soldiers and guards at home, allies' soldiers standing guard, towers and castles. Soldiers on the march or standing guard elsewhere do not defend.";
+  "Soldiers and guards at home and allies' soldiers standing guard, with those a castle shelters counting for more. Soldiers on the march or standing guard elsewhere do not defend.";
 
 export const counterIntelligenceHelp = (config: GameConfig): string =>
   `${config.espionage.counterIntelligencePerSpy} for each spy and ${config.espionage.counterIntelligencePerGuard} for each guard. Enemy spies succeed only when they outnumber it.`;
@@ -28,4 +28,4 @@ export const turnsHelp = (config: GameConfig): string => {
 };
 
 export const protectionHelp =
-  "Your defense was broken. Sending an army of your own ends the protection; armies already on the road still arrive.";
+  "Every kingdom starts at peace, and one whose defense was broken gets a short respite. Sending an army of your own ends the protection; armies already on the road still arrive.";

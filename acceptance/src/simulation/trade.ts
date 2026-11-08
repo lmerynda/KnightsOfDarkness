@@ -1,6 +1,6 @@
 import type { Player } from "../api/client.ts";
 import { militaryUnits, type BuildingName, type Counts, type MarketResource, type MarketTrade, type UnitName } from "../api/types.ts";
-import { developEconomy, fillBarracks, strikeLargest, type Plan, type Strategy, type TurnContext } from "./strategies.ts";
+import { developEconomy, fillBarracks, strikeLargest, walls, type Plan, type Strategy, type TurnContext } from "./strategies.ts";
 
 /**
  * Rulers of coalitions that trade: each lives by one trade and buys the rest, from its allies first and from anyone
@@ -275,27 +275,26 @@ const strikeMemoryTurns = 24;
 const mostGarrisonShare = 0.04;
 
 /**
- * a craftsman's plan with barracks for its garrison and towers for the full tower bonus; without them every strike on
- * a craftsman won, and whichever coalition's warrior struck took its rivals' land. Each strike it remembers adds its
- * garrison share again, as a player who loses land walls up: a coalition of three warriors took a third more land than
- * the expected make-up while every garrison stayed at its first size
+ * a craftsman's plan with barracks for its garrison, and towers and castles with a place for all of it; without them
+ * every strike on a craftsman won, and whichever coalition's warrior struck took its rivals' land. Each strike it
+ * remembers adds its garrison share again, as a player who loses land walls up: a coalition of three warriors took a
+ * third more land than the expected make-up while every garrison stayed at its first size
  */
-const defended = ({ config, kingdom, memory, turn }: TurnContext, plan: Plan): Plan => {
-  const towers = Math.ceil(config.attack.maxTowerDefenseBonus / config.attack.towerDefenseBonusPerTower);
+const defended = ({ config, memory, turn }: TurnContext, plan: Plan): Plan => {
   const struck = ((memory.struck as number[] | undefined) ?? []).filter(when => when > turn - strikeMemoryTurns);
   const share = Math.min(mostGarrisonShare, garrisonShare * (1 + struck.length));
-  return { ...plan, barracks: (plan.barracks ?? 0) + share, tower: Math.max(plan.tower ?? 0, Math.min(0.05, towers / kingdom.resources.land)) };
+  return { ...plan, barracks: (plan.barracks ?? 0) + share, ...walls(share, config) };
 };
 
 /**
- * builds the barracks and towers its plan calls for before anything else; built in turn with the rest of the plan, the
- * garrison's small share was always the smallest shortfall and came last, so a smith ended with barracks on 0.3% of its
- * land instead of 1%
+ * builds the barracks, towers and castles its plan calls for before anything else; built in turn with the rest of the
+ * plan, the garrison's small share was always the smallest shortfall and came last, so a smith ended with barracks on
+ * 0.3% of its land instead of 1%
  */
 const wallUp = async (context: TurnContext, plan: Plan): Promise<void> => {
   const { kingdom } = await refreshed(context);
-  const missing = (building: "barracks" | "tower"): number => Math.max(0, Math.floor((plan[building] ?? 0) * kingdom.resources.land) - kingdom.buildings[building]);
-  if (missing("barracks") + missing("tower") > 0) await context.player.build({ barracks: missing("barracks"), tower: missing("tower") });
+  const missing = (building: "barracks" | "tower" | "castle"): number => Math.max(0, Math.floor((plan[building] ?? 0) * kingdom.resources.land) - kingdom.buildings[building]);
+  if (missing("barracks") + missing("tower") + missing("castle") > 0) await context.player.build({ barracks: missing("barracks"), tower: missing("tower"), castle: missing("castle") });
 };
 
 /** notes the turns on which the ruler's land shrank, which is when a strike on it won */

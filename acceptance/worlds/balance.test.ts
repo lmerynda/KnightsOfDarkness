@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { World } from "../src/api/client.ts";
-import { readBaseConfig, startServer, type ConfigOverrides } from "../src/server.ts";
+import { noPeace, readBaseConfig, startServer, type ConfigOverrides } from "../src/server.ts";
 import { economist, warlord } from "../src/simulation/strategies.ts";
 import { foundRulers, runWorld, type WorldRun } from "../src/simulation/world.ts";
 
 // The same duel under two configs: the harness can tell whether a balance change does what it claims.
 const duel = async (overrides: ConfigOverrides): Promise<{ run: WorldRun; attacker: string }> => {
-  const server = await startServer(overrides);
+  const server = await startServer({ ...noPeace, ...overrides });
   try {
     const world = new World(server.url);
     const rulers = await foundRulers(world, [economist, warlord()], "Duel");

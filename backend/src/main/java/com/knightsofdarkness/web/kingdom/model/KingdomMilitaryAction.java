@@ -116,7 +116,7 @@ public class KingdomMilitaryAction {
 
         if (target.getProtectionTicks() > 0)
         {
-            return Utils.format("{} is protected after a recent defeat, for {} more turns", target.getName(), target.getProtectionTicks());
+            return Utils.format("{} is protected for {} more turns", target.getName(), target.getProtectionTicks());
         }
 
         var ownAlliance = kingdom.getAlliance();

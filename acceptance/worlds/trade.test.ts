@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { World } from "../src/api/client.ts";
-import { startServer } from "../src/server.ts";
+import { noPeace, startServer } from "../src/server.ts";
 import { foundCoalition } from "../src/simulation/coalition.ts";
 import { coalitionOf, selfSufficient, tradeShares } from "../src/simulation/trade.ts";
 import { runWorld } from "../src/simulation/world.ts";
@@ -125,7 +125,7 @@ test("a craftsman whose soldiers' pay outgrows its income dismisses soldiers", a
 // Three warriors took a third more land than the expected make-up while every garrison stayed at 1% of land; a player who
 // loses land walls up, and so do these rulers
 test("a craftsman struck by warriors keeps more barracks", async () => {
-  const server = await startServer();
+  const server = await startServer(noPeace);
   try {
     const world = new World(server.url);
     const guild = await foundCoalition(world, "Guild", () => coalitionOf(selfSufficient));

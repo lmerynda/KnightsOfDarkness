@@ -42,24 +42,28 @@ public class KingdomDetailsProvider {
     }
 
     /**
-     * troops and guards at home and allied garrisons standing with them, strengthened by towers (capped) and castles
+     * troops and guards at home and allied garrisons standing with them; soldiers with a place in a castle stand stronger
      */
     public double getDefensePower(KingdomEntity kingdom)
     {
         var attackConfig = config.attack();
-        var units = kingdom.getUnits();
-        var basePower = UnitName.getMilitaryUnits().stream().mapToDouble(unit -> units.getAvailableCount(unit) * attackConfig.getDefensePower(unit)).sum();
-        for (var garrison : kingdom.getStandingGarrisons())
-        {
-            basePower += UnitName.getMilitaryUnits().stream().mapToDouble(unit -> garrison.getUnits().getCount(unit) * attackConfig.getDefensePower(unit)).sum();
-        }
-        basePower += units.getAvailableCount(UnitName.guard) * attackConfig.getDefensePower(UnitName.guard);
+        var forces = new DefendingForces(kingdom);
+        var soldiers = UnitName.getMilitaryUnits().stream().mapToDouble(unit -> forces.count(unit) * attackConfig.getDefensePower(unit)).sum();
+        var sheltered = forces.shelteredInCastles(getBuildingCapacity(kingdom, BuildingName.castle));
+        var shelteredPower = sheltered.entrySet().stream().mapToDouble(entry -> entry.getValue() * attackConfig.getDefensePower(entry.getKey())).sum();
+        var guards = kingdom.getUnits().getAvailableCount(UnitName.guard) * attackConfig.getDefensePower(UnitName.guard);
 
-        var buildings = kingdom.getBuildings();
-        var towerBonus = Math.min(attackConfig.maxTowerDefenseBonus(), buildings.getCount(BuildingName.tower) * attackConfig.towerDefenseBonusPerTower());
-        var castleBonus = buildings.getCount(BuildingName.castle) * attackConfig.castleDefenseBonusPerCastle();
+        return soldiers + shelteredPower * attackConfig.castleSoldierBonus() + guards;
+    }
 
-        return basePower * (1 + towerBonus + castleBonus);
+    /**
+     * the arrows a kingdom's bowmen loose in the salvo: one each, more for those with a place in a tower
+     */
+    public int getSalvoArrows(KingdomEntity kingdom)
+    {
+        var bowmen = new DefendingForces(kingdom).count(UnitName.bowman);
+        var onTowers = Math.min(bowmen, getBuildingCapacity(kingdom, BuildingName.tower));
+        return bowmen + (int) Math.round(onTowers * config.attack().towerFireBonus());
     }
 
     public double getCounterIntelligence(KingdomEntity kingdom)

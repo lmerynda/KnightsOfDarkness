@@ -75,7 +75,8 @@ public class KingdomEntity
     AllianceEntity alliance;
 
     /**
-     * world ticks left during which nobody may send an army against this kingdom, granted when its defense was broken
+     * world ticks left during which nobody may send an army against this kingdom, granted when it starts and when its
+     * defense was broken
      */
     int protectionTicks;
 
@@ -161,7 +162,7 @@ public class KingdomEntity
         reinforcements.clear();
         garrisons.clear();
         lastTurnReport = new KingdomTurnReport();
-        protectionTicks = 0;
+        protectionTicks = config.attack().protectionTicksAtStart();
     }
 
     public int getTotalPeopleCount()

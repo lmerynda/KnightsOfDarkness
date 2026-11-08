@@ -155,7 +155,8 @@ const SpecialBuildingRow: React.FC<{ building: SpecialBuilding }> = ({ building 
 const SpecialBuildings: React.FC = () => {
   const { kingdom, config, act } = useGame();
   // one great work of each kind; warehouses alone may be raised more than once, as the server rules
-  const raised = (type: SpecialBuildingType): boolean => type !== "warehouse" && kingdom.specialBuildings.some(building => building.buildingType === type);
+  const raised = (type: SpecialBuildingType): boolean =>
+    type !== "warehouse" && kingdom.specialBuildings.some(building => building.buildingType === type);
   const open = specialBuildingTypes.filter(type => !raised(type));
   const [picked, setChoice] = useState<SpecialBuildingType>("goldShaft");
   const choice = open.includes(picked) ? picked : open[0];
@@ -221,9 +222,9 @@ const buildingFacts = (
   const holds: Partial<Record<BuildingName, number>> = config.buildingCapacity;
   const facts = [buildingLore[building].purpose(holds[building] ?? 0)];
   const percent = (ratio: number): number => Math.round(ratio * 100);
-  if (building === "tower")
-    facts[0] = `Adds ${percent(config.attack.towerDefenseBonusPerTower)}% defense each, up to ${percent(config.attack.maxTowerDefenseBonus)}%`;
-  if (building === "castle") facts[0] = `Adds ${percent(config.attack.castleDefenseBonusPerCastle)}% defense each`;
+  if (building === "tower") facts.push(`They loose ${percent(config.attack.towerFireBonus)}% more arrows when defending`);
+  if (building === "castle")
+    facts.push(`They defend ${percent(config.attack.castleSoldierBonus)}% stronger and take as many more blows to fall`);
   if (capacity !== undefined && occupancy !== undefined) facts.push(`${formatNumber(occupancy)} of ${formatNumber(capacity)} places taken`);
   return facts;
 };
@@ -313,14 +314,7 @@ export const Build: React.FC = () => {
               type="button"
               onClick={() => {
                 const chosen = buildingPlans.find(option => option.name === plan) ?? buildingPlans[0];
-                const filled = fillPlan(
-                  chosen.shares(kingdom.resources.land, config),
-                  kingdom.buildings,
-                  kingdom.resources.land,
-                  points,
-                  freeLand,
-                  config,
-                );
+                const filled = fillPlan(chosen.shares(config), kingdom.buildings, kingdom.resources.land, points, freeLand, config);
                 setOrder(filled);
                 if (Object.keys(filled).length === 0) notify("Nothing to fill in: the plan is met, or points or free land ran out");
               }}

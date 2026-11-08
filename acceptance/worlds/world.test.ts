@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { after, test } from "node:test";
 import { World } from "../src/api/client.ts";
-import { startServer, type GameServer } from "../src/server.ts";
+import { noPeace, startServer, type GameServer } from "../src/server.ts";
 import { economist, idle, turtle, warlord } from "../src/simulation/strategies.ts";
 import { finalSnapshot, foundRulers, runWorld, type WorldRun } from "../src/simulation/world.ts";
 
@@ -13,7 +13,7 @@ let played: Promise<Played> | undefined;
 
 const busyWorld = (): Promise<Played> =>
   (played ??= (async () => {
-    const server = await startServer();
+    const server = await startServer(noPeace);
     const world = new World(server.url);
     const rulers = await foundRulers(world, [economist, warlord(), turtle, idle], "World");
     const names = Object.fromEntries(rulers.map(ruler => [ruler.strategy.name, ruler.player.name]));

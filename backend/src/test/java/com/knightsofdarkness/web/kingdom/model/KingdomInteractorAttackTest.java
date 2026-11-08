@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.knightsofdarkness.web.Game;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.AttackType;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
@@ -175,7 +176,7 @@ class KingdomInteractorAttackTest
 
     private KingdomEntity kingdomWith(String name, UnitName unit, int count)
     {
-        var kingdom = new KingdomBuilder(game).withName(name).withUnit(unit, count).build();
+        var kingdom = new KingdomBuilder(game).withName(name).withUnit(unit, count).withBuilding(BuildingName.castle, 0).build();
         game.addKingdom(kingdom);
         return kingdom;
     }
@@ -219,6 +220,7 @@ class KingdomInteractorAttackTest
         var charge = new UnitsMapDto();
         charge.setCount(UnitName.infantry, 120);
         var attack = attackWith(footmen, secondaryKingdom, charge);
+        secondaryKingdom.getBuildings().setCount(BuildingName.castle, 0);
 
         ((KingdomInteractor) game.getKingdomInteractor()).processMelee(footmen, secondaryKingdom, attack);
 

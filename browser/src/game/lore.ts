@@ -44,8 +44,8 @@ export const buildingLore: Record<BuildingName, BuildingLore> = {
   barracks: { label: "Barracks", plural: "Barracks", purpose: holds => `Each quarters ${holds} infantry, bowmen or cavalry` },
   guardHouse: { label: "Guard house", plural: "Guard houses", purpose: holds => `Each quarters ${holds} guards` },
   spyGuild: { label: "Spy guild", plural: "Spy guilds", purpose: holds => `Each hides ${holds} spies` },
-  tower: { label: "Tower", plural: "Towers", purpose: () => "Strengthens your defense" },
-  castle: { label: "Castle", plural: "Castles", purpose: () => "Strengthens your defense" },
+  tower: { label: "Tower", plural: "Towers", purpose: holds => `Each has places for ${holds} bowmen` },
+  castle: { label: "Castle", plural: "Castles", purpose: holds => `Each shelters ${holds} infantry or cavalry` },
 };
 
 type UnitLore = { label: string; plural: string; duty: string };

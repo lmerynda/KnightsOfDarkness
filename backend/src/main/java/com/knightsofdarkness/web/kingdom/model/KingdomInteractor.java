@@ -331,13 +331,13 @@ public class KingdomInteractor implements IKingdomInteractor
 
     void processDefenseSalvo(KingdomEntity attackerKingdom, KingdomEntity defenderKingdom, KingdomOngoingAttackEntity attack)
     {
-        var defenderBowmenCount = new DefendingForces(defenderKingdom).count(UnitName.bowman);
+        var arrows = detailsProvider.getSalvoArrows(defenderKingdom);
         var attackerUnits = attack.units;
         var attackerUnitsRatios = attack.units.getMilitaryUnitsRatios();
 
-        var bowmenHittingBowmen = (int) Math.ceil(attackerUnitsRatios.get(UnitName.bowman) * defenderBowmenCount);
-        var bowmenHittingInfantry = (int) Math.ceil(attackerUnitsRatios.get(UnitName.infantry) * defenderBowmenCount);
-        var bowmenHittingCavarly = (int) Math.ceil(attackerUnitsRatios.get(UnitName.cavalry) * defenderBowmenCount);
+        var bowmenHittingBowmen = (int) Math.ceil(attackerUnitsRatios.get(UnitName.bowman) * arrows);
+        var bowmenHittingInfantry = (int) Math.ceil(attackerUnitsRatios.get(UnitName.infantry) * arrows);
+        var bowmenHittingCavarly = (int) Math.ceil(attackerUnitsRatios.get(UnitName.cavalry) * arrows);
 
         // TODO move consts to configuration
         var killedAttackingBowmen = Math.min(bowmenHittingBowmen / 3, attackerUnits.getCount(UnitName.bowman));
@@ -378,7 +378,7 @@ public class KingdomInteractor implements IKingdomInteractor
 
     /**
      * infantry and cavalry strike, their blows spread over the enemy army by its make-up; bowmen strike nobody in melee
-     * but are among those struck, and every type takes its own number of blows to fall
+     * but are among those struck, and every type takes its own number of blows to fall, more behind a castle's walls
      */
     void processMelee(KingdomEntity attackerKingdom, KingdomEntity defendantKingdom, KingdomOngoingAttackEntity attack)
     {
@@ -388,16 +388,28 @@ public class KingdomInteractor implements IKingdomInteractor
         var defenderStrikers = defenders.count(UnitName.infantry) + defenders.count(UnitName.cavalry);
         var attackingUnitsRatios = attackingUnits.getMilitaryUnitsRatios();
         var defenderUnitsRatios = defenders.militaryRatios();
+        var sheltered = defenders.shelteredInCastles(detailsProvider.getBuildingCapacity(defendantKingdom, BuildingName.castle));
 
         for (var unit : UnitName.getMilitaryUnits())
         {
             var blowsToFall = meleeBlowsToFall.get(unit);
+            var blowsOnDefenders = (int) Math.ceil(attackerStrikers * defenderUnitsRatios.get(unit));
             var killedAttacking = Math.min((int) Math.ceil(defenderStrikers * attackingUnitsRatios.get(unit)) / blowsToFall, attackingUnits.getCount(unit));
-            var killedDefending = Math.min((int) Math.ceil(attackerStrikers * defenderUnitsRatios.get(unit)) / blowsToFall, defenders.count(unit));
+            var killedDefending = Math.min(defendersFalling(blowsOnDefenders, blowsToFall, sheltered.getOrDefault(unit, 0), defenders.count(unit)), defenders.count(unit));
 
             attackingUnits.subtractCount(unit, killedAttacking);
             attackerKingdom.getUnits().subtractMobileCount(unit, killedAttacking);
             defenders.lose(unit, killedDefending);
         }
+    }
+
+    /**
+     * blows land evenly on the soldiers of a type, and those sheltered in a castle take more of them to fall
+     */
+    private int defendersFalling(int blows, int blowsToFall, int sheltered, int count)
+    {
+        var shelteredShare = count == 0 ? 0.0 : (double) sheltered / count;
+        var fallen = blows * (1 - shelteredShare) / blowsToFall + blows * shelteredShare / (blowsToFall * (1 + gameConfig.attack().castleSoldierBonus()));
+        return (int) Math.floor(fallen);
     }
 }

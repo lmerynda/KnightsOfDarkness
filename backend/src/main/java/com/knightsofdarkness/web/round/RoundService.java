@@ -102,7 +102,7 @@ public class RoundService {
         roundRepository.save(nextRound);
 
         var winner = rankings.kingdoms().isEmpty() ? "nobody" : rankings.kingdoms().get(0).kingdomName();
-        var message = Utils.format("Round {} has ended, {} ruled the most land. Round {} begins, every kingdom starts anew", round.getNumber(), winner, nextRound.getNumber());
+        var message = Utils.format("Round {} has ended, {} ruled the most land. Round {} begins, every kingdom starts anew and at peace for {} turns", round.getNumber(), winner, nextRound.getNumber(), gameConfig.attack().protectionTicksAtStart());
         kingdoms.forEach(kingdom -> notificationSystem.create(kingdom.getName(), NotificationKind.round, message));
     }
 

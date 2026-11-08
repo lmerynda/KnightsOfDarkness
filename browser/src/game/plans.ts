@@ -4,9 +4,10 @@ import { unitHome } from "./rules";
 type Shares = Partial<Counts<BuildingName>>;
 
 /** a share of the land for each building, the mixes the simulated rulers grow on */
-export type BuildingPlan = { name: string; label: string; shares: (land: number, config: GameConfig) => Shares };
+export type BuildingPlan = { name: string; label: string; shares: (config: GameConfig) => Shares };
 
 const economy: Shares = { house: 0.34, farm: 0.14, goldMine: 0.22, ironMine: 0.06, workshop: 0.08 };
+const fortressBarracks = 0.04;
 
 export const buildingPlans: BuildingPlan[] = [
   { name: "economy", label: "Economy", shares: () => economy },
@@ -14,14 +15,15 @@ export const buildingPlans: BuildingPlan[] = [
   {
     name: "fortress",
     label: "Fortress",
-    shares: (land, config) => ({
+    shares: config => ({
       ...economy,
       house: 0.3,
       goldMine: 0.18,
-      // towers up to the full bonus and no further
-      tower: Math.min(0.12, Math.ceil(config.attack.maxTowerDefenseBonus / config.attack.towerDefenseBonusPerTower) / Math.max(1, land)),
       guardHouse: 0.04,
-      barracks: 0.04,
+      barracks: fortressBarracks,
+      // a place for everyone in barracks full of half bowmen and half infantry
+      tower: (fortressBarracks * config.buildingCapacity.barracks) / 2 / config.buildingCapacity.tower,
+      castle: (fortressBarracks * config.buildingCapacity.barracks) / 2 / config.buildingCapacity.castle,
     }),
   },
 ];

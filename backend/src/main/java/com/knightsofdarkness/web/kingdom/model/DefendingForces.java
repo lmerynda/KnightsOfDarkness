@@ -39,6 +39,19 @@ final class DefendingForces
     }
 
     /**
+     * a castle's places go to infantry first, who hold more of the line, then to cavalry; bowmen stand on the towers
+     */
+    Map<UnitName, Integer> shelteredInCastles(int places)
+    {
+        var infantry = Math.min(count(UnitName.infantry), places);
+        var cavalry = Math.min(count(UnitName.cavalry), places - infantry);
+        var sheltered = new EnumMap<UnitName, Integer>(UnitName.class);
+        sheltered.put(UnitName.infantry, infantry);
+        sheltered.put(UnitName.cavalry, cavalry);
+        return sheltered;
+    }
+
+    /**
      * every side loses its share rounded down, and whatever rounding leaves falls on the sides that still have the most
      */
     void lose(UnitName unit, int count)

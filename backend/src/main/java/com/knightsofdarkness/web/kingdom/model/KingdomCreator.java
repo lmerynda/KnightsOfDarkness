@@ -42,6 +42,7 @@ public class KingdomCreator
                 new ArrayList<>(),
                 new KingdomUnitsEntity(startingUnitsDto.getAvailableUnits(), startingUnitsDto.getMobileUnits()),
                 new KingdomTurnReport());
+        kingdom.setProtectionTicks(gameConfig.attack().protectionTicksAtStart());
 
         return kingdom;
     }

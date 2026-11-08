@@ -19,7 +19,9 @@ import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.common.messaging.NotificationDto;
 import com.knightsofdarkness.web.common.messaging.NotificationKind;
+import com.knightsofdarkness.web.common.war.BattleReportDto;
 import com.knightsofdarkness.web.game.config.GameConfig;
+import com.knightsofdarkness.web.kingdom.model.KingdomCreator;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomInteractor;
@@ -275,27 +277,108 @@ class WarTest {
     @Test
     void guards_shouldFallInProportionToTheAttack()
     {
-        // 100 cavalry (attack 300) against 5 guards behind towers and a castle (defense 5.9)
+        // 100 cavalry (attack 300) against 5 guards (defense 5)
         sendAndResolve(AttackType.land, cavalry(100));
 
-        var expectedLost = (int) Math.floor(5 * (300 / (300 + 5.9)) * gameConfig.attack().maxGuardLossRatio());
+        var expectedLost = (int) Math.floor(5 * (300 / (300 + 5.0)) * gameConfig.attack().maxGuardLossRatio());
         assertEquals(5 - expectedLost, defender.getUnits().getAvailableCount(UnitName.guard));
         var report = game.getWarReportRepository().getBattleReports(defender.getName(), 1).get(0);
         assertEquals(expectedLost, report.defenderLosses().getCount(UnitName.guard));
     }
 
     @Test
-    void towersAndCastles_shouldIncreaseDefense()
+    void castles_shouldStrengthenOnlyTheSoldiersTheyHaveRoomFor()
+    {
+        var detailsProvider = new KingdomDetailsProvider(gameConfig);
+        var places = gameConfig.buildingCapacity().castle();
+        var bonus = gameConfig.attack().castleSoldierBonus();
+        defender.getUnits().setCount(UnitName.guard, 0);
+        defender.getBuildings().setCount(BuildingName.castle, 1);
+        // infantry take the places first, whatever is left over stands as usual
+        defender.getUnits().setCount(UnitName.infantry, places + 10);
+        defender.getUnits().setCount(UnitName.cavalry, 10);
+
+        assertEquals((places + 10) * 2 + 10 + places * 2 * bonus, detailsProvider.getDefensePower(defender), 0.0001);
+
+        // guards and bowmen gain nothing from a castle
+        defender.getUnits().setCount(UnitName.infantry, 0);
+        defender.getUnits().setCount(UnitName.cavalry, 0);
+        defender.getUnits().setCount(UnitName.guard, 10);
+        defender.getUnits().setCount(UnitName.bowman, 10);
+        assertEquals(10 + 10 * 2, detailsProvider.getDefensePower(defender), 0.0001);
+    }
+
+    @Test
+    void towers_shouldAddNoDefenseButSendMoreArrows()
     {
         var detailsProvider = new KingdomDetailsProvider(gameConfig);
         defender.getBuildings().setCount(BuildingName.tower, 0);
-        defender.getBuildings().setCount(BuildingName.castle, 0);
-        var bareDefense = detailsProvider.getDefensePower(defender);
+        defender.getUnits().setCount(UnitName.bowman, 100);
+        var defenseWithoutTowers = detailsProvider.getDefensePower(defender);
+        assertEquals(100, detailsProvider.getSalvoArrows(defender));
 
-        defender.getBuildings().setCount(BuildingName.tower, 10);
-        defender.getBuildings().setCount(BuildingName.castle, 1);
+        defender.getBuildings().setCount(BuildingName.tower, 1);
+        assertEquals(defenseWithoutTowers, detailsProvider.getDefensePower(defender), 0.0001);
+        var places = gameConfig.buildingCapacity().tower();
+        assertEquals(100 + (int) Math.round(places * gameConfig.attack().towerFireBonus()), detailsProvider.getSalvoArrows(defender));
 
-        assertEquals(bareDefense * 1.3, detailsProvider.getDefensePower(defender), 0.0001);
+        // towers with room for more than stand on them give no extra arrows
+        defender.getBuildings().setCount(BuildingName.tower, 100);
+        assertEquals(100 + (int) Math.round(100 * gameConfig.attack().towerFireBonus()), detailsProvider.getSalvoArrows(defender));
+    }
+
+    /**
+     * twin battles against a kingdom of its own, with a fresh army, so that the only difference between them is what the
+     * given defenders hold
+     */
+    private BattleReportDto battleAgainst(String name, UnitName defendingUnit, int defending, BuildingName building, int buildings, int charging)
+    {
+        var target = new KingdomBuilder(game).withName(name).withUnit(defendingUnit, defending).withBuilding(building, buildings).build();
+        game.addKingdom(target);
+        var army = new KingdomBuilder(game).withName("army of " + name).withUnit(UnitName.cavalry, charging).build();
+        game.addKingdom(army);
+        var result = new KingdomMilitaryAction(army, gameConfig).sendAttack(new SendAttackDto(name, AttackType.land, cavalry(charging)), target);
+        assertTrue(result.success(), result.message());
+        ((KingdomInteractor) game.getKingdomInteractor()).resolveAttack(army, army.getOngoingAttacks().get(0));
+        return game.getWarReportRepository().getBattleReports(name, 1).get(0);
+    }
+
+    @Test
+    void towers_shouldKillMoreOfTheAttackersInTheSalvo()
+    {
+        var withoutTowers = battleAgainst("open", UnitName.bowman, 100, BuildingName.tower, 0, 100);
+        var withTowers = battleAgainst("walled", UnitName.bowman, 100, BuildingName.tower, 2, 100);
+
+        // arrows hit cavalry once in seven, and two towers have room for all hundred bowmen
+        assertEquals(14, withoutTowers.attackerArrowLosses().getCount(UnitName.cavalry));
+        assertEquals(28, withTowers.attackerArrowLosses().getCount(UnitName.cavalry));
+    }
+
+    @Test
+    void castles_shouldKeepSoldiersAliveInMelee()
+    {
+        var withoutCastle = battleAgainst("open", UnitName.infantry, 300, BuildingName.castle, 0, 300);
+        var withCastle = battleAgainst("walled", UnitName.infantry, 300, BuildingName.castle, 1, 300);
+
+        // 300 blows on infantry that take 3 each, or 6 each behind a castle's walls
+        assertEquals(100, withoutCastle.defenderLosses().getCount(UnitName.infantry));
+        assertEquals(50, withCastle.defenderLosses().getCount(UnitName.infantry));
+    }
+
+    @Test
+    void newKingdom_shouldBeProtectedUntilThePeaceEndsOrItMarches()
+    {
+        var founded = new KingdomCreator(gameConfig).createKingdom("Newcomer");
+        assertEquals(gameConfig.attack().protectionTicksAtStart(), founded.getProtectionTicks());
+
+        var strike = new KingdomMilitaryAction(attacker, gameConfig).sendAttack(new SendAttackDto(founded.getName(), AttackType.land, cavalry(10)), founded);
+        assertFalse(strike.success());
+        assertThat(strike.message()).contains("protected");
+
+        founded.getUnits().setCount(UnitName.cavalry, 5);
+        var march = new KingdomMilitaryAction(founded, gameConfig).sendAttack(new SendAttackDto(defender.getName(), AttackType.land, cavalry(5)), defender);
+        assertTrue(march.success(), march.message());
+        assertEquals(0, founded.getProtectionTicks());
     }
 
     @Test

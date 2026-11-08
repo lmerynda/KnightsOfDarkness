@@ -67,7 +67,9 @@
         "market": 50,
         "barracks": 100,
         "guardHouse": 10,
-        "spyGuild": 50
+        "spyGuild": 50,
+        "tower": 50,
+        "castle": 500
     },
     "trainingCost": {
         "goldMiner": {
@@ -177,12 +179,12 @@
         "minTargetLandRatio": 0.5,
         "maxLandCaptureRatio": 0.1,
         "maxPlunderRatio": 0.2,
-        "towerDefenseBonusPerTower": 0.02,
-        "maxTowerDefenseBonus": 0.5,
-        "castleDefenseBonusPerCastle": 0.1,
+        "towerFireBonus": 1,
+        "castleSoldierBonus": 1,
         "warehousePlunderProtectionPerLevel": 0.05,
         "maxWarehousePlunderProtection": 0.75,
         "maxGuardLossRatio": 0.5,
+        "protectionTicksAtStart": 336,
         "protectionTicksAfterDefeat": 24,
         "smallerTargetCaptureExponent": 1,
         "unitAttackPower": {

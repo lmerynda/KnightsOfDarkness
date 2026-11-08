@@ -2,13 +2,13 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { World } from "../src/api/client.ts";
 import { askingWarlord, coalitionWarlord, foundCoalition, guardian, treasurer } from "../src/simulation/coalition.ts";
-import { startServer } from "../src/server.ts";
+import { noPeace, startServer } from "../src/server.ts";
 import { economist, raider, turtle, warlord } from "../src/simulation/strategies.ts";
 import { foundRulers, runWorld, unevenPace } from "../src/simulation/world.ts";
 
 // Two small coalitions at war: Order strikes together and guards its own, Horde plays every kingdom for itself.
 test("coalitions fight, guard each other and keep every rule", async () => {
-  const server = await startServer();
+  const server = await startServer(noPeace);
   try {
     const world = new World(server.url);
     const order = await foundCoalition(world, "Order", council => [coalitionWarlord(council), economist, guardian(council)]);
@@ -55,7 +55,7 @@ test("a treasurer funds an allied warlord through the market", async () => {
 
 // Allied warlords who play at different paces still land one strike together: the later armies join the first one's.
 test("allied warlords at uneven paces join one strike", async () => {
-  const server = await startServer();
+  const server = await startServer(noPeace);
   try {
     const world = new World(server.url);
     const order = await foundCoalition(world, "Order", council => [coalitionWarlord(council), coalitionWarlord(council), coalitionWarlord(council)]);

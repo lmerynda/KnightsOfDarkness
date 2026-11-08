@@ -162,17 +162,21 @@ export const hoarder: Strategy = {
   },
 };
 
+/** the towers and castles with a place for everyone in barracks on this share of the land, half of them bowmen and half infantry */
+export const walls = (barracksShare: number, config: GameConfig): Plan => {
+  const eachKind = (barracksShare * config.buildingCapacity.barracks) / 2;
+  return { tower: eachKind / config.buildingCapacity.tower, castle: eachKind / config.buildingCapacity.castle };
+};
+
 /** walls, towers and guards on top of a smaller economy, bowmen behind the walls and infantry to hold them in melee */
 export const turtle: Strategy = {
   name: "turtle",
   weaponsPercentage: 50,
   play: async context => {
-    const towersForFullBonus = Math.ceil(context.config.attack.maxTowerDefenseBonus / context.config.attack.towerDefenseBonusPerTower);
-    const towerShare = Math.min(0.12, towersForFullBonus / Math.max(1, context.kingdom.resources.land));
     // soldiers live in barracks, so recruiting them before the workers frees house space for newcomers; half the
     // treasury stays for land, or the garrison eats every coin and the realm never grows
     await fillBarracks(context, { bowman: 1, infantry: 1 }, context.kingdom.resources.gold / 2);
-    await developEconomy(context, { ...economyPlan, house: 0.3, goldMine: 0.18, tower: towerShare, guardHouse: 0.04, barracks: 0.04 }, [
+    await developEconomy(context, { ...economyPlan, house: 0.3, goldMine: 0.18, ...walls(0.04, context.config), guardHouse: 0.04, barracks: 0.04 }, [
       ...economyWorkers,
       "guard",
     ]);
@@ -186,8 +190,12 @@ export const estimatedDefense = (report: SpyReport, config: GameConfig): number 
   const base =
     militaryUnits.reduce((sum, unit) => sum + (report.units[unit] ?? 0) * (config.attack.unitDefensePower[unit] ?? 0), 0) +
     (report.units.guard ?? 0) * (config.attack.unitDefensePower.guard ?? 0);
-  const towers = Math.min(config.attack.maxTowerDefenseBonus, (report.buildings.tower ?? 0) * config.attack.towerDefenseBonusPerTower);
-  return base * (1 + towers + (report.buildings.castle ?? 0) * config.attack.castleDefenseBonusPerCastle);
+  // a castle's places go to infantry first, then cavalry
+  const places = (report.buildings.castle ?? 0) * config.buildingCapacity.castle;
+  const infantry = Math.min(report.units.infantry ?? 0, places);
+  const cavalry = Math.min(report.units.cavalry ?? 0, places - infantry);
+  const sheltered = infantry * (config.attack.unitDefensePower.infantry ?? 0) + cavalry * (config.attack.unitDefensePower.cavalry ?? 0);
+  return base + sheltered * config.attack.castleSoldierBonus;
 };
 
 /**

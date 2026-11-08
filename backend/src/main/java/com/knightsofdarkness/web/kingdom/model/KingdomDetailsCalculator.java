@@ -36,6 +36,12 @@ public class KingdomDetailsCalculator {
                 occupancy.put(building, housedUnits.stream().mapToInt(kingdom.getUnits()::getTotalCount).sum());
             }
         }
+        // towers and castles house nobody, soldiers live in barracks, but they have places for those defending at home
+        var defenders = new DefendingForces(kingdom);
+        capacity.put(BuildingName.tower, kingdom.getBuildingCapacity(BuildingName.tower, gameConfig));
+        occupancy.put(BuildingName.tower, defenders.count(UnitName.bowman));
+        capacity.put(BuildingName.castle, kingdom.getBuildingCapacity(BuildingName.castle, gameConfig));
+        occupancy.put(BuildingName.castle, defenders.count(UnitName.infantry) + defenders.count(UnitName.cavalry));
 
         var land = kingdom.getResources().getCount(ResourceName.land);
         var nextLandPrice = KingdomOtherAction.calculateCost(land, 1, Integer.MAX_VALUE).cost();

@@ -65,6 +65,7 @@ class RoundRulesTest {
         assertEquals(start.buildings().toMap().get(BuildingName.house), kingdom.getBuildings().getCount(BuildingName.house));
         assertEquals(start.units().toMap().get(UnitName.cavalry), kingdom.getUnits().getAvailableCount(UnitName.cavalry));
         assertTrue(kingdom.getSpecialBuildings().isEmpty());
+        assertEquals(config.attack().protectionTicksAtStart(), kingdom.getProtectionTicks());
     }
 
     @Test

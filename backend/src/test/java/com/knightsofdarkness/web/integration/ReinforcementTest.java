@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.common.kingdom.AttackType;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.web.common.kingdom.SendReinforcementsDto;
@@ -122,6 +123,7 @@ class ReinforcementTest
     void garrison_shouldFightBesideTheHostAndShareTheLosses()
     {
         standGuard(100);
+        farmer.getBuildings().setCount(BuildingName.castle, 0);
         var attack = new KingdomMilitaryAction(raider, config).sendAttack(new SendAttackDto("farmer", AttackType.land, units(UnitName.cavalry, 100)), farmer);
         assertTrue(attack.success(), attack.message());
 
@@ -132,9 +134,9 @@ class ReinforcementTest
         assertEquals(33, report.alliedLosses().getCount(UnitName.infantry));
         assertEquals(100 - 33, farmer.getGarrisons().get(0).getUnits().getCount(UnitName.infantry));
         assertEquals(100 - 33, guardian.getUnits().getMobileCount(UnitName.infantry));
-        // 25 cavalry fall to the infantry; the 75 left attack with 225 against 67 infantry and 5 guards behind walls, about 164
+        // 25 cavalry fall to the infantry; the 75 left attack with 225 against 67 infantry and 5 guards, 139
         assertEquals(25, report.attackerLosses().getCount(UnitName.cavalry));
-        assertEquals((67 * 2 + 5) * (1 + 4 * config.attack().towerDefenseBonusPerTower() + config.attack().castleDefenseBonusPerCastle()), report.defensePower(), 0.001);
+        assertEquals(67 * 2 + 5, report.defensePower(), 0.001);
         assertThat(game.getNotificationSystem().getNotifications("guardian")).extracting(NotificationDto::kind).contains(NotificationKind.breached);
     }
 

@@ -7,9 +7,12 @@ export const estimatedDefense = (report: SpyReport, config: GameConfig): number 
   const base =
     militaryUnits.reduce((sum, unit) => sum + (units[unit] ?? 0) * (config.attack.unitDefensePower[unit] ?? 0), 0) +
     (units.guard ?? 0) * (config.attack.unitDefensePower.guard ?? 0);
-  const towers = Math.min(config.attack.maxTowerDefenseBonus, (report.buildings.tower ?? 0) * config.attack.towerDefenseBonusPerTower);
-  const castles = (report.buildings.castle ?? 0) * config.attack.castleDefenseBonusPerCastle;
-  return base * (1 + towers + castles);
+  // a castle's places go to infantry first, then cavalry
+  const places = (report.buildings.castle ?? 0) * config.buildingCapacity.castle;
+  const infantry = Math.min(units.infantry ?? 0, places);
+  const cavalry = Math.min(units.cavalry ?? 0, places - infantry);
+  const sheltered = infantry * (config.attack.unitDefensePower.infantry ?? 0) + cavalry * (config.attack.unitDefensePower.cavalry ?? 0);
+  return base + sheltered * config.attack.castleSoldierBonus;
 };
 
 /** the building that houses each kind of unit, builders live in houses */

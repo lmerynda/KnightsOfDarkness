@@ -14,6 +14,9 @@ export type ConfigOverrides = Record<string, unknown>;
 
 export type GameServer = { url: string; stop: () => Promise<void> };
 
+/** for a world about war, which cannot wait out the peace every kingdom starts with */
+export const noPeace: ConfigOverrides = { "attack.protectionTicksAtStart": 0 };
+
 export const readBaseConfig = (): Record<string, unknown> => JSON.parse(readFileSync(baseConfigPath, "utf8")) as Record<string, unknown>;
 
 export const applyOverrides = (config: Record<string, unknown>, overrides: ConfigOverrides): Record<string, unknown> => {

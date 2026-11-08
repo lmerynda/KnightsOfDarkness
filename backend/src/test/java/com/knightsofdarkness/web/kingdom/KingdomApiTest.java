@@ -117,6 +117,7 @@ class KingdomApiTest {
     {
         postJson("/kingdom/build", "{\"barracks\":1}").andExpect(status().isOk());
         postJson("/kingdom/train", "{\"infantry\":1}").andExpect(jsonPath("$.data.infantry").value(1));
+        endThePeaceOf("GoldMinerBot");
 
         postJson("/kingdom/send-attack", "{\"destinationKingdomName\":\"GoldMinerBot\",\"attackType\":\"land\",\"units\":{\"infantry\":1}}")
                 .andExpect(status().isOk())
@@ -151,6 +152,7 @@ class KingdomApiTest {
     {
         postJson("/kingdom/build", "{\"barracks\":1}").andExpect(status().isOk());
         postJson("/kingdom/train", "{\"infantry\":1}").andExpect(jsonPath("$.data.infantry").value(1));
+        endThePeaceOf("IronMinerBot");
         postJson("/kingdom/send-attack", "{\"destinationKingdomName\":\"IronMinerBot\",\"attackType\":\"economy\",\"units\":{\"infantry\":1}}")
                 .andExpect(jsonPath("$.success").value(true));
 
@@ -247,9 +249,21 @@ class KingdomApiTest {
         mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"" + email + "\",\"kingdomName\":\"" + name + "\",\"password\":\"long-enough-password\"}"))
                 .andExpect(status().isOk());
+        assertEquals(gameConfig.attack().protectionTicksAtStart(), kingdomRepository.getKingdomByName(name).orElseThrow().getProtectionTicks());
+        endThePeaceOf(name);
         var response = mockMvc.perform(post("/auth/authenticate").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"" + email + "\",\"password\":\"long-enough-password\"}")).andReturn().getResponse().getContentAsString();
         return JsonPath.read(response, "$.token");
+    }
+
+    /**
+     * these tests start their fights at once, as if the peace every kingdom starts with were past
+     */
+    private void endThePeaceOf(String name)
+    {
+        var kingdom = kingdomRepository.getKingdomByName(name).orElseThrow();
+        kingdom.setProtectionTicks(0);
+        kingdomRepository.update(kingdom);
     }
 
     @Test

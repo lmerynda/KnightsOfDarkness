@@ -128,6 +128,8 @@ class KingdomAttackTest {
     {
         var turnAction = new KingdomTurnAction(primaryKingdom, kingdomInteractor, gameConfig, kingdomDetailsProvider);
         turnAction.passTurn(weaponsProductionPercentage);// normalize kingdom population
+        secondaryKingdom.getBuildings().setCount(BuildingName.tower, 0);
+        secondaryKingdom.getBuildings().setCount(BuildingName.castle, 0);
         var attackingUnits = new UnitsMapDto();
         attackingUnits.setCount(UnitName.bowman, 1000);
         attackingUnits.setCount(UnitName.infantry, 1000);

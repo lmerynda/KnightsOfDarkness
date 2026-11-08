@@ -2,7 +2,7 @@ import { after, test } from "node:test";
 import { World } from "../api/client.ts";
 import { apiVisitors } from "../drivers/api.ts";
 import { startChrome, type Chrome } from "../drivers/browser.ts";
-import { startServer, type GameServer } from "../server.ts";
+import { noPeace, startServer, type ConfigOverrides, type GameServer } from "../server.ts";
 import { Game, type Visitors } from "./game.ts";
 
 // Every scenario file plays on a world of its own, reached through the driver the suite names (src/run.ts): the HTTP
@@ -13,13 +13,21 @@ type Stage = { server: GameServer; chrome: Chrome | null };
 
 let stage: Promise<Stage> | undefined;
 
+/** scenarios start their fights at once, so a world opens without the peace unless its file says otherwise */
+let worldConfig: ConfigOverrides = noPeace;
+
+/** the config of this file's world, for a file that plays something other than an ordinary one */
+export const playedOn = (overrides: ConfigOverrides): void => {
+  worldConfig = overrides;
+};
+
 /**
  * the file's world, started by its first scenario: node runs no after hook for a file whose scenarios a name filter
  * skipped, and a world started for nothing would keep that file running forever
  */
 const world = (): Promise<Stage> =>
   (stage ??= (async () => {
-    const server = await startServer();
+    const server = await startServer(worldConfig);
     return { server, chrome: driver === "browser" ? await startChrome(server.url) : null };
   })());
 

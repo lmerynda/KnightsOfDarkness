@@ -453,7 +453,7 @@
       },
       "Attack" : {
         "properties" : {
-          "castleDefenseBonusPerCastle" : {
+          "castleSoldierBonus" : {
             "format" : "double",
             "type" : "number"
           },
@@ -469,10 +469,6 @@
             "format" : "double",
             "type" : "number"
           },
-          "maxTowerDefenseBonus" : {
-            "format" : "double",
-            "type" : "number"
-          },
           "maxWarehousePlunderProtection" : {
             "format" : "double",
             "type" : "number"
@@ -485,11 +481,15 @@
             "format" : "int32",
             "type" : "integer"
           },
+          "protectionTicksAtStart" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
           "smallerTargetCaptureExponent" : {
             "format" : "double",
             "type" : "number"
           },
-          "towerDefenseBonusPerTower" : {
+          "towerFireBonus" : {
             "format" : "double",
             "type" : "number"
           },
@@ -604,7 +604,7 @@
             "type" : "number"
           }
         },
-        "required" : [ "castleDefenseBonusPerCastle", "maxGuardLossRatio", "maxLandCaptureRatio", "maxPlunderRatio", "maxTowerDefenseBonus", "maxWarehousePlunderProtection", "minTargetLandRatio", "protectionTicksAfterDefeat", "smallerTargetCaptureExponent", "towerDefenseBonusPerTower", "turnsToArrive", "turnsToWaitAtBorder", "unitAttackPower", "unitDefensePower", "warehousePlunderProtectionPerLevel" ],
+        "required" : [ "castleSoldierBonus", "maxGuardLossRatio", "maxLandCaptureRatio", "maxPlunderRatio", "maxWarehousePlunderProtection", "minTargetLandRatio", "protectionTicksAfterDefeat", "protectionTicksAtStart", "smallerTargetCaptureExponent", "towerFireBonus", "turnsToArrive", "turnsToWaitAtBorder", "unitAttackPower", "unitDefensePower", "warehousePlunderProtectionPerLevel" ],
         "type" : "object"
       },
       "AttackType" : {
@@ -1104,6 +1104,10 @@
             "format" : "int32",
             "type" : "integer"
           },
+          "castle" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
           "farm" : {
             "format" : "int32",
             "type" : "integer"
@@ -1132,12 +1136,16 @@
             "format" : "int32",
             "type" : "integer"
           },
+          "tower" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
           "workshop" : {
             "format" : "int32",
             "type" : "integer"
           }
         },
-        "required" : [ "barracks", "farm", "goldMine", "guardHouse", "house", "ironMine", "market", "spyGuild", "workshop" ],
+        "required" : [ "barracks", "castle", "farm", "goldMine", "guardHouse", "house", "ironMine", "market", "spyGuild", "tower", "workshop" ],
         "type" : "object"
       },
       "BuildingName" : {

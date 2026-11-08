@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.knightsofdarkness.web.GameServerTest;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.market.MarketResource;
+import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.market.MarketService;
 
@@ -29,6 +30,9 @@ class RoundServiceTest {
 
     @Autowired
     private MarketService marketService;
+
+    @Autowired
+    private GameConfig gameConfig;
 
     @Test
     void endingRound_shouldArchiveRankingsResetKingdomsAndStartNextRound() throws Exception
@@ -59,7 +63,7 @@ class RoundServiceTest {
 
         var resetKingdom = kingdomRepository.getKingdomByName("uprzejmy").orElseThrow();
         assertEquals(100, resetKingdom.getResources().getCount(ResourceName.land));
-        assertEquals(0, resetKingdom.getProtectionTicks());
+        assertEquals(gameConfig.attack().protectionTicksAtStart(), resetKingdom.getProtectionTicks());
         for (var resource : MarketResource.values())
         {
             assertEquals(0, marketService.getOffersByResource(resource).size());

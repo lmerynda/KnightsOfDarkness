@@ -11,12 +11,15 @@ public record Attack(
         double minTargetLandRatio,
         double maxLandCaptureRatio,
         double maxPlunderRatio,
-        double towerDefenseBonusPerTower,
-        double maxTowerDefenseBonus,
-        double castleDefenseBonusPerCastle,
+        // how many more arrows a defending bowman with a place in a tower looses in the salvo, 1 is twice as many
+        double towerFireBonus,
+        // how much stronger a defending soldier sheltered in a castle stands: its defense, and the blows it takes to fall
+        double castleSoldierBonus,
         double warehousePlunderProtectionPerLevel,
         double maxWarehousePlunderProtection,
         double maxGuardLossRatio,
+        // the peace every kingdom starts with, so that everyone can raise an economy before the first army marches
+        int protectionTicksAtStart,
         int protectionTicksAfterDefeat,
         double smallerTargetCaptureExponent,
         Map<UnitName, Double> unitAttackPower,
