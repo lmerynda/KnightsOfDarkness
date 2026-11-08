@@ -548,7 +548,7 @@
   line-height: 1.45;
 }
 
-.landing-round {
+.landing-era {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(min(100%, 380px), 1fr);
   gap: var(--space-6);
@@ -558,12 +558,12 @@
   border-bottom: 1px solid var(--rule);
 }
 
-.landing-round h2 {
+.landing-era h2 {
   margin-bottom: var(--space-3);
   font-size: var(--step-3);
 }
 
-.landing-round .muted {
+.landing-era .muted {
   max-width: 46ch;
 }
 
@@ -672,7 +672,7 @@
 }
 
 @media (max-width: 900px) {
-  .landing-round {
+  .landing-era {
     grid-template-columns: minmax(0, 1fr);
   }
 

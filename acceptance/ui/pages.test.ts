@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { goTo, gone, holds, pageCheck, shows, toast } from "../src/pages.ts";
 
-pageCheck("the landing page shows the round", async ({ open, ui }) => {
+pageCheck("the landing page shows the era", async ({ open, ui }) => {
   const page = await open();
   await page.goto(`${ui}/`);
   await shows(page.getByRole("heading", { name: "Knights of Darkness" }), "Knights of Darkness");
-  await shows(page.getByRole("heading", { name: /Round \d+/ }), /Round \d+/);
+  await shows(page.getByRole("heading", { name: /Era \d+/ }), /Era \d+/);
 });
 
 pageCheck("the sign-up page says when the two passwords differ", async ({ open, ui }) => {

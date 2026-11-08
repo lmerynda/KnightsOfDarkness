@@ -16,15 +16,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.jayway.jsonpath.JsonPath;
+import com.knightsofdarkness.web.era.EraService;
 import com.knightsofdarkness.web.kingdom.KingdomService;
-import com.knightsofdarkness.web.round.RoundService;
 
 /**
- * The world outlives the server: a ruler who played before a restart finds their kingdom, the round and the whole world
+ * The world outlives the server: a ruler who played before a restart finds their kingdom, the era and the whole world
  * as they left them, still signed in, and the server's own start-up creates nothing twice.
  */
 class WorldSurvivesRestartTest {
-    private static final List<String> tables = List.of("kingdom_entity", "bot_entity", "user_entity", "alliance_entity", "game_round_entity", "market_offer_entity");
+    private static final List<String> tables = List.of("kingdom_entity", "bot_entity", "user_entity", "alliance_entity", "game_era_entity", "market_offer_entity");
 
     private final HttpClient http = HttpClient.newHttpClient();
 
@@ -34,7 +34,7 @@ class WorldSurvivesRestartTest {
         var database = TestDatabase.create();
         String token;
         String kingdomBefore;
-        String roundBefore;
+        String eraBefore;
         Map<String, Integer> rowsBefore;
 
         try (var server = start(database))
@@ -43,14 +43,14 @@ class WorldSurvivesRestartTest {
             send(url, "POST", "/auth/register", null, "{\"email\":\"restart@example.com\",\"kingdomName\":\"Restart\",\"password\":\"restart-password\"}");
             token = JsonPath.read(send(url, "POST", "/auth/authenticate", null, "{\"email\":\"restart@example.com\",\"password\":\"restart-password\"}"), "$.token");
             assertEquals(true, JsonPath.read(send(url, "POST", "/kingdom/pass-turn", token, "0"), "$.success"));
-            // time moves on: turns come in and the round counts the ticks
+            // time moves on: turns come in and the era counts the ticks
             for (int tick = 0; tick < 3; tick++)
             {
                 server.getBean(KingdomService.class).addTurnForEveryone();
-                server.getBean(RoundService.class).tick();
+                server.getBean(EraService.class).tick();
             }
             kingdomBefore = send(url, "GET", "/kingdom", token, null);
-            roundBefore = send(url, "GET", "/game/round", null, null);
+            eraBefore = send(url, "GET", "/game/era", null, null);
             rowsBefore = rows(server);
         }
 
@@ -58,7 +58,7 @@ class WorldSurvivesRestartTest {
         {
             var url = url(server);
             assertEquals(kingdomBefore, send(url, "GET", "/kingdom", token, null));
-            assertEquals(roundBefore, send(url, "GET", "/game/round", null, null));
+            assertEquals(eraBefore, send(url, "GET", "/game/era", null, null));
             assertEquals(rowsBefore, rows(server));
             assertEquals(true, JsonPath.read(send(url, "POST", "/kingdom/pass-turn", token, "0"), "$.success"));
         }

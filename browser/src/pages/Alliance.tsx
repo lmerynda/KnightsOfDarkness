@@ -196,7 +196,7 @@ const NoAlliance: React.FC<{ onChange: () => void }> = ({ onChange }) => {
             </button>
           </div>
         </Panel>
-        <Panel title="Alliances of this round" help="Write to an emperor to ask for an invitation.">
+        <Panel title="Alliances of this era" help="Write to an emperor to ask for an invitation.">
           {alliances.length === 0 ? (
             <p className="muted">No alliances yet.</p>
           ) : (

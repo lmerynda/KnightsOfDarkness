@@ -23,9 +23,9 @@ import com.knightsofdarkness.web.GameServerTest;
 import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
+import com.knightsofdarkness.web.era.EraService;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
-import com.knightsofdarkness.web.round.RoundService;
 
 /**
  * Requests as the browser sends them: unit, building and resource maps are flat objects keyed by name.
@@ -51,7 +51,7 @@ class KingdomApiTest {
     private TransactionTemplate transactionTemplate;
 
     @Autowired
-    private RoundService roundService;
+    private EraService eraService;
 
     private String kingdomName;
 
@@ -237,7 +237,7 @@ class KingdomApiTest {
         var before = version();
 
         transactionTemplate.executeWithoutResult(status -> kingdomRepository.getAllKingdoms().forEach(kingdom -> kingdom.getName()));
-        roundService.getRankings();
+        eraService.getRankings();
         mockMvc.perform(get("/kingdom/details").header("Authorization", "Bearer " + token)).andExpect(status().isOk());
 
         assertEquals(before, version());

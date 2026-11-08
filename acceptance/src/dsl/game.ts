@@ -71,7 +71,7 @@ export class Game {
     expectRefusal(`Signing in as ${credentials.email}`, await gate.signIn(credentials), reason);
   }
 
-  /** the clock ticks: every kingdom gets a turn, the round moves on and the merchants trade */
+  /** the clock ticks: every kingdom gets a turn, the era moves on and the merchants trade */
   /** the rules the world plays by, for checks whose numbers follow from them */
   public rules(): Promise<GameConfig> {
     return this.world.config();
@@ -81,10 +81,11 @@ export class Game {
     await this.world.advance(ticks);
   }
 
-  /** the clock runs on to the round's last tick, which ends it */
-  public async theRoundRunsOut(): Promise<void> {
-    const round = await this.world.round();
-    const next = await this.world.advance(round.lengthInTicks - round.ticksElapsed);
-    if (next.number !== round.number + 1) throw new Error(`Round ${round.number} ran its ${round.lengthInTicks} ticks, and round ${next.number} followed`);
+  /** the clock runs on to the era's last tick, which ends it; says which era that was */
+  public async theEraRunsOut(): Promise<number> {
+    const era = await this.world.era();
+    const next = await this.world.advance(era.maxLengthInTicks - era.ticksElapsed);
+    if (next.number !== era.number + 1) throw new Error(`Era ${era.number} ran its ${era.maxLengthInTicks} ticks, and era ${next.number} followed`);
+    return era.number;
   }
 }

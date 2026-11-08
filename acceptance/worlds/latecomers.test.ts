@@ -21,7 +21,7 @@ const withNewcomer = async (overrides: ConfigOverrides): Promise<WorldRun> => {
 
 const turnsOf = (run: WorldRun, kingdom: string): Snapshot[] => run.timeline.filter(entry => entry.kingdom === kingdom);
 
-test("a newcomer founds a kingdom mid-round and grows faster for the small kingdoms' production bonus", async () => {
+test("a newcomer founds a kingdom mid-era and grows faster for the small kingdoms' production bonus", async () => {
   const withBonus = await withNewcomer({});
   const without = await withNewcomer({ "common.smallKingdomProductionBonus": 0 });
   assert.deepEqual([...withBonus.violations, ...without.violations], []);
@@ -36,9 +36,9 @@ test("a newcomer founds a kingdom mid-round and grows faster for the small kingd
   assert.ok(landWith > landWithout, `the newcomer reached ${landWith} acres with the bonus and ${landWithout} without`);
 });
 
-test("a hoarder keeps its starting land for half the round, then spends the treasury on land", async () => {
-  // a round of forty ticks, so half of it passes in twenty turns
-  const server = await startServer({ "round.lengthInTicks": 40 });
+test("a hoarder keeps its starting land for half the era, then spends the treasury on land", async () => {
+  // an era of forty ticks, so half of it passes in twenty turns
+  const server = await startServer({ "era.maxLengthInTicks": 40 });
   try {
     const world = new World(server.url);
     const rulers = await foundRulers(world, [hoarder], "Miser");

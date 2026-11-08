@@ -12,6 +12,7 @@ import {
   type GateDriver,
   type Goal,
   type Outcome,
+  type PastEra,
   type RulerDriver,
   type Store,
   type Units,
@@ -618,12 +619,14 @@ class BrowserRuler implements RulerDriver {
     return this.lines(this.page.locator("ol.chronicle > li"));
   }
 
-  public async pastRounds(): Promise<{ round: number; winner: string | null }[]> {
+  public async pastEras(): Promise<PastEra[]> {
     await this.open("rankings");
-    return (await this.lines(this.panel("Past rounds").locator("li"))).map(line => {
-      const past = /^Round (\d+): (.+?) with [\d,]+ land/.exec(line);
-      return { round: number(/^Round (\d+)/.exec(line)?.[1] ?? ""), winner: past?.[2] ?? null };
-    });
+    return (await this.lines(this.panel("Past eras").locator("li"))).map(line => ({
+      era: number(/^Era (\d+)/.exec(line)?.[1] ?? ""),
+      winner: /^Era \d+: (.+?) won with [\d,]+ land/.exec(line)?.[1] ?? null,
+      largest: /, largest kingdom (.+?) with [\d,]+ land/.exec(line)?.[1] ?? null,
+      endedBy: line.includes("when the clock ran out") ? "clock" : null,
+    }));
   }
 }
 

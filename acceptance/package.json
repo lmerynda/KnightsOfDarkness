@@ -3,7 +3,7 @@
     "private": true,
     "version": "0.1.0",
     "type": "module",
-    "description": "Black-box tests of the whole game in its own words: domain scenarios through the HTTP API and through Chrome, worlds of scripted rulers, and months of rounds",
+    "description": "Black-box tests of the whole game in its own words: domain scenarios through the HTTP API and through Chrome, worlds of scripted rulers, and months of eras",
     "scripts": {
         "test": "node src/run.ts api",
         "test:browser": "node src/run.ts browser",

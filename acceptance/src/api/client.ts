@@ -15,7 +15,7 @@ import type {
   MarketResource,
   Notification,
   Rankings,
-  Round,
+  Era,
   SignedIn,
   SpecialBuildingType,
   SpyReport,
@@ -62,12 +62,8 @@ export class World {
     this.url = url;
   }
 
-  public advance(ticks = 1, bots = true): Promise<Round> {
+  public advance(ticks = 1, bots = true): Promise<Era> {
     return call(`${this.url}/simulation/advance?ticks=${ticks}&bots=${bots}`, { method: "POST" });
-  }
-
-  public endRound(): Promise<Round> {
-    return call(`${this.url}/simulation/end-round`, { method: "POST" });
   }
 
   public kingdoms(): Promise<Kingdom[]> {
@@ -87,8 +83,8 @@ export class World {
     return call(`${this.url}/game/rankings`);
   }
 
-  public round(): Promise<Round> {
-    return call(`${this.url}/game/round`);
+  public era(): Promise<Era> {
+    return call(`${this.url}/game/era`);
   }
 
   /** registers a kingdom through the public sign-up and signs in as its ruler */
@@ -158,9 +154,9 @@ export class Player {
     return this.get(`/kingdom/details?weaponsProductionPercentage=${weaponsPercentage}`);
   }
 
-  /** the hall of fame: every finished round with its final rankings, newest first */
-  public finishedRounds(): Promise<Round[]> {
-    return this.get("/game/rounds");
+  /** the hall of fame: every finished era with its final rankings, newest first */
+  public finishedEras(): Promise<Era[]> {
+    return this.get("/game/eras");
   }
 
   public offers(resource: MarketResource): Promise<MarketOffer[]> {

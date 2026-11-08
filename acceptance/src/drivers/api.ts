@@ -10,7 +10,7 @@ import type {
   MarketOffer,
   MarketResource,
   Notification,
-  Round,
+  Era,
   SignedIn,
   SpecialBuildingType,
   SpyReport,
@@ -27,6 +27,7 @@ import {
   type GateDriver,
   type Goal,
   type Outcome,
+  type PastEra,
   type RulerDriver,
   type Store,
   type Units,
@@ -363,8 +364,13 @@ class ApiRuler implements RulerDriver {
     return (await this.get<Notification[]>("/kingdom/notifications")).map(note => note.message);
   }
 
-  public async pastRounds(): Promise<{ round: number; winner: string | null }[]> {
-    return (await this.get<Round[]>("/game/rounds")).map(past => ({ round: past.number, winner: past.finalRankings?.kingdoms[0]?.kingdomName ?? null }));
+  public async pastEras(): Promise<PastEra[]> {
+    return (await this.get<Era[]>("/game/eras")).map(past => ({
+      era: past.number,
+      winner: past.winningAlliance ?? null,
+      largest: past.finalRankings?.kingdoms[0]?.kingdomName ?? null,
+      endedBy: past.endedBy ?? null,
+    }));
   }
 }
 

@@ -102,7 +102,7 @@ export const runWorld = async (
     afterTick?: (turn: number) => Promise<void>;
     afterTurn?: (turn: number) => Promise<void>;
     pace?: Pace;
-    /** rulers who found their kingdom later in the round, just before the clock ticks on the given turn */
+    /** rulers who found their kingdom later in the era, just before the clock ticks on the given turn */
     newcomers?: Newcomer[];
     /**
      * plays the rulers in a new random order every turn; in a fixed order whoever acts first always meets the market and

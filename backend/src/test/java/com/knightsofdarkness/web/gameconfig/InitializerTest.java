@@ -28,7 +28,7 @@ class InitializerTest {
         assertEquals(10000, local.common().newTurnPeriodicity());
         assertEquals(game.common().maxTurns(), local.common().maxTurns());
         assertEquals(game.attack(), local.attack());
-        assertEquals(game.round(), local.round());
+        assertEquals(game.era(), local.era());
         assertEquals(game.events(), local.events());
     }
 }

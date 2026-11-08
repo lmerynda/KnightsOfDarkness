@@ -12,7 +12,7 @@ public record GameConfig(
         CarrierCapacity carrierCapacity,
         Attack attack,
         Espionage espionage,
-        Round round,
+        Era era,
         Bots bots,
         Events events) {
 }

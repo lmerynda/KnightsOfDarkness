@@ -4,26 +4,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.knightsofdarkness.web.era.EraService;
 import com.knightsofdarkness.web.kingdom.KingdomService;
-import com.knightsofdarkness.web.round.RoundService;
 
 @Component
 public class TurnAdd
 {
     private static final Logger log = LoggerFactory.getLogger(TurnAdd.class);
     private final KingdomService kingdomService;
-    private final RoundService roundService;
+    private final EraService eraService;
 
-    public TurnAdd(KingdomService kingdomService, RoundService roundService)
+    public TurnAdd(KingdomService kingdomService, EraService eraService)
     {
         this.kingdomService = kingdomService;
-        this.roundService = roundService;
+        this.eraService = eraService;
     }
 
     public void addTurnPeriodically()
     {
         log.info("Adding turn");
         kingdomService.addTurnForEveryone();
-        roundService.tick();
+        eraService.tick();
     }
 }

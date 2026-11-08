@@ -22,6 +22,7 @@ import com.knightsofdarkness.web.common.kingdom.UnitName;
 import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 import com.knightsofdarkness.web.common.messaging.NotificationDto;
 import com.knightsofdarkness.web.common.messaging.NotificationKind;
+import com.knightsofdarkness.web.era.EraReset;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.model.KingdomDetailsProvider;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
@@ -29,7 +30,6 @@ import com.knightsofdarkness.web.kingdom.model.KingdomInteractor;
 import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomTurnAction;
 import com.knightsofdarkness.web.legacy.TestGame;
-import com.knightsofdarkness.web.round.RoundReset;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 class ReinforcementTest
@@ -155,11 +155,11 @@ class ReinforcementTest
     }
 
     @Test
-    void newRound_shouldClearGarrisonsOnBothSides()
+    void newEra_shouldClearGarrisonsOnBothSides()
     {
         standGuard(40);
 
-        RoundReset.reset(List.of(guardian, farmer, raider), Set.of(), config);
+        EraReset.reset(List.of(guardian, farmer, raider), Set.of(), config);
 
         assertThat(guardian.getReinforcements()).isEmpty();
         assertThat(farmer.getGarrisons()).isEmpty();

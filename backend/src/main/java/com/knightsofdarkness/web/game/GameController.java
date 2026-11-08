@@ -11,22 +11,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.knightsofdarkness.web.common.game.EraDto;
 import com.knightsofdarkness.web.common.game.RankingsDto;
-import com.knightsofdarkness.web.common.game.RoundDto;
+import com.knightsofdarkness.web.era.EraService;
 import com.knightsofdarkness.web.game.config.GameConfig;
-import com.knightsofdarkness.web.round.RoundService;
 import com.knightsofdarkness.web.user.UserData;
 
 @RestController
 public class GameController {
     private static final Logger log = LoggerFactory.getLogger(GameController.class);
     private final GameConfig gameConfig;
-    private final RoundService roundService;
+    private final EraService eraService;
 
-    public GameController(GameConfig gameConfig, RoundService roundService)
+    public GameController(GameConfig gameConfig, EraService eraService)
     {
         this.gameConfig = gameConfig;
-        this.roundService = roundService;
+        this.eraService = eraService;
     }
 
     @PostMapping("/config")
@@ -42,23 +42,23 @@ public class GameController {
     }
 
     /**
-     * public, the landing page shows the ongoing round
+     * public, the landing page shows the ongoing era
      */
-    @GetMapping("/game/round")
-    ResponseEntity<RoundDto> getCurrentRound()
+    @GetMapping("/game/era")
+    ResponseEntity<EraDto> getCurrentEra()
     {
-        return ResponseEntity.ok(roundService.getCurrentRound());
+        return ResponseEntity.ok(eraService.getCurrentEra());
     }
 
-    @GetMapping("/game/rounds")
-    ResponseEntity<List<RoundDto>> getFinishedRounds()
+    @GetMapping("/game/eras")
+    ResponseEntity<List<EraDto>> getFinishedEras()
     {
-        return ResponseEntity.ok(roundService.getFinishedRounds());
+        return ResponseEntity.ok(eraService.getFinishedEras());
     }
 
     @GetMapping("/game/rankings")
     ResponseEntity<RankingsDto> getRankings()
     {
-        return ResponseEntity.ok(roundService.getRankings());
+        return ResponseEntity.ok(eraService.getRankings());
     }
 }

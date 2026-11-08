@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.round;
+package com.knightsofdarkness.web.era;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -18,12 +18,12 @@ import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.market.MarketService;
 
 @GameServerTest
-class RoundServiceTest {
+class EraServiceTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private RoundService roundService;
+    private EraService eraService;
 
     @Autowired
     private KingdomRepository kingdomRepository;
@@ -35,12 +35,12 @@ class RoundServiceTest {
     private GameConfig gameConfig;
 
     @Test
-    void endingRound_shouldArchiveRankingsResetKingdomsAndStartNextRound() throws Exception
+    void theClockRunningOut_shouldArchiveRankingsResetKingdomsAndStartNextEra() throws Exception
     {
-        var roundBefore = roundService.getCurrentRound().number();
+        var eraBefore = eraService.getCurrentEra().number();
         var kingdom = kingdomRepository.getKingdomByName("uprzejmy").orElseThrow();
         kingdom.getResources().setCount(ResourceName.land, 5000);
-        // beaten just before the end: the protection belongs to the round that is over
+        // beaten just before the end: the protection belongs to the era that is over
         kingdom.setProtectionTicks(3);
         kingdomRepository.update(kingdom);
 
@@ -49,15 +49,20 @@ class RoundServiceTest {
                 .andExpect(jsonPath("$.kingdoms[0].kingdomName").value("uprzejmy"))
                 .andExpect(jsonPath("$.kingdoms[0].land").value(5000));
 
-        roundService.endCurrentRound();
+        for (int tick = 0; tick < gameConfig.era().maxLengthInTicks(); tick++)
+        {
+            assertEquals(eraBefore, eraService.getCurrentEra().number());
+            eraService.tick();
+        }
 
-        mockMvc.perform(get("/game/round"))
+        mockMvc.perform(get("/game/era"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.number").value(roundBefore + 1))
+                .andExpect(jsonPath("$.number").value(eraBefore + 1))
                 .andExpect(jsonPath("$.ticksElapsed").value(0));
-        mockMvc.perform(get("/game/rounds").with(user("uprzejmy")))
+        mockMvc.perform(get("/game/eras").with(user("uprzejmy")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].number").value(roundBefore))
+                .andExpect(jsonPath("$[0].number").value(eraBefore))
+                .andExpect(jsonPath("$[0].endedBy").value("clock"))
                 .andExpect(jsonPath("$[0].finalRankings.kingdoms[0].kingdomName").value("uprzejmy"))
                 .andExpect(jsonPath("$[0].finalRankings.kingdoms[0].land").value(5000));
 

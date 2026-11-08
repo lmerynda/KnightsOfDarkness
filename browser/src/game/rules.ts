@@ -1,4 +1,4 @@
-import type { BuildingName, GameConfig, KingdomRank, Round, SpyReport, UnitName } from "../api/types";
+import type { BuildingName, Era, EraEnding, GameConfig, KingdomRank, SpyReport, UnitName } from "../api/types";
 import { militaryUnits } from "../api/types";
 
 /** defense estimated from a spy report, using the same rules the battle uses */
@@ -52,8 +52,11 @@ export const landAtStake = (targetLand: number, ownLand: number, config: GameCon
   return { acres: Math.max(1, Math.floor(targetLand * config.attack.maxLandCaptureRatio * sizeFactor)), sizeFactor };
 };
 
-export const roundTimeLeft = (round: Round): string => {
-  const millis = Math.max(0, round.lengthInTicks - round.ticksElapsed) * round.tickPeriodMillis;
+/** how the hall of fame tells the way an era ended */
+export const eraEndings: Record<EraEnding, string> = { clock: "when the clock ran out" };
+
+export const eraTimeLeft = (era: Era): string => {
+  const millis = Math.max(0, era.maxLengthInTicks - era.ticksElapsed) * era.tickPeriodMillis;
   const hours = Math.floor(millis / 3600000);
   const minutes = Math.floor((millis % 3600000) / 60000);
   if (hours >= 48) return `${Math.floor(hours / 24)} days`;

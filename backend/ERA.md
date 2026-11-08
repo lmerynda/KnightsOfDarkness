@@ -1,6 +1,6 @@
 # Eras and the coalition monument
 
-Design, not built yet (2026-11-07). An era ends when a coalition completes its monument. Today a round ends on a fixed clock of 672 ticks (four weeks), and the largest kingdom is crowned.
+Designed on 2026-11-07. An era ends when a coalition completes its monument. The era itself is built (2026-11-08): today it ends only by the clock, after 2,880 ticks (four months), and the alliance with the most land wins it. The monument is not built yet.
 
 ## Why
 
@@ -15,14 +15,14 @@ Design, not built yet (2026-11-07). An era ends when a coalition completes its m
 - Joined strikes (`joins` on `POST /kingdom/send-attack`): armies land one right after the other.
 - Reinforcements: soldiers stand guard with an ally after 2 turns. The sender pays and feeds them.
 - Attack types `land` and `economy` (plunder), with 24 turns of protection after a defeat.
-- Kingdoms are ranked by land and alliances by their members' land (`RankingCalculator`). A round's final rankings go into the hall of fame, and `RoundReset` starts every kingdom anew while alliances are kept.
+- Kingdoms are ranked by land and alliances by their members' land (`RankingCalculator`). An era's winning alliance, its ending and its final rankings go into the hall of fame, and `EraReset` starts every kingdom anew while alliances are kept.
 - Great works belong to one kingdom each. Nothing is built at the alliance level.
 
 ## The rules
 
 ### The era
 
-- `round` becomes `era` everywhere: config, entity, API, browser, docs. This applies only if decision 5 below is yes. Nothing keeps the old name working.
+- `round` became `era` everywhere: config, entity, API, browser, docs. Nothing keeps the old name working. Past balance entries that describe rounds are left as measured.
 - An era ends when a monument stands complete for `monument.holdTicks`. The alliance that built it wins.
 - A clock cap ends a stalled era at `era.maxLengthInTicks`: 2,880 ticks, four months of hourly turns. The alliance with the most land wins it. See decision 1.
 - The hall of fame records the winning alliance, how the era ended (monument or clock), and the final rankings.
@@ -122,7 +122,7 @@ Each step lands with its scenarios, docs and checks, and is committed on its own
 
 1. **Measure.** Done on 2026-11-08: see "Measured" above.
 2. **Warriors keep a garrison at home**, then measure the era again. Done on 2026-11-08: see "Measured" above.
-3. **Era.** Rename round to era. Add the clock cap and record the winning alliance and the way the era ended in the hall of fame. Update the `clock` and `round` scenarios and `npm run test:long`.
+3. **Era.** Done on 2026-11-08: round is renamed to era, the clock cap is 2,880 ticks, and the hall of fame records the winning alliance and the way the era ended. The `era` scenarios play a short era of 120 ticks, and `npm run test:long` plays two at full length.
 4. **Monument.** Found it and pay into it. Add the stages, the upkeep and decay, the chronicle notices, and the public view. This needs:
    - the API, plus regenerated types in both clients;
    - an Alliance page section and a listing on the rankings;
@@ -134,10 +134,10 @@ Each step lands with its scenarios, docs and checks, and is committed on its own
 
 ## Open decisions
 
-Each has a default the plan follows unless changed.
+Each open one has a default the plan follows unless changed.
 
-1. **Clock cap.** Should a stalled era end at four months, with the most land winning? The default is yes. Without a cap, a world where nobody builds never restarts.
+1. **Clock cap.** Settled and built: a stalled era ends at four months, with the most land winning. Without a cap, a world where nobody builds never restarts.
 2. **What a won assault does.** Should it knock down a share of the stages, scaled by dominance, or raze the whole monument? The default is a share: one lucky strike shouldn't end a month of work, while repeated strikes by rivals who band together still bring it down.
 3. **Pacts.** Should pacts between alliances be a formal game feature? The default is no, until the simulations show a need: letters plus the lack of protection after a defeat may be enough.
 4. **Hold period.** How long must a completed monument stand: three days, or no hold? The default is three days, so players who come back once a day still get a chance to answer.
-5. **Naming.** Should "round" become "era" throughout? The default is yes, as it's your word for it.
+5. **Naming.** Settled and built: "round" became "era" throughout.

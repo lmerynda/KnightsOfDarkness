@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../api/endpoints";
-import type { Round } from "../api/types";
+import type { Era } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art } from "../game/lore";
 import { Crest } from "../ui/Crest";
 import { Banner, Meter, Panel } from "../ui/parts";
 import { formatNumber, plural } from "../ui/format";
-import { roundTimeLeft } from "../game/rules";
+import { eraEndings, eraTimeLeft } from "../game/rules";
 
 export const RankingsPage: React.FC = () => {
   const { kingdom, rankings } = useGame();
-  const [round, setRound] = useState<Round | null>(null);
-  const [history, setHistory] = useState<Round[]>([]);
+  const [era, setEra] = useState<Era | null>(null);
+  const [history, setHistory] = useState<Era[]>([]);
 
   useEffect(() => {
     api
-      .round()
-      .then(setRound)
+      .era()
+      .then(setEra)
       .catch(() => undefined);
     api
-      .finishedRounds()
+      .finishedEras()
       .then(setHistory)
       .catch(() => undefined);
   }, []);
@@ -29,16 +29,16 @@ export const RankingsPage: React.FC = () => {
       <Banner
         image={art("victory")}
         title="Rankings"
-        help="Land decides the round. When it ends, the largest kingdom and the largest alliance are remembered, and every realm starts again."
+        help="Land decides the era. When the clock runs out, the alliance holding the most land wins it, the largest kingdom is remembered too, and every realm starts again."
       />
       <div className="stack">
-        {round ? (
+        {era ? (
           <Panel
-            title={`Round ${round.number}`}
-            lede={`Ends in about ${roundTimeLeft(round)}.`}
-            help={`The round lasts ${formatNumber(round.lengthInTicks)} turns.`}
+            title={`Era ${era.number}`}
+            lede={`The clock ends it in about ${eraTimeLeft(era)}.`}
+            help={`An era lasts at most ${formatNumber(era.maxLengthInTicks)} turns.`}
           >
-            <Meter value={round.ticksElapsed} max={round.lengthInTicks} label="Round progress" />
+            <Meter value={era.ticksElapsed} max={era.maxLengthInTicks} label="Era progress" />
           </Panel>
         ) : null}
         <div className="two-columns">
@@ -109,19 +109,24 @@ export const RankingsPage: React.FC = () => {
                 </table>
               )}
             </Panel>
-            <Panel title="Past rounds">
+            <Panel title="Past eras">
               {history.length === 0 ? (
-                <p className="muted">This is the first round. Its winner will be remembered here.</p>
+                <p className="muted">This is the first era. Its winner will be remembered here.</p>
               ) : (
                 <ul className="plain-list">
                   {history.map(past => {
-                    const winner = past.finalRankings?.kingdoms[0];
-                    const alliance = past.finalRankings?.alliances[0];
+                    const largest = past.finalRankings?.kingdoms[0];
+                    const winner = past.finalRankings?.alliances[0];
                     return (
                       <li key={past.number}>
                         <span>
-                          Round {past.number}: {winner ? `${winner.kingdomName} with ${formatNumber(winner.land)} land` : "no kingdoms"}
-                          {alliance ? <span className="muted">, alliance {alliance.allianceName}</span> : null}
+                          Era {past.number}: {winner ? `${winner.allianceName} won with ${formatNumber(winner.land)} land` : "no alliance sworn"}{" "}
+                          {past.endedBy ? eraEndings[past.endedBy] : ""}
+                          {largest ? (
+                            <span className="muted">
+                              , largest kingdom {largest.kingdomName} with {formatNumber(largest.land)} land
+                            </span>
+                          ) : null}
                         </span>
                         <span className="muted">
                           {past.endedAt

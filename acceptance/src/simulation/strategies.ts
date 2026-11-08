@@ -143,14 +143,14 @@ export const economist: Strategy = {
 const allTheLandItBuys = 100_000;
 
 /**
- * stays on its starting land for half the round, filling the workplaces it has, so small kingdoms' production bonus never
+ * stays on its starting land for half the era, filling the workplaces it has, so small kingdoms' production bonus never
  * fades; then spends the whole treasury on land at once and grows as the economist does
  */
 export const hoarder: Strategy = {
   name: "hoarder",
   weaponsPercentage: 0,
   play: async context => {
-    if (context.turn < context.config.round.lengthInTicks / 2) {
+    if (context.turn < context.config.era.maxLengthInTicks / 2) {
       await staffBuildings(context, economyWorkers);
       return;
     }

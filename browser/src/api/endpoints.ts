@@ -20,7 +20,7 @@ import type {
   Notification,
   PassTurnResult,
   Rankings,
-  Round,
+  Era,
   SpecialBuildingType,
   SignedIn,
   SpyReport,
@@ -73,8 +73,8 @@ export const api = {
   },
 
   config: (): Promise<GameConfig> => post("/config"),
-  round: (): Promise<Round> => get("/game/round"),
-  finishedRounds: (): Promise<Round[]> => get("/game/rounds"),
+  era: (): Promise<Era> => get("/game/era"),
+  finishedEras: (): Promise<Era[]> => get("/game/eras"),
   rankings: (): Promise<Rankings> => get("/game/rankings"),
 
   kingdom: (): Promise<Kingdom> => get("/kingdom"),

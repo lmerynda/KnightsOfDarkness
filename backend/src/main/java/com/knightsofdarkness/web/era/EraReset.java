@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.round;
+package com.knightsofdarkness.web.era;
 
 import java.util.List;
 import java.util.Set;
@@ -8,11 +8,11 @@ import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
 import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingAction;
 
 /**
- * Every kingdom starts the new round from the starting configuration. Alliances stay. Bots keep the kind of special
+ * Every kingdom starts the new era from the starting configuration. Alliances stay. Bots keep the kind of special
  * buildings they specialize in, rebuilt from level 0.
  */
-public final class RoundReset {
-    private RoundReset()
+public final class EraReset {
+    private EraReset()
     {
     }
 

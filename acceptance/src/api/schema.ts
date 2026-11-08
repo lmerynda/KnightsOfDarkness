@@ -308,6 +308,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/game/era": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getCurrentEra"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/game/eras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getFinishedEras"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/game/rankings": {
         parameters: {
             query?: never;
@@ -316,38 +348,6 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getRankings"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/game/round": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["getCurrentRound"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/game/rounds": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["getFinishedRounds"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1494,6 +1494,29 @@ export interface components {
         CreateAllianceDto: {
             name: string;
         };
+        Era: {
+            /** Format: int32 */
+            maxLengthInTicks: number;
+        };
+        EraDto: {
+            /** Format: date-time */
+            endedAt: string | null;
+            endedBy: components["schemas"]["EraEnding"] | null;
+            finalRankings: components["schemas"]["RankingsDto"] | null;
+            /** Format: int32 */
+            maxLengthInTicks: number;
+            /** Format: int32 */
+            number: number;
+            /** Format: date-time */
+            startedAt: string;
+            /** Format: int64 */
+            tickPeriodMillis: number;
+            /** Format: int32 */
+            ticksElapsed: number;
+            winningAlliance: string | null;
+        };
+        /** @enum {string} */
+        EraEnding: "clock";
         Espionage: {
             /** Format: double */
             counterIntelligencePerGuard: number;
@@ -1519,12 +1542,12 @@ export interface components {
             buildingPointCosts: components["schemas"]["BuildingPointCosts"];
             carrierCapacity: components["schemas"]["CarrierCapacity"];
             common: components["schemas"]["Common"];
+            era: components["schemas"]["Era"];
             espionage: components["schemas"]["Espionage"];
             events: components["schemas"]["Events"];
             kingdomStartConfiguration: components["schemas"]["KingdomStartConfiguration"];
             market: components["schemas"]["MarketConfig"];
             production: components["schemas"]["Production"];
-            round: components["schemas"]["Round"];
             specialBuildingCosts: components["schemas"]["SpecialBuildingCosts"];
             trainingCost: components["schemas"]["TrainingCost"];
         };
@@ -1970,7 +1993,7 @@ export interface components {
             message: string;
         };
         /** @enum {string} */
-        NotificationKind: "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "round" | "event" | "threat" | "hardship";
+        NotificationKind: "victory" | "defeat" | "repelled" | "breached" | "spies" | "trade" | "delivery" | "alliance" | "era" | "event" | "threat" | "hardship";
         OngoingAttackDto: {
             attackType: components["schemas"]["AttackType"];
             from: string;
@@ -2060,25 +2083,6 @@ export interface components {
         };
         /** @enum {string} */
         ResourceName: "land" | "buildingPoints" | "unemployed" | "gold" | "iron" | "food" | "tools" | "weapons" | "turns";
-        Round: {
-            /** Format: int32 */
-            lengthInTicks: number;
-        };
-        RoundDto: {
-            /** Format: date-time */
-            endedAt: string | null;
-            finalRankings: components["schemas"]["RankingsDto"] | null;
-            /** Format: int32 */
-            lengthInTicks: number;
-            /** Format: int32 */
-            number: number;
-            /** Format: date-time */
-            startedAt: string;
-            /** Format: int64 */
-            tickPeriodMillis: number;
-            /** Format: int32 */
-            ticksElapsed: number;
-        };
         SendAttackDto: {
             attackType: components["schemas"]["AttackType"];
             destinationKingdomName: string;
@@ -2712,6 +2716,46 @@ export interface operations {
             };
         };
     };
+    getCurrentEra: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EraDto"];
+                };
+            };
+        };
+    };
+    getFinishedEras: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EraDto"][];
+                };
+            };
+        };
+    };
     getRankings: {
         parameters: {
             query?: never;
@@ -2728,46 +2772,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["RankingsDto"];
-                };
-            };
-        };
-    };
-    getCurrentRound: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["RoundDto"];
-                };
-            };
-        };
-    };
-    getFinishedRounds: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["RoundDto"][];
                 };
             };
         };

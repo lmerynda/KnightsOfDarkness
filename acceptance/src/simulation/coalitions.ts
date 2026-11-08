@@ -15,7 +15,7 @@ strike together through a war council; Horde, a coalition whose warlords each pi
 kingdoms in no alliance. The merchant bots play too. With --guard, Order's turtles become guardians who send soldiers to
 stand guard with their weakest allies. With --fund, Order's warlords ask for gold on the market and its economists pay
 half of their spare gold into those asks. With --mirror, Horde plays exactly as Order does, with its own war council, to
-see whether one of two equal coalitions runs away with the round. With --uneven, rulers play in bursts of one to three
+see whether one of two equal coalitions runs away with the era. With --uneven, rulers play in bursts of one to three
 turns at different ticks, as players who come back at different times. Order's warlords join the first army's strike so
 their armies land together; --solo-strikes has them march alone instead, to see what joining is worth.`;
 

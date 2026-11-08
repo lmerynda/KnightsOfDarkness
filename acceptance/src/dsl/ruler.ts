@@ -1,5 +1,5 @@
 import type { BuildingName, MarketResource, SpecialBuildingType, UnitName } from "../api/types.ts";
-import type { Buildings, Credentials, Outcome, RulerDriver, Store, Units } from "./driver.ts";
+import type { Buildings, Credentials, Outcome, PastEra, RulerDriver, Store, Units } from "./driver.ts";
 
 /** checks again until it holds or time is up, since a page may still be catching up with the game */
 export const eventually = async (what: string, check: () => Promise<boolean>, timeout = 10_000): Promise<void> => {
@@ -438,11 +438,13 @@ export class Ruler {
     await eventually(`${this.name}'s chronicle tells ${pattern}`, async () => (await this.act.chronicle()).some(entry => pattern.test(entry)));
   }
 
-  // the round
+  // the era
 
-  public async seesInTheHallOfFame(round: number, winner: Ruler): Promise<void> {
-    await eventually(`${this.name} sees ${winner.name} remembered for round ${round}`, async () =>
-      (await this.act.pastRounds()).some(past => past.round === round && past.winner === winner.name),
+  /** the era is remembered as won by the alliance, or by no alliance at all, with the kingdom as its largest */
+  public async seesInTheHallOfFame(era: number, winner: string | null, largest: Ruler): Promise<void> {
+    const remembered: PastEra = { era, winner, largest: largest.name, endedBy: "clock" };
+    await eventually(`${this.name} sees era ${era} remembered as ${JSON.stringify(remembered)}`, async () =>
+      (await this.act.pastEras()).some(past => JSON.stringify(past) === JSON.stringify(remembered)),
     );
   }
 

@@ -1340,6 +1340,67 @@
         "required" : [ "name" ],
         "type" : "object"
       },
+      "Era" : {
+        "properties" : {
+          "maxLengthInTicks" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "maxLengthInTicks" ],
+        "type" : "object"
+      },
+      "EraDto" : {
+        "properties" : {
+          "endedAt" : {
+            "format" : "date-time",
+            "type" : [ "string", "null" ]
+          },
+          "endedBy" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/EraEnding"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "finalRankings" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/RankingsDto"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "maxLengthInTicks" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "number" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "startedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "tickPeriodMillis" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "ticksElapsed" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "winningAlliance" : {
+            "type" : [ "string", "null" ]
+          }
+        },
+        "required" : [ "endedAt", "endedBy", "finalRankings", "maxLengthInTicks", "number", "startedAt", "tickPeriodMillis", "ticksElapsed", "winningAlliance" ],
+        "type" : "object"
+      },
+      "EraEnding" : {
+        "enum" : [ "clock" ],
+        "type" : "string"
+      },
       "Espionage" : {
         "properties" : {
           "counterIntelligencePerGuard" : {
@@ -1400,6 +1461,9 @@
           "common" : {
             "$ref" : "#/components/schemas/Common"
           },
+          "era" : {
+            "$ref" : "#/components/schemas/Era"
+          },
           "espionage" : {
             "$ref" : "#/components/schemas/Espionage"
           },
@@ -1415,9 +1479,6 @@
           "production" : {
             "$ref" : "#/components/schemas/Production"
           },
-          "round" : {
-            "$ref" : "#/components/schemas/Round"
-          },
           "specialBuildingCosts" : {
             "$ref" : "#/components/schemas/SpecialBuildingCosts"
           },
@@ -1425,7 +1486,7 @@
             "$ref" : "#/components/schemas/TrainingCost"
           }
         },
-        "required" : [ "attack", "bots", "buildingCapacity", "buildingPointCosts", "carrierCapacity", "common", "espionage", "events", "kingdomStartConfiguration", "market", "production", "round", "specialBuildingCosts", "trainingCost" ],
+        "required" : [ "attack", "bots", "buildingCapacity", "buildingPointCosts", "carrierCapacity", "common", "era", "espionage", "events", "kingdomStartConfiguration", "market", "production", "specialBuildingCosts", "trainingCost" ],
         "type" : "object"
       },
       "IncomingArmyDto" : {
@@ -2426,7 +2487,7 @@
         "type" : "object"
       },
       "NotificationKind" : {
-        "enum" : [ "victory", "defeat", "repelled", "breached", "spies", "trade", "delivery", "alliance", "round", "event", "threat", "hardship" ],
+        "enum" : [ "victory", "defeat", "repelled", "breached", "spies", "trade", "delivery", "alliance", "era", "event", "threat", "hardship" ],
         "type" : "string"
       },
       "OngoingAttackDto" : {
@@ -2643,53 +2704,6 @@
       "ResourceName" : {
         "enum" : [ "land", "buildingPoints", "unemployed", "gold", "iron", "food", "tools", "weapons", "turns" ],
         "type" : "string"
-      },
-      "Round" : {
-        "properties" : {
-          "lengthInTicks" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        },
-        "required" : [ "lengthInTicks" ],
-        "type" : "object"
-      },
-      "RoundDto" : {
-        "properties" : {
-          "endedAt" : {
-            "format" : "date-time",
-            "type" : [ "string", "null" ]
-          },
-          "finalRankings" : {
-            "anyOf" : [ {
-              "$ref" : "#/components/schemas/RankingsDto"
-            }, {
-              "type" : "null"
-            } ]
-          },
-          "lengthInTicks" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "number" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "startedAt" : {
-            "format" : "date-time",
-            "type" : "string"
-          },
-          "tickPeriodMillis" : {
-            "format" : "int64",
-            "type" : "integer"
-          },
-          "ticksElapsed" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        },
-        "required" : [ "endedAt", "finalRankings", "lengthInTicks", "number", "startedAt", "tickPeriodMillis", "ticksElapsed" ],
-        "type" : "object"
       },
       "SendAttackDto" : {
         "properties" : {
@@ -3612,6 +3626,45 @@
         "tags" : [ "game-controller" ]
       }
     },
+    "/game/era" : {
+      "get" : {
+        "operationId" : "getCurrentEra",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EraDto"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "game-controller" ]
+      }
+    },
+    "/game/eras" : {
+      "get" : {
+        "operationId" : "getFinishedEras",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/EraDto"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "game-controller" ]
+      }
+    },
     "/game/rankings" : {
       "get" : {
         "operationId" : "getRankings",
@@ -3621,45 +3674,6 @@
               "*/*" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/RankingsDto"
-                }
-              }
-            },
-            "description" : "OK"
-          }
-        },
-        "tags" : [ "game-controller" ]
-      }
-    },
-    "/game/round" : {
-      "get" : {
-        "operationId" : "getCurrentRound",
-        "responses" : {
-          "200" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/RoundDto"
-                }
-              }
-            },
-            "description" : "OK"
-          }
-        },
-        "tags" : [ "game-controller" ]
-      }
-    },
-    "/game/rounds" : {
-      "get" : {
-        "operationId" : "getFinishedRounds",
-        "responses" : {
-          "200" : {
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "items" : {
-                    "$ref" : "#/components/schemas/RoundDto"
-                  },
-                  "type" : "array"
                 }
               }
             },

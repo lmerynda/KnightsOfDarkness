@@ -210,8 +210,8 @@
         "counterIntelligencePerGuard": 0.2,
         "failedMissionLossRatio": 0.5
     },
-    "round": {
-        "lengthInTicks": 672
+    "era": {
+        "maxLengthInTicks": 2880
     },
     "bots": {
         "maxLand": 400,

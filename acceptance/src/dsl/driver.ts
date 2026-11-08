@@ -6,6 +6,9 @@ import type { BuildingName, Counts, MarketResource, SpecialBuildingType, UnitNam
 export type Units = Partial<Counts<UnitName>>;
 export type Buildings = Partial<Counts<BuildingName>>;
 
+/** an era in the hall of fame: the alliance that won it, if any, its largest kingdom and how it ended */
+export type PastEra = { era: number; winner: string | null; largest: string | null; endedBy: string | null };
+
 /** what an army marches for: to take land, or to plunder the stores */
 export type Goal = "land" | "plunder";
 
@@ -141,6 +144,6 @@ export interface RulerDriver {
 
   /** the chronicle: what happened to the kingdom, newest first */
   chronicle(): Promise<string[]>;
-  /** the hall of fame: every finished round and the kingdom that ruled the most land in it, newest first */
-  pastRounds(): Promise<{ round: number; winner: string | null }[]>;
+  /** the hall of fame: every finished era, newest first */
+  pastEras(): Promise<PastEra[]>;
 }

@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knightsofdarkness.web.bots.Scheduler;
-import com.knightsofdarkness.web.common.game.RoundDto;
+import com.knightsofdarkness.web.common.game.EraDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomDto;
 import com.knightsofdarkness.web.common.market.MarketTradeDto;
+import com.knightsofdarkness.web.era.EraService;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.kingdom.KingdomService;
 import com.knightsofdarkness.web.market.model.MarketTransactionJpaRepository;
-import com.knightsofdarkness.web.round.RoundService;
 
 /**
  * The edge a simulation harness drives the world through. It exists only in the simulation profile, where the wall
@@ -29,44 +29,37 @@ import com.knightsofdarkness.web.round.RoundService;
 public class SimulationController
 {
     private final KingdomService kingdomService;
-    private final RoundService roundService;
+    private final EraService eraService;
     private final Scheduler botScheduler;
     private final GameConfig gameConfig;
     private final MarketTransactionJpaRepository trades;
 
-    public SimulationController(KingdomService kingdomService, RoundService roundService, Scheduler botScheduler, GameConfig gameConfig, MarketTransactionJpaRepository trades)
+    public SimulationController(KingdomService kingdomService, EraService eraService, Scheduler botScheduler, GameConfig gameConfig, MarketTransactionJpaRepository trades)
     {
         this.trades = trades;
         this.kingdomService = kingdomService;
-        this.roundService = roundService;
+        this.eraService = eraService;
         this.botScheduler = botScheduler;
         this.gameConfig = gameConfig;
     }
 
     /**
-     * one tick is what the wall clock does every newTurnPeriodicity: every kingdom gets a turn, the round moves on and,
+     * one tick is what the wall clock does every newTurnPeriodicity: every kingdom gets a turn, the era moves on and,
      * unless bots=false, every bot acts once
      */
     @PostMapping("/advance")
-    ResponseEntity<RoundDto> advance(@RequestParam(defaultValue = "1") int ticks, @RequestParam(defaultValue = "true") boolean bots)
+    ResponseEntity<EraDto> advance(@RequestParam(defaultValue = "1") int ticks, @RequestParam(defaultValue = "true") boolean bots)
     {
         for (int tick = 0; tick < ticks; tick++)
         {
             kingdomService.addTurnForEveryone();
-            roundService.tick();
+            eraService.tick();
             if (bots)
             {
                 botScheduler.runBots();
             }
         }
-        return ResponseEntity.ok(roundService.getCurrentRound());
-    }
-
-    @PostMapping("/end-round")
-    ResponseEntity<RoundDto> endRound()
-    {
-        roundService.endCurrentRound();
-        return ResponseEntity.ok(roundService.getCurrentRound());
+        return ResponseEntity.ok(eraService.getCurrentEra());
     }
 
     /**

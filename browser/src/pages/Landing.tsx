@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { errorText, getTrial } from "../api/client";
 import { api } from "../api/endpoints";
-import type { Rankings, Round } from "../api/types";
+import type { Rankings, Era } from "../api/types";
 import { art } from "../game/lore";
-import { roundTimeLeft } from "../game/rules";
+import { eraTimeLeft } from "../game/rules";
 import { Crest } from "../ui/Crest";
 import { formatNumber } from "../ui/format";
 
@@ -22,7 +22,7 @@ const pillars = [
   {
     image: "alliance",
     title: "Swear to an alliance",
-    text: "No kingdom outlasts the dark alone. Trade on the market, send carriers to allies, write to your council, and rise together in the rankings until the round ends.",
+    text: "No kingdom outlasts the dark alone. Trade on the market, send carriers to allies, write to your council, and rise together in the rankings until the era ends.",
   },
 ];
 
@@ -74,13 +74,13 @@ const PlayNow: React.FC = () => {
 };
 
 export const Landing: React.FC = () => {
-  const [round, setRound] = useState<Round | null>(null);
+  const [era, setEra] = useState<Era | null>(null);
   const [rankings, setRankings] = useState<Rankings | null>(null);
 
   useEffect(() => {
     api
-      .round()
-      .then(setRound)
+      .era()
+      .then(setEra)
       .catch(() => undefined);
     api
       .rankings()
@@ -95,7 +95,7 @@ export const Landing: React.FC = () => {
           <h1 className="landing-title">Knights of Darkness</h1>
           <p className="landing-intro">
             The western sky never clears. Caravans vanish, outposts burn, and old enemies hold torchlit councils because they must. Build a
-            kingdom that lasts the round, and an alliance that does not betray it.
+            kingdom that lasts the era, and an alliance that does not betray it.
           </p>
           <div className="row">
             <Link className="button" to="/register">
@@ -109,13 +109,13 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      <section className="landing-round">
+      <section className="landing-era">
         <div>
-          <h2>{round ? `Round ${round.number}` : "The current round"}</h2>
+          <h2>{era ? `Era ${era.number}` : "The current era"}</h2>
           <p className="muted">
-            {round
-              ? `Ends in ${roundTimeLeft(round)}. When it does, the kingdom with the most land is remembered, and every realm starts again from nothing.`
-              : "Rounds end on a fixed day; the largest kingdom is remembered and every realm starts again."}
+            {era
+              ? `The clock ends it in ${eraTimeLeft(era)}. The alliance holding the most land then wins the era, and every realm starts again from nothing.`
+              : "The clock ends an era after four months; the alliance holding the most land wins it and every realm starts again."}
           </p>
         </div>
         <ol className="landing-standings">

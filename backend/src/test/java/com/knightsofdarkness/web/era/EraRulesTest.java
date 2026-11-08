@@ -1,4 +1,4 @@
-package com.knightsofdarkness.web.round;
+package com.knightsofdarkness.web.era;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -20,7 +20,7 @@ import com.knightsofdarkness.web.kingdom.model.KingdomSpecialBuildingAction;
 import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
-class RoundRulesTest {
+class EraRulesTest {
     private Game game;
 
     @BeforeEach
@@ -57,7 +57,7 @@ class RoundRulesTest {
         var kingdom = new KingdomBuilder(game).withRichConfiguration().build();
         new KingdomSpecialBuildingAction(kingdom, config).startSpecialBuilding(SpecialBuildingType.forge);
 
-        RoundReset.reset(List.of(kingdom), Set.of(), config);
+        EraReset.reset(List.of(kingdom), Set.of(), config);
 
         var start = config.kingdomStartConfiguration();
         assertEquals(start.resources().toMap().get(ResourceName.land), kingdom.getResources().getCount(ResourceName.land));
@@ -77,7 +77,7 @@ class RoundRulesTest {
         action.startSpecialBuilding(SpecialBuildingType.granary);
         action.startSpecialBuilding(SpecialBuildingType.warehouse);
 
-        RoundReset.reset(List.of(bot), Set.of("FarmerBot"), config);
+        EraReset.reset(List.of(bot), Set.of("FarmerBot"), config);
 
         assertEquals(List.of(SpecialBuildingType.granary, SpecialBuildingType.warehouse), bot.getSpecialBuildings().stream().map(building -> building.getBuildingType()).toList());
         assertTrue(bot.getSpecialBuildings().stream().allMatch(building -> building.toDto().level() == 0));

@@ -123,7 +123,7 @@ export const Spies: React.FC = () => {
           {reports === null ? (
             <p className="muted">Reading the reports</p>
           ) : reports.length === 0 ? (
-            <p className="muted">No missions yet this round.</p>
+            <p className="muted">No missions yet this era.</p>
           ) : (
             <div className="battles">
               {reports.map(report => (

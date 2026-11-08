@@ -121,7 +121,7 @@ const hostileRequests = (random: () => number) => {
       () => ({ method: "POST", path: "/auth/trial", body: json({ kingdomName: random() < 0.5 ? `Fuzz Trial ${Math.floor(random() * 1000)}` : name() }) }),
       () => ({ method: "POST", path: "/auth/authenticate", body: json({ email: pick(words), password: pick(words) }) }),
       () => ({ method: "POST", path: "/auth/keep", body: json({ email: pick([...words, "kept@simulation.test"]), password: pick(words) }) }),
-      () => ({ method: "GET", path: pick(["/kingdom", "/kingdom/notifications/count", "/war/battle-reports", "/war/spy-reports", "/messages/sent", "/messages/unread-count", "/alliance", "/alliance/all", "/auth/account", "/game/rounds", "/game/round", "/game/rankings"]) }),
+      () => ({ method: "GET", path: pick(["/kingdom", "/kingdom/notifications/count", "/war/battle-reports", "/war/spy-reports", "/messages/sent", "/messages/unread-count", "/alliance", "/alliance/all", "/auth/account", "/game/eras", "/game/era", "/game/rankings"]) }),
     ];
     return pick(requests)();
   };

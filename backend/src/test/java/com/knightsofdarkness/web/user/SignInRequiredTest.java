@@ -25,7 +25,7 @@ import com.knightsofdarkness.web.GameServerTest;
 class SignInRequiredTest {
     private static final Set<String> open = Set.of(
             "GET /health",
-            "GET /game/round",
+            "GET /game/era",
             "GET /game/rankings",
             "POST /auth/authenticate",
             "POST /auth/register",

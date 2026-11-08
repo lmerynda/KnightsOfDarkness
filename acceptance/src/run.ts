@@ -13,7 +13,7 @@ const suites: Record<string, Suite> = {
   api: { driver: "api", files: ["scenarios/*.test.ts", "worlds/*.test.ts", "robustness/*.test.ts"], ui: false },
   // the same domain scenarios through Chrome, and the checks only a browser can make
   browser: { driver: "browser", files: ["scenarios/*.test.ts", "ui/*.test.ts"], ui: true },
-  // months of rounds played out, on demand
+  // months of eras played out, on demand
   long: { driver: "api", files: ["long/*.test.ts"], ui: false },
 };
 

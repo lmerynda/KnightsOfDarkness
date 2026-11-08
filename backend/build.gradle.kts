@@ -59,7 +59,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 }
 
-// local play gets a turn every ten seconds so a whole round can be watched in a sitting; the jar keeps the game's hourly pace
+// local play gets a turn every ten seconds so an era of four months passes in eight hours; the jar keeps the game's hourly pace
 tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
     args("--game.clock.turn-period=10s")
 }
