@@ -1,4 +1,4 @@
-import type { BuildingName, Era, EraEnding, GameConfig, KingdomRank, Monument, SpyReport, UnitName } from "../api/types";
+import type { AttackType, BuildingName, Era, EraEnding, GameConfig, KingdomRank, Monument, SpyReport, UnitName } from "../api/types";
 import { militaryUnits } from "../api/types";
 
 /** defense estimated from a spy report, using the same rules the battle uses */
@@ -51,6 +51,15 @@ export const landAtStake = (targetLand: number, ownLand: number, config: GameCon
   const sizeFactor = Math.min(1, targetLand / Math.max(1, ownLand)) ** config.attack.smallerTargetCaptureExponent;
   return { acres: Math.max(1, Math.floor(targetLand * config.attack.maxLandCaptureRatio * sizeFactor)), sizeFactor };
 };
+
+/** what an army marches for, to follow "to" */
+export const attackGoal: Record<AttackType, string> = { land: "take land", economy: "plunder", monument: "assault the monument" };
+
+/** who guards a monument, as everyone's scouts count them */
+export const monumentGarrison = (monument: Monument): string =>
+  monument.garrison > 0
+    ? `about ${monument.garrison.toLocaleString("en-US")} ${monument.garrison === 1 ? "soldier" : "soldiers"} on guard`
+    : "no garrison";
 
 /** how far a monument stands, in everyone's words */
 export const monumentStanding = (monument: Monument): string =>

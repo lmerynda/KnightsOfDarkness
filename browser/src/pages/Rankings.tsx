@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
 import type { Era, Monument } from "../api/types";
 import { useGame } from "../game/useGame";
@@ -6,7 +7,7 @@ import { art } from "../game/lore";
 import { Crest } from "../ui/Crest";
 import { Banner, Meter, Panel } from "../ui/parts";
 import { formatNumber, plural } from "../ui/format";
-import { eraEndings, eraTimeLeft, monumentStanding } from "../game/rules";
+import { eraEndings, eraTimeLeft, monumentGarrison, monumentStanding } from "../game/rules";
 
 export const RankingsPage: React.FC = () => {
   const { kingdom, rankings } = useGame();
@@ -115,7 +116,10 @@ export const RankingsPage: React.FC = () => {
               )}
             </Panel>
             {monuments ? (
-              <Panel title="Monuments" help="Every alliance's monument, for all to see. Rivals may want to answer before one stands complete.">
+              <Panel
+                title="Monuments"
+                help="Every alliance's monument, for all to see. Rivals may want to answer before one stands complete: only the garrison its members send defends it, and every won assault knocks stages down."
+              >
                 {monuments.length === 0 ? (
                   <p className="muted">No alliance has founded a monument this era.</p>
                 ) : (
@@ -125,7 +129,14 @@ export const RankingsPage: React.FC = () => {
                         <span className="figure">
                           <Crest name={monument.allianceName} size={26} /> {monument.allianceName} at {monument.seat}
                         </span>
-                        <span className="muted">{monumentStanding(monument)}</span>
+                        <span className="muted">
+                          {monumentStanding(monument)}, {monumentGarrison(monument)}
+                        </span>
+                        {monument.allianceName !== kingdom.allianceName ? (
+                          <Link className="button quiet small" to={`/kingdom/war?assault=${encodeURIComponent(monument.seat)}`}>
+                            March on it
+                          </Link>
+                        ) : null}
                       </li>
                     ))}
                   </ul>
@@ -143,7 +154,8 @@ export const RankingsPage: React.FC = () => {
                     return (
                       <li key={past.number}>
                         <span>
-                          Era {past.number}: {winner ? `${winner.allianceName} won with ${formatNumber(winner.land)} land` : "no alliance sworn"}{" "}
+                          Era {past.number}:{" "}
+                          {winner ? `${winner.allianceName} won with ${formatNumber(winner.land)} land` : "no alliance sworn"}{" "}
                           {past.endedBy ? eraEndings[past.endedBy] : ""}
                           {largest ? (
                             <span className="muted">

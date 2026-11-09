@@ -258,6 +258,10 @@ export class Player {
     return this.post("/alliance/remove", { kingdomName });
   }
 
+  public sendToMonument(units: Partial<Counts<UnitName>>): Promise<ActionResult> {
+    return this.post("/alliance/monument/garrison", { units });
+  }
+
   public monument(): Promise<MonumentLedger> {
     return this.get("/alliance/monument");
   }

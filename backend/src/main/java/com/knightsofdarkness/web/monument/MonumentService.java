@@ -11,12 +11,16 @@ import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.alliance.FoundMonumentDto;
 import com.knightsofdarkness.web.common.alliance.MonumentContributionDto;
 import com.knightsofdarkness.web.common.alliance.MonumentDto;
+import com.knightsofdarkness.web.common.alliance.MonumentGarrisonDto;
 import com.knightsofdarkness.web.common.alliance.MonumentLedgerDto;
+import com.knightsofdarkness.web.common.kingdom.AttackType;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.messaging.NotificationKind;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.game.config.Monument;
+import com.knightsofdarkness.web.kingdom.IMonumentFront;
 import com.knightsofdarkness.web.kingdom.model.KingdomEntity;
+import com.knightsofdarkness.web.kingdom.model.KingdomMilitaryAction;
 import com.knightsofdarkness.web.kingdom.model.KingdomRepository;
 import com.knightsofdarkness.web.messaging.INotificationSystem;
 import com.knightsofdarkness.web.monument.model.MonumentEntity;
@@ -25,10 +29,10 @@ import com.knightsofdarkness.web.utils.Utils;
 
 /**
  * An alliance may raise one monument an era. Everyone hears when it is founded, at every stage from the half-way mark and
- * when it stands complete, so that its rivals can answer in time.
+ * when it stands complete, so that its rivals can answer in time, and when an assault knocks it down.
  */
 @Service
-public class MonumentService {
+public class MonumentService implements IMonumentFront {
     private final MonumentJpaRepository monumentRepository;
     private final KingdomRepository kingdomRepository;
     private final INotificationSystem notificationSystem;
@@ -125,7 +129,29 @@ public class MonumentService {
     }
 
     /**
-     * the clock takes the upkeep of every monument
+     * soldiers go to the monument as to an ally, and come home the same way
+     */
+    @Transactional
+    public ActionResult<Void> sendGarrison(String kingdomName, MonumentGarrisonDto garrison)
+    {
+        var maybeKingdom = kingdomRepository.getKingdomByName(kingdomName);
+        var alliance = maybeKingdom.flatMap(KingdomEntity::getAlliance);
+        var monument = alliance.flatMap(joined -> monumentRepository.findByAllianceNameForUpdate(joined.getName()));
+        if (monument.isEmpty())
+        {
+            return ActionResult.failure("Your alliance has no monument");
+        }
+        var kingdom = maybeKingdom.get();
+        var result = new KingdomMilitaryAction(kingdom, gameConfig).sendToMonument(garrison.units(), monument.get());
+        if (result.success())
+        {
+            kingdomRepository.update(kingdom);
+        }
+        return result;
+    }
+
+    /**
+     * the clock takes the upkeep of every monument, and a store that can spare the goods rebuilds what has fallen
      */
     @Transactional
     public void tick()
@@ -136,7 +162,37 @@ public class MonumentService {
             {
                 tellMembers(monument.getAllianceName(), Utils.format("The store of our monument at {} cannot pay its upkeep, and the monument is crumbling", monument.getSeat()));
             }
+            if (!monument.isUpkeepUnpaid())
+            {
+                monument.raiseStages(rules()).forEach(stage -> announce(monument, stage));
+            }
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean standsAt(String seat)
+    {
+        return monumentRepository.existsBySeat(seat);
+    }
+
+    @Override
+    public Optional<MonumentEntity> findAtSeatForUpdate(String seat)
+    {
+        return monumentRepository.findBySeatForUpdate(seat);
+    }
+
+    @Override
+    public void assaultWon(MonumentEntity monument, String attacker)
+    {
+        var dto = monument.toDto(rules());
+        tellEveryone(Utils.format("{} stormed the monument of {} at {} and knocked it down to stage {} of {}", attacker, monument.getAllianceName(), monument.getSeat(), MonumentEntity.stages(dto.stages()), dto.totalStages()));
+    }
+
+    @Override
+    public void assaultRepelled(MonumentEntity monument, String attacker)
+    {
+        tellMembers(monument.getAllianceName(), NotificationKind.repelled, Utils.format("We repelled {} at our monument at {}", attacker, monument.getSeat()));
     }
 
     /**
@@ -147,6 +203,8 @@ public class MonumentService {
     {
         monumentRepository.findByAllianceNameForUpdate(allianceName).filter(monument -> monument.getSeat().equals(kingdomName)).ifPresent(monument -> {
             monument.moveSeat(emperor);
+            // armies on the march follow the monument, leaving the alliance is no way to dodge them
+            kingdomRepository.getAttacksOn(kingdomName).stream().filter(attack -> attack.getAttackType() == AttackType.monument).forEach(attack -> attack.marchOn(emperor));
             tellEveryone(Utils.format("{} moved the seat of its monument from {} to {}", allianceName, kingdomName, emperor));
         });
     }
@@ -167,7 +225,10 @@ public class MonumentService {
     @Transactional
     public void clear()
     {
-        monumentRepository.deleteAll();
+        var monuments = monumentRepository.findAll();
+        monuments.forEach(MonumentEntity::sendGarrisonHome);
+        monumentRepository.flush();
+        monumentRepository.deleteAll(monuments);
     }
 
     private void announce(MonumentEntity monument, int stage)
@@ -193,9 +254,14 @@ public class MonumentService {
 
     private void tellMembers(String allianceName, String message)
     {
+        tellMembers(allianceName, NotificationKind.monument, message);
+    }
+
+    private void tellMembers(String allianceName, NotificationKind kind, String message)
+    {
         kingdomRepository.getAllKingdoms().stream()
                 .filter(kingdom -> kingdom.getAlliance().filter(alliance -> alliance.getName().equals(allianceName)).isPresent())
-                .forEach(kingdom -> notificationSystem.create(kingdom.getName(), NotificationKind.monument, message));
+                .forEach(kingdom -> notificationSystem.create(kingdom.getName(), kind, message));
     }
 
     private Monument rules()

@@ -13,6 +13,7 @@ import com.knightsofdarkness.web.common.ActionResult;
 import com.knightsofdarkness.web.common.alliance.FoundMonumentDto;
 import com.knightsofdarkness.web.common.alliance.MonumentContributionDto;
 import com.knightsofdarkness.web.common.alliance.MonumentDto;
+import com.knightsofdarkness.web.common.alliance.MonumentGarrisonDto;
 import com.knightsofdarkness.web.common.alliance.MonumentLedgerDto;
 import com.knightsofdarkness.web.user.UserData;
 
@@ -50,5 +51,14 @@ public class MonumentController {
     ResponseEntity<ActionResult<Void>> contribute(@AuthenticationPrincipal UserData currentUser, @RequestBody MonumentContributionDto goods)
     {
         return ResponseEntity.ok(monumentService.contribute(currentUser.getKingdomName(), goods));
+    }
+
+    /**
+     * they come home through /kingdom/recall-reinforcements, as all soldiers standing guard do
+     */
+    @PostMapping("/alliance/monument/garrison")
+    ResponseEntity<ActionResult<Void>> sendGarrison(@AuthenticationPrincipal UserData currentUser, @RequestBody MonumentGarrisonDto garrison)
+    {
+        return ResponseEntity.ok(monumentService.sendGarrison(currentUser.getKingdomName(), garrison));
     }
 }

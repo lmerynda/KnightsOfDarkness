@@ -224,7 +224,8 @@
             "gold": 7500000,
             "food": 15000
         },
-        "decayRatio": 0.05
+        "decayRatio": 0.05,
+        "maxRazeRatio": 0.25
     },
     "bots": {
         "maxLand": 400,

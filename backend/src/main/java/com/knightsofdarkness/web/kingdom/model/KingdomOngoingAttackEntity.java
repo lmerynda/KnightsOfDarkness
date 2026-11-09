@@ -79,7 +79,7 @@ public class KingdomOngoingAttackEntity {
         return new IncomingArmyDto(kingdom.getName(), targetKingdomName, attackType, turnsLeft, roughly(units.countMilitary()));
     }
 
-    static int roughly(int count)
+    public static int roughly(int count)
     {
         if (count < 100)
         {
@@ -102,6 +102,19 @@ public class KingdomOngoingAttackEntity {
     public String getTargetKingdomName()
     {
         return targetKingdomName;
+    }
+
+    public AttackType getAttackType()
+    {
+        return attackType;
+    }
+
+    /**
+     * the monument this army marches on has moved its seat
+     */
+    public void marchOn(String kingdomName)
+    {
+        targetKingdomName = kingdomName;
     }
 
     public UUID getJoinsAttackId()

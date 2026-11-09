@@ -22,6 +22,7 @@ import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingDemolishDt
 import com.knightsofdarkness.web.common.kingdom.KingdomSpecialBuildingStartDto;
 import com.knightsofdarkness.web.common.kingdom.KingdomTurnReport;
 import com.knightsofdarkness.web.common.kingdom.LandTransaction;
+import com.knightsofdarkness.web.common.kingdom.AttackType;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.web.common.kingdom.SendCarriersDto;
 import com.knightsofdarkness.web.common.kingdom.SendReinforcementsDto;
@@ -60,12 +61,14 @@ public class KingdomService
     private final IKingdomInteractor kingdomInteractor;
     private final KingdomDetailsProvider kingdomDetailsProvider;
     private final INotificationSystem notificationSystem;
+    private final IMonumentFront monuments;
     private final KingdomEvents events;
     private final RandomGenerator dice = RandomGenerator.getDefault();
 
     public KingdomService(KingdomRepository kingdomRepository, KingdomReadRepository kingdomReadRepository, MarketOfferReadRepository marketOfferReadRepository, GameConfig gameConfig, IKingdomInteractor kingdomInteractor,
-            KingdomDetailsProvider kingdomDetailsProvider, INotificationSystem notificationSystem)
+            KingdomDetailsProvider kingdomDetailsProvider, INotificationSystem notificationSystem, IMonumentFront monuments)
     {
+        this.monuments = monuments;
         this.kingdomRepository = kingdomRepository;
         this.kingdomReadRepository = kingdomReadRepository;
         this.marketOfferReadRepository = marketOfferReadRepository;
@@ -416,6 +419,12 @@ public class KingdomService
             return Optional.of(ActionResult.failure("Destination kingdom does not exist"));
         }
 
+        var onMonument = sendAttackDto.attackType() == AttackType.monument;
+        if (onMonument && !monuments.standsAt(sendAttackDto.destinationKingdomName()))
+        {
+            return Optional.of(ActionResult.failure(Utils.format("No monument stands at {}", sendAttackDto.destinationKingdomName())));
+        }
+
         KingdomOngoingAttackEntity lead = null;
         if (sendAttackDto.joins() != null)
         {
@@ -433,8 +442,15 @@ public class KingdomService
         {
             kingdomRepository.update(kingdom);
             var army = kingdom.getOngoingAttacks().get(kingdom.getOngoingAttacks().size() - 1).toIncomingDto();
-            notificationSystem.create(army.to(), NotificationKind.threat,
-                    Utils.format("Our scouts saw {} with about {} soldiers march on us, they arrive in {} of their turns", army.from(), army.soldiers(), army.turnsLeft()));
+            if (onMonument)
+            {
+                maybeDestinationKingdom.get().getAlliance().ifPresent(alliance -> alliance.getKingdoms().forEach(member -> notificationSystem.create(member.getName(), NotificationKind.threat,
+                        Utils.format("Our scouts saw {} with about {} soldiers march on our monument at {}, they arrive in {} of their turns", army.from(), army.soldiers(), army.to(), army.turnsLeft()))));
+            } else
+            {
+                notificationSystem.create(army.to(), NotificationKind.threat,
+                        Utils.format("Our scouts saw {} with about {} soldiers march on us, they arrive in {} of their turns", army.from(), army.soldiers(), army.turnsLeft()));
+            }
             if (lead != null)
             {
                 notificationSystem.create(lead.getKingdom().getName(), NotificationKind.alliance,

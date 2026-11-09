@@ -4,7 +4,7 @@ import { errorText, getTrial } from "../api/client";
 import { api } from "../api/endpoints";
 import type { Era, Monument, Rankings } from "../api/types";
 import { art } from "../game/lore";
-import { eraTimeLeft, monumentStanding } from "../game/rules";
+import { eraTimeLeft, monumentGarrison, monumentStanding } from "../game/rules";
 import { Crest } from "../ui/Crest";
 import { formatNumber } from "../ui/format";
 
@@ -124,7 +124,7 @@ export const Landing: React.FC = () => {
           </p>
           {monuments.map(monument => (
             <p className="muted" key={monument.allianceName}>
-              The monument of {monument.allianceName} at {monument.seat}: {monumentStanding(monument).toLowerCase()}.
+              The monument of {monument.allianceName} at {monument.seat}: {monumentStanding(monument).toLowerCase()}, {monumentGarrison(monument)}.
             </p>
           ))}
         </div>

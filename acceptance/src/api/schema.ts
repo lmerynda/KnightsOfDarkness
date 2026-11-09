@@ -180,6 +180,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/alliance/monument/garrison": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["sendGarrison"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/alliance/reject": {
         parameters: {
             query?: never;
@@ -1214,7 +1230,7 @@ export interface components {
             warehousePlunderProtectionPerLevel: number;
         };
         /** @enum {string} */
-        AttackType: "economy" | "land";
+        AttackType: "economy" | "land" | "monument";
         AuthRequestDto: {
             email: string;
             password: string;
@@ -1377,6 +1393,8 @@ export interface components {
                 /** Format: int32 */
                 weapons?: number;
             };
+            /** Format: double */
+            stagesRazed: number;
             unitsSent: {
                 /** Format: int32 */
                 blacksmith?: number;
@@ -2053,6 +2071,8 @@ export interface components {
         Monument: {
             /** Format: double */
             decayRatio: number;
+            /** Format: double */
+            maxRazeRatio: number;
             stageCost: components["schemas"]["StageCost"];
             /** Format: int32 */
             stages: number;
@@ -2071,11 +2091,39 @@ export interface components {
         MonumentDto: {
             allianceName: string;
             complete: boolean;
+            /** Format: int32 */
+            garrison: number;
             seat: string;
             /** Format: double */
             stages: number;
             /** Format: int32 */
             totalStages: number;
+        };
+        MonumentGarrisonDto: {
+            units: {
+                /** Format: int32 */
+                blacksmith?: number;
+                /** Format: int32 */
+                bowman?: number;
+                /** Format: int32 */
+                builder?: number;
+                /** Format: int32 */
+                carrier?: number;
+                /** Format: int32 */
+                cavalry?: number;
+                /** Format: int32 */
+                farmer?: number;
+                /** Format: int32 */
+                goldMiner?: number;
+                /** Format: int32 */
+                guard?: number;
+                /** Format: int32 */
+                infantry?: number;
+                /** Format: int32 */
+                ironMiner?: number;
+                /** Format: int32 */
+                spy?: number;
+            };
         };
         MonumentGoodsDto: {
             /** Format: int64 */
@@ -2088,6 +2136,7 @@ export interface components {
             tools: number;
         };
         MonumentLedgerDto: {
+            garrison: components["schemas"]["ReinforcementDto"][];
             monument: components["schemas"]["MonumentDto"];
             nextStageCost: components["schemas"]["MonumentGoodsDto"] | null;
             store: components["schemas"]["MonumentGoodsDto"];
@@ -2159,6 +2208,7 @@ export interface components {
             password: string;
         };
         ReinforcementDto: {
+            atMonument: boolean;
             from: string;
             /** Format: uuid */
             id: string;
@@ -2652,6 +2702,30 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["FoundMonumentDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ActionResultVoid"];
+                };
+            };
+        };
+    };
+    sendGarrison: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MonumentGarrisonDto"];
             };
         };
         responses: {

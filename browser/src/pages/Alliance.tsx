@@ -244,7 +244,8 @@ const WarRoomPanel: React.FC = () => {
                 {warRoom.threats.map((threat, index) => (
                   <li key={`${threat.from}-${threat.to}-${index}`}>
                     <span className="warning">
-                      {threat.from} → <strong>{threat.to}</strong>, about {plural(threat.soldiers, "soldier", "soldiers")}
+                      {threat.from} → {threat.attackType === "monument" ? "the monument at " : ""}
+                      <strong>{threat.to}</strong>, about {plural(threat.soldiers, "soldier", "soldiers")}
                     </span>
                     <span className="muted">in {plural(threat.turnsLeft, "turn", "turns")}</span>
                   </li>
@@ -260,7 +261,8 @@ const WarRoomPanel: React.FC = () => {
               {warRoom.marching.map(march => (
                 <li key={march.id}>
                   <span>
-                    {march.from} → <strong>{march.to}</strong>, {plural(soldiers(march.units), "soldier", "soldiers")}
+                    {march.from} → {march.attackType === "monument" ? "the monument at " : ""}
+                    <strong>{march.to}</strong>, {plural(soldiers(march.units), "soldier", "soldiers")}
                   </span>
                   <span className="muted">
                     {march.joining ? `joins ${march.joining}, ` : ""}
@@ -278,7 +280,8 @@ const WarRoomPanel: React.FC = () => {
               {warRoom.guards.map(guard => (
                 <li key={guard.id}>
                   <span>
-                    {guard.from} → <strong>{guard.to}</strong>, {plural(soldiers(guard.units), "soldier", "soldiers")}
+                    {guard.from} → {guard.atMonument ? "the monument at " : ""}
+                    <strong>{guard.to}</strong>, {plural(soldiers(guard.units), "soldier", "soldiers")}
                   </span>
                   <span className="muted">
                     {guard.turnsLeft > 0 ? `arrive in ${plural(guard.turnsLeft, "turn", "turns")}` : "standing"}
@@ -295,9 +298,13 @@ const WarRoomPanel: React.FC = () => {
               {warRoom.battles.map(battle => (
                 <li key={battle.id}>
                   <span>
-                    {battle.attackerWon
-                      ? `${battle.attacker} beat ${battle.defender}`
-                      : `${battle.defender} held against ${battle.attacker}`}
+                    {battle.attackType === "monument"
+                      ? battle.attackerWon
+                        ? `${battle.attacker} stormed the monument at ${battle.defender}, ${battle.stagesRazed} ${battle.stagesRazed === 1 ? "stage" : "stages"} fell`
+                        : `The monument at ${battle.defender} held against ${battle.attacker}`
+                      : battle.attackerWon
+                        ? `${battle.attacker} beat ${battle.defender}`
+                        : `${battle.defender} held against ${battle.attacker}`}
                     {battle.landCaptured > 0 ? `, ${plural(battle.landCaptured, "acre", "acres")} changed hands` : ""}
                   </span>
                   <span className="muted">{ago(battle.date)}</span>

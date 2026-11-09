@@ -14,7 +14,7 @@ import com.knightsofdarkness.web.common.alliance.MonumentGoodsDto;
 import com.knightsofdarkness.web.game.config.Monument;
 
 class MonumentEntityTest {
-    private final Monument rules = new Monument(4, new Monument.StageCost(1000, 100, 10), new Monument.Upkeep(50, 5), 0.25);
+    private final Monument rules = new Monument(4, new Monument.StageCost(1000, 100, 10), new Monument.Upkeep(50, 5), 0.25, 0.25);
 
     private MonumentEntity monument()
     {
@@ -24,6 +24,45 @@ class MonumentEntityTest {
     private MonumentContributionDto stages(int count)
     {
         return new MonumentContributionDto(1000 * count, 100 * count, 10 * count, 0);
+    }
+
+    @Test
+    void anAssault_shouldKnockDownItsShareOfWhatStands()
+    {
+        var monument = monument();
+        monument.pay(stages(4));
+        monument.raiseStages(rules);
+
+        assertEquals(1, monument.raze(0.25));
+        assertEquals(3, monument.toDto(rules).stages());
+        assertEquals(0.3, monument.raze(0.1), 0.001);
+        assertEquals(2.7, monument.toDto(rules).stages());
+    }
+
+    @Test
+    void aStageKnockedDown_shouldCostOnlyTheFallenShareToRebuild()
+    {
+        var monument = monument();
+        monument.pay(stages(1));
+        monument.raiseStages(rules);
+        monument.raze(0.25);
+
+        assertEquals(new MonumentGoodsDto(250, 25, 3, 0), monument.toLedgerDto(rules).nextStageCost());
+    }
+
+    @Test
+    void aRebuiltStage_shouldBeNewsOnlyIfItWasWhollyLost()
+    {
+        var monument = monument();
+        monument.pay(stages(4));
+        monument.raiseStages(rules).forEach(monument::announces);
+
+        monument.raze(0.1);
+        assertFalse(monument.announces(4), "the top of the fourth stage fell, the stage still stands");
+
+        monument.raze(0.5);
+        assertFalse(monument.announces(2), "not lost");
+        assertTrue(monument.announces(3), "lost whole, and rebuilt");
     }
 
     @Test

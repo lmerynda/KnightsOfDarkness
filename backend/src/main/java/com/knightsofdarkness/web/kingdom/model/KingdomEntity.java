@@ -53,7 +53,7 @@ public class KingdomEntity
     List<KingdomOngoingAttackEntity> ongoingAttacks;
 
     /**
-     * our soldiers on the way to, or standing guard in, allied kingdoms
+     * our soldiers on the way to, or standing guard in, allied kingdoms or at our monument
      */
     @OneToMany(mappedBy = "kingdom", cascade = CascadeType.ALL, orphanRemoval = true)
     List<KingdomReinforcementEntity> reinforcements = new ArrayList<>();
@@ -238,7 +238,7 @@ public class KingdomEntity
     }
 
     /**
-     * soldiers stand guard only between allies: ours abroad and allies' here all go home
+     * soldiers stand guard only between allies: ours abroad, at the monument too, and allies' here all go home
      */
     void sendGarrisonsHome()
     {

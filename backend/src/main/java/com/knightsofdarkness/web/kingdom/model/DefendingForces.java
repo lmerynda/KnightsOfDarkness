@@ -9,22 +9,42 @@ import com.knightsofdarkness.web.common.kingdom.UnitsMapDto;
 
 /**
  * Everyone who defends a kingdom in battle: its own soldiers at home and the allied garrisons standing with it, fighting
- * as one army. Losses of each unit type are shared in proportion to how many of that type each side brought.
+ * as one army. At a monument only the garrisons stand. Losses of each unit type are shared in proportion to how many of that type each side brought.
  */
 final class DefendingForces
 {
-    private final KingdomEntity host;
+    private final KingdomUnitsEntity home;
     private final List<KingdomReinforcementEntity> garrisons;
 
     DefendingForces(KingdomEntity host)
     {
-        this.host = host;
-        this.garrisons = host.getStandingGarrisons();
+        this(host.getUnits(), host.getStandingGarrisons());
+    }
+
+    private DefendingForces(KingdomUnitsEntity home, List<KingdomReinforcementEntity> garrisons)
+    {
+        this.home = home;
+        this.garrisons = garrisons;
+    }
+
+    static DefendingForces atMonument(List<KingdomReinforcementEntity> garrisons)
+    {
+        return new DefendingForces(new KingdomUnitsEntity(emptyHome()), garrisons);
+    }
+
+    private static Map<UnitName, Integer> emptyHome()
+    {
+        var nobody = new EnumMap<UnitName, Integer>(UnitName.class);
+        for (var unit : UnitName.values())
+        {
+            nobody.put(unit, 0);
+        }
+        return nobody;
     }
 
     int count(UnitName unit)
     {
-        return host.getUnits().getAvailableCount(unit) + garrisons.stream().mapToInt(garrison -> garrison.getUnits().getCount(unit)).sum();
+        return home.getAvailableCount(unit) + garrisons.stream().mapToInt(garrison -> garrison.getUnits().getCount(unit)).sum();
     }
 
     Map<UnitName, Double> militaryRatios()
@@ -65,7 +85,7 @@ final class DefendingForces
         var sides = garrisons.size() + 1;
         var have = new int[sides];
         var lost = new int[sides];
-        have[0] = host.getUnits().getAvailableCount(unit);
+        have[0] = home.getAvailableCount(unit);
         for (int side = 1; side < sides; side++)
         {
             have[side] = garrisons.get(side - 1).getUnits().getCount(unit);
@@ -91,7 +111,7 @@ final class DefendingForces
             assigned++;
         }
 
-        host.getUnits().subtractAvailableCount(unit, lost[0]);
+        home.subtractAvailableCount(unit, lost[0]);
         for (int side = 1; side < sides; side++)
         {
             garrisons.get(side - 1).lose(unit, lost[side]);
@@ -108,7 +128,7 @@ final class DefendingForces
         {
             units.setCount(unit, count(unit));
         }
-        units.setCount(UnitName.guard, host.getUnits().getAvailableCount(UnitName.guard));
+        units.setCount(UnitName.guard, home.getAvailableCount(UnitName.guard));
         return units;
     }
 

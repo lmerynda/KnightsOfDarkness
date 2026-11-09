@@ -30,6 +30,9 @@ scenario("an era runs out: the alliance with the most land wins it, and every ki
   await smaller.trains({ infantry: 10 });
   await smaller.foundsAMonumentAt(ally);
   await largest.seesTheMonumentOf(sworn, ally, 0);
+  await smaller.sendsToTheMonument({ infantry: 10 });
+  await smaller.passesTurns(2);
+  await largest.seesTheMonumentGuardedBy(sworn, 10);
 
   const ended = await game.theEraRunsOut();
 

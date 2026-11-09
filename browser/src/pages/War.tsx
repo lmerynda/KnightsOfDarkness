@@ -6,6 +6,7 @@ import type {
   BattleReport,
   Counts,
   MilitaryUnit,
+  Monument,
   OngoingAttack,
   ResourceName,
   SpyReport,
@@ -14,24 +15,14 @@ import type {
 } from "../api/types";
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
-import { art, resourceLabel, unitLore } from "../game/lore";
-import { estimatedDefense, landAtStake, targetProblem } from "../game/rules";
+import { art, resourceLabel, unitList, unitLore } from "../game/lore";
+import { attackGoal, estimatedDefense, landAtStake, monumentGarrison, monumentStanding, targetProblem } from "../game/rules";
 import { Crest } from "../ui/Crest";
 import { Icon } from "../ui/Icon";
 import { CountField, Banner, Choice, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
 import { Term } from "../ui/Tip";
 import { defenseHelp, protectionHelp } from "../game/help";
-
-const unitList = (units: Partial<Counts<UnitName>>): string => {
-  const parts = [...militaryUnits, "guard" as const]
-    .filter(unit => (units[unit] ?? 0) > 0)
-    .map(
-      unit =>
-        `${formatNumber(units[unit] ?? 0)} ${(units[unit] ?? 0) === 1 ? unitLore[unit].label.toLowerCase() : unitLore[unit].plural.toLowerCase()}`,
-    );
-  return parts.length ? parts.join(", ") : "nobody";
-};
 
 /** how the fallen fell: soldiers to arrows or in melee, guards on the walls once the battle was decided */
 const howTheyFell = (losses: Partial<Counts<UnitName>>, arrowLosses: Partial<Counts<UnitName>>): string => {
@@ -64,14 +55,16 @@ const Losses: React.FC<{ losses: Partial<Counts<UnitName>>; arrowLosses: Partial
 
 const SendArmy: React.FC<{
   spyReports: SpyReport[];
+  monuments: Monument[];
   target: string;
   setTarget: (target: string) => void;
+  chosenGoal: AttackType;
+  setGoal: (goal: AttackType) => void;
   joining: OngoingAttack | null;
   onMarchAlone: () => void;
   onSent: () => void;
-}> = ({ spyReports, target, setTarget, joining, onMarchAlone, onSent }) => {
+}> = ({ spyReports, monuments, target, setTarget, chosenGoal, setGoal, joining, onMarchAlone, onSent }) => {
   const { kingdom, config, rankings, act } = useGame();
-  const [attackType, setAttackType] = useState<AttackType>("land");
   const [army, setArmy] = useState<Partial<Counts<MilitaryUnit>>>({});
 
   // allies can never be attacked, so they are left out rather than listed and refused
@@ -79,12 +72,21 @@ const SendArmy: React.FC<{
     rank => rank.kingdomName !== kingdom.name && !(kingdom.allianceName && rank.allianceName === kingdom.allianceName),
   );
   const chosen = targets.find(rank => rank.kingdomName === target);
-  const problem = chosen ? targetProblem(chosen, kingdom.name, kingdom.allianceName, kingdom.resources.land, config) : null;
+  const enemyMonuments = monuments.filter(monument => monument.allianceName !== kingdom.allianceName);
+  const monumentAt = (seat: string): Monument | undefined => enemyMonuments.find(monument => monument.seat === seat);
+  const monument = monumentAt(target);
+  // a strike is joined for what it marches on, and a monument can be assaulted only where one stands
+  const canAssault = monument !== undefined && (!joining || joining.attackType === "monument");
+  const attackType: AttackType =
+    joining?.attackType === "monument" ? "monument" : chosenGoal === "monument" && !canAssault ? "land" : chosenGoal;
+  // a monument has no protection and no size, only the kingdom it stands in has
+  const problem =
+    chosen && attackType !== "monument" ? targetProblem(chosen, kingdom.name, kingdom.allianceName, kingdom.resources.land, config) : null;
   const sending = militaryUnits.reduce((sum, unit) => sum + (army[unit] ?? 0), 0);
   const attackPower = militaryUnits.reduce((sum, unit) => sum + (army[unit] ?? 0) * (config.attack.unitAttackPower[unit] ?? 0), 0);
   const intel = spyReports.find(report => report.success && report.targetKingdomName === target);
   const defense = intel ? estimatedDefense(intel, config) : null;
-  const stake = chosen && !problem ? landAtStake(chosen.land, kingdom.resources.land, config) : null;
+  const stake = chosen && !problem && attackType === "land" ? landAtStake(chosen.land, kingdom.resources.land, config) : null;
 
   const send = async (): Promise<void> => {
     const result = await act(
@@ -93,7 +95,7 @@ const SendArmy: React.FC<{
         text: outcome.success
           ? joining
             ? `The army marches to join ${joining.from}'s strike on ${target}, it reaches the border in ${plural(config.attack.turnsToArrive, "turn", "turns")}`
-            : `The army marches on ${target}, it arrives in ${plural(config.attack.turnsToArrive, "turn", "turns")}`
+            : `The army marches on ${attackType === "monument" ? `the monument at ${target}` : target}, it arrives in ${plural(config.attack.turnsToArrive, "turn", "turns")}`
           : outcome.message,
         failure: !outcome.success,
       }),
@@ -108,14 +110,15 @@ const SendArmy: React.FC<{
   return (
     <Panel
       title="Send an army"
-      help={`Armies arrive after ${plural(config.attack.turnsToArrive, "turn", "turns")} of your own. Archers on both sides loose first, then infantry and cavalry cut into the whole enemy army; bowmen strike nobody in melee but still fall. Win and you take up to ${Math.round(config.attack.maxLandCaptureRatio * 100)}% of their land, less from a kingdom smaller than yours, or plunder up to ${Math.round(config.attack.maxPlunderRatio * 100)}% of their stores; crushing victories take the most.`}
+      help={`Armies arrive after ${plural(config.attack.turnsToArrive, "turn", "turns")} of your own. Archers on both sides loose first, then infantry and cavalry cut into the whole enemy army; bowmen strike nobody in melee but still fall. Win and you take up to ${Math.round(config.attack.maxLandCaptureRatio * 100)}% of their land, less from a kingdom smaller than yours, or plunder up to ${Math.round(config.attack.maxPlunderRatio * 100)}% of their stores; crushing victories take the most. A monument has only its garrison to defend it and no protection after a defeat, whatever the size of the kingdom it stands in; a won assault knocks down up to ${Math.round(config.monument.maxRazeRatio * 100)}% of the stages standing and takes nothing else.`}
     >
       <div className="stack">
         {joining ? (
           <p className="notice">
             <Icon name="sword" size={18} />{" "}
             <span>
-              Joining <strong>{joining.joining ?? joining.from}</strong>'s strike on <strong>{joining.to}</strong>: our army waits at the
+              Joining <strong>{joining.joining ?? joining.from}</strong>'s strike on{" "}
+              <strong>{joining.attackType === "monument" ? `the monument at ${joining.to}` : joining.to}</strong>: our army waits at the
               border and fights right after theirs lands.
             </span>{" "}
             <button className="button quiet small" type="button" onClick={onMarchAlone}>
@@ -130,9 +133,11 @@ const SendArmy: React.FC<{
               <option value="">Choose a kingdom</option>
               {targets.map(rank => {
                 const reason = targetProblem(rank, kingdom.name, kingdom.allianceName, kingdom.resources.land, config);
+                const standing = monumentAt(rank.kingdomName);
                 return (
-                  <option key={rank.kingdomName} value={rank.kingdomName} disabled={reason !== null}>
+                  <option key={rank.kingdomName} value={rank.kingdomName} disabled={reason !== null && !standing}>
                     {rank.kingdomName}, {formatNumber(rank.land)} land{reason ? `, ${reason}` : ""}
+                    {standing ? `, monument of ${standing.allianceName}` : ""}
                   </option>
                 );
               })}
@@ -143,10 +148,15 @@ const SendArmy: React.FC<{
             <Choice
               label="Goal of the attack"
               value={attackType}
-              onChange={setAttackType}
+              onChange={setGoal}
               options={[
-                { value: "land", label: "Take land" },
-                { value: "economy", label: "Plunder stores" },
+                ...(joining?.attackType === "monument"
+                  ? []
+                  : [
+                      { value: "land" as const, label: "Take land" },
+                      { value: "economy" as const, label: "Plunder stores" },
+                    ]),
+                ...(canAssault ? [{ value: "monument" as const, label: "Assault its monument" }] : []),
               ]}
             />
           </div>
@@ -177,15 +187,30 @@ const SendArmy: React.FC<{
           </button>
           <span className="muted">
             Attack strength {formatNumber(attackPower)}
-            {target
-              ? defense !== null
-                ? `, ${target} defended with about ${formatNumber(defense)} when ${intel?.kingdomName === kingdom.name ? "your" : `${intel?.kingdomName}'s`} spies last looked (${ago(intel?.date ?? "")})`
-                : `, ${target}'s defense is unknown; `
-              : ""}
-            {target && defense === null ? <Link to="/kingdom/spies">send spies first</Link> : null}
+            {attackType === "monument" && monument
+              ? `, the monument of ${monument.allianceName} has ${monumentGarrison(monument)}`
+              : target
+                ? defense !== null
+                  ? `, ${target} defended with about ${formatNumber(defense)} when ${intel?.kingdomName === kingdom.name ? "your" : `${intel?.kingdomName}'s`} spies last looked (${ago(intel?.date ?? "")})`
+                  : `, ${target}'s defense is unknown; `
+                : ""}
+            {target && attackType !== "monument" && defense === null ? <Link to="/kingdom/spies">send spies first</Link> : null}
           </span>
         </div>
-        {stake && attackType === "land" ? (
+        {problem && monument ? (
+          <p className="muted">
+            {target} itself is {problem}, but its monument can be assaulted.
+          </p>
+        ) : null}
+        {attackType === "monument" && monument ? (
+          <p className="muted">
+            <Term tip="What a crushing victory knocks down. It takes no land and no stores, and the next army may strike at once.">
+              At stake
+            </Term>
+            : up to {Math.round(config.monument.maxRazeRatio * 100)}% of what stands. {monumentStanding(monument)}.
+          </p>
+        ) : null}
+        {stake ? (
           <p className="muted">
             <Term tip="What a crushing victory takes. The share shrinks with the target's land against yours: a kingdom half your size yields half.">
               At stake
@@ -273,8 +298,10 @@ const StandGuard: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => 
                 <span>
                   {unitList(sent.units)}{" "}
                   {sent.turnsLeft > 0
-                    ? `on the way to ${sent.to}, ${plural(sent.turnsLeft, "turn", "turns")} left`
-                    : `stand guard in ${sent.to}`}
+                    ? `on the way to ${sent.atMonument ? "the monument at " : ""}${sent.to}, ${plural(sent.turnsLeft, "turn", "turns")} left`
+                    : sent.atMonument
+                      ? `stand guard at the monument at ${sent.to}`
+                      : `stand guard in ${sent.to}`}
                 </span>
                 <button className="button quiet small" type="button" onClick={() => recall(sent.id)}>
                   Call home
@@ -317,7 +344,7 @@ const Threats: React.FC = () => {
           <li key={`${army.from}-${index}`}>
             <span>
               <Icon name="warning" size={16} /> <strong>{army.from}</strong> with about {plural(army.soldiers, "soldier", "soldiers")}, to{" "}
-              {army.attackType === "land" ? "take land" : "plunder"}
+              {attackGoal[army.attackType]}
             </span>
             <span className="warning">in {plural(army.turnsLeft, "of their turns", "of their turns")}</span>
           </li>
@@ -353,7 +380,7 @@ const Marching: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => {
                 <td>
                   {attack.to}
                   <span className="muted block">
-                    {attack.attackType === "land" ? "to take land" : "to plunder"}
+                    to {attackGoal[attack.attackType]}
                     {attack.joining ? `, joining ${attack.joining}'s strike` : ""}
                     {joinedBy(attack.to).length ? `, joined by ${joinedBy(attack.to).join(", ")}` : ""}
                   </span>
@@ -401,9 +428,13 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
   const other = attacking ? report.defender : report.attacker;
   // a defender's losses include the allied garrisons that stood with it; those are told apart
   const alliedLosses = report.alliedLosses ?? {};
-  const ownDefenderLosses = Object.fromEntries(
-    Object.entries(report.defenderLosses).map(([unit, count]) => [unit, (count ?? 0) - (alliedLosses[unit as UnitName] ?? 0)]),
-  ) as Partial<Counts<UnitName>>;
+  const atMonument = report.attackType === "monument";
+  // at a monument everyone who fell was a member's, the seat's own soldiers among them
+  const ownDefenderLosses = atMonument
+    ? report.defenderLosses
+    : (Object.fromEntries(
+        Object.entries(report.defenderLosses).map(([unit, count]) => [unit, (count ?? 0) - (alliedLosses[unit as UnitName] ?? 0)]),
+      ) as Partial<Counts<UnitName>>);
   const ourLosses = attacking ? report.attackerLosses : ownDefenderLosses;
   const theirLosses = attacking ? report.defenderLosses : report.attackerLosses;
   const ourArrowLosses = attacking ? report.attackerArrowLosses : report.defenderArrowLosses;
@@ -418,17 +449,24 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
           <Crest name={other} size={34} />
           <div>
             <h3>
-              {won
-                ? attacking
-                  ? `Victory over ${other}`
-                  : `${other} was repelled`
-                : attacking
-                  ? `Defeat at ${other}`
-                  : `${other} broke through`}
+              {atMonument
+                ? won
+                  ? attacking
+                    ? `Victory at the monument at ${other}`
+                    : `${other} was repelled at our monument`
+                  : attacking
+                    ? `Defeat at the monument at ${other}`
+                    : `${other} stormed our monument`
+                : won
+                  ? attacking
+                    ? `Victory over ${other}`
+                    : `${other} was repelled`
+                  : attacking
+                    ? `Defeat at ${other}`
+                    : `${other} broke through`}
             </h3>
             <span className="muted">
-              {attacking ? "We attacked" : "We were attacked"} to {report.attackType === "land" ? "take land" : "plunder"},{" "}
-              {ago(report.date)}
+              {attacking ? "We attacked" : "We were attacked"} to {attackGoal[report.attackType]}, {ago(report.date)}
             </span>
           </div>
         </header>
@@ -453,10 +491,18 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
             <dt>They lost</dt>
             <Losses losses={theirLosses} arrowLosses={theirArrowLosses} tone="gain" />
           </div>
-          {soldiersIn(alliedLosses) > 0 ? (
+          {!atMonument && soldiersIn(alliedLosses) > 0 ? (
             <div>
               <dt>{attacking ? "Of them, allies" : "Allies lost"}</dt>
               <dd className={attacking ? "gain" : "loss"}>{unitList(alliedLosses)}</dd>
+            </div>
+          ) : null}
+          {report.attackerWon && atMonument ? (
+            <div>
+              <dt>Monument</dt>
+              <dd className={attacking ? "gain" : "loss"}>
+                {attacking ? "Knocked down" : "Lost"} {report.stagesRazed} {report.stagesRazed === 1 ? "stage" : "stages"}
+              </dd>
             </div>
           ) : null}
           {report.attackerWon && report.attackType === "land" ? (
@@ -498,8 +544,7 @@ const AlliedMarches: React.FC<{ warRoom: WarRoom | undefined; onJoin: (march: On
         {marches.map(march => (
           <li key={march.id}>
             <span>
-              {march.from} marches {unitList(march.units)} on <strong>{march.to}</strong> to{" "}
-              {march.attackType === "land" ? "take land" : "plunder"}
+              {march.from} marches {unitList(march.units)} on <strong>{march.to}</strong> to {attackGoal[march.attackType]}
               {march.joining
                 ? march.turnsLeft === 0
                   ? `, waiting at the border for ${march.joining}'s army`
@@ -526,6 +571,8 @@ export const War: React.FC = () => {
   const [spyReports, setSpyReports] = useState<SpyReport[]>([]);
   const [warRoom, setWarRoom] = useState<WarRoom | undefined>(undefined);
   const [target, setTarget] = useState("");
+  const [goal, setGoal] = useState<AttackType>("land");
+  const [monuments, setMonuments] = useState<Monument[]>([]);
   const [joining, setJoining] = useState<OngoingAttack | null>(null);
   const [search, setSearch] = useSearchParams();
 
@@ -541,6 +588,10 @@ export const War: React.FC = () => {
     api
       .warRoom()
       .then(setWarRoom)
+      .catch(() => undefined);
+    api
+      .monuments()
+      .then(setMonuments)
       .catch(() => undefined);
   }, []);
   // the freshest intel first, whether our spies or an ally's brought it back
@@ -563,6 +614,16 @@ export const War: React.FC = () => {
   useEffect(() => {
     if (askedMarch) setSearch({}, { replace: true });
   }, [askedMarch, setSearch]);
+  // the rankings' March on it link names a monument's seat
+  const askedAssault = search.get("assault");
+  if (askedAssault && (target !== askedAssault || goal !== "monument" || joining)) {
+    setTarget(askedAssault);
+    setGoal("monument");
+    setJoining(null);
+  }
+  useEffect(() => {
+    if (askedAssault) setSearch({}, { replace: true });
+  }, [askedAssault, setSearch]);
   // another target leaves the strike behind
   const chooseTarget = (next: string): void => {
     setTarget(next);
@@ -585,8 +646,11 @@ export const War: React.FC = () => {
         <Threats />
         <SendArmy
           spyReports={intel}
+          monuments={monuments}
           target={target}
           setTarget={chooseTarget}
+          chosenGoal={goal}
+          setGoal={setGoal}
           joining={joining}
           onMarchAlone={() => setJoining(null)}
           onSent={load}

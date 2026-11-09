@@ -13,18 +13,18 @@ export type PastEra = { era: number; winner: string | null; largest: string | nu
 export type MonumentGoods = { gold: number; iron: number; tools: number; food: number };
 
 /** what everyone sees of a monument */
-export type MonumentView = { alliance: string; seat: string; stages: number; complete: boolean };
+export type MonumentView = { alliance: string; seat: string; stages: number; complete: boolean; garrison: number };
 
 /** what an alliance's members see of their own */
-export type MonumentLedger = { stages: number; store: MonumentGoods; crumbling: boolean };
+export type MonumentLedger = { stages: number; store: MonumentGoods; crumbling: boolean; soldiersOnGuard: number };
 
-/** what an army marches for: to take land, or to plunder the stores */
-export type Goal = "land" | "plunder";
+/** what an army marches for: to take land, to plunder the stores, or to assault the monument in that kingdom */
+export type Goal = "land" | "plunder" | "monument";
 
 /** what a kingdom keeps in its stores, and what its people bring in each turn */
 export type Store = "gold" | MarketResource;
 
-export type Battle = { attacker: string; defender: string; attackerWon: boolean; landTaken: number; goldPlundered: number };
+export type Battle = { attacker: string; defender: string; attackerWon: boolean; landTaken: number; goldPlundered: number; stagesRazed: number };
 
 /** what the game answered when a ruler tried something: whether it went through and what it said */
 export type Outcome = { done: boolean; message: string };
@@ -94,7 +94,7 @@ export interface RulerDriver {
   /** calls back the army on the march to the target */
   recallArmy(target: string): Promise<Outcome>;
   /** sends an army to wait at the target's border and strike right after an ally's army lands */
-  joinStrike(leader: string, target: string, units: Units): Promise<Outcome>;
+  joinStrike(leader: string, target: string, units: Units, goal?: Goal): Promise<Outcome>;
   /** armies marching on this kingdom, as its scouts report them */
   armiesComing(): Promise<{ from: string; soldiers: number }[]>;
   /** our own armies out on the march, each with its target, whose strike it joins, and whether it waits at the border */
@@ -150,6 +150,8 @@ export interface RulerDriver {
   alliance(): Promise<{ name: string; members: string[] } | null>;
   foundMonument(seat: string): Promise<Outcome>;
   payIntoMonument(goods: Partial<MonumentGoods>): Promise<Outcome>;
+  /** sends soldiers to stand guard at the alliance's monument; they come home with callGuardsHome */
+  sendToMonument(units: Units): Promise<Outcome>;
   /** the alliance's own monument, or null when it has none */
   monumentLedger(): Promise<MonumentLedger | null>;
   /** every monument in the world */

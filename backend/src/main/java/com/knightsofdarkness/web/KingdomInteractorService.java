@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.knightsofdarkness.web.kingdom.IKingdomInteractor;
 import com.knightsofdarkness.web.kingdom.IKingdomRepository;
+import com.knightsofdarkness.web.kingdom.IMonumentFront;
 import com.knightsofdarkness.web.kingdom.model.KingdomInteractor;
 import com.knightsofdarkness.web.game.config.GameConfig;
 import com.knightsofdarkness.web.messaging.INotificationSystem;
@@ -18,9 +19,11 @@ public class KingdomInteractorService {
     private final GameConfig gameConfig;
     private final INotificationSystem notificationSystem;
     private final IWarReportRepository warReportRepository;
+    private final IMonumentFront monuments;
 
-    public KingdomInteractorService(IKingdomRepository kingdomRepository, GameConfig gameConfig, INotificationSystem notificationSystem, IWarReportRepository warReportRepository)
+    public KingdomInteractorService(IKingdomRepository kingdomRepository, GameConfig gameConfig, INotificationSystem notificationSystem, IWarReportRepository warReportRepository, IMonumentFront monuments)
     {
+        this.monuments = monuments;
         this.kingdomRepository = kingdomRepository;
         this.gameConfig = gameConfig;
         this.notificationSystem = notificationSystem;
@@ -30,6 +33,6 @@ public class KingdomInteractorService {
     @Bean
     public IKingdomInteractor kingdomInteractor()
     {
-        return new KingdomInteractor(kingdomRepository, gameConfig, notificationSystem, warReportRepository);
+        return new KingdomInteractor(kingdomRepository, gameConfig, notificationSystem, warReportRepository, monuments);
     }
 }

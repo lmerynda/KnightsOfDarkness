@@ -160,8 +160,10 @@ export const api = {
   /** the alliance's own view of its monument; a rejection means it has none */
   monument: (): Promise<MonumentLedger> => get("/alliance/monument"),
   foundMonument: (seat: string): Promise<ActionResult> => post("/alliance/monument/found", { seat }),
-  payIntoMonument: (goods: { gold: number; iron: number; tools: number; food: number }): Promise<ActionResult> => post("/alliance/monument/contribute", goods),
+  payIntoMonument: (goods: { gold: number; iron: number; tools: number; food: number }): Promise<ActionResult> =>
+    post("/alliance/monument/contribute", goods),
   leaveAlliance: (): Promise<ActionResult> => post("/alliance/leave"),
+  sendToMonument: (units: Partial<Counts<UnitName>>): Promise<ActionResult> => post("/alliance/monument/garrison", { units }),
   invite: (kingdomName: string, allianceName: string): Promise<ActionResult> => post("/alliance/invite", { kingdomName, allianceName }),
   acceptInvitation: (invitationId: string): Promise<ActionResult> => post("/alliance/accept", { invitationId }),
   rejectInvitation: (invitationId: string): Promise<ActionResult> => post("/alliance/reject", { invitationId }),

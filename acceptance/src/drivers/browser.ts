@@ -69,6 +69,8 @@ const greatWorkLabel: Record<SpecialBuildingType, string> = {
   warehouse: "Warehouse",
 };
 
+const goalLabel: Record<Goal, string> = { land: "Take land", plunder: "Plunder stores", monument: "Assault its monument" };
+
 const marketResources = Object.keys(resourceLabel) as MarketResource[];
 
 const entries = <K extends string>(counts: Partial<Record<K, number>>): [K, number][] =>
@@ -307,7 +309,7 @@ class BrowserRuler implements RulerDriver {
     await this.page.waitForLoadState("networkidle");
     if (await optionDisabled(option)) return { done: false, message: (await option.innerText()).trim() };
     await this.page.getByRole("combobox", { name: /^Target/ }).selectOption(target);
-    await this.page.getByRole("group", { name: "Goal of the attack" }).getByRole("button", { name: goal === "land" ? "Take land" : "Plunder stores" }).click();
+    await this.page.getByRole("group", { name: "Goal of the attack" }).getByRole("button", { name: goalLabel[goal] }).click();
     await this.fillArmy(units, unit => `${unitPlural[unit]} to send`);
     const march = this.page.getByRole("button", { name: "March" });
     if (await march.isDisabled()) return { done: false, message: (await this.panel("Send an army").innerText()).replace(/\s+/g, " ") };
@@ -320,7 +322,7 @@ class BrowserRuler implements RulerDriver {
     return this.answer(/^\/api\/kingdom\/withdraw-attack$/, () => army.getByRole("button", { name: "Call back" }).click());
   }
 
-  public async joinStrike(leader: string, target: string, units: Units): Promise<Outcome> {
+  public async joinStrike(leader: string, target: string, units: Units, _goal?: Goal): Promise<Outcome> {
     await this.open("war");
     const strike = this.panel("Allies on the march").locator("li").filter({ hasText: `${leader} marches` }).filter({ hasText: target });
     await strike.getByRole("button", { name: "Join the strike" }).click();
@@ -359,7 +361,17 @@ class BrowserRuler implements RulerDriver {
       const spoils = {
         landTaken: number(/(?:Took|Lost) ([\d,]+) acres?/.exec(facts)?.[1] ?? "0"),
         goldPlundered: number(/(?:Plundered|Stolen) ([\d,]+) gold/.exec(facts)?.[1] ?? "0"),
+        stagesRazed: Number(/(?:Knocked down|Lost) ([\d.]+) stages?/.exec(facts)?.[1] ?? 0),
       };
+      const stormed = /^Victory at the monument at (.+)$/.exec(title);
+      const thrownBack = /^Defeat at the monument at (.+)$/.exec(title);
+      const heldOff = /^(.+) was repelled at our monument$/.exec(title);
+      const overran = /^(.+) stormed our monument$/.exec(title);
+      if (stormed) battles.push({ attacker: me, defender: stormed[1], attackerWon: true, ...spoils });
+      else if (thrownBack) battles.push({ attacker: me, defender: thrownBack[1], attackerWon: false, ...spoils });
+      else if (heldOff) battles.push({ attacker: heldOff[1], defender: me, attackerWon: false, ...spoils });
+      else if (overran) battles.push({ attacker: overran[1], defender: me, attackerWon: true, ...spoils });
+      if (stormed || thrownBack || heldOff || overran) continue;
       const won = /^Victory over (.+)$/.exec(title);
       const lost = /^Defeat at (.+)$/.exec(title);
       const repelled = /^(.+) was repelled$/.exec(title);
@@ -399,7 +411,7 @@ class BrowserRuler implements RulerDriver {
   public async guardsAway(): Promise<{ with: string; soldiers: number }[]> {
     await this.open("war");
     return (await this.lines(this.panel("Stand guard with allies").locator("li"))).flatMap(line => {
-      const standing = /^(.+) stand guard in (.+?)(?: Call home)?$/.exec(line);
+      const standing = /^(.+) stand guard (?:at the monument at|in) (.+?)(?: Call home)?$/.exec(line);
       return standing ? [{ with: standing[2], soldiers: soldiersIn(standing[1]) }] : [];
     });
   }
@@ -622,6 +634,15 @@ class BrowserRuler implements RulerDriver {
     return this.answer(/^\/api\/alliance\/monument\/contribute$/, () => pay.click());
   }
 
+  public async sendToMonument(units: Units): Promise<Outcome> {
+    await this.open("alliance");
+    await this.panel("Monument").waitFor();
+    const send = this.page.getByRole("button", { name: "Send to the monument" });
+    if ((await send.count()) === 0) return { done: false, message: (await this.panel("Monument").innerText()).replace(/\s+/g, " ") };
+    await this.fillArmy(units, unit => new RegExp(`^${unitPlural[unit]} to the monument`));
+    return this.answer(/^\/api\/alliance\/monument\/garrison$/, () => send.click());
+  }
+
   public async monumentLedger(): Promise<MonumentLedger | null> {
     await this.open("alliance");
     await this.panel("Monument").waitFor();
@@ -633,6 +654,10 @@ class BrowserRuler implements RulerDriver {
       stages: Number(/Stage ([\d.]+) of/.exec(text)?.[1] ?? Number(await panel.getByRole("meter").getAttribute("aria-valuenow"))),
       store: { gold: await stored("Gold"), iron: await stored("Iron"), tools: await stored("Tools"), food: await stored("Food") },
       crumbling: text.includes("the monument is crumbling"),
+      soldiersOnGuard: (await this.lines(panel.locator(".monument-garrison li"))).reduce((sum, line) => {
+        const guarding = /^.+?: (.+), on guard/.exec(line);
+        return sum + (guarding ? soldiersIn(guarding[1]) : 0);
+      }, 0),
     };
   }
 
@@ -640,9 +665,9 @@ class BrowserRuler implements RulerDriver {
     await this.open("rankings");
     await this.panel("Monuments").waitFor();
     return (await this.lines(this.panel("Monuments").locator("li"))).map(line => {
-      const seen = /^(.+) at (.+?) (Stage ([\d.]+) of \d+|Stands complete)$/.exec(line);
+      const seen = /^(.+) at (.+?) (Stage ([\d.]+) of \d+|Stands complete), (?:no garrison|about ([\d,]+) soldiers? on guard)(?: March on it)?$/.exec(line);
       if (!seen) throw new Error(`The rankings tell of a monument as "${line}"`);
-      return { alliance: seen[1], seat: seen[2], stages: Number(seen[4] ?? 0), complete: seen[3] === "Stands complete" };
+      return { alliance: seen[1], seat: seen[2], stages: Number(seen[4] ?? 0), complete: seen[3] === "Stands complete", garrison: number(seen[5] ?? "0") };
     });
   }
 

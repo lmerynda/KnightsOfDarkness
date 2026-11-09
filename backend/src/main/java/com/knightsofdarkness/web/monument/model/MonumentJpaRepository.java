@@ -19,6 +19,12 @@ public interface MonumentJpaRepository extends JpaRepository<MonumentEntity, Str
     @Query("SELECT m FROM MonumentEntity m WHERE m.allianceName = :allianceName")
     Optional<MonumentEntity> findByAllianceNameForUpdate(String allianceName);
 
+    boolean existsBySeat(String seat);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT m FROM MonumentEntity m WHERE m.seat = :seat")
+    Optional<MonumentEntity> findBySeatForUpdate(String seat);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT m FROM MonumentEntity m ORDER BY m.allianceName")
     List<MonumentEntity> findAllForUpdate();

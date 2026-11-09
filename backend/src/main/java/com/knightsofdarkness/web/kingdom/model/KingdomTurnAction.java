@@ -65,7 +65,7 @@ public class KingdomTurnAction {
     }
 
     /**
-     * soldiers on their way to an ally come one step closer, and stand guard once there
+     * soldiers on their way to an ally or the monument come one step closer, and stand guard once there
      */
     private void processReinforcements()
     {
@@ -84,12 +84,12 @@ public class KingdomTurnAction {
     }
 
     /**
-     * soldiers who arrive where ours already stand guard join that garrison, so each ally holds one garrison of ours
+     * soldiers who arrive where ours already stand guard join that garrison, so each post holds one garrison of ours
      */
     private void joinStandingGarrison(KingdomReinforcementEntity arrived)
     {
         kingdom.getReinforcements().stream()
-                .filter(other -> other != arrived && other.isStanding() && other.getHost() == arrived.getHost())
+                .filter(other -> other != arrived && other.isStanding() && other.sharesPostWith(arrived))
                 .findFirst()
                 .ifPresent(garrison ->
                 {
@@ -97,8 +97,7 @@ public class KingdomTurnAction {
                     {
                         garrison.getUnits().setCount(unit, garrison.getUnits().getCount(unit) + arrived.getUnits().getCount(unit));
                     }
-                    kingdom.getReinforcements().remove(arrived);
-                    arrived.getHost().getGarrisons().remove(arrived);
+                    arrived.leavePost();
                 });
     }
 

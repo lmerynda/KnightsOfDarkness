@@ -2,16 +2,30 @@ package com.knightsofdarkness.web.legacy;
 
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.game.config.Initializer;
+import com.knightsofdarkness.web.kingdom.IMonumentFront;
 import com.knightsofdarkness.web.kingdom.model.KingdomInteractor;
 import com.knightsofdarkness.web.messaging.NotificationSystem;
 import com.knightsofdarkness.web.utils.AllianceRepository;
 import com.knightsofdarkness.web.utils.BotRepository;
 import com.knightsofdarkness.web.utils.KingdomRepository;
 import com.knightsofdarkness.web.utils.MarketBuilder;
+import com.knightsofdarkness.web.utils.MonumentFront;
 import com.knightsofdarkness.web.utils.NotificationRepository;
 import com.knightsofdarkness.web.utils.WarReportRepository;
 
 public class TestGame {
+    private final IMonumentFront monuments;
+
+    public TestGame()
+    {
+        this(new MonumentFront());
+    }
+
+    public TestGame(IMonumentFront monuments)
+    {
+        this.monuments = monuments;
+    }
+
     public Game get()
     {
         var config = Initializer.readGameConfig();
@@ -21,7 +35,7 @@ public class TestGame {
         var warReportRepository = new WarReportRepository();
         var notificationSystem = new NotificationSystem(new NotificationRepository(), config);
         var market = new MarketBuilder(config, notificationSystem).withKingdomRepository(kingdomRepository).build();
-        var kingdomInteractor = new KingdomInteractor(kingdomRepository, config, notificationSystem, warReportRepository);
+        var kingdomInteractor = new KingdomInteractor(kingdomRepository, config, notificationSystem, warReportRepository, monuments);
 
         return new Game(config, market, kingdomRepository, allianceRepository, botRepository, notificationSystem, kingdomInteractor, warReportRepository);
     }

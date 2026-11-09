@@ -117,6 +117,8 @@ const hostileRequests = (random: () => number) => {
       () => ({ method: "POST", path: "/alliance/monument/found", body: json({ seat: name() }) }),
       () => ({ method: "POST", path: "/alliance/monument/contribute", body: json(counts(["gold", "iron", "tools", "food"])) }),
       () => ({ method: "GET", path: "/alliance/monument" }),
+      () => ({ method: "POST", path: "/alliance/monument/garrison", body: json({ units: counts(["infantry", "bowman", "cavalry"]) }) }),
+      () => ({ method: "POST", path: "/kingdom/send-attack", body: json({ destinationKingdomName: name(), attackType: "monument", units: counts(["infantry", "bowman", "cavalry"]) }) }),
       () => ({ method: "POST", path: "/messages/send", body: json({ recipient: name(), body: pick(words) }) }),
       () => ({ method: "POST", path: "/messages/send-alliance", body: json({ recipient: name(), body: pick(words) }) }),
       () => ({ method: "POST", path: `/messages/${raw(id())}/mark-as-read` }),

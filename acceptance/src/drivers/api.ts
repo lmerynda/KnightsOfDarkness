@@ -46,6 +46,8 @@ const outcome = (result: { success: boolean; message: string }): Outcome => ({ d
 const soldiers = (units: Units): number => Object.values(units).reduce((sum, count) => sum + (count ?? 0), 0);
 
 /** a ruler through the HTTP API, with exactly the calls the browser makes */
+const attackTypes = { land: "land", plunder: "economy", monument: "monument" } as const;
+
 class ApiRuler implements RulerDriver {
   private readonly url: string;
   private token: string | null;
@@ -173,7 +175,7 @@ class ApiRuler implements RulerDriver {
   }
 
   public march(target: string, units: Units, goal: Goal): Promise<Outcome> {
-    return this.act("/kingdom/send-attack", { destinationKingdomName: target, attackType: goal === "land" ? "land" : "economy", units });
+    return this.act("/kingdom/send-attack", { destinationKingdomName: target, attackType: attackTypes[goal], units });
   }
 
   public async recallArmy(target: string): Promise<Outcome> {
@@ -181,11 +183,11 @@ class ApiRuler implements RulerDriver {
     return army ? this.act("/kingdom/withdraw-attack", army.id) : { done: false, message: `No army marches on ${target}` };
   }
 
-  public async joinStrike(leader: string, target: string, units: Units): Promise<Outcome> {
+  public async joinStrike(leader: string, target: string, units: Units, goal: Goal = "land"): Promise<Outcome> {
     const room = await this.get<Schemas["AllianceWarRoomDto"]>("/alliance/war-room");
     const strike = room.marching.find(march => march.from === leader && march.to === target);
     if (!strike) return { done: false, message: `${leader} has no army on the march to ${target}` };
-    return this.act("/kingdom/send-attack", { destinationKingdomName: target, attackType: "land", units, joins: strike.id });
+    return this.act("/kingdom/send-attack", { destinationKingdomName: target, attackType: attackTypes[goal], units, joins: strike.id });
   }
 
   public async armiesComing(): Promise<{ from: string; soldiers: number }[]> {
@@ -207,6 +209,7 @@ class ApiRuler implements RulerDriver {
       attackerWon: report.attackerWon,
       landTaken: report.attackerWon && report.attackType === "land" ? report.landCaptured : 0,
       goldPlundered: report.attackerWon ? (report.plunder.gold ?? 0) : 0,
+      stagesRazed: report.stagesRazed,
     }));
   }
 
@@ -360,16 +363,27 @@ class ApiRuler implements RulerDriver {
     return this.act("/alliance/monument/contribute", { gold: 0, iron: 0, tools: 0, food: 0, ...goods });
   }
 
+  public sendToMonument(units: Units): Promise<Outcome> {
+    return this.act("/alliance/monument/garrison", { units });
+  }
+
   public async monumentLedger(): Promise<MonumentLedger | null> {
     const ledger = await this.get<Schemas["MonumentLedgerDto"]>("/alliance/monument").catch((failure: unknown) => {
       if (failure instanceof ApiError && failure.status === 404) return null;
       throw failure;
     });
-    return ledger && { stages: ledger.monument.stages, store: ledger.store, crumbling: ledger.upkeepUnpaid };
+    return (
+      ledger && {
+        stages: ledger.monument.stages,
+        store: ledger.store,
+        crumbling: ledger.upkeepUnpaid,
+        soldiersOnGuard: ledger.garrison.filter(guard => guard.turnsLeft === 0).reduce((sum, guard) => sum + soldiers(guard.units), 0),
+      }
+    );
   }
 
   public async monuments(): Promise<MonumentView[]> {
-    return (await this.get<Schemas["MonumentDto"][]>("/game/monuments")).map(monument => ({ alliance: monument.allianceName, seat: monument.seat, stages: monument.stages, complete: monument.complete }));
+    return (await this.get<Schemas["MonumentDto"][]>("/game/monuments")).map(monument => ({ alliance: monument.allianceName, seat: monument.seat, stages: monument.stages, complete: monument.complete, garrison: monument.garrison }));
   }
 
   public async alliance(): Promise<{ name: string; members: string[] } | null> {

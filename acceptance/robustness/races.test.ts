@@ -182,6 +182,38 @@ test("members paying into a monument at once while the clock ticks lose nothing 
   assert.equal((await emperor.monument()).store.gold, given);
 });
 
+test("an assault landing while members call soldiers home, send more and pay in loses nobody and spends nothing twice", async () => {
+  const world = await sharedWorld();
+  const emperor = await found(world, "Besieged Emperor");
+  const mason = await found(world, "Besieged Mason");
+  const raider = await found(world, "Besieger");
+  for (const ruler of [emperor, mason, raider]) {
+    for (let turn = 0; turn < 5; turn++) await ruler.passTurn(100);
+    assert.ok((await ruler.train({ infantry: 10 })).success);
+  }
+  const alliance = `Besieged ${founded}`;
+  assert.ok((await emperor.createAlliance(alliance)).success);
+  assert.ok((await emperor.invite(mason.name, alliance)).success);
+  assert.ok((await mason.acceptInvitation((await mason.invitations())[0].id)).success);
+  assert.ok((await emperor.foundMonument(emperor.name)).success);
+  assert.ok((await mason.sendToMonument({ infantry: 4 })).success);
+  for (let turn = 0; turn < 2; turn++) await mason.passTurn(100);
+  const standing = (await mason.kingdom()).reinforcements[0].id;
+  assert.ok((await raider.sendAttack(emperor.name, "monument", { infantry: 10 })).success);
+  for (let turn = 0; turn < 3; turn++) await raider.passTurn(100);
+  const goldBefore = (await emperor.kingdom()).resources.gold;
+
+  const [, , , payment] = await Promise.all([raced(raider.passTurn(100)), raced(mason.recallReinforcements(standing)), raced(mason.sendToMonument({ infantry: 2 })), raced(emperor.payIntoMonument({ gold: 100 }))]);
+
+  // the army may have lost its race to the garrison's owner: it lands with the next try
+  for (let attempt = 0; attempt < 5 && (await raider.kingdom()).ongoingAttacks.length > 0; attempt++) await raced(raider.passTurn(100));
+  assert.equal((await raider.kingdom()).ongoingAttacks.length, 0, "the army never landed");
+  assert.deepEqual(await brokenRules(world), []);
+  const given = goldBefore - (await emperor.kingdom()).resources.gold;
+  assert.equal(given, succeeded([payment]).length * 100, "the payment cost gold though it failed, or none though it went through");
+  assert.equal((await emperor.monument()).store.gold, given);
+});
+
 test("the last places in an alliance go to as many kingdoms as there are places", async () => {
   const world = await sharedWorld();
   const maxMembers = (await world.config()).common.allianceMaxMembers;

@@ -1,4 +1,6 @@
-import type { BuildingName, MarketResource, ResourceName, SpecialBuildingType, UnitName } from "../api/types";
+import type { BuildingName, Counts, MarketResource, ResourceName, SpecialBuildingType, UnitName } from "../api/types";
+import { militaryUnits } from "../api/types";
+import { formatNumber } from "../ui/format";
 
 export const art = (name: string): string => `/art/${name}.webp`;
 
@@ -81,4 +83,15 @@ export const specialBuildingLore: Record<SpecialBuildingType, { label: string; e
   granary: { label: "Granary", effect: "Each level adds 20% food production" },
   forge: { label: "Forge", effect: "Each level adds 20% tools and weapons production" },
   warehouse: { label: "Warehouse", effect: "Each level shields 5% of your stores from plunder" },
+};
+
+/** a body of soldiers in words: 100 infantry, 20 bowmen */
+export const unitList = (units: Partial<Counts<UnitName>>): string => {
+  const parts = [...militaryUnits, "guard" as const]
+    .filter(unit => (units[unit] ?? 0) > 0)
+    .map(
+      unit =>
+        `${formatNumber(units[unit] ?? 0)} ${(units[unit] ?? 0) === 1 ? unitLore[unit].label.toLowerCase() : unitLore[unit].plural.toLowerCase()}`,
+    );
+  return parts.length ? parts.join(", ") : "nobody";
 };

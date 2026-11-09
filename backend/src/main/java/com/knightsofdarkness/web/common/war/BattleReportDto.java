@@ -25,5 +25,7 @@ public record BattleReportDto(
         double defensePower,
         boolean attackerWon,
         int landCaptured,
-        Map<ResourceName, Integer> plunder) {
+        Map<ResourceName, Integer> plunder,
+        /** how many stages of its monument a won assault knocked down; the defender is then the monument's seat */
+        double stagesRazed) {
 }

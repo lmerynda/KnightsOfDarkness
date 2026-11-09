@@ -6,6 +6,7 @@ import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
 import { counsel } from "../game/advice";
 import { ChronicleEntry } from "../game/chronicle";
+import { attackGoal } from "../game/rules";
 import { art, marketResourceLabel, realmStage, resourceLabel, unitLore } from "../game/lore";
 import type { IconName } from "../ui/Icon";
 import { Icon } from "../ui/Icon";
@@ -221,7 +222,7 @@ const Movements: React.FC = () => {
   const moves: { id: string; text: string; turns: number; status?: string; link: string }[] = [
     ...kingdom.incoming.map((army, index) => ({
       id: `incoming-${index}`,
-      text: `${army.from} marches on us with about ${formatNumber(army.soldiers)} soldiers`,
+      text: `${army.from} marches on ${army.attackType === "monument" ? "our monument" : "us"} with about ${formatNumber(army.soldiers)} soldiers`,
       turns: army.turnsLeft,
       link: "/kingdom/war",
     })),
@@ -236,7 +237,7 @@ const Movements: React.FC = () => {
           }
         : {
             id: attack.id,
-            text: `Army marching on ${attack.to} to ${attack.attackType === "land" ? "take land" : "plunder"}`,
+            text: `Army marching on ${attack.to} to ${attackGoal[attack.attackType]}`,
             turns: attack.turnsLeft,
             link: "/kingdom/war",
           },
@@ -245,7 +246,7 @@ const Movements: React.FC = () => {
       .filter(sent => sent.turnsLeft > 0)
       .map(sent => ({
         id: sent.id,
-        text: `Soldiers on the way to stand guard in ${sent.to}`,
+        text: `Soldiers on the way to stand guard ${sent.atMonument ? "at the monument at" : "in"} ${sent.to}`,
         turns: sent.turnsLeft,
         link: "/kingdom/war",
       })),

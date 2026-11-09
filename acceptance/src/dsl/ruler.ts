@@ -1,3 +1,4 @@
+import assert from "node:assert/strict";
 import type { BuildingName, MarketResource, SpecialBuildingType, UnitName } from "../api/types.ts";
 import type { Buildings, Credentials, MonumentGoods, Outcome, PastEra, RulerDriver, Store, Units } from "./driver.ts";
 
@@ -237,6 +238,10 @@ export class Ruler {
     return taken;
   }
 
+  public async hasNotFoughtAt(target: Ruler): Promise<void> {
+    assert.deepEqual((await this.act.battles()).filter(battle => battle.attacker === this.name && battle.defender === target.name), [], `${this.name} should not have fought at ${target.name}`);
+  }
+
   public async hasFoughtAt(target: Ruler): Promise<void> {
     await eventually(`${this.name} has fought at ${target.name}`, async () =>
       (await this.act.battles()).some(battle => battle.attacker === this.name && battle.defender === target.name),
@@ -419,6 +424,43 @@ export class Ruler {
 
   public async paysIntoTheMonument(goods: Partial<MonumentGoods>): Promise<void> {
     done(`${this.name} paying ${JSON.stringify(goods)} into the monument`, await this.act.payIntoMonument(goods));
+  }
+
+  public async sendsToTheMonument(units: Units): Promise<void> {
+    done(`${this.name} sending soldiers to the monument`, await this.act.sendToMonument(units));
+  }
+
+  /** the soldiers who have arrived and stand guard at the alliance's monument, by the members' own count */
+  public async seesOnGuardAtOurMonument(count: number): Promise<void> {
+    await eventually(`${this.name} sees ${count} soldiers on guard at our monument`, async () => (await this.act.monumentLedger())?.soldiersOnGuard === count);
+  }
+
+  /** as everyone's scouts count them, to two figures */
+  public async seesTheMonumentGuardedBy(allianceName: string, count: number): Promise<void> {
+    await eventually(`${this.name} sees about ${count} soldiers guarding the monument of ${allianceName}`, async () =>
+      (await this.act.monuments()).some(monument => monument.alliance === allianceName && monument.garrison === count),
+    );
+  }
+
+  public async marchesOnTheMonumentAt(seat: Ruler, units: Units): Promise<void> {
+    done(`${this.name} marching on the monument at ${seat.name}`, await this.act.march(seat.name, units, "monument"));
+  }
+
+  public async joinsTheAssault(leader: Ruler, seat: Ruler, units: Units): Promise<void> {
+    done(`${this.name} joining ${leader.name}'s assault at ${seat.name}`, await this.act.joinStrike(leader.name, seat.name, units, "monument"));
+  }
+
+  /** the army won and knocked this many stages down */
+  public async hasStormedTheMonumentAt(seat: Ruler, stages: number): Promise<void> {
+    await eventually(`${this.name} has stormed the monument at ${seat.name}, knocking down ${stages} stages`, async () =>
+      (await this.act.battles()).some(battle => battle.attacker === this.name && battle.defender === seat.name && battle.attackerWon && battle.stagesRazed === stages && battle.landTaken === 0 && battle.goldPlundered === 0),
+    );
+  }
+
+  public async wasRepelledAtTheMonumentAt(seat: Ruler): Promise<void> {
+    await eventually(`${this.name} was repelled at the monument at ${seat.name}`, async () =>
+      (await this.act.battles()).some(battle => battle.attacker === this.name && battle.defender === seat.name && !battle.attackerWon && battle.stagesRazed === 0),
+    );
   }
 
   public async isRefusedPayingIntoTheMonument(goods: Partial<MonumentGoods>, reason: string | RegExp): Promise<void> {

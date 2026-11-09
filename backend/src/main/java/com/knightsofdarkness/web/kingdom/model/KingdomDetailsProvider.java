@@ -48,12 +48,21 @@ public class KingdomDetailsProvider {
     {
         var attackConfig = config.attack();
         var forces = new DefendingForces(kingdom);
-        var soldiers = UnitName.getMilitaryUnits().stream().mapToDouble(unit -> forces.count(unit) * attackConfig.getDefensePower(unit)).sum();
+        var soldiers = getDefensePower(forces);
         var sheltered = forces.shelteredInCastles(getBuildingCapacity(kingdom, BuildingName.castle));
         var shelteredPower = sheltered.entrySet().stream().mapToDouble(entry -> entry.getValue() * attackConfig.getDefensePower(entry.getKey())).sum();
         var guards = kingdom.getUnits().getAvailableCount(UnitName.guard) * attackConfig.getDefensePower(UnitName.guard);
 
         return soldiers + shelteredPower * attackConfig.castleSoldierBonus() + guards;
+    }
+
+    /**
+     * soldiers alone, with no walls, towers or guards to help them, as at a monument
+     */
+    double getDefensePower(DefendingForces forces)
+    {
+        var attackConfig = config.attack();
+        return UnitName.getMilitaryUnits().stream().mapToDouble(unit -> forces.count(unit) * attackConfig.getDefensePower(unit)).sum();
     }
 
     /**

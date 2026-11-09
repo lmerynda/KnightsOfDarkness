@@ -608,7 +608,7 @@
         "type" : "object"
       },
       "AttackType" : {
-        "enum" : [ "economy", "land" ],
+        "enum" : [ "economy", "land", "monument" ],
         "type" : "string"
       },
       "AuthRequestDto" : {
@@ -952,6 +952,10 @@
             },
             "type" : "object"
           },
+          "stagesRazed" : {
+            "format" : "double",
+            "type" : "number"
+          },
           "unitsSent" : {
             "properties" : {
               "blacksmith" : {
@@ -1002,7 +1006,7 @@
             "type" : "object"
           }
         },
-        "required" : [ "alliedLosses", "attackPower", "attackType", "attacker", "attackerArrowLosses", "attackerLosses", "attackerWon", "date", "defender", "defenderArrowLosses", "defenderLosses", "defensePower", "id", "landCaptured", "plunder", "unitsSent" ],
+        "required" : [ "alliedLosses", "attackPower", "attackType", "attacker", "attackerArrowLosses", "attackerLosses", "attackerWon", "date", "defender", "defenderArrowLosses", "defenderLosses", "defensePower", "id", "landCaptured", "plunder", "stagesRazed", "unitsSent" ],
         "type" : "object"
       },
       "Bots" : {
@@ -2478,6 +2482,10 @@
             "format" : "double",
             "type" : "number"
           },
+          "maxRazeRatio" : {
+            "format" : "double",
+            "type" : "number"
+          },
           "stageCost" : {
             "$ref" : "#/components/schemas/StageCost"
           },
@@ -2489,7 +2497,7 @@
             "$ref" : "#/components/schemas/Upkeep"
           }
         },
-        "required" : [ "decayRatio", "stageCost", "stages", "upkeepPerStage" ],
+        "required" : [ "decayRatio", "maxRazeRatio", "stageCost", "stages", "upkeepPerStage" ],
         "type" : "object"
       },
       "MonumentContributionDto" : {
@@ -2522,6 +2530,10 @@
           "complete" : {
             "type" : "boolean"
           },
+          "garrison" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
           "seat" : {
             "type" : "string"
           },
@@ -2534,7 +2546,62 @@
             "type" : "integer"
           }
         },
-        "required" : [ "allianceName", "complete", "seat", "stages", "totalStages" ],
+        "required" : [ "allianceName", "complete", "garrison", "seat", "stages", "totalStages" ],
+        "type" : "object"
+      },
+      "MonumentGarrisonDto" : {
+        "properties" : {
+          "units" : {
+            "properties" : {
+              "blacksmith" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "bowman" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "builder" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "carrier" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "cavalry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "farmer" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "goldMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "guard" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "infantry" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "ironMiner" : {
+                "format" : "int32",
+                "type" : "integer"
+              },
+              "spy" : {
+                "format" : "int32",
+                "type" : "integer"
+              }
+            },
+            "type" : "object"
+          }
+        },
+        "required" : [ "units" ],
         "type" : "object"
       },
       "MonumentGoodsDto" : {
@@ -2561,6 +2628,12 @@
       },
       "MonumentLedgerDto" : {
         "properties" : {
+          "garrison" : {
+            "items" : {
+              "$ref" : "#/components/schemas/ReinforcementDto"
+            },
+            "type" : "array"
+          },
           "monument" : {
             "$ref" : "#/components/schemas/MonumentDto"
           },
@@ -2581,7 +2654,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "monument", "nextStageCost", "store", "upkeep", "upkeepUnpaid" ],
+        "required" : [ "garrison", "monument", "nextStageCost", "store", "upkeep", "upkeepUnpaid" ],
         "type" : "object"
       },
       "NotificationDto" : {
@@ -2749,6 +2822,9 @@
       },
       "ReinforcementDto" : {
         "properties" : {
+          "atMonument" : {
+            "type" : "boolean"
+          },
           "from" : {
             "type" : "string"
           },
@@ -2813,7 +2889,7 @@
             "type" : "object"
           }
         },
-        "required" : [ "from", "id", "to", "turnsLeft", "units" ],
+        "required" : [ "atMonument", "from", "id", "to", "turnsLeft", "units" ],
         "type" : "object"
       },
       "RemoveFromAllianceDto" : {
@@ -3578,6 +3654,34 @@
             "application/json" : {
               "schema" : {
                 "$ref" : "#/components/schemas/FoundMonumentDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "monument-controller" ]
+      }
+    },
+    "/alliance/monument/garrison" : {
+      "post" : {
+        "operationId" : "sendGarrison",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MonumentGarrisonDto"
               }
             }
           },

@@ -1,6 +1,6 @@
 # Eras and the coalition monument
 
-Designed on 2026-11-07. An era ends when a coalition completes its monument. The era itself is built (2026-11-08): today it ends only by the clock, after 2,880 ticks (four months), and the alliance with the most land wins it. A monument can be founded, paid for, fed and watched (step 4), but it has no garrison yet, cannot be attacked and does not end the era.
+Designed on 2026-11-07. An era ends when a coalition completes its monument. The era itself is built (2026-11-08): today it ends only by the clock, after 2,880 ticks (four months), and the alliance with the most land wins it. A monument can be founded, paid for, fed, watched (step 4), garrisoned and assaulted (step 5), but completing one does not end the era yet.
 
 ## Why
 
@@ -34,21 +34,21 @@ Designed on 2026-11-07. An era ends when a coalition completes its monument. The
 - **Stages.** It has `monument.stages` stages, 10 to start with. Each stage costs `monument.stageCost` in gold, iron and tools. That draws on every craft at once: gold producers, the iron miner and the smiths. A stage is 5 billion gold, more than a kingdom's store can hold, so a monument's store and costs count in `long`.
 - **Contributions.** Members pay resources straight into the monument's store with `POST /alliance/monument/contribute`. A stage is raised as soon as the store covers its cost.
   - I'd skip carriers. Carrying would add a delay and another strike target, but it isn't needed to make the monument costly.
-- **Upkeep.** Each tick the monument eats `monument.upkeepPerStage` in gold and food for every stage built, so a nearly finished monument costs the most to keep. When the store can't pay all of it, it pays nothing and loses `monument.decayRatio` of a stage that tick, 5% to start with. Holding a monument without feeding it decays it. Repairing a crumbled stage costs only the share that crumbled. Its members hear once when it starts to crumble.
-- **Visibility.** Everyone sees every monument: its alliance, seat, stage, and the size of its garrison to two figures, as with marching armies. The rankings and the landing page show this. The chronicle tells every kingdom when a monument is founded, at each stage from the half-way mark, and when it is complete. A stage repaired after crumbling is not news again unless a whole stage was lost. Rivals must know in time to band together. Only the alliance's members see its store.
-- **The seat.** A member's kingdom. If that member leaves, the seat moves to the emperor, who leaves last. A monument falls with its alliance.
+- **Upkeep.** Each tick the monument eats `monument.upkeepPerStage` in gold and food for every stage built, so a nearly finished monument costs the most to keep. When the store can't pay all of it, it pays nothing and loses `monument.decayRatio` of a stage that tick, 5% to start with. Holding a monument without feeding it decays it. Repairing a crumbled stage costs only the share that crumbled. Its members hear once when it starts to crumble. A stage that has fallen rises again with the next paid tick if the store covers it, so goods held back in the store rebuild a monument without anyone paying in again.
+- **Visibility.** Everyone sees every monument: its alliance, seat, stage, and the size of its standing garrison to two figures, as with marching armies. The rankings and the landing page show this. The chronicle tells every kingdom when a monument is founded, at each stage from the half-way mark, and when it is complete. A stage repaired after crumbling is not news again unless a whole stage was lost. Rivals must know in time to band together. Only the alliance's members see its store.
+- **The seat.** A member's kingdom. If that member leaves, the seat moves to the emperor, who leaves last, and armies on the march follow it, so leaving is no way to dodge them. A monument falls with its alliance.
 
 ### Defending it
 
-- **The garrison** is made up only of soldiers that members send. Infantry, bowmen and cavalry go to the monument the way reinforcements do: they arrive after `common.turnsToReinforce` turns, and the sender pays, feeds and recalls them.
+- **The garrison** is made up only of soldiers that members send. Infantry, bowmen and cavalry go to the monument the way reinforcements do: they arrive after `common.turnsToReinforce` turns, and the sender pays, feeds and recalls them (`POST /alliance/monument/garrison`, `POST /kingdom/recall-reinforcements`). They go home when their ruler leaves the alliance, and when the monument falls or the era ends.
 - **No other defense counts.** No towers, castles or guards, and not the seat's own army at home. The seat's ruler can send soldiers to the monument like any other member.
 
 ### Assaulting it
 
-- **New attack type `monument`.** Any kingdom outside the alliance may march on a monument. The march takes `attack.turnsToArrive`, and `joins` works as for any strike.
-- **Usual limits lifted.** `minTargetLandRatio` doesn't apply, and a monument gets no protection after a defeat. Rivals can strike it again and again: that's the counterplay.
+- **New attack type `monument`.** Any kingdom outside the alliance may march on a monument, naming its seat as the destination of `POST /kingdom/send-attack`. The march takes `attack.turnsToArrive`, and `joins` works as for any strike, though an army joins only a strike on the same thing: the kingdom or its monument. Every member hears of an army marching on the monument, and the seat and the war room see it coming. An army that finds no enemy monument when it lands, because it fell or its alliance took the attacker in, comes home without a fight.
+- **Usual limits lifted.** `minTargetLandRatio` doesn't apply, the seat's protection doesn't cover the monument, peace included, and a monument gets no protection after a defeat. Rivals can strike it again and again: that's the counterplay.
 - **The battle** is the usual one: archers first, then melee. The defender is the garrison alone, and both sides take losses as usual.
-- **A won assault** knocks down up to `monument.maxRazeRatio` (25%) of the built stages, scaled by dominance as land capture is. It takes no land and no stores. See decision 2.
+- **A won assault** knocks down up to `monument.maxRazeRatio` (25%) of the stages standing, scaled by dominance as land capture is. It takes no land and no stores, and everyone hears. See decision 2. Since dominance is full against nobody, a single soldier takes the full share of an unguarded monument: a garrison is not optional. Step 7 checks whether that needs softening.
 - **The cost to attackers:** their armies are away from home, so the leader's warriors can strike back at their homes.
 
 ### Winning
@@ -125,7 +125,7 @@ Each step lands with its scenarios, docs and checks, and is committed on its own
 2. **Warriors keep a garrison at home**, then measure the era again. Done on 2026-11-08: see "Measured" above.
 3. **Era.** Done on 2026-11-08: round is renamed to era, the clock cap is 2,880 ticks, and the hall of fame records the winning alliance and the way the era ended. The `era` scenarios play a short era of 120 ticks, and `npm run test:long` plays two at full length.
 4. **Monument.** Done on 2026-11-08: `POST /alliance/monument/found` and `/contribute`, `GET /alliance/monument` for members and `GET /game/monuments` for everyone, a section on the Alliance page, listings on the rankings and the landing page, and the `monument` scenarios. Completing one does nothing yet, and the prices are the starting ones from "Measured": no simulated ruler builds one until step 7.
-5. **Garrison and assault.** Add the `monument` attack type, the garrison as a reinforcement target, razing, and joined assaults. Add scenarios and battle reports.
+5. **Garrison and assault.** Done on 2026-11-08: the `monument` attack type, soldiers standing guard at a monument, razing and joined assaults, battle reports, a Garrison section on the Alliance page, a goal on the Army page, a March on it link on the rankings, and the `assault` scenarios. Prices are still the starting ones: no simulated ruler garrisons or assaults one until step 7.
 6. **Winning.** Add the hold period. The era ends by monument and the next era begins. Add scenarios, and a `test:long` world that ends by monument.
 7. **Balance.** Add the builder and rival policies to the simulation, then the four balance targets as worlds. Tune the costs, upkeep, raze ratio and hold time, and record them in `BALANCE.md`.
 8. **Pacts**, only if step 7 shows that alliances striking separately can't stop a leader.
