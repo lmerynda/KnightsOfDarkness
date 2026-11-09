@@ -9,6 +9,11 @@ spring:
     # every read happens inside a service transaction, as the clock and the bots do; a session held open for the whole
     # request let reads lean on it, and kept kingdoms stale across the simulation ticks of one request
     open-in-view: false
+    properties:
+      hibernate:
+        # writes rows in the order of their keys, so two purchases between the same kingdoms lock them in one order: a
+        # kingdom buying from another while it buys back made about a thousand deadlocks in a simulated era, and none since
+        order_updates: true
   output:
     ansi:
       enabled: always
