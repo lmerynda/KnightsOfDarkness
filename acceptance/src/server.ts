@@ -3,6 +3,7 @@ import { appendFileSync, copyFileSync, existsSync, mkdtempSync, readFileSync, rm
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { freshDatabase, runPostgres } from "./postgres.ts";
 
 const repository = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const backend = join(repository, "backend");
@@ -91,8 +92,8 @@ const waitUntilReady = async (process: ChildProcess, output: () => string): Prom
 };
 
 /**
- * starts a fresh world: the shipped server jar in the simulation profile, an in-memory database, and the base
- * gameconfig.json with the given overrides
+ * starts a fresh world: the shipped server jar in the simulation profile, an in-memory database or, when the run has a
+ * PostgreSQL, a fresh database of its own there, and the base gameconfig.json with the given overrides
  */
 export const startServer = async (overrides: ConfigOverrides = {}): Promise<GameServer> => {
   const configDirectory = mkdtempSync(join(tmpdir(), "kod-sim-"));
@@ -106,7 +107,9 @@ export const startServer = async (overrides: ConfigOverrides = {}): Promise<Game
   const java = process.env.JAVA_HOME ? join(process.env.JAVA_HOME, "bin", "java") : "java";
   // KOD_JAVA_OPTS passes options to the JVM, for example a flight recording to profile a world
   const javaOptions = process.env.KOD_JAVA_OPTS?.split(" ").filter(Boolean) ?? [];
-  const child = spawn(java, [...javaOptions, "-jar", jar, "--spring.profiles.active=simulation", "--server.port=0", "--logging.level.org.springframework.boot.tomcat=INFO", `--game.config-path=${configPath}`], {
+  const postgres = runPostgres();
+  const database = postgres ? freshDatabase(postgres) : [];
+  const child = spawn(java, [...javaOptions, "-jar", jar, "--spring.profiles.active=simulation", "--server.port=0", "--logging.level.org.springframework.boot.tomcat=INFO", `--game.config-path=${configPath}`, ...database], {
     stdio: ["ignore", "pipe", "pipe"],
   });
   let log = "";
