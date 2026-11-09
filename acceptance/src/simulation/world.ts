@@ -109,6 +109,11 @@ export const runWorld = async (
      * the armies first, which in a war between coalitions decides more than the rules being measured
      */
     shuffle?: boolean;
+    /**
+     * every ruler plays its turn at the same moment, as players do, rather than one after another: a world plays several
+     * times faster, and a write that loses a race to another ruler is sent again, as the server asks
+     */
+    atOnce?: boolean;
     /** ends the run early, asked after each tick: for a world that should stop once something has happened */
     until?: () => boolean;
   } = {},
@@ -117,10 +122,13 @@ export const runWorld = async (
   const timeline: Snapshot[] = [];
   const violations: string[] = [];
   rulers = [...rulers];
+  if (options.atOnce) for (const ruler of rulers) ruler.player.retryConflicts = true;
 
   for (let turn = 1; turn <= turns; turn++) {
     for (const newcomer of options.newcomers?.filter(candidate => candidate.joinsOnTurn === turn) ?? []) {
-      rulers.push({ player: await world.foundKingdom(newcomer.name), strategy: newcomer.strategy, memory: {} });
+      const player = await world.foundKingdom(newcomer.name);
+      player.retryConflicts = options.atOnce ?? false;
+      rulers.push({ player, strategy: newcomer.strategy, memory: {} });
     }
     await world.advance(1, options.bots ?? true);
     // a look at the world as the clock left it, before anyone plays
@@ -134,20 +142,23 @@ export const runWorld = async (
         [order[last], order[pick]] = [order[pick]!, order[last]!];
       }
     }
-    for (const [index, ruler] of order) {
+    const playTurn = async ([index, ruler]: [number, Ruler]): Promise<void> => {
       for (let play = 0; play < (options.pace?.(index, turn) ?? 1); play++) {
         const [kingdom, details] = await Promise.all([ruler.player.kingdom(), ruler.player.details(ruler.strategy.weaponsPercentage)]);
         await ruler.strategy.play({ player: ruler.player, world, config, kingdom, details, rankings, turn, memory: ruler.memory });
         const passed = await ruler.player.passTurn(ruler.strategy.weaponsPercentage);
         if (!passed.success) violations.push(`turn ${turn}, ${ruler.player.name}: could not pass the turn, ${passed.message}`);
       }
-    }
+    };
+    if (options.atOnce) await Promise.all(order.map(playTurn));
+    else for (const entry of order) await playTurn(entry);
 
     const kingdoms = await world.kingdoms();
     violations.push(...invariantViolations(kingdoms, config, turn));
-    for (const ruler of rulers) {
+    const defenses = await Promise.all(rulers.map(async ruler => (await ruler.player.details()).defensePower));
+    for (const [index, ruler] of rulers.entries()) {
       const kingdom = kingdoms.find(candidate => candidate.name === ruler.player.name);
-      if (kingdom) timeline.push(snapshot(kingdom, turn, (await ruler.player.details()).defensePower));
+      if (kingdom) timeline.push(snapshot(kingdom, turn, defenses[index]));
     }
     // a pause for whoever watches the world, for example to look at it in the browser
     await options.afterTurn?.(turn);

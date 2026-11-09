@@ -2,9 +2,11 @@
 # Pass game.config-path to run a balance variant of gameconfig.json.
 # Each simulated world is short and thrown away, so it lives in memory with the schema built from the entities; the
 # server tests check that the migrations build the same schema.
+# H2 keeps only 8 parsed statements per connection by default; the game uses many more, and parsing them again cost
+# about 8% of a simulated world's time.
 spring:
   datasource:
-    url: jdbc:h2:mem:world
+    url: jdbc:h2:mem:world;QUERY_CACHE_SIZE=256
   flyway:
     enabled: false
   jpa:

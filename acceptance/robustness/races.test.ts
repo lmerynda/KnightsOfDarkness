@@ -84,6 +84,31 @@ test("a buyer racing the seller's withdrawal gets the food only if the seller do
   assert.deepEqual(await brokenRules(world), []);
 });
 
+test("kingdoms buying each other's offers at the same moment trade or are told to try again, and nothing is lost", async () => {
+  const world = await sharedWorld();
+  const pairs = await Promise.all([1, 2, 3, 4, 5, 6, 7, 8].map(async index => [await found(world, `Swap West ${index}`), await found(world, `Swap East ${index}`)] as const));
+  const everyone = pairs.flat();
+  const holdings = async (): Promise<{ gold: number; food: number }> => {
+    const kingdoms = await Promise.all(everyone.map(player => player.kingdom()));
+    const onOffer = kingdoms.flatMap(kingdom => kingdom.marketOffers).reduce((sum, offer) => sum + offer.count, 0);
+    return { gold: kingdoms.reduce((sum, kingdom) => sum + kingdom.resources.gold, 0), food: kingdoms.reduce((sum, kingdom) => sum + kingdom.resources.food, 0) + onOffer };
+  };
+  const before = await holdings();
+  for (let round = 0; round < 6; round++) {
+    const offerOf = async (player: Player): Promise<string> => {
+      const posted = await player.postOffer("food", 10, 5);
+      assert.ok(posted.success && posted.data, posted.message);
+      return posted.data.id;
+    };
+    // each kingdom buys from the other in its pair at once, so each purchase touches both kingdoms, in opposite orders
+    const offers = await Promise.all(pairs.map(async ([west, east]) => [await offerOf(west), await offerOf(east)] as const));
+    const outcomes = await Promise.all(pairs.flatMap(([west, east], index) => [raced(west.buyOffer(offers[index][1], 10)), raced(east.buyOffer(offers[index][0], 10))]));
+    assert.ok(outcomes.some(outcome => "answered" in outcome && outcome.answered.success), "nobody bought anything");
+  }
+  assert.deepEqual(await holdings(), before, "gold or food appeared or vanished");
+  assert.deepEqual(await brokenRules(world), []);
+});
+
 test("a ruler passing turns from ten tabs at once spends each stored turn once", async () => {
   const world = await sharedWorld();
   const ruler = await found(world, "Many Tabs");

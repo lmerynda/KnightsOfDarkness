@@ -1,3 +1,4 @@
+import { writeFileSync } from "node:fs";
 import type {
   ActionResult,
   AllianceInvitation,
@@ -33,13 +34,36 @@ export class ApiError extends Error {
   }
 }
 
+/** KOD_PROFILE names a file that gets, when the process exits, every endpoint's calls, wall time and bytes received */
+const profile = process.env.KOD_PROFILE ? new Map<string, { calls: number; ms: number; bytes: number }>() : undefined;
+if (profile) {
+  process.once("exit", () => {
+    const rows = [...profile.entries()].map(([endpoint, row]) => ({ endpoint, ...row, ms: Math.round(row.ms) })).sort((one, other) => other.ms - one.ms);
+    writeFileSync(process.env.KOD_PROFILE!, JSON.stringify(rows, null, 1));
+  });
+}
+const endpointOf = (method: string, url: string): string =>
+  `${method} ${new URL(url).pathname
+    .split("/")
+    .map(segment => (segment.includes("%20") ? ":name" : segment))
+    .join("/")}`;
+
 export const call = async <T>(url: string, init: { method?: string; body?: unknown; token?: string } = {}): Promise<T> => {
+  const started = profile ? performance.now() : 0;
   const response = await fetch(url, {
     method: init.method ?? "GET",
     headers: { "Content-Type": "application/json", ...(init.token ? { Authorization: `Bearer ${init.token}` } : {}) },
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
   });
   const text = await response.text();
+  if (profile) {
+    const endpoint = endpointOf(init.method ?? "GET", url);
+    const row = profile.get(endpoint) ?? { calls: 0, ms: 0, bytes: 0 };
+    row.calls++;
+    row.ms += performance.now() - started;
+    row.bytes += text.length;
+    profile.set(endpoint, row);
+  }
   if (!response.ok) {
     throw new ApiError(response.status, `${init.method ?? "GET"} ${new URL(url).pathname} answered ${response.status}: ${text}`);
   }
@@ -109,6 +133,9 @@ export const simulationCredentials = (kingdomName: string): Credentials => ({
   password: "simulation-password",
 });
 
+/** how often a ruler playing alongside others tries one write before the conflict counts as a failure */
+const maxConflictAttempts = 8;
+
 const signIn = async (url: string, credentials: Credentials): Promise<string> =>
   (await call<SignedIn>(`${url}/auth/authenticate`, { method: "POST", body: credentials })).token;
 
@@ -121,6 +148,11 @@ export class Player {
   private readonly url: string;
   private readonly credentials: Credentials;
   private token: string;
+  /**
+   * a ruler playing at the same moment as others sends a write again when the server refuses it because the kingdom
+   * changed under it; the refused write changed nothing, as the 409 promises
+   */
+  public retryConflicts = false;
 
   public constructor(url: string, name: string, credentials: Credentials, token: string) {
     this.url = url;
@@ -143,8 +175,15 @@ export class Player {
     return this.signedIn(token => call(`${this.url}${path}`, { token }));
   }
 
-  private post<T>(path: string, body: unknown = {}): Promise<T> {
-    return this.signedIn(token => call(`${this.url}${path}`, { method: "POST", body, token }));
+  private async post<T>(path: string, body: unknown = {}): Promise<T> {
+    for (let attempt = 1; ; attempt++) {
+      try {
+        return await this.signedIn(token => call<T>(`${this.url}${path}`, { method: "POST", body, token }));
+      } catch (error) {
+        if (!this.retryConflicts || !(error instanceof ApiError) || error.status !== 409 || attempt >= maxConflictAttempts) throw error;
+        await new Promise(wait => setTimeout(wait, Math.random() * 5 * attempt));
+      }
+    }
   }
 
   /** any request as this ruler, with the body exactly as given */
@@ -232,7 +271,7 @@ export class Player {
     return this.post(`/market/${id}/buy`, { count });
   }
 
-  public postOffer(resource: MarketResource, count: number, price: number): Promise<ActionResult> {
+  public postOffer(resource: MarketResource, count: number, price: number): Promise<ActionResult<MarketOffer>> {
     return this.post("/market/create", { resource, count, price });
   }
 

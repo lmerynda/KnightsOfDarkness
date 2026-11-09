@@ -1,5 +1,5 @@
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
-import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -104,12 +104,17 @@ export const startServer = async (overrides: ConfigOverrides = {}): Promise<Game
 
   // the Java that JAVA_HOME names, as Gradle uses it, or else the one on the path
   const java = process.env.JAVA_HOME ? join(process.env.JAVA_HOME, "bin", "java") : "java";
-  const child = spawn(java, ["-jar", jar, "--spring.profiles.active=simulation", "--server.port=0", "--logging.level.org.springframework.boot.tomcat=INFO", `--game.config-path=${configPath}`], {
+  // KOD_JAVA_OPTS passes options to the JVM, for example a flight recording to profile a world
+  const javaOptions = process.env.KOD_JAVA_OPTS?.split(" ").filter(Boolean) ?? [];
+  const child = spawn(java, [...javaOptions, "-jar", jar, "--spring.profiles.active=simulation", "--server.port=0", "--logging.level.org.springframework.boot.tomcat=INFO", `--game.config-path=${configPath}`], {
     stdio: ["ignore", "pipe", "pipe"],
   });
   let log = "";
+  // KOD_SERVER_LOG names a file that gets the whole server log, for reading what went wrong inside a long world
+  const logFile = process.env.KOD_SERVER_LOG;
   const keep = (chunk: Buffer): void => {
     log = (log + chunk.toString()).slice(-20_000);
+    if (logFile) appendFileSync(logFile, chunk);
   };
   child.stdout?.on("data", keep);
   child.stderr?.on("data", keep);
