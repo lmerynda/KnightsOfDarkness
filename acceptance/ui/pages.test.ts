@@ -219,6 +219,45 @@ pageCheck("on a phone the market's buy field stays on screen", async ({ game, op
   await shows(toast(page, /Bought 10 food for [\d,]+ gold/), "Bought 10 food");
 });
 
+pageCheck("every store in the top bar stands under its name", async ({ game, open }) => {
+  const ruler = await game.foundsAKingdom();
+  const page = await open(ruler);
+  await shows(page.locator(".ledger-bar"), "Weapons");
+  const names = await page.locator(".ledger-bar .ledger-label").allInnerTexts();
+  assert.deepEqual(names, ["Gold", "Food", "Land", "Points", "Idle", "Iron", "Tools", "Weapons"]);
+  // and on a phone too, with the kingdom's name above them
+  const phone = await open(ruler, { width: 390, height: 844 });
+  await shows(phone.locator(".ledger-bar .ledger-who"), ruler.name);
+  assert.deepEqual(await phone.locator(".ledger-bar .ledger-label").allInnerTexts(), names);
+});
+
+pageCheck("on a phone the thumb bar leads around the kingdom and passes the turn", async ({ game, open, ui }) => {
+  const ruler = await game.foundsAKingdom();
+  const page = await open(ruler, { width: 390, height: 844 });
+  await page.goto(`${ui}/kingdom/overview`);
+  const bar = page.getByRole("navigation", { name: "Parts of the kingdom" });
+
+  await bar.getByRole("button", { name: "War" }).click();
+  await page.locator(".thumb-sheet").getByRole("link", { name: "Spies" }).click();
+  await page.waitForURL(/\/kingdom\/spies$/);
+  await gone(page.locator(".thumb-sheet"));
+  await shows(page.locator("main h1"), "Spies");
+
+  await bar.getByRole("button", { name: "Council" }).click();
+  await shows(page.locator(".thumb-sheet"), "Sign out");
+  await page.getByRole("button", { name: "Close the menu" }).click({ position: { x: 10, y: 10 } });
+  await gone(page.locator(".thumb-sheet"));
+
+  await bar.getByRole("button", { name: /^Pass turn/ }).click();
+  await shows(toast(page, /A turn has passed/), "A turn has passed");
+
+  // the bar sits on the screen, and nothing under it is out of reach
+  const box = await bar.boundingBox();
+  assert.ok(box && box.y + box.height <= 844 && box.height >= 48, `the bar stands at ${JSON.stringify(box)}`);
+  const padding = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.querySelector("main")!).paddingBottom));
+  assert.ok(padding >= (box?.height ?? 0), `the page leaves ${padding} px under its content for a bar of ${box?.height}`);
+});
+
 pageCheck("every page fits a phone screen", async ({ game, open, ui }) => {
   const ruler = await game.foundsAKingdom();
   const page = await open(ruler, { width: 390, height: 844 });

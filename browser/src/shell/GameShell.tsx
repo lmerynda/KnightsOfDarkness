@@ -34,12 +34,12 @@ const signOut = (trial: boolean): void => {
   api.signOut();
 };
 
-const Rail: React.FC<{ open: boolean; onNavigate: () => void }> = ({ open, onNavigate }) => {
-  const trial = useTrial();
+type NavGroup = { title: string; items: NavItem[] };
+
+const useNavGroups = (): NavGroup[] => {
   const { kingdom, unreadLetters, unreadNotifications } = useGame();
   const marching = kingdom.ongoingAttacks.length;
-
-  const groups: { title: string; items: NavItem[] }[] = [
+  return [
     {
       title: "Realm",
       items: [
@@ -72,9 +72,15 @@ const Rail: React.FC<{ open: boolean; onNavigate: () => void }> = ({ open, onNav
       ],
     },
   ];
+};
+
+const Rail: React.FC = () => {
+  const trial = useTrial();
+  const { kingdom } = useGame();
+  const groups = useNavGroups();
 
   return (
-    <nav className={`rail ${open ? "open" : ""}`} aria-label="Kingdom">
+    <nav className="rail" aria-label="Kingdom">
       <div className="rail-crest">
         <Crest name={kingdom.name} size={56} />
         <div>
@@ -86,7 +92,7 @@ const Rail: React.FC<{ open: boolean; onNavigate: () => void }> = ({ open, onNav
         <div key={group.title} className="rail-group">
           <div className="rail-group-title">{group.title}</div>
           {group.items.map(item => (
-            <NavLink key={item.to} to={item.to} className="rail-link" onClick={onNavigate}>
+            <NavLink key={item.to} to={item.to} className="rail-link">
               <span>{item.label}</span>
               {item.badge ? <span className={item.alert ? "badge" : "rail-count"}>{item.badge}</span> : null}
             </NavLink>
@@ -109,15 +115,17 @@ const resourceIcon: Partial<Record<ResourceName, IconName>> = {
   buildingPoints: "buildingPoints",
 };
 
-/** a figure in the top bar: the value first, its name and what the next turn brings on hover or tap */
+/** a figure in the top bar, under its name; what the next turn brings on hover or tap */
 const LedgerItem: React.FC<{
   icon: IconName;
   label: string;
+  /** the name on the bar, when the full one is too long for it */
+  short?: string;
   value: number;
   change?: number;
   note?: string;
   detail: React.ReactNode;
-}> = ({ icon, label, value, change, note, detail }) => (
+}> = ({ icon, label, short, value, change, note, detail }) => (
   <Term
     className="ledger-item"
     label={`${label} ${formatNumber(value)}`}
@@ -128,28 +136,41 @@ const LedgerItem: React.FC<{
     }
   >
     <Icon name={icon} size={18} />
-    <span className="ledger-value">{formatNumber(value)}</span>
-    {change ? <span className={`ledger-change ${change > 0 ? "gain" : "loss"}`}>{signed(change)}</span> : null}
-    {note ? <span className="ledger-note">{note}</span> : null}
+    <span className="ledger-text">
+      <span className="ledger-label">{short ?? label}</span>
+      <span className="ledger-figures">
+        <span className="ledger-value">{formatNumber(value)}</span>
+        {change ? <span className={`ledger-change ${change > 0 ? "gain" : "loss"}`}>{signed(change)}</span> : null}
+        {note ? <span className="ledger-note">{note}</span> : null}
+      </span>
+    </span>
   </Term>
 );
 
-const TurnSeal: React.FC = () => {
-  const { kingdom, config, details, passTurn } = useGame();
+/** what passing the turn takes, wherever the button is: the turns left, what it would cost, and the act itself */
+const usePassTurn = (): { turns: number; warnings: string[]; passing: boolean; pass: () => Promise<void> } => {
+  const { kingdom, details, passTurn } = useGame();
   const [passing, setPassing] = useState(false);
-  const turns = kingdom.resources.turns;
   const forecast = details.forecast;
   const warnings = [
     forecast.starvedPeople > 0 ? `${formatNumber(forecast.starvedPeople)} people will leave hungry` : null,
     forecast.exiledPeople > 0 ? `${formatNumber(forecast.exiledPeople)} people lack houses and will leave` : null,
     Object.values(forecast.professionalsLeaving).some(count => (count ?? 0) > 0) ? "Some workers have no room and will quit" : null,
-  ].filter(Boolean);
+  ].filter((warning): warning is string => warning !== null);
 
-  const onPass = async (): Promise<void> => {
+  const pass = async (): Promise<void> => {
     setPassing(true);
     await passTurn();
     setPassing(false);
   };
+
+  return { turns: kingdom.resources.turns, warnings, passing, pass };
+};
+
+const TurnSeal: React.FC = () => {
+  const { config, details } = useGame();
+  const { turns, warnings, passing, pass: onPass } = usePassTurn();
+  const forecast = details.forecast;
 
   return (
     <div className="seal-wrap">
@@ -200,7 +221,7 @@ const TurnSeal: React.FC = () => {
   );
 };
 
-const Ledger: React.FC<{ onMenu: () => void }> = ({ onMenu }) => {
+const Ledger: React.FC = () => {
   const { kingdom, details } = useGame();
   const resources = kingdom.resources;
   const forecast = details.forecast;
@@ -209,11 +230,10 @@ const Ledger: React.FC<{ onMenu: () => void }> = ({ onMenu }) => {
 
   return (
     <header className="ledger-bar">
-      <button type="button" className="menu-button" onClick={onMenu} aria-label="Open the kingdom menu">
-        <span />
-        <span />
-        <span />
-      </button>
+      <div className="ledger-who">
+        <Crest name={kingdom.name} size={26} />
+        <span className="ledger-name">{kingdom.name}</span>
+      </div>
       <div className="ledger-items">
         <LedgerItem
           icon="gold"
@@ -239,12 +259,14 @@ const Ledger: React.FC<{ onMenu: () => void }> = ({ onMenu }) => {
         <LedgerItem
           icon="buildingPoints"
           label="Building points"
+          short="Points"
           value={resources.buildingPoints}
           detail="Spent on buildings this turn; what is left is lost when the turn passes."
         />
         <LedgerItem
           icon="people"
           label="Idle people"
+          short="Idle"
           value={resources.unemployed}
           detail={`Ready to train; ${formatNumber(details.housedPeople - resources.unemployed)} others at work. ${forecast.arrivingPeople > 0 ? `${signed(forecast.arrivingPeople)} arrive next turn.` : "The houses are full, so nobody arrives next turn."}`}
         />
@@ -263,8 +285,73 @@ const Ledger: React.FC<{ onMenu: () => void }> = ({ onMenu }) => {
   );
 };
 
+/**
+ * a phone's way around the kingdom, within reach of a thumb: the four parts of the rail, each opening its pages, and the
+ * turn in the middle
+ */
+const ThumbBar: React.FC = () => {
+  const trial = useTrial();
+  const groups = useNavGroups();
+  const location = useLocation();
+  const { turns, warnings, passing, pass } = usePassTurn();
+  const [opened, setOpened] = useState<string | null>(null);
+  const sheet = groups.find(group => group.title === opened);
+
+  const tab = (group: NavGroup): React.ReactElement => {
+    const unread = group.items.reduce((sum, item) => sum + (item.alert ? (item.badge ?? 0) : 0), 0);
+    return (
+      <button
+        key={group.title}
+        type="button"
+        className={`thumb-tab ${group.items.some(item => item.to === location.pathname) ? "here" : ""}`}
+        aria-expanded={opened === group.title}
+        onClick={() => setOpened(opened === group.title ? null : group.title)}
+      >
+        {group.title}
+        {unread ? <span className="badge">{unread}</span> : null}
+      </button>
+    );
+  };
+
+  return (
+    <>
+      {sheet ? (
+        <>
+          <button type="button" className="rail-scrim" aria-label="Close the menu" onClick={() => setOpened(null)} />
+          <div className="thumb-sheet">
+            {sheet.items.map(item => (
+              <NavLink key={item.to} to={item.to} className="rail-link" onClick={() => setOpened(null)}>
+                <span>{item.label}</span>
+                {item.badge ? <span className={item.alert ? "badge" : "rail-count"}>{item.badge}</span> : null}
+              </NavLink>
+            ))}
+            {sheet.title === "Council" ? (
+              <button type="button" className="rail-signout" onClick={() => signOut(trial)}>
+                Sign out
+              </button>
+            ) : null}
+          </div>
+        </>
+      ) : null}
+      <nav className="thumb-bar" aria-label="Parts of the kingdom">
+        {groups.slice(0, 2).map(tab)}
+        <button
+          type="button"
+          className={`thumb-turn ${warnings.length ? "warn" : ""}`}
+          onClick={() => void pass()}
+          disabled={passing || turns <= 0}
+          aria-label={turns > 0 ? `Pass turn, ${turns} stored` : "No turns left"}
+        >
+          <span>{turns > 0 ? "Pass turn" : "No turns"}</span>
+          <strong>{turns}</strong>
+        </button>
+        {groups.slice(2).map(tab)}
+      </nav>
+    </>
+  );
+};
+
 export const GameShell: React.FC = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const { reload } = useGame();
   const trial = useTrial();
@@ -277,10 +364,9 @@ export const GameShell: React.FC = () => {
 
   return (
     <div className="shell">
-      <Rail open={menuOpen} onNavigate={() => setMenuOpen(false)} />
-      {menuOpen ? <button type="button" className="rail-scrim" aria-label="Close the menu" onClick={() => setMenuOpen(false)} /> : null}
+      <Rail />
       <div className="shell-main">
-        <Ledger onMenu={() => setMenuOpen(true)} />
+        <Ledger />
         <main className="content">
           {trial && location.pathname !== "/kingdom/keep" ? (
             <p className="trial-notice">
@@ -293,6 +379,7 @@ export const GameShell: React.FC = () => {
           <Outlet />
         </main>
       </div>
+      <ThumbBar />
     </div>
   );
 };
