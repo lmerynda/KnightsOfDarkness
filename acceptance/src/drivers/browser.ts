@@ -201,7 +201,7 @@ class BrowserRuler implements RulerDriver {
 
   public async unitsAtHome(unit: UnitName): Promise<number> {
     await this.open("train");
-    return number(await this.page.locator(`.plate-count[title="${unitPlural[unit]} at home"]`).innerText());
+    return number(await this.page.locator(`.work-count [title="${unitPlural[unit]} at home"]`).innerText());
   }
 
   private greatWorkRow(type: SpecialBuildingType): Locator {
@@ -245,7 +245,7 @@ class BrowserRuler implements RulerDriver {
 
   public async buildingCount(building: BuildingName): Promise<number> {
     await this.open("build");
-    return number(await this.page.locator(`.plate-count[title="${buildingPlural[building]} you own"]`).innerText());
+    return number(await this.page.locator(`.work-count [title="${buildingPlural[building]} you own"]`).innerText());
   }
 
   public async landPrice(acres: number): Promise<number> {

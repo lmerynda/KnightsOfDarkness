@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
-import type { BuildingName, Counts, GameConfig, UnitName } from "../api/types";
+import type { Counts, GameConfig, UnitName } from "../api/types";
 import { militaryUnits, unitNames } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, buildingLore, resourceLabel, unitGroups, unitLore } from "../game/lore";
 import { unitHome } from "../game/rules";
 import { Icon } from "../ui/Icon";
-import { CountField, Banner, Choice } from "../ui/parts";
+import { CountField, Banner, Choice, Meter } from "../ui/parts";
 import { fillFreePlaces } from "../game/plans";
 import { formatNumber, plural } from "../ui/format";
 
@@ -109,118 +109,140 @@ export const Train: React.FC = () => {
       <Banner
         image={art("barracks")}
         title="Train"
+        slim
         help={`Idle people become workers, watchmen and soldiers. Each needs gold, its tools or weapons, and a place in its building. Soldiers are paid every turn, those away too; when the gold falls short, soldiers at home desert.`}
       />
-      <div className="row build-mode">
-        <Choice
-          label="Train or dismiss"
-          value={mode}
-          onChange={next => {
-            setMode(next);
-            setOrder({});
-          }}
-          options={[
-            { value: "train", label: "Train" },
-            { value: "dismiss", label: "Dismiss" },
-          ]}
-        />
-        <span className="figure muted">
-          <Icon name="people" /> {plural(resources.unemployed, "idle person", "idle people")}
-        </span>
-        {mode === "train" ? (
-          <button
-            className="button quiet"
-            type="button"
-            onClick={() => {
-              const free = (unit: UnitName): number => {
-                const home = unitHome[unit];
-                return home ? (details.buildingCapacity[home] ?? 0) - (details.buildingOccupancy[home] ?? 0) : 0;
-              };
-              const filled = fillFreePlaces(free, resources, config);
-              setOrder(filled);
-              if (Object.keys(filled).length === 0) notify("No free places to staff, or nothing to pay them with");
-            }}
-          >
-            Staff the free places
-          </button>
-        ) : null}
-      </div>
       <div className="stack">
-        {unitGroups.map(group => (
-          <section key={group.title}>
-            <h2 className="section-title">{group.title}</h2>
-            <div className="plates">
+        <div className="row works-tools">
+          <Choice
+            label="Train or dismiss"
+            value={mode}
+            onChange={next => {
+              setMode(next);
+              setOrder({});
+            }}
+            options={[
+              { value: "train", label: "Train" },
+              { value: "dismiss", label: "Dismiss" },
+            ]}
+          />
+          {mode === "train" ? (
+            <button
+              className="button quiet"
+              type="button"
+              onClick={() => {
+                const free = (unit: UnitName): number => {
+                  const home = unitHome[unit];
+                  return home ? (details.buildingCapacity[home] ?? 0) - (details.buildingOccupancy[home] ?? 0) : 0;
+                };
+                const filled = fillFreePlaces(free, resources, config);
+                setOrder(filled);
+                if (Object.keys(filled).length === 0) notify("No free places to staff, or nothing to pay them with");
+              }}
+            >
+              Staff the free places
+            </button>
+          ) : null}
+          <span className="figure muted works-budget">
+            <Icon name="people" /> {plural(resources.unemployed, "idle person", "idle people")}
+          </span>
+        </div>
+        <table className="ledger works">
+          <thead>
+            <tr>
+              <th aria-label="Picture" />
+              <th>Who</th>
+              <th>What they do</th>
+              <th className="number">At home</th>
+              <th>Places taken</th>
+              <th>Each costs</th>
+              <th>{mode === "train" ? "Train" : "Dismiss"}</th>
+            </tr>
+          </thead>
+          {unitGroups.map(group => (
+            <tbody key={group.title}>
+              <tr className="works-group">
+                <th colSpan={7} scope="rowgroup">
+                  {group.title}
+                </th>
+              </tr>
               {group.units.map(unit => {
                 const cost = config.trainingCost[unit];
                 const home = unitHome[unit];
                 const away = units.mobileUnits[unit];
                 const production = productionText(unit, config);
+                const lore = unitLore[unit];
                 return (
-                  <article key={unit} className={`plate ${(order[unit] ?? 0) > 0 ? "chosen" : ""}`}>
-                    <div className="plate-art" style={{ backgroundImage: `url(${art(unit)})` }}>
-                      <span className="plate-count" title={`${unitLore[unit].plural} at home`}>
-                        {formatNumber(units.availableUnits[unit])}
-                      </span>
-                    </div>
-                    <div className="plate-body">
-                      <h3>{unitLore[unit].label}</h3>
-                      <div className="facts">
-                        <span>{production ?? unitLore[unit].duty}</span>
-                        {config.attack.unitDefensePower[unit] !== undefined ? (
-                          <span>
-                            Attack {config.attack.unitAttackPower[unit] ?? 0}, defense {config.attack.unitDefensePower[unit]}
-                          </span>
-                        ) : null}
-                        {(militaryUnits as readonly UnitName[]).includes(unit) ? (
-                          <span>Paid {formatNumber(Math.round(cost.gold * config.common.soldierUpkeepRatio))} gold a turn</span>
-                        ) : null}
-                        {away > 0 ? <span className="warning">{formatNumber(away)} away from home</span> : null}
-                        {home ? (
-                          <span>
-                            {buildingLore[home].plural}: {formatNumber(details.buildingOccupancy[home] ?? 0)} of{" "}
-                            {formatNumber(details.buildingCapacity[home] ?? 0)} places,{" "}
-                            {formatNumber((config.buildingCapacity as Partial<Record<BuildingName, number>>)[home] ?? 0)} each
-                          </span>
-                        ) : (
-                          <span>Lives in a house</span>
-                        )}
-                        <span className="cost">
-                          <span className="figure">
-                            <Icon name="gold" size={13} /> {formatNumber(cost.gold)}
-                          </span>
-                          {cost.tools > 0 ? (
-                            <span className="figure">
-                              <Icon name="tools" size={13} /> {cost.tools}
-                            </span>
-                          ) : null}
-                          {cost.weapons > 0 ? (
-                            <span className="figure">
-                              <Icon name="weapons" size={13} /> {cost.weapons}
-                            </span>
-                          ) : null}
+                  <tr key={unit} className={(order[unit] ?? 0) > 0 ? "chosen" : undefined}>
+                    <td className="work-art">
+                      <img src={art(unit)} alt="" loading="lazy" />
+                    </td>
+                    <td className="work-name">
+                      <h3>{lore.label}</h3>
+                    </td>
+                    <td className="work-purpose">
+                      {production ?? lore.duty}
+                      {config.attack.unitDefensePower[unit] !== undefined ? (
+                        <span className="block">
+                          Attack {config.attack.unitAttackPower[unit] ?? 0}, defense {config.attack.unitDefensePower[unit]}
+                          {(militaryUnits as readonly UnitName[]).includes(unit)
+                            ? `, paid ${formatNumber(Math.round(cost.gold * config.common.soldierUpkeepRatio))} gold a turn`
+                            : ""}
                         </span>
-                      </div>
-                    </div>
-                    <div className="plate-input">
+                      ) : null}
+                    </td>
+                    <td className="number work-count" data-label="At home">
+                      <span title={`${lore.plural} at home`}>{formatNumber(units.availableUnits[unit])}</span>
+                      {away > 0 ? <span className="warning block work-away">{formatNumber(away)} away</span> : null}
+                    </td>
+                    <td className="work-places" data-label="Places taken">
+                      {home ? (
+                        <>
+                          <span title={buildingLore[home].plural}>
+                            {formatNumber(details.buildingOccupancy[home] ?? 0)} of {formatNumber(details.buildingCapacity[home] ?? 0)}
+                          </span>
+                          <Meter
+                            value={details.buildingOccupancy[home] ?? 0}
+                            max={details.buildingCapacity[home] ?? 0}
+                            label={`${buildingLore[home].plural}: places taken`}
+                          />
+                        </>
+                      ) : (
+                        <span className="muted">Lives in a house</span>
+                      )}
+                    </td>
+                    <td className="work-cost" data-label="Each costs">
+                      <span className="cost">
+                        <span className="figure">
+                          <Icon name="gold" size={13} /> {formatNumber(cost.gold)}
+                        </span>
+                        {cost.tools > 0 ? (
+                          <span className="figure">
+                            <Icon name="tools" size={13} /> {cost.tools}
+                          </span>
+                        ) : null}
+                        {cost.weapons > 0 ? (
+                          <span className="figure">
+                            <Icon name="weapons" size={13} /> {cost.weapons}
+                          </span>
+                        ) : null}
+                      </span>
+                    </td>
+                    <td className="work-input">
                       <CountField
-                        label={`${unitLore[unit].plural} to ${mode}`}
+                        label={`${lore.plural} to ${mode}`}
                         hideLabel
                         value={order[unit] ?? 0}
                         onChange={count => setOrder(current => ({ ...current, [unit]: count }))}
                         max={maxFor(unit)}
                         action={
                           mode === "train"
-                            ? { label: `Train ${unitLore[unit].plural.toLowerCase()}`, icon: "recruit", onClick: () => submit(unit) }
-                            : {
-                                label: `Dismiss ${unitLore[unit].plural.toLowerCase()}`,
-                                icon: "dismiss",
-                                danger: true,
-                                onClick: () => submit(unit),
-                              }
+                            ? { label: `Train ${lore.plural.toLowerCase()}`, icon: "recruit", onClick: () => submit(unit) }
+                            : { label: `Dismiss ${lore.plural.toLowerCase()}`, icon: "dismiss", danger: true, onClick: () => submit(unit) }
                         }
                       />
                       {(order[unit] ?? 0) > maxFor(unit) ? (
-                        <p className="warning plate-warning">
+                        <p className="warning work-warning">
                           Only {formatNumber(maxFor(unit))} within reach.
                           {mode === "train" && (order[unit] ?? 0) * cost.weapons > resources.weapons ? (
                             <>
@@ -230,15 +252,15 @@ export const Train: React.FC = () => {
                           ) : null}
                         </p>
                       ) : null}
-                    </div>
-                  </article>
+                    </td>
+                  </tr>
                 );
               })}
-            </div>
-          </section>
-        ))}
+            </tbody>
+          ))}
+        </table>
       </div>
-      {chosen.length > 1 ? (
+      {chosen.length > 0 ? (
         <div className="order-bar">
           <span>
             {mode === "train" ? (

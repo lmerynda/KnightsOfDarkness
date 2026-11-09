@@ -79,7 +79,7 @@ pageCheck("a plan fills the build order and the free places fill the training or
   await goTo(page, "Train");
   // a new kingdom has fewer idle people than free farm places, so every one of them goes to the farms
   await page.getByRole("button", { name: "Staff the free places" }).click();
-  assert.equal(await page.locator(".plate.chosen").count(), 1);
+  assert.equal(await page.locator(".works tr.chosen").count(), 1);
   await holds(page.getByLabel("Farmers to train", { exact: true }), "10");
 });
 
@@ -303,6 +303,38 @@ pageCheck("battles in a row against one enemy add up to one line that opens", as
   await run.first().locator("summary").click();
   assert.equal(await page.locator(".battle").count(), 2);
   assert.ok(await page.locator(".battle").first().isVisible());
+});
+
+pageCheck("every building and every unit fit one table, to compare them at a glance", async ({ game, open }) => {
+  const ruler = await game.foundsAKingdom();
+  const page = await open(ruler, { width: 1440, height: 900 });
+  await goTo(page, "Build");
+  await shows(page.locator(".works"), "Castle");
+  const heightOf = (table: string): Promise<number> => page.locator(table).evaluate(element => element.getBoundingClientRect().height);
+  const built = await heightOf(".works");
+  assert.ok(built < 800, `the table of buildings is ${built} px tall`);
+  const rows = await page.locator(".works tbody tr:not(.works-group)").count();
+  assert.equal(rows, 11);
+
+  await goTo(page, "Train");
+  await shows(page.locator(".works"), "Cavalry");
+  const trained = await heightOf(".works");
+  assert.ok(trained < 800, `the table of units is ${trained} px tall`);
+
+  // one order already shows what it comes to
+  await page.getByLabel("Farmers to train", { exact: true }).fill("1");
+  await shows(page.locator(".order-bar"), "Train 1 recruit for");
+});
+
+pageCheck("a plan chosen on the build page is remembered", async ({ game, open }) => {
+  const ruler = await game.foundsAKingdom();
+  const page = await open(ruler);
+  await goTo(page, "Build");
+  const fortress = page.getByRole("group", { name: "Plan" }).getByRole("button", { name: "Fortress" });
+  await fortress.click();
+  await page.reload();
+  await fortress.waitFor();
+  assert.equal(await fortress.getAttribute("aria-pressed"), "true");
 });
 
 pageCheck("every store in the top bar stands under its name", async ({ game, open }) => {

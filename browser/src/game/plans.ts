@@ -28,6 +28,26 @@ export const buildingPlans: BuildingPlan[] = [
   },
 ];
 
+const planKey = "buildingPlan";
+
+/** the plan this ruler chose last on this device, a convenience that may be gone */
+export const rememberedPlan = (): string => {
+  try {
+    const name = localStorage.getItem(planKey);
+    return buildingPlans.some(plan => plan.name === name) && name ? name : buildingPlans[0].name;
+  } catch {
+    return buildingPlans[0].name;
+  }
+};
+
+export const rememberPlan = (name: string): void => {
+  try {
+    localStorage.setItem(planKey, name);
+  } catch {
+    // a browser that keeps nothing simply starts from the first plan
+  }
+};
+
 /**
  * what a plan still misses on this land, one building at a time into the largest remaining gap, so a short turn of points
  * spreads across the plan; within the building points and free land at hand

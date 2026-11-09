@@ -7,7 +7,7 @@ import { art, buildingGroups, buildingLore, specialBuildingLore } from "../game/
 import { Icon } from "../ui/Icon";
 import { CountField, Banner, Choice, Meter, Panel } from "../ui/parts";
 import { Tip } from "../ui/Tip";
-import { buildingPlans, fillPlan } from "../game/plans";
+import { buildingPlans, fillPlan, rememberedPlan, rememberPlan } from "../game/plans";
 import { formatNumber, plural } from "../ui/format";
 
 const LandPurchase: React.FC = () => {
@@ -213,26 +213,19 @@ const SpecialBuildings: React.FC = () => {
 
 type Mode = "build" | "demolish";
 
-const buildingFacts = (
-  building: BuildingName,
-  config: ReturnType<typeof useGame>["config"],
-  occupancy: number | undefined,
-  capacity: number | undefined,
-): string[] => {
-  const holds: Partial<Record<BuildingName, number>> = config.buildingCapacity;
-  const facts = [buildingLore[building].purpose(holds[building] ?? 0)];
+/** what one building gives beyond its places, behind a mark so that a row stays one line */
+const buildingBonus = (building: BuildingName, config: ReturnType<typeof useGame>["config"]): string | null => {
   const percent = (ratio: number): number => Math.round(ratio * 100);
-  if (building === "tower") facts.push(`They loose ${percent(config.attack.towerFireBonus)}% more arrows when defending`);
+  if (building === "tower") return `They loose ${percent(config.attack.towerFireBonus)}% more arrows when defending.`;
   if (building === "castle")
-    facts.push(`They defend ${percent(config.attack.castleSoldierBonus)}% stronger and take as many more blows to fall`);
-  if (capacity !== undefined && occupancy !== undefined) facts.push(`${formatNumber(occupancy)} of ${formatNumber(capacity)} places taken`);
-  return facts;
+    return `They defend ${percent(config.attack.castleSoldierBonus)}% stronger and take as many more blows to fall.`;
+  return null;
 };
 
 export const Build: React.FC = () => {
   const { kingdom, details, config, act, notify } = useGame();
   const [mode, setMode] = useState<Mode>("build");
-  const [plan, setPlan] = useState(buildingPlans[0].name);
+  const [plan, setPlan] = useState(rememberedPlan);
   const [order, setOrder] = useState<Partial<Counts<BuildingName>>>({});
 
   const points = kingdom.resources.buildingPoints;
@@ -280,11 +273,11 @@ export const Build: React.FC = () => {
       <Banner
         image={art("castle")}
         title="Build"
+        slim
         help="Builders bring building points each turn. Points not spent are lost when the turn passes."
       />
       <div className="stack">
-        <LandPurchase />
-        <div className="row build-mode">
+        <div className="row works-tools">
           <Choice
             label="Build or tear down"
             value={mode}
@@ -297,99 +290,134 @@ export const Build: React.FC = () => {
               { value: "demolish", label: "Tear down" },
             ]}
           />
-          <span className="figure muted">
-            <Icon name="buildingPoints" /> {formatNumber(points)} building points this turn
+          {mode === "build" ? (
+            <span className="row plan-row">
+              <Choice
+                label="Plan"
+                value={plan}
+                onChange={next => {
+                  setPlan(next);
+                  rememberPlan(next);
+                }}
+                options={buildingPlans.map(option => ({ value: option.name, label: option.label }))}
+              />
+              <button
+                className="button quiet"
+                type="button"
+                onClick={() => {
+                  const chosen = buildingPlans.find(option => option.name === plan) ?? buildingPlans[0];
+                  const filled = fillPlan(chosen.shares(config), kingdom.buildings, kingdom.resources.land, points, freeLand, config);
+                  setOrder(filled);
+                  if (Object.keys(filled).length === 0) notify("Nothing to fill in: the plan is met, or points or free land ran out");
+                }}
+              >
+                Fill in the plan
+              </button>
+              <Tip about="plans">
+                Each plan holds a share of your land for every building: Economy for mines and farms, War with barracks and a spy guild,
+                Fortress with towers and guard houses. Filling it in enters what is still missing, the largest gap first, within this turn's
+                points and free land; nothing is raised until you say so.
+              </Tip>
+            </span>
+          ) : null}
+          <span className="figure muted works-budget">
+            <Icon name="buildingPoints" /> {formatNumber(points)} building points, {formatNumber(freeLand)} free acres
+          </span>
+          <span className="works-jumps">
+            <a href="#land">Buy land</a>
+            <a href="#great-works">Great works</a>
           </span>
         </div>
-        {mode === "build" ? (
-          <div className="row plan-row">
-            <Choice
-              label="Plan"
-              value={plan}
-              onChange={setPlan}
-              options={buildingPlans.map(option => ({ value: option.name, label: option.label }))}
-            />
-            <button
-              className="button quiet"
-              type="button"
-              onClick={() => {
-                const chosen = buildingPlans.find(option => option.name === plan) ?? buildingPlans[0];
-                const filled = fillPlan(chosen.shares(config), kingdom.buildings, kingdom.resources.land, points, freeLand, config);
-                setOrder(filled);
-                if (Object.keys(filled).length === 0) notify("Nothing to fill in: the plan is met, or points or free land ran out");
-              }}
-            >
-              Fill in the plan
-            </button>
-            <Tip about="plans">
-              Each plan holds a share of your land for every building: Economy for mines and farms, War with barracks and a spy guild,
-              Fortress with towers and guard houses. Filling it in enters what is still missing, the largest gap first, within this turn's
-              points and free land; nothing is raised until you say so.
-            </Tip>
-          </div>
-        ) : null}
-        {buildingGroups.map(group => (
-          <section key={group.title}>
-            <h2 className="section-title">{group.title}</h2>
-            <div className="plates">
-              {group.buildings.map(building => (
-                <article key={building} className={`plate ${(order[building] ?? 0) > 0 ? "chosen" : ""}`}>
-                  <div className="plate-art" style={{ backgroundImage: `url(${art(building)})` }}>
-                    <span className="plate-count" title={`${buildingLore[building].plural} you own`}>
-                      {formatNumber(kingdom.buildings[building])}
-                    </span>
-                  </div>
-                  <div className="plate-body">
-                    <h3>{buildingLore[building].label}</h3>
-                    <div className="facts">
-                      {buildingFacts(building, config, details.buildingOccupancy[building], details.buildingCapacity[building]).map(
-                        fact => (
-                          <span key={fact}>{fact}</span>
-                        ),
-                      )}
-                      <span>
-                        <Icon name="buildingPoints" size={13} /> {formatNumber(config.buildingPointCosts[building])} points each
-                      </span>
-                    </div>
-                  </div>
-                  <div className="plate-input">
-                    <CountField
-                      label={`${buildingLore[building].plural} to ${mode === "build" ? "raise" : "tear down"}`}
-                      hideLabel
-                      value={order[building] ?? 0}
-                      onChange={count => setCount(building, count)}
-                      max={maxFor(building)}
-                      action={
-                        mode === "build"
-                          ? {
-                              label: `Raise ${buildingLore[building].plural.toLowerCase()}`,
-                              icon: "hammer",
-                              onClick: () => submit(building),
-                            }
-                          : {
-                              label: `Tear down ${buildingLore[building].plural.toLowerCase()}`,
-                              icon: "pickaxe",
-                              danger: true,
-                              onClick: () => submit(building),
-                            }
-                      }
-                    />
-                    {(order[building] ?? 0) > maxFor(building) ? (
-                      <p className="warning plate-warning">
-                        {mode === "build" ? `Room for ${formatNumber(maxFor(building))}.` : `Only ${formatNumber(maxFor(building))} stand.`}
-                      </p>
-                    ) : null}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        ))}
-        {chosen.length > 1 ? (
+        <table className="ledger works">
+          <thead>
+            <tr>
+              <th aria-label="Picture" />
+              <th>Building</th>
+              <th>What one gives</th>
+              <th className="number">Standing</th>
+              <th>Places taken</th>
+              <th className="number">Points each</th>
+              <th>{mode === "build" ? "Raise" : "Tear down"}</th>
+            </tr>
+          </thead>
+          {buildingGroups.map(group => (
+            <tbody key={group.title}>
+              <tr className="works-group">
+                <th colSpan={7} scope="rowgroup">
+                  {group.title}
+                </th>
+              </tr>
+              {group.buildings.map(building => {
+                const holds = (config.buildingCapacity as Partial<Record<BuildingName, number>>)[building] ?? 0;
+                const capacity = details.buildingCapacity[building];
+                const occupancy = details.buildingOccupancy[building];
+                const bonus = buildingBonus(building, config);
+                const lore = buildingLore[building];
+                return (
+                  <tr key={building} className={(order[building] ?? 0) > 0 ? "chosen" : undefined}>
+                    <td className="work-art">
+                      <img src={art(building)} alt="" loading="lazy" />
+                    </td>
+                    <td className="work-name">
+                      <h3>{lore.label}</h3>
+                    </td>
+                    <td className="work-purpose">
+                      {lore.purpose(holds)}
+                      {bonus ? <Tip about={lore.label}>{bonus}</Tip> : null}
+                    </td>
+                    <td className="number work-count" data-label="Standing">
+                      <span title={`${lore.plural} you own`}>{formatNumber(kingdom.buildings[building])}</span>
+                    </td>
+                    <td className="work-places" data-label="Places taken">
+                      {capacity !== undefined && occupancy !== undefined ? (
+                        <>
+                          <span>
+                            {formatNumber(occupancy)} of {formatNumber(capacity)}
+                          </span>
+                          <Meter value={occupancy} max={capacity} label={`${lore.plural}: places taken`} />
+                        </>
+                      ) : null}
+                    </td>
+                    <td className="number work-cost" data-label="Points each">
+                      {formatNumber(config.buildingPointCosts[building])}
+                    </td>
+                    <td className="work-input">
+                      <CountField
+                        label={`${lore.plural} to ${mode === "build" ? "raise" : "tear down"}`}
+                        hideLabel
+                        value={order[building] ?? 0}
+                        onChange={count => setCount(building, count)}
+                        max={maxFor(building)}
+                        action={
+                          mode === "build"
+                            ? { label: `Raise ${lore.plural.toLowerCase()}`, icon: "hammer", onClick: () => submit(building) }
+                            : {
+                                label: `Tear down ${lore.plural.toLowerCase()}`,
+                                icon: "pickaxe",
+                                danger: true,
+                                onClick: () => submit(building),
+                              }
+                        }
+                      />
+                      {(order[building] ?? 0) > maxFor(building) ? (
+                        <p className="warning work-warning">
+                          {mode === "build"
+                            ? `Room for ${formatNumber(maxFor(building))}.`
+                            : `Only ${formatNumber(maxFor(building))} stand.`}
+                        </p>
+                      ) : null}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          ))}
+        </table>
+        {chosen.length > 0 ? (
           <div className="order-bar">
             <span>
               {mode === "build"
-                ? `Raise ${plural(ordered, "building", "buildings")} for ${formatNumber(cost)} building points, on ${plural(ordered, "acre", "acres")}`
+                ? `Raise ${plural(ordered, "building", "buildings")} for ${formatNumber(cost)} of ${formatNumber(points)} building points, on ${formatNumber(ordered)} of ${plural(freeLand, "free acre", "free acres")}`
                 : `Tear down ${plural(ordered, "building", "buildings")}, freeing their land`}
               {overBudget ? (
                 <span className="warning"> {pointsLeft < 0 ? "More points than you have." : "More than your free land."}</span>
@@ -405,7 +433,12 @@ export const Build: React.FC = () => {
             </span>
           </div>
         ) : null}
-        <SpecialBuildings />
+        <div id="land" className="jump-target">
+          <LandPurchase />
+        </div>
+        <div id="great-works" className="jump-target">
+          <SpecialBuildings />
+        </div>
       </div>
     </>
   );
