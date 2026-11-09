@@ -544,6 +544,7 @@
   height: 44px;
   border-radius: var(--radius-small);
   object-fit: cover;
+  object-position: center 25%;
 }
 
 .work-name h3 {
@@ -556,11 +557,16 @@
   font-size: var(--step--1);
 }
 
+.work-fighting {
+  display: block;
+}
+
 .work-count {
   font-weight: 700;
 }
 
 .work-away {
+  display: block;
   font-size: var(--step--1);
   font-weight: 400;
 }
@@ -635,14 +641,15 @@
     grid-column: 2 / -1;
   }
 
-  .work-count,
-  .work-places,
-  .work-cost {
+  .works .work-count,
+  .works .work-places,
+  .works .work-cost {
     grid-column: span 1;
+    align-self: start;
     text-align: left;
   }
 
-  .work-count {
+  .works .work-count {
     grid-column: 1 / 3;
   }
 

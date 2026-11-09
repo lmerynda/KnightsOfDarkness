@@ -7,7 +7,7 @@ import { World } from "./api/client.ts";
 import { apiVisitors } from "./drivers/api.ts";
 import { Game } from "./dsl/game.ts";
 import type { Ruler } from "./dsl/ruler.ts";
-import { noPeace, startServer, type GameServer } from "./server.ts";
+import { noPeace, startServer, type ConfigOverrides, type GameServer } from "./server.ts";
 import { startUi, type Ui } from "./ui.ts";
 
 // Checks only a browser can make: how the pages look and help. The world is set up through the API in the game's own
@@ -18,11 +18,17 @@ const evidence = join(resolve(dirname(fileURLToPath(import.meta.url)), ".."), "t
 type Stage = { server: GameServer; ui: Ui; browser: Browser };
 
 let stage: Promise<Stage> | undefined;
+let rules: ConfigOverrides = noPeace;
+
+/** the rules this file's world plays by; called before its first check */
+export const pagesOn = (overrides: ConfigOverrides): void => {
+  rules = overrides;
+};
 
 /** the file's world and browser, started by its first check, so a file whose checks a name filter skipped starts nothing */
 const world = (): Promise<Stage> =>
   (stage ??= (async () => {
-    const server = await startServer(noPeace);
+    const server = await startServer(rules);
     const ui = await startUi(server.url);
     return { server, ui, browser: await chromium.launch({ channel: "chrome" }) };
   })());

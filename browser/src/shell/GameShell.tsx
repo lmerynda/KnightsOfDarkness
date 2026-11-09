@@ -43,7 +43,7 @@ const useNavGroups = (): NavGroup[] => {
     {
       title: "Realm",
       items: [
-        { to: "/kingdom/overview", label: "Overview" },
+        { to: "/kingdom/overview", label: "Your turn" },
         { to: "/kingdom/build", label: "Build" },
         { to: "/kingdom/train", label: "Train" },
       ],

@@ -124,7 +124,8 @@ export const Landing: React.FC = () => {
           </p>
           {monuments.map(monument => (
             <p className="muted" key={monument.allianceName}>
-              The monument of {monument.allianceName} at {monument.seat}: {monumentStanding(monument).toLowerCase()}, {monumentGarrison(monument)}.
+              The monument of {monument.allianceName} at {monument.seat}: {monumentStanding(monument).toLowerCase()},{" "}
+              {monumentGarrison(monument)}.
             </p>
           ))}
         </div>

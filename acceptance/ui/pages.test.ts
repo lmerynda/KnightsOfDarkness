@@ -52,7 +52,7 @@ pageCheck("the rules wait behind a mark until hovered or tapped", async ({ game,
   await gone(rule);
 
   // words and the figures in the top bar explain themselves the same way
-  await goTo(page, "Overview");
+  await goTo(page, "Your turn");
   await shows(page.locator(".realm-meters"), /Idle people[\s\S]*at work/);
   await page.locator(".term", { hasText: "counter intelligence" }).hover();
   await shows(rule, "for each spy");
@@ -168,7 +168,7 @@ pageCheck("the steward sets up a strike to join, and the army waits at the borde
   const ours = page.locator("tr").filter({ hasText: target.name });
   await shows(ours, "At the border");
   await shows(ours, "or alone in 3 turns");
-  await goTo(page, "Overview");
+  await goTo(page, "Your turn");
   await shows(page.locator("main"), `Army at the border of ${target}, waiting for ${squire}'s army`);
 
   const squirePage = await open(squire);
@@ -239,6 +239,13 @@ pageCheck("looks at one kingdom make one row that says what changed", async ({ g
 
   // the kingdom looked at last stands open; the other row counts its looks and shows how its gold moved
   await shows(page.locator(".dossier-detail"), "People at home");
+  // the figures inside stand beside their names, on a phone too, not under them
+  const phone = await open(spy, { width: 390, height: 844 });
+  await phone.goto(page.url());
+  const gold = phone.locator(".dossier-detail tr").first();
+  await gold.waitFor();
+  const [name, figure] = await gold.locator("td").evaluateAll(cells => cells.map(cell => cell.getBoundingClientRect().top));
+  assert.equal(Math.round(name), Math.round(figure));
   const looked = rows.filter({ hasText: target.name });
   await shows(looked.locator('td[data-label="Looks"]'), "2");
   await shows(looked.locator('td[data-label="Gold"] .dossier-change'), /^\+[\d,]+$/);
@@ -277,8 +284,11 @@ pageCheck("spies and the army both warn of allies standing guard unseen", async 
   await goTo(page, "Spies");
   await shows(page.locator(".dossier-note"), /An army here last met [\d,]+ defense: allies stand guard/);
   await goTo(page, "Army");
-  await page.getByRole("combobox", { name: /^Target/ }).selectOption(target.name);
-  await shows(page.locator(".panel").filter({ has: page.getByRole("heading", { name: "Send an army" }) }), "allies stand guard");
+  // Spies has a Target too, so the army page must be up before choosing one
+  const sendArmy = page.locator(".panel").filter({ has: page.getByRole("heading", { name: "Send an army" }) });
+  await sendArmy.waitFor();
+  await sendArmy.getByRole("combobox", { name: /^Target/ }).selectOption(target.name);
+  await shows(sendArmy, "allies stand guard");
 });
 
 pageCheck("battles in a row against one enemy add up to one line that opens", async ({ game, open }) => {
@@ -315,6 +325,10 @@ pageCheck("every building and every unit fit one table, to compare them at a gla
   assert.ok(built < 800, `the table of buildings is ${built} px tall`);
   const rows = await page.locator(".works tbody tr:not(.works-group)").count();
   assert.equal(rows, 11);
+  // a building nobody can work in yet has nothing to fill, so it shows no meter that reads as full
+  const market = page.locator(".works tr").filter({ hasText: "Market" });
+  await shows(market.locator(".work-places"), "0 of 0");
+  assert.equal(await market.getByRole("meter").count(), 0);
 
   await goTo(page, "Train");
   await shows(page.locator(".works"), "Cavalry");

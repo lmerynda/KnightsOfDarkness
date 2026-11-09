@@ -33,7 +33,7 @@ An alliance's emperor may found one monument an era in a member's kingdom. Membe
 
 Build can fill in a plan (Economy, War or Fortress, the land shares the simulated rulers grow on) one building at a time into the largest gap, and Train can staff every free workplace; both only fill in the order, which the player then raises or trains.
 
-The pages are written for players who know the game: they show figures, and the steward on the overview warns only of what will not wait (an army on the way, hunger, unpaid soldiers, an ally's call for gold, a full turn store). The rules sit in tooltips, behind a `?` beside a title or a dotted word, opened by hovering, focusing or tapping.
+The pages are written for players who know the game: they show figures, and Your turn lists only what waits on the ruler: first what will not wait (an army on the way, hunger, unpaid soldiers, a crumbling or unguarded monument, an ally's call for gold, a full turn store), then the turn's own work, with its order worked out so that one click carries it out (the building points that would otherwise be lost, by the plan last chosen on Build, and idle people for the free workplaces). The rules sit in tooltips, behind a `?` beside a title or a dotted word, opened by hovering, focusing or tapping.
 
 ## How a turn works
 

@@ -183,7 +183,7 @@ export const Train: React.FC = () => {
                     <td className="work-purpose">
                       {production ?? lore.duty}
                       {config.attack.unitDefensePower[unit] !== undefined ? (
-                        <span className="block">
+                        <span className="work-fighting">
                           Attack {config.attack.unitAttackPower[unit] ?? 0}, defense {config.attack.unitDefensePower[unit]}
                           {(militaryUnits as readonly UnitName[]).includes(unit)
                             ? `, paid ${formatNumber(Math.round(cost.gold * config.common.soldierUpkeepRatio))} gold a turn`
@@ -201,11 +201,13 @@ export const Train: React.FC = () => {
                           <span title={buildingLore[home].plural}>
                             {formatNumber(details.buildingOccupancy[home] ?? 0)} of {formatNumber(details.buildingCapacity[home] ?? 0)}
                           </span>
-                          <Meter
-                            value={details.buildingOccupancy[home] ?? 0}
-                            max={details.buildingCapacity[home] ?? 0}
-                            label={`${buildingLore[home].plural}: places taken`}
-                          />
+                          {(details.buildingCapacity[home] ?? 0) > 0 ? (
+                            <Meter
+                              value={details.buildingOccupancy[home] ?? 0}
+                              max={details.buildingCapacity[home] ?? 0}
+                              label={`${buildingLore[home].plural}: places taken`}
+                            />
+                          ) : null}
                         </>
                       ) : (
                         <span className="muted">Lives in a house</span>

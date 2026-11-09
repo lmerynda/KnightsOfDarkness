@@ -90,7 +90,20 @@
   margin-bottom: 6px;
 }
 
-/* ---------- the steward's counsel ---------- */
+.turn-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .turn-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- what waits on the ruler ---------- */
 .counsel {
   display: grid;
   gap: var(--space-2);
@@ -112,7 +125,42 @@
   border-bottom: none;
 }
 
-.counsel li.urgent {
+.counsel-picture {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-small);
+  object-fit: cover;
+}
+
+.counsel li > svg {
+  width: 48px;
+}
+
+.counsel-text {
+  display: grid;
+  gap: 2px;
+}
+
+.counsel-line {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  line-height: 1.2;
+}
+
+.counsel-detail {
+  font-size: var(--step--1);
+}
+
+.counsel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.counsel li.urgent .counsel-line,
+.counsel li.urgent > svg {
   color: var(--ember);
 }
 
@@ -121,9 +169,13 @@
     grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .counsel li .button {
+  .counsel-actions {
     grid-column: 2;
-    justify-self: start;
+    justify-content: flex-start;
+  }
+
+  .counsel-actions .button {
+    min-height: 44px;
   }
 }
 
@@ -324,13 +376,26 @@
 
 .battle-run summary {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: 1em minmax(0, 1.1fr) minmax(0, 1.5fr) 9em;
   align-items: center;
-  gap: var(--space-1) var(--space-4);
+  gap: var(--space-1) var(--space-3);
   min-height: 44px;
   padding: var(--space-2) 0;
   list-style: none;
   cursor: pointer;
+}
+
+/* it opens: a mark that turns */
+.battle-run summary::before {
+  content: "\203A";
+  color: var(--gold);
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: transform 120ms ease;
+}
+
+.battle-run[open] summary::before {
+  transform: rotate(90deg);
 }
 
 .battle-run summary::-webkit-details-marker {
@@ -339,6 +404,10 @@
 
 .battle-run summary:hover {
   background: rgba(142, 154, 166, 0.06);
+}
+
+.battle-run-taken {
+  text-align: right;
 }
 
 .battle-run[open] > .battles {
@@ -363,22 +432,38 @@
   margin-left: var(--space-2);
 }
 
-.dossier.open td,
-.dossier-detail td {
+.dossier.open > td,
+.dossier-detail > td {
   background: rgba(184, 154, 90, 0.07);
 }
 
-.dossier-note td {
+.dossier-note > td {
   padding-top: 0;
 }
 
-.dossier-detail td {
+.dossier-detail > td {
   padding-bottom: var(--space-4);
 }
 
 @media (max-width: 760px) {
   .battle-run summary {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 1em minmax(0, 1fr);
+  }
+
+  .battle-run summary > * {
+    grid-column: 2;
+  }
+
+  .battle-run summary::before {
+    grid-row: 1;
+  }
+
+  .battle-run-taken {
+    text-align: left;
+  }
+
+  .battle-run-taken:empty {
+    display: none;
   }
 
   /* a row becomes a card, each figure under its name */
@@ -387,9 +472,9 @@
   }
 
   .dossiers,
-  .dossiers tbody,
-  .dossiers tr,
-  .dossiers td {
+  .dossiers > tbody,
+  .dossiers > tbody > tr,
+  .dossiers > tbody > tr > td {
     display: block;
   }
 
@@ -401,28 +486,29 @@
     border-top: 1px solid var(--rule-strong);
   }
 
-  .dossier td {
+  .dossier > td {
     padding: 0;
     border: 0;
+    background: none !important;
   }
 
-  .dossier td:first-child,
+  .dossier > td:first-child,
   .dossier-actions {
     grid-column: 1 / -1;
   }
 
-  .dossier td[data-label] {
+  .ledger .dossier > td[data-label] {
     text-align: left;
   }
 
-  .dossier td[data-label]::before {
+  .dossier > td[data-label]::before {
     content: attr(data-label);
     display: block;
     color: var(--pewter);
     font-size: var(--step--1);
   }
 
-  .dossier-actions {
+  .ledger .dossier-actions {
     text-align: left;
   }
 
@@ -430,9 +516,15 @@
     min-height: 44px;
   }
 
-  .dossier-note td,
-  .dossier-detail td {
+  .dossier-note > td,
+  .dossier-detail > td {
     border: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .forecast-source {
+    display: none;
   }
 }
 

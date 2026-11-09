@@ -374,7 +374,7 @@ export const Build: React.FC = () => {
                           <span>
                             {formatNumber(occupancy)} of {formatNumber(capacity)}
                           </span>
-                          <Meter value={occupancy} max={capacity} label={`${lore.plural}: places taken`} />
+                          {capacity > 0 ? <Meter value={occupancy} max={capacity} label={`${lore.plural}: places taken`} /> : null}
                         </>
                       ) : null}
                     </td>

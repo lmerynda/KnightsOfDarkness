@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
-import type { MarketOffer, Notification, ResourceName, TurnReport, UnitName, WarRoom } from "../api/types";
+import type { MarketOffer, MonumentLedger, Notification, ResourceName, TurnReport, UnitName, WarRoom } from "../api/types";
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
+import type { Chore } from "../game/advice";
 import { counsel } from "../game/advice";
 import { ChronicleEntry } from "../game/chronicle";
 import { attackGoal } from "../game/rules";
@@ -38,7 +39,7 @@ const departures = (report: TurnReport): string[] => {
 };
 
 const TurnLines: React.FC<{ report: TurnReport }> = ({ report }) => (
-  <table className="ledger">
+  <table className="ledger compact-ledger">
     <tbody>
       {producedResources.map(({ resource, icon }) => {
         const produced = report.resourcesProduced[resource] ?? 0;
@@ -51,7 +52,15 @@ const TurnLines: React.FC<{ report: TurnReport }> = ({ report }) => (
               </span>
             </td>
             <td className="number">{signed(produced)}</td>
-            <td className="number muted">{bonus > 1 ? `special buildings ×${bonus.toFixed(1)}` : ""}</td>
+            <td className="number muted">
+              {bonus > 1 ? (
+                <>
+                  <span className="forecast-source">special buildings </span>×{bonus.toFixed(1)}
+                </>
+              ) : (
+                ""
+              )}
+            </td>
           </tr>
         );
       })}
@@ -305,10 +314,11 @@ const RecentChronicle: React.FC = () => {
   );
 };
 
-const Counsel: React.FC = () => {
-  const { kingdom, details, config, rankings } = useGame();
+const Waiting: React.FC = () => {
+  const { kingdom, details, config, rankings, act } = useGame();
   const [warRoom, setWarRoom] = useState<WarRoom | undefined>(undefined);
   const [offers, setOffers] = useState<MarketOffer[]>([]);
+  const [monument, setMonument] = useState<MonumentLedger | null>(null);
   useEffect(() => {
     if (!kingdom.allianceName) return;
     api
@@ -319,27 +329,73 @@ const Counsel: React.FC = () => {
       .alliesOffers()
       .then(setOffers)
       .catch(() => undefined);
+    // an alliance with no monument answers with nothing to read
+    api
+      .monument()
+      .then(setMonument)
+      .catch(() => setMonument(null));
   }, [kingdom]);
   const allies = (rankings?.kingdoms ?? [])
     .filter(rank => kingdom.allianceName && rank.allianceName === kingdom.allianceName && rank.kingdomName !== kingdom.name)
     .map(rank => rank.kingdomName);
-  const lines = counsel(kingdom, details, config, warRoom && kingdom.allianceName ? { allies, warRoom, offers } : undefined);
-  if (!lines.length) return null;
+  const lines = counsel(kingdom, details, config, warRoom && kingdom.allianceName ? { allies, warRoom, offers, monument } : undefined);
+
+  const carryOut = (chore: Chore): void => {
+    const told = (
+      done: Record<string, number> | null | undefined,
+      name: string,
+      names: string,
+      verb: string,
+    ): { text: string; failure: boolean } => {
+      const count = Object.values(done ?? {}).reduce((sum, each) => sum + each, 0);
+      return { text: `${verb} ${plural(count, name, names)}`, failure: count === 0 };
+    };
+    if (chore.kind === "build") {
+      void act(
+        () => api.build(chore.order),
+        outcome => told(outcome.data, "building", "buildings", "Raised"),
+      );
+    } else {
+      void act(
+        () => api.train(chore.order),
+        outcome => told(outcome.data, "recruit", "recruits", "Trained"),
+      );
+    }
+  };
+
   return (
-    <Panel title="The steward warns">
-      <ul className="counsel">
-        {lines.map(line => (
-          <li key={line.text} className={line.urgent ? "urgent" : undefined}>
-            <Icon name={line.urgent ? "warning" : "scroll"} size={18} />
-            <span>{line.text}</span>
-            {line.link ? (
-              <Link className="button quiet small" to={line.link.to}>
-                {line.link.label}
-              </Link>
-            ) : null}
-          </li>
-        ))}
-      </ul>
+    <Panel title="Waiting on you">
+      {lines.length === 0 ? (
+        <p className="muted">Nothing waits. Pass the turn when you are ready.</p>
+      ) : (
+        <ul className="counsel">
+          {lines.map(line => (
+            <li key={line.text} className={line.urgent ? "urgent" : undefined}>
+              {line.picture ? (
+                <img className="counsel-picture" src={line.picture} alt="" />
+              ) : (
+                <Icon name={line.urgent ? "warning" : "scroll"} size={22} />
+              )}
+              <span className="counsel-text">
+                <span className="counsel-line">{line.text}</span>
+                {line.detail ? <span className="muted counsel-detail">{line.detail}</span> : null}
+              </span>
+              <span className="counsel-actions">
+                {line.chore ? (
+                  <button className="button small" type="button" onClick={() => line.chore && carryOut(line.chore.chore)}>
+                    {line.chore.label}
+                  </button>
+                ) : null}
+                {line.link ? (
+                  <Link className="button quiet small" to={line.link.to}>
+                    {line.link.label}
+                  </Link>
+                ) : null}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </Panel>
   );
 };
@@ -349,18 +405,18 @@ export const Overview: React.FC = () => {
   const stage = realmStage(kingdom.resources.land);
   return (
     <>
-      <Banner image={art(stage.art)} title={kingdom.name}>
+      <Banner image={art(stage.art)} title={kingdom.name} slim>
         {stage.title} of {formatNumber(kingdom.resources.land)} acres · {kingdom.allianceName ?? "no alliance"}
       </Banner>
-      <div className="stack">
-        <Counsel />
-        <div className="two-columns">
+      <div className="turn-columns">
+        <div className="stack">
+          <Waiting />
+          <Realm />
+        </div>
+        <div className="stack">
           <Forecast />
-          <div className="stack">
-            <Realm />
-            <Movements />
-            <RecentChronicle />
-          </div>
+          <Movements />
+          <RecentChronicle />
         </div>
       </div>
     </>

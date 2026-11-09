@@ -486,11 +486,7 @@ const BattleRun: React.FC<{ run: BattleReport[]; own: string }> = ({ run, own })
           {attacking ? `${formatNumber(total(run, report => soldiersIn(report.unitsSent)))} sent, ` : ""}
           {formatNumber(ours)} of ours fell, {formatNumber(theirs)} of theirs, {ago(first.date)}
         </span>
-        {taken ? (
-          <span className={attacking ? "gain" : "loss"}>
-            {attacking ? "Took" : "Lost"} {taken}
-          </span>
-        ) : null}
+        <span className={`battle-run-taken ${attacking ? "gain" : "loss"}`}>{taken ? `${attacking ? "Took" : "Lost"} ${taken}` : ""}</span>
       </summary>
       <div className="battles">
         {run.map(report => (
