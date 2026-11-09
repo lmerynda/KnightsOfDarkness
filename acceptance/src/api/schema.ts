@@ -1598,7 +1598,7 @@ export interface components {
             winningAlliance: string | null;
         };
         /** @enum {string} */
-        EraEnding: "clock";
+        EraEnding: "clock" | "monument";
         Espionage: {
             /** Format: double */
             counterIntelligencePerGuard: number;
@@ -2071,6 +2071,8 @@ export interface components {
         Monument: {
             /** Format: double */
             decayRatio: number;
+            /** Format: int32 */
+            holdTicks: number;
             /** Format: double */
             maxRazeRatio: number;
             stageCost: components["schemas"]["StageCost"];
@@ -2096,6 +2098,8 @@ export interface components {
             seat: string;
             /** Format: double */
             stages: number;
+            /** Format: int32 */
+            ticksToWin: number | null;
             /** Format: int32 */
             totalStages: number;
         };

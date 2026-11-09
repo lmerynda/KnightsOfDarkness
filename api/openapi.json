@@ -1402,7 +1402,7 @@
         "type" : "object"
       },
       "EraEnding" : {
-        "enum" : [ "clock" ],
+        "enum" : [ "clock", "monument" ],
         "type" : "string"
       },
       "Espionage" : {
@@ -2482,6 +2482,10 @@
             "format" : "double",
             "type" : "number"
           },
+          "holdTicks" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
           "maxRazeRatio" : {
             "format" : "double",
             "type" : "number"
@@ -2497,7 +2501,7 @@
             "$ref" : "#/components/schemas/Upkeep"
           }
         },
-        "required" : [ "decayRatio", "maxRazeRatio", "stageCost", "stages", "upkeepPerStage" ],
+        "required" : [ "decayRatio", "holdTicks", "maxRazeRatio", "stageCost", "stages", "upkeepPerStage" ],
         "type" : "object"
       },
       "MonumentContributionDto" : {
@@ -2541,12 +2545,16 @@
             "format" : "double",
             "type" : "number"
           },
+          "ticksToWin" : {
+            "format" : "int32",
+            "type" : [ "integer", "null" ]
+          },
           "totalStages" : {
             "format" : "int32",
             "type" : "integer"
           }
         },
-        "required" : [ "allianceName", "complete", "garrison", "seat", "stages", "totalStages" ],
+        "required" : [ "allianceName", "complete", "garrison", "seat", "stages", "ticksToWin", "totalStages" ],
         "type" : "object"
       },
       "MonumentGarrisonDto" : {

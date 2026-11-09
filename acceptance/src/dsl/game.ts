@@ -81,6 +81,11 @@ export class Game {
     await this.world.advance(ticks);
   }
 
+  /** the number of the era being played */
+  public async currentEra(): Promise<number> {
+    return (await this.world.era()).number;
+  }
+
   /** the clock runs on to the era's last tick, which ends it; says which era that was */
   public async theEraRunsOut(): Promise<number> {
     const era = await this.world.era();

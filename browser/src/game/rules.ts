@@ -102,10 +102,20 @@ export const monumentGarrison = (monument: Monument): string =>
 
 /** how far a monument stands, in everyone's words */
 export const monumentStanding = (monument: Monument): string =>
-  monument.complete ? "Stands complete" : `Stage ${monument.stages} of ${monument.totalStages}`;
+  monument.complete
+    ? `Stands complete, ${monument.ticksToWin === 1 ? "1 turn" : `${monument.ticksToWin ?? 0} turns`} from winning the era`
+    : `Stage ${monument.stages} of ${monument.totalStages}`;
 
 /** how the hall of fame tells the way an era ended */
-export const eraEndings: Record<EraEnding, string> = { clock: "when the clock ran out" };
+export const eraEndings: Record<EraEnding, string> = { clock: "when the clock ran out", monument: "by completing its monument" };
+
+/** what ends the era first: a complete monument whose hold runs out, or else the clock */
+export const eraOutlook = (era: Era, monuments: Monument[]): string => {
+  const first = monuments.filter(monument => monument.complete).sort((one, other) => (one.ticksToWin ?? 0) - (other.ticksToWin ?? 0))[0];
+  if (!first) return `The clock ends it in about ${eraTimeLeft(era)}.`;
+  const turns = first.ticksToWin === 1 ? "1 turn" : `${first.ticksToWin ?? 0} turns`;
+  return `The monument of ${first.allianceName} wins it in ${turns} unless an army knocks it down; otherwise the clock ends it in about ${eraTimeLeft(era)}.`;
+};
 
 export const eraTimeLeft = (era: Era): string => {
   const millis = Math.max(0, era.maxLengthInTicks - era.ticksElapsed) * era.tickPeriodMillis;

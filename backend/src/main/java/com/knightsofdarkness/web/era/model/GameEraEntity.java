@@ -3,6 +3,7 @@ package com.knightsofdarkness.web.era.model;
 import java.time.Instant;
 
 import org.hibernate.annotations.JdbcTypeCode;
+import org.jspecify.annotations.Nullable;
 import org.hibernate.type.SqlTypes;
 
 import com.knightsofdarkness.web.common.game.EraDto;
@@ -55,12 +56,12 @@ public class GameEraEntity {
         return ticksElapsed >= maxLengthInTicks;
     }
 
-    public void end(Instant now, EraEnding ending, RankingsDto rankings)
+    public void end(Instant now, EraEnding ending, @Nullable String winner, RankingsDto rankings)
     {
         endedAt = now;
         endedBy = ending;
         finalRankings = rankings;
-        winningAlliance = rankings.alliances().isEmpty() ? null : rankings.alliances().get(0).allianceName();
+        winningAlliance = winner;
     }
 
     public int getNumber()

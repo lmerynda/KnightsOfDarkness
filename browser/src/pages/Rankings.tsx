@@ -7,7 +7,7 @@ import { art } from "../game/lore";
 import { Crest } from "../ui/Crest";
 import { Banner, Meter, Panel } from "../ui/parts";
 import { formatNumber, plural } from "../ui/format";
-import { eraEndings, eraTimeLeft, monumentGarrison, monumentStanding } from "../game/rules";
+import { eraEndings, eraOutlook, monumentGarrison, monumentStanding } from "../game/rules";
 
 export const RankingsPage: React.FC = () => {
   const { kingdom, rankings } = useGame();
@@ -35,13 +35,13 @@ export const RankingsPage: React.FC = () => {
       <Banner
         image={art("victory")}
         title="Rankings"
-        help="Land decides the era. When the clock runs out, the alliance holding the most land wins it, the largest kingdom is remembered too, and every realm starts again."
+        help="An alliance whose monument stands complete and fed through its hold wins the era at once. If none does, land decides it: when the clock runs out, the alliance holding the most land wins. The largest kingdom is remembered too, and every realm starts again."
       />
       <div className="stack">
         {era ? (
           <Panel
             title={`Era ${era.number}`}
-            lede={`The clock ends it in about ${eraTimeLeft(era)}.`}
+            lede={eraOutlook(era, monuments ?? [])}
             help={`An era lasts at most ${formatNumber(era.maxLengthInTicks)} turns.`}
           >
             <Meter value={era.ticksElapsed} max={era.maxLengthInTicks} label="Era progress" />
@@ -150,12 +150,15 @@ export const RankingsPage: React.FC = () => {
                 <ul className="plain-list">
                   {history.map(past => {
                     const largest = past.finalRankings?.kingdoms[0];
-                    const winner = past.finalRankings?.alliances[0];
+                    // a monument wins whatever the land, so the winner is not always the largest alliance
+                    const winner = past.finalRankings?.alliances.find(alliance => alliance.allianceName === past.winningAlliance);
                     return (
                       <li key={past.number}>
                         <span>
                           Era {past.number}:{" "}
-                          {winner ? `${winner.allianceName} won with ${formatNumber(winner.land)} land` : "no alliance sworn"}{" "}
+                          {past.winningAlliance
+                            ? `${past.winningAlliance} won${winner ? ` with ${formatNumber(winner.land)} land` : ""}`
+                            : "no alliance sworn"}{" "}
                           {past.endedBy ? eraEndings[past.endedBy] : ""}
                           {largest ? (
                             <span className="muted">

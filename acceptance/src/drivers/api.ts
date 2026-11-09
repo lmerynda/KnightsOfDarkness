@@ -383,7 +383,7 @@ class ApiRuler implements RulerDriver {
   }
 
   public async monuments(): Promise<MonumentView[]> {
-    return (await this.get<Schemas["MonumentDto"][]>("/game/monuments")).map(monument => ({ alliance: monument.allianceName, seat: monument.seat, stages: monument.stages, complete: monument.complete, garrison: monument.garrison }));
+    return (await this.get<Schemas["MonumentDto"][]>("/game/monuments")).map(monument => ({ alliance: monument.allianceName, seat: monument.seat, stages: monument.stages, complete: monument.complete, ticksToWin: monument.ticksToWin ?? null, garrison: monument.garrison }));
   }
 
   public async alliance(): Promise<{ name: string; members: string[] } | null> {

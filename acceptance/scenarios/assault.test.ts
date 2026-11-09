@@ -13,6 +13,8 @@ playedOn({
   "monument.stageCost.tools": 10,
   "monument.upkeepPerStage.gold": 0,
   "monument.upkeepPerStage.food": 0,
+  // no monument wins the era here: winning.test.ts has a world of its own, since a won era starts every kingdom anew
+  "monument.holdTicks": 1_000_000,
 });
 
 const fourStages = { gold: 4000, iron: 40, tools: 40 };

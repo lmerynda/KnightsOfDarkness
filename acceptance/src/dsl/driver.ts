@@ -13,7 +13,7 @@ export type PastEra = { era: number; winner: string | null; largest: string | nu
 export type MonumentGoods = { gold: number; iron: number; tools: number; food: number };
 
 /** what everyone sees of a monument */
-export type MonumentView = { alliance: string; seat: string; stages: number; complete: boolean; garrison: number };
+export type MonumentView = { alliance: string; seat: string; stages: number; complete: boolean; ticksToWin: number | null; garrison: number };
 
 /** what an alliance's members see of their own */
 export type MonumentLedger = { stages: number; store: MonumentGoods; crumbling: boolean; soldiersOnGuard: number };

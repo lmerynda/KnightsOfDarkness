@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/endpoints";
-import type { MarketOffer, MonumentLedger, Notification, ResourceName, TurnReport, UnitName, WarRoom } from "../api/types";
+import type { MarketOffer, Monument, MonumentLedger, Notification, ResourceName, TurnReport, UnitName, WarRoom } from "../api/types";
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
 import type { Chore } from "../game/advice";
@@ -319,6 +319,13 @@ const Waiting: React.FC = () => {
   const [warRoom, setWarRoom] = useState<WarRoom | undefined>(undefined);
   const [offers, setOffers] = useState<MarketOffer[]>([]);
   const [monument, setMonument] = useState<MonumentLedger | null>(null);
+  const [monuments, setMonuments] = useState<Monument[]>([]);
+  useEffect(() => {
+    api
+      .monuments()
+      .then(setMonuments)
+      .catch(() => undefined);
+  }, [kingdom]);
   useEffect(() => {
     if (!kingdom.allianceName) return;
     api
@@ -338,7 +345,13 @@ const Waiting: React.FC = () => {
   const allies = (rankings?.kingdoms ?? [])
     .filter(rank => kingdom.allianceName && rank.allianceName === kingdom.allianceName && rank.kingdomName !== kingdom.name)
     .map(rank => rank.kingdomName);
-  const lines = counsel(kingdom, details, config, warRoom && kingdom.allianceName ? { allies, warRoom, offers, monument } : undefined);
+  const lines = counsel(
+    kingdom,
+    details,
+    config,
+    warRoom && kingdom.allianceName ? { allies, warRoom, offers, monument } : undefined,
+    monuments,
+  );
 
   const carryOut = (chore: Chore): void => {
     const told = (

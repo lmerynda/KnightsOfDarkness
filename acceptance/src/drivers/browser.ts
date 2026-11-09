@@ -667,9 +667,10 @@ class BrowserRuler implements RulerDriver {
     await this.open("rankings");
     await this.panel("Monuments").waitFor();
     return (await this.lines(this.panel("Monuments").locator("li"))).map(line => {
-      const seen = /^(.+) at (.+?) (Stage ([\d.]+) of \d+|Stands complete), (?:no garrison|about ([\d,]+) soldiers? on guard)(?: March on it)?$/.exec(line);
+      const seen = /^(.+) at (.+?) (?:Stage ([\d.]+) of \d+|Stands complete, (\d+) turns? from winning the era), (?:no garrison|about ([\d,]+) soldiers? on guard)(?: March on it)?$/.exec(line);
       if (!seen) throw new Error(`The rankings tell of a monument as "${line}"`);
-      return { alliance: seen[1], seat: seen[2], stages: Number(seen[4] ?? 0), complete: seen[3] === "Stands complete", garrison: number(seen[5] ?? "0") };
+      const complete = seen[4] !== undefined;
+      return { alliance: seen[1], seat: seen[2], stages: Number(seen[3] ?? 0), complete, ticksToWin: complete ? Number(seen[4]) : null, garrison: number(seen[5] ?? "0") };
     });
   }
 
@@ -699,9 +700,9 @@ class BrowserRuler implements RulerDriver {
     await this.open("rankings");
     return (await this.lines(this.panel("Past eras").locator("li"))).map(line => ({
       era: number(/^Era (\d+)/.exec(line)?.[1] ?? ""),
-      winner: /^Era \d+: (.+?) won with [\d,]+ land/.exec(line)?.[1] ?? null,
+      winner: /^Era \d+: (.+?) won(?: with [\d,]+ land)? (?:when|by)/.exec(line)?.[1] ?? null,
       largest: /, largest kingdom (.+?) with [\d,]+ land/.exec(line)?.[1] ?? null,
-      endedBy: line.includes("when the clock ran out") ? "clock" : null,
+      endedBy: line.includes("when the clock ran out") ? "clock" : line.includes("by completing its monument") ? "monument" : null,
     }));
   }
 }

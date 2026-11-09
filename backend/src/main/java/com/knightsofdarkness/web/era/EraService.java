@@ -3,14 +3,18 @@ package com.knightsofdarkness.web.era;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.knightsofdarkness.web.bots.IBotRepository;
+import com.knightsofdarkness.web.common.alliance.MonumentDto;
 import com.knightsofdarkness.web.common.game.EraDto;
 import com.knightsofdarkness.web.common.game.EraEnding;
 import com.knightsofdarkness.web.common.game.RankingsDto;
@@ -72,23 +76,46 @@ public class EraService {
     @Transactional
     public void tick()
     {
-        monumentService.tick();
+        var monument = monumentService.tick();
         var era = currentEra();
-        if (era.tick())
+        var outOfTime = era.tick();
+        if (monument.isPresent())
         {
-            endEra(era, EraEnding.clock);
+            endEra(era, monument.get());
+        } else if (outOfTime)
+        {
+            endEra(era);
         }
         eraRepository.save(era);
     }
 
-    private void endEra(GameEraEntity era, EraEnding ending)
+    /**
+     * a monument that stood complete for the whole hold wins the era for its alliance, whatever the land
+     */
+    private void endEra(GameEraEntity era, MonumentDto monument)
+    {
+        endEra(era, EraEnding.monument, rankings -> monument.allianceName(), (rankings, next) -> Utils.format(
+                "Era {} has ended: the monument of {} at {} stood complete for {} turns, and {} wins the era. {} Era {} begins, every kingdom starts anew and at peace for {} turns",
+                era.getNumber(), monument.allianceName(), monument.seat(), gameConfig.monument().holdTicks(), monument.allianceName(), largest(rankings), next, gameConfig.attack().protectionTicksAtStart()));
+    }
+
+    /**
+     * the clock ran out: the alliance with the most land wins
+     */
+    private void endEra(GameEraEntity era)
+    {
+        endEra(era, EraEnding.clock, rankings -> rankings.alliances().isEmpty() ? null : rankings.alliances().get(0).allianceName(), (rankings, next) -> Utils.format(
+                "Era {} has ended as the clock ran out. {} Era {} begins, every kingdom starts anew and at peace for {} turns", era.getNumber(), standing(rankings), next, gameConfig.attack().protectionTicksAtStart()));
+    }
+
+    private void endEra(GameEraEntity era, EraEnding ending, Function<RankingsDto, @Nullable String> winner, BiFunction<RankingsDto, Integer, String> news)
     {
         var kingdoms = kingdomRepository.getAllKingdoms();
         var botNames = botNames();
         var rankings = RankingCalculator.calculate(kingdoms, botNames);
         var now = Instant.now();
-        era.end(now, ending, rankings);
-        log.info("Era {} ended", era.getNumber());
+        era.end(now, ending, winner.apply(rankings), rankings);
+        log.info("Era {} ended by {}", era.getNumber(), ending);
 
         marketOfferRepository.deleteAll();
         warReportRepository.deleteAll();
@@ -99,7 +126,7 @@ public class EraService {
         var nextEra = new GameEraEntity(era.getNumber() + 1, now, gameConfig.era().maxLengthInTicks());
         eraRepository.save(nextEra);
 
-        var message = Utils.format("Era {} has ended as the clock ran out. {} Era {} begins, every kingdom starts anew and at peace for {} turns", era.getNumber(), standing(rankings), nextEra.getNumber(), gameConfig.attack().protectionTicksAtStart());
+        var message = news.apply(rankings, nextEra.getNumber());
         kingdoms.forEach(kingdom -> notificationSystem.create(kingdom.getName(), NotificationKind.era, message));
     }
 
@@ -108,6 +135,11 @@ public class EraService {
         var alliance = rankings.alliances().isEmpty() ? "No alliance was sworn" : rankings.alliances().get(0).allianceName() + " held the most land";
         var kingdom = rankings.kingdoms().isEmpty() ? "no kingdom stood" : rankings.kingdoms().get(0).kingdomName() + " was the largest kingdom";
         return alliance + ", " + kingdom + ".";
+    }
+
+    private static String largest(RankingsDto rankings)
+    {
+        return rankings.kingdoms().isEmpty() ? "" : rankings.kingdoms().get(0).kingdomName() + " was the largest kingdom.";
     }
 
     private Set<String> botNames()
