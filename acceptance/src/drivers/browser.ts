@@ -355,6 +355,9 @@ class BrowserRuler implements RulerDriver {
     await this.open("war");
     const me = await this.kingdomName();
     const battles: Battle[] = [];
+    // battles in a row stand in one line, with their reports inside
+    const closed = this.page.locator("details.battle-run:not([open]) > summary");
+    while ((await closed.count()) > 0) await closed.first().click();
     for (const report of await this.page.locator(".battle").all()) {
       const title = (await report.locator("h3").innerText()).trim();
       const facts = (await report.locator(".battle-facts").innerText()).replace(/\s+/g, " ");
@@ -393,12 +396,11 @@ class BrowserRuler implements RulerDriver {
 
   public async latestIntel(): Promise<{ about: string; stores: boolean; spiesLost: number } | null> {
     await this.open("spies");
-    const report = this.page.locator(".intel").first();
-    if (!(await report.count())) return null;
-    const title = (await report.locator("h3").innerText()).trim();
-    const about = /^(?:Inside|Caught in) (.+)$/.exec(title)?.[1] ?? title;
-    const lost = /([\d,]+) (?:spy|spies) never came back/.exec(await report.locator("header").innerText())?.[1] ?? "0";
-    return { about, stores: (await report.getByRole("heading", { name: "Stores" }).count()) > 0, spiesLost: number(lost) };
+    // the kingdom looked at last comes first, and says when the look failed
+    const row = this.page.locator(".dossier").first();
+    if (!(await row.count())) return null;
+    const caught = /([\d,]+) (?:spy|spies) never came back/.exec(await row.innerText());
+    return { about: (await row.locator(".dossier-name").innerText()).trim(), stores: !caught, spiesLost: number(caught?.[1] ?? "0") };
   }
 
   public async sendGuards(ally: string, units: Units): Promise<Outcome> {

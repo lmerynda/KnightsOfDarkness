@@ -1,4 +1,15 @@
-import type { AttackType, BuildingName, Era, EraEnding, GameConfig, KingdomRank, Monument, SpyReport, UnitName } from "../api/types";
+import type {
+  AttackType,
+  BattleReport,
+  BuildingName,
+  Era,
+  EraEnding,
+  GameConfig,
+  KingdomRank,
+  Monument,
+  SpyReport,
+  UnitName,
+} from "../api/types";
 import { militaryUnits } from "../api/types";
 
 /** defense estimated from a spy report, using the same rules the battle uses */
@@ -50,6 +61,34 @@ export const targetProblem = (
 export const landAtStake = (targetLand: number, ownLand: number, config: GameConfig): { acres: number; sizeFactor: number } => {
   const sizeFactor = Math.min(1, targetLand / Math.max(1, ownLand)) ** config.attack.smallerTargetCaptureExponent;
   return { acres: Math.max(1, Math.floor(targetLand * config.attack.maxLandCaptureRatio * sizeFactor)), sizeFactor };
+};
+
+/**
+ * the last battle at a kingdom that met allied soldiers and more defense than our spies counted, for spies see only who is
+ * at home; the battles may be our own and our allies', in any order
+ */
+export const alliesUnseen = (target: string, estimate: number, battles: BattleReport[]): BattleReport | null => {
+  const last = battles
+    .filter(battle => battle.defender === target && battle.attackType !== "monument")
+    .sort((one, other) => other.date.localeCompare(one.date))[0];
+  const fellThere = last ? militaryUnits.some(unit => (last.alliedLosses[unit] ?? 0) > 0) : false;
+  return last && fellThere && last.defensePower > estimate ? last : null;
+};
+
+/** battles one after another between the same two, fought for the same thing and ending the same way, the newest first */
+export const inARow = (battles: BattleReport[]): BattleReport[][] => {
+  const runs: BattleReport[][] = [];
+  for (const battle of battles) {
+    const run = runs[runs.length - 1] as BattleReport[] | undefined;
+    const same =
+      run?.[0].attacker === battle.attacker &&
+      run[0].defender === battle.defender &&
+      run[0].attackType === battle.attackType &&
+      run[0].attackerWon === battle.attackerWon;
+    if (same) run.push(battle);
+    else runs.push([battle]);
+  }
+  return runs;
 };
 
 /** what an army marches for, to follow "to" */

@@ -219,6 +219,92 @@ pageCheck("on a phone the market's buy field stays on screen", async ({ game, op
   await shows(toast(page, /Bought 10 food for [\d,]+ gold/), "Bought 10 food");
 });
 
+pageCheck("looks at one kingdom make one row that says what changed", async ({ game, open }) => {
+  const spy = await game.foundsAKingdom("Spy");
+  const target = await game.foundsAKingdom("Target");
+  const other = await game.foundsAKingdom("Other");
+  await spy.raises({ spyGuild: 1 });
+  // a new kingdom has weapons for two spies, more than the one a target's five guards can catch
+  await spy.trains({ spy: 2 });
+  await spy.sendsSpies(target, 2);
+  await target.passesTurns(2);
+  await spy.sendsSpies(target, 2);
+  await spy.sendsSpies(other, 2);
+
+  const page = await open(spy);
+  await goTo(page, "Spies");
+  const rows = page.locator("tr.dossier");
+  await shows(rows.first(), other.name);
+  assert.equal(await rows.count(), 2);
+
+  // the kingdom looked at last stands open; the other row counts its looks and shows how its gold moved
+  await shows(page.locator(".dossier-detail"), "People at home");
+  const looked = rows.filter({ hasText: target.name });
+  await shows(looked.locator('td[data-label="Looks"]'), "2");
+  await shows(looked.locator('td[data-label="Gold"] .dossier-change'), /^\+[\d,]+$/);
+  await looked.getByRole("button", { name: "More" }).click();
+  assert.equal(await page.locator(".dossier-detail").count(), 1);
+  await looked.getByRole("button", { name: "Less" }).click();
+  await gone(page.locator(".dossier-detail"));
+
+  await looked.getByRole("link", { name: "Target" }).click();
+  await page.waitForURL(/\/kingdom\/war$/);
+  await holds(page.getByRole("combobox", { name: /^Target/ }), target.name);
+});
+
+pageCheck("spies and the army both warn of allies standing guard unseen", async ({ game, open }) => {
+  const raider = await game.foundsAKingdom("Raider");
+  const target = await game.foundsAKingdom("Target");
+  const guardian = await game.foundsAKingdom("Guardian");
+  const pact = `Pact ${Math.random().toString(36).slice(2, 7)}`;
+  await target.foundsAlliance(pact);
+  await target.invites(guardian);
+  await guardian.joins(pact);
+  await guardian.passesTurns(5);
+  await guardian.trains({ infantry: 20 });
+  await guardian.sendsToStandGuard(target, { infantry: 20 });
+  await guardian.passesTurns(2);
+  await raider.raises({ spyGuild: 1 });
+  await raider.trains({ spy: 2 });
+  await raider.passesTurns(5);
+  await raider.trains({ infantry: 10 });
+  await raider.marchesOn(target, { infantry: 10 });
+  await raider.passesTurns(4);
+  await raider.hasFoughtAt(target);
+  await raider.sendsSpies(target, 2);
+
+  const page = await open(raider);
+  await goTo(page, "Spies");
+  await shows(page.locator(".dossier-note"), /An army here last met [\d,]+ defense: allies stand guard/);
+  await goTo(page, "Army");
+  await page.getByRole("combobox", { name: /^Target/ }).selectOption(target.name);
+  await shows(page.locator(".panel").filter({ has: page.getByRole("heading", { name: "Send an army" }) }), "allies stand guard");
+});
+
+pageCheck("battles in a row against one enemy add up to one line that opens", async ({ game, open }) => {
+  const raider = await game.foundsAKingdom("Raider");
+  const target = await game.foundsAKingdom("Target");
+  await target.passesTurns(5);
+  await target.trains({ infantry: 30 });
+  await raider.passesTurns(5);
+  await raider.trains({ infantry: 4 });
+  for (let strike = 0; strike < 2; strike++) {
+    await raider.marchesOn(target, { infantry: 2 });
+    await raider.passesTurns(4);
+  }
+
+  const page = await open(raider);
+  await goTo(page, "Army");
+  const run = page.locator("details.battle-run");
+  await shows(run.first().locator("summary"), `2 defeats at ${target}`);
+  assert.equal(await run.count(), 1);
+  await shows(run.first().locator("summary"), /4 sent, [\d,]+ of ours fell/);
+  assert.equal(await page.locator(".battle").first().isVisible(), false);
+  await run.first().locator("summary").click();
+  assert.equal(await page.locator(".battle").count(), 2);
+  assert.ok(await page.locator(".battle").first().isVisible());
+});
+
 pageCheck("every store in the top bar stands under its name", async ({ game, open }) => {
   const ruler = await game.foundsAKingdom();
   const page = await open(ruler);

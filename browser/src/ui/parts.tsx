@@ -17,13 +17,14 @@ export const Figure: React.FC<{ icon: IconName; value: React.ReactNode; title?: 
 );
 
 /** a strip of the painting with the page name; children are a short line of facts, never an explanation */
-export const Banner: React.FC<{ image: string; title: string; help?: React.ReactNode; children?: React.ReactNode }> = ({
+export const Banner: React.FC<{ image: string; title: string; help?: React.ReactNode; slim?: boolean; children?: React.ReactNode }> = ({
   image,
   title,
   help,
+  slim,
   children,
 }) => (
-  <header className="banner" style={{ backgroundImage: `url(${image})` }}>
+  <header className={`banner ${slim ? "slim" : ""}`} style={{ backgroundImage: `url(${image})` }}>
     <h1>
       {title}
       {help ? <Tip about={title}>{help}</Tip> : null}

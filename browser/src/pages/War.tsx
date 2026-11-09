@@ -16,13 +16,24 @@ import type {
 import { militaryUnits } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, resourceLabel, unitList, unitLore } from "../game/lore";
-import { attackGoal, estimatedDefense, landAtStake, monumentGarrison, monumentStanding, targetProblem } from "../game/rules";
+import {
+  alliesUnseen,
+  attackGoal,
+  estimatedDefense,
+  inARow,
+  landAtStake,
+  monumentGarrison,
+  monumentStanding,
+  targetProblem,
+} from "../game/rules";
 import { Crest } from "../ui/Crest";
 import { Icon } from "../ui/Icon";
 import { CountField, Banner, Choice, Panel } from "../ui/parts";
 import { ago, formatNumber, plural } from "../ui/format";
 import { Term } from "../ui/Tip";
 import { defenseHelp, protectionHelp } from "../game/help";
+
+const soldiersIn = (units: Partial<Counts<UnitName>>): number => militaryUnits.reduce((sum, unit) => sum + (units[unit] ?? 0), 0);
 
 /** how the fallen fell: soldiers to arrows or in melee, guards on the walls once the battle was decided */
 const howTheyFell = (losses: Partial<Counts<UnitName>>, arrowLosses: Partial<Counts<UnitName>>): string => {
@@ -55,6 +66,7 @@ const Losses: React.FC<{ losses: Partial<Counts<UnitName>>; arrowLosses: Partial
 
 const SendArmy: React.FC<{
   spyReports: SpyReport[];
+  battles: BattleReport[];
   monuments: Monument[];
   target: string;
   setTarget: (target: string) => void;
@@ -63,7 +75,7 @@ const SendArmy: React.FC<{
   joining: OngoingAttack | null;
   onMarchAlone: () => void;
   onSent: () => void;
-}> = ({ spyReports, monuments, target, setTarget, chosenGoal, setGoal, joining, onMarchAlone, onSent }) => {
+}> = ({ spyReports, battles, monuments, target, setTarget, chosenGoal, setGoal, joining, onMarchAlone, onSent }) => {
   const { kingdom, config, rankings, act } = useGame();
   const [army, setArmy] = useState<Partial<Counts<MilitaryUnit>>>({});
 
@@ -86,6 +98,7 @@ const SendArmy: React.FC<{
   const attackPower = militaryUnits.reduce((sum, unit) => sum + (army[unit] ?? 0) * (config.attack.unitAttackPower[unit] ?? 0), 0);
   const intel = spyReports.find(report => report.success && report.targetKingdomName === target);
   const defense = intel ? estimatedDefense(intel, config) : null;
+  const unseen = defense !== null && attackType !== "monument" ? alliesUnseen(target, defense, battles) : null;
   const stake = chosen && !problem && attackType === "land" ? landAtStake(chosen.land, kingdom.resources.land, config) : null;
 
   const send = async (): Promise<void> => {
@@ -197,6 +210,11 @@ const SendArmy: React.FC<{
             {target && attackType !== "monument" && defense === null ? <Link to="/kingdom/spies">send spies first</Link> : null}
           </span>
         </div>
+        {unseen ? (
+          <p className="warning">
+            Spies see only who is at home. An army here last met {formatNumber(unseen.defensePower)} defense: allies stand guard.
+          </p>
+        ) : null}
         {problem && monument ? (
           <p className="muted">
             {target} itself is {problem}, but its monument can be assaulted.
@@ -229,8 +247,6 @@ const SendArmy: React.FC<{
     </Panel>
   );
 };
-
-const soldiersIn = (units: Partial<Counts<UnitName>>): number => militaryUnits.reduce((sum, unit) => sum + (units[unit] ?? 0), 0);
 
 /** allies stand guard in each other's kingdoms: send soldiers, see who stands where, and call them home */
 const StandGuard: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => {
@@ -422,6 +438,69 @@ const Marching: React.FC<{ warRoom: WarRoom | undefined }> = ({ warRoom }) => {
   );
 };
 
+/** a battle in a line, or the battles of a row added up */
+const battleTitle = (report: BattleReport, own: string, count: number): string => {
+  const attacking = report.attacker === own;
+  const won = attacking === report.attackerWon;
+  const other = attacking ? report.defender : report.attacker;
+  const atMonument = report.attackType === "monument";
+  const times = count > 1 ? ` ${count} times` : "";
+  if (attacking) {
+    if (count > 1) return `${count} ${won ? "victories" : "defeats"} ${atMonument ? "at the monument at" : won ? "over" : "at"} ${other}`;
+    return won
+      ? `Victory ${atMonument ? "at the monument at" : "over"} ${other}`
+      : `Defeat at ${atMonument ? "the monument at " : ""}${other}`;
+  }
+  if (atMonument) return won ? `${other} was repelled at our monument${times}` : `${other} stormed our monument${times}`;
+  return won ? `${other} was repelled${times}` : `${other} broke through${times}`;
+};
+
+const total = (run: BattleReport[], count: (report: BattleReport) => number): number => run.reduce((sum, report) => sum + count(report), 0);
+
+/** battles in a row against the same enemy in one line, what they cost added up; opening it shows every report */
+const BattleRun: React.FC<{ run: BattleReport[]; own: string }> = ({ run, own }) => {
+  const first = run[0];
+  const attacking = first.attacker === own;
+  const won = attacking === first.attackerWon;
+  const fell = (units: Partial<Counts<UnitName>>): number => soldiersIn(units) + (units.guard ?? 0);
+  const ours = total(run, report => fell(attacking ? report.attackerLosses : report.defenderLosses));
+  const theirs = total(run, report => fell(attacking ? report.defenderLosses : report.attackerLosses));
+  const acres = total(run, report => report.landCaptured);
+  const gold = total(run, report => report.plunder.gold ?? 0);
+  const stages = Math.round(total(run, report => report.stagesRazed) * 100) / 100;
+  const taken = [
+    acres > 0 ? plural(acres, "acre", "acres") : "",
+    gold > 0 ? `${formatNumber(gold)} gold` : "",
+    stages > 0 ? `${stages} ${stages === 1 ? "stage" : "stages"}` : "",
+  ]
+    .filter(Boolean)
+    .join(", ");
+  return (
+    <details className="battle-run">
+      <summary>
+        <span className="figure">
+          <Crest name={attacking ? first.defender : first.attacker} size={26} />
+          <strong className={won ? "gain" : "loss"}>{battleTitle(first, own, run.length)}</strong>
+        </span>
+        <span className="muted">
+          {attacking ? `${formatNumber(total(run, report => soldiersIn(report.unitsSent)))} sent, ` : ""}
+          {formatNumber(ours)} of ours fell, {formatNumber(theirs)} of theirs, {ago(first.date)}
+        </span>
+        {taken ? (
+          <span className={attacking ? "gain" : "loss"}>
+            {attacking ? "Took" : "Lost"} {taken}
+          </span>
+        ) : null}
+      </summary>
+      <div className="battles">
+        {run.map(report => (
+          <BattleReportCard key={report.id} report={report} own={own} />
+        ))}
+      </div>
+    </details>
+  );
+};
+
 const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ report, own }) => {
   const attacking = report.attacker === own;
   const won = attacking === report.attackerWon;
@@ -448,23 +527,7 @@ const BattleReportCard: React.FC<{ report: BattleReport; own: string }> = ({ rep
         <header className="battle-head">
           <Crest name={other} size={34} />
           <div>
-            <h3>
-              {atMonument
-                ? won
-                  ? attacking
-                    ? `Victory at the monument at ${other}`
-                    : `${other} was repelled at our monument`
-                  : attacking
-                    ? `Defeat at the monument at ${other}`
-                    : `${other} stormed our monument`
-                : won
-                  ? attacking
-                    ? `Victory over ${other}`
-                    : `${other} was repelled`
-                  : attacking
-                    ? `Defeat at ${other}`
-                    : `${other} broke through`}
-            </h3>
+            <h3>{battleTitle(report, own, 1)}</h3>
             <span className="muted">
               {attacking ? "We attacked" : "We were attacked"} to {attackGoal[report.attackType]}, {ago(report.date)}
             </span>
@@ -614,6 +677,16 @@ export const War: React.FC = () => {
   useEffect(() => {
     if (askedMarch) setSearch({}, { replace: true });
   }, [askedMarch, setSearch]);
+  // the spies' Target link names a kingdom
+  const askedTarget = search.get("target");
+  if (askedTarget && target !== askedTarget) {
+    setTarget(askedTarget);
+    setGoal("land");
+    setJoining(null);
+  }
+  useEffect(() => {
+    if (askedTarget) setSearch({}, { replace: true });
+  }, [askedTarget, setSearch]);
   // the rankings' March on it link names a monument's seat
   const askedAssault = search.get("assault");
   if (askedAssault && (target !== askedAssault || goal !== "monument" || joining)) {
@@ -646,6 +719,7 @@ export const War: React.FC = () => {
         <Threats />
         <SendArmy
           spyReports={intel}
+          battles={[...(reports ?? []), ...(warRoom?.battles ?? [])]}
           monuments={monuments}
           target={target}
           setTarget={chooseTarget}
@@ -664,9 +738,9 @@ export const War: React.FC = () => {
           ) : reports.length === 0 ? (
             <p className="muted">No battles yet this era.</p>
           ) : (
-            <div className="battles">
-              {reports.map(report => (
-                <BattleReportCard key={report.id} report={report} own={kingdom.name} />
+            <div className="battle-runs">
+              {inARow(reports).map(run => (
+                <BattleRun key={run[0].id} run={run} own={kingdom.name} />
               ))}
             </div>
           )}

@@ -5,7 +5,7 @@ import type { Alliance, AllianceInvitation, AllianceSummary, MarketOffer, WarRoo
 import { marketResources } from "../api/types";
 import { useGame } from "../game/useGame";
 import { art, marketResourceLabel } from "../game/lore";
-import { estimatedDefense } from "../game/rules";
+import { inARow, estimatedDefense } from "../game/rules";
 import { MonumentPanel } from "./MonumentPanel";
 import { Crest } from "../ui/Crest";
 import { CountField, Banner, Panel } from "../ui/parts";
@@ -295,21 +295,27 @@ const WarRoomPanel: React.FC = () => {
             <p className="muted">No battles yet.</p>
           ) : (
             <ul className="plain-list">
-              {warRoom.battles.map(battle => (
-                <li key={battle.id}>
-                  <span>
-                    {battle.attackType === "monument"
-                      ? battle.attackerWon
-                        ? `${battle.attacker} stormed the monument at ${battle.defender}, ${battle.stagesRazed} ${battle.stagesRazed === 1 ? "stage" : "stages"} fell`
-                        : `The monument at ${battle.defender} held against ${battle.attacker}`
-                      : battle.attackerWon
-                        ? `${battle.attacker} beat ${battle.defender}`
-                        : `${battle.defender} held against ${battle.attacker}`}
-                    {battle.landCaptured > 0 ? `, ${plural(battle.landCaptured, "acre", "acres")} changed hands` : ""}
-                  </span>
-                  <span className="muted">{ago(battle.date)}</span>
-                </li>
-              ))}
+              {inARow(warRoom.battles).map(run => {
+                const battle = run[0];
+                const acres = run.reduce((sum, report) => sum + report.landCaptured, 0);
+                const stages = Math.round(run.reduce((sum, report) => sum + report.stagesRazed, 0) * 100) / 100;
+                return (
+                  <li key={battle.id}>
+                    <span>
+                      {battle.attackType === "monument"
+                        ? battle.attackerWon
+                          ? `${battle.attacker} stormed the monument at ${battle.defender}, ${stages} ${stages === 1 ? "stage" : "stages"} fell`
+                          : `The monument at ${battle.defender} held against ${battle.attacker}`
+                        : battle.attackerWon
+                          ? `${battle.attacker} beat ${battle.defender}`
+                          : `${battle.defender} held against ${battle.attacker}`}
+                      {run.length > 1 ? `, ${run.length} times` : ""}
+                      {acres > 0 ? `, ${plural(acres, "acre", "acres")} changed hands` : ""}
+                    </span>
+                    <span className="muted">{ago(battle.date)}</span>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>

@@ -309,11 +309,131 @@
   margin: 0;
 }
 
-.intel {
-  padding: var(--space-4);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  background: rgba(18, 24, 32, 0.45);
+/* battles in a row: one line, the reports inside */
+.battle-runs {
+  display: grid;
+}
+
+.battle-run {
+  border-bottom: 1px solid var(--rule);
+}
+
+.battle-run:last-child {
+  border-bottom: 0;
+}
+
+.battle-run summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-1) var(--space-4);
+  min-height: 44px;
+  padding: var(--space-2) 0;
+  list-style: none;
+  cursor: pointer;
+}
+
+.battle-run summary::-webkit-details-marker {
+  display: none;
+}
+
+.battle-run summary:hover {
+  background: rgba(142, 154, 166, 0.06);
+}
+
+.battle-run[open] > .battles {
+  padding: var(--space-2) 0 var(--space-4);
+}
+
+/* one row a kingdom */
+.dossiers .small-note {
+  font-size: var(--step--1);
+}
+
+.dossier-change {
+  display: block;
+  font-size: var(--step--1);
+}
+
+.dossier-actions {
+  white-space: nowrap;
+}
+
+.dossier-actions .button + .button {
+  margin-left: var(--space-2);
+}
+
+.dossier.open td,
+.dossier-detail td {
+  background: rgba(184, 154, 90, 0.07);
+}
+
+.dossier-note td {
+  padding-top: 0;
+}
+
+.dossier-detail td {
+  padding-bottom: var(--space-4);
+}
+
+@media (max-width: 760px) {
+  .battle-run summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* a row becomes a card, each figure under its name */
+  .dossiers thead {
+    display: none;
+  }
+
+  .dossiers,
+  .dossiers tbody,
+  .dossiers tr,
+  .dossiers td {
+    display: block;
+  }
+
+  .dossier {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2);
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .dossier td {
+    padding: 0;
+    border: 0;
+  }
+
+  .dossier td:first-child,
+  .dossier-actions {
+    grid-column: 1 / -1;
+  }
+
+  .dossier td[data-label] {
+    text-align: left;
+  }
+
+  .dossier td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--pewter);
+    font-size: var(--step--1);
+  }
+
+  .dossier-actions {
+    text-align: left;
+  }
+
+  .dossier-actions .button {
+    min-height: 44px;
+  }
+
+  .dossier-note td,
+  .dossier-detail td {
+    border: 0;
+  }
 }
 
 .intel-grid {
