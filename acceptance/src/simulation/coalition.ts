@@ -192,6 +192,21 @@ export const treasurer = (share = 0.5): Strategy => ({
 });
 
 /**
+ * an economist that raises its alliance's monument: once the alliance has founded one, it pays this share of the gold it
+ * holds after its own turn into the monument's store, which raises the stages and feeds the upkeep
+ */
+export const mason = (alliance: string, share = 1 / 3): Strategy => ({
+  name: "mason",
+  weaponsPercentage: economist.weaponsPercentage,
+  play: async context => {
+    await economist.play(context);
+    if (!(await context.world.monuments()).some(monument => monument.allianceName === alliance)) return;
+    const gold = Math.floor((await context.player.kingdom()).resources.gold * share);
+    if (gold > 0) await context.player.payIntoMonument({ gold });
+  },
+});
+
+/**
  * founds the rulers of one coalition: the first founds the alliance and invites the others, who accept; warlords made
  * with `coalitionWarlord(coalition.council)` march together
  */

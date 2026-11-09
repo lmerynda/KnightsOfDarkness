@@ -33,6 +33,8 @@ import com.knightsofdarkness.web.utils.Utils;
  */
 @Service
 public class MonumentService implements IMonumentFront {
+    /** a day of hourly ticks */
+    private static final int lastCallTicks = 24;
     private final MonumentJpaRepository monumentRepository;
     private final KingdomRepository kingdomRepository;
     private final INotificationSystem notificationSystem;
@@ -151,21 +153,50 @@ public class MonumentService implements IMonumentFront {
     }
 
     /**
-     * the clock takes the upkeep of every monument, and a store that can spare the goods rebuilds what has fallen
+     * the clock takes the upkeep of every monument, and a store that can spare the goods rebuilds what has fallen; a
+     * complete monument that stood through the tick, fed, holds on towards winning the era
+     *
+     * @return the monument that has now stood long enough to win the era, the one that has held longest if two have
      */
     @Transactional
-    public void tick()
+    public Optional<MonumentDto> tick()
     {
+        MonumentEntity winner = null;
         for (var monument : monumentRepository.findAllForUpdate())
         {
+            var stoodComplete = monument.isComplete(rules());
             if (monument.payUpkeep(rules()))
             {
                 tellMembers(monument.getAllianceName(), Utils.format("The store of our monument at {} cannot pay its upkeep, and the monument is crumbling", monument.getSeat()));
             }
-            if (!monument.isUpkeepUnpaid())
+            if (monument.isUpkeepUnpaid())
             {
-                monument.raiseStages(rules()).forEach(stage -> announce(monument, stage));
+                continue;
             }
+            if (stoodComplete && monument.hold(rules()) && (winner == null || holdsLonger(monument, winner)))
+            {
+                winner = monument;
+            }
+            lastCall(monument);
+            monument.raiseStages(rules()).forEach(stage -> announce(monument, stage));
+        }
+        return Optional.ofNullable(winner).map(monument -> monument.toDto(rules()));
+    }
+
+    private static boolean holdsLonger(MonumentEntity monument, MonumentEntity other)
+    {
+        return monument.getHeldTicks() > other.getHeldTicks() || (monument.getHeldTicks() == other.getHeldTicks() && monument.getAllianceName().compareTo(other.getAllianceName()) < 0);
+    }
+
+    /**
+     * a day before a monument wins, everyone hears once more, for rivals who look in once a day
+     */
+    private void lastCall(MonumentEntity monument)
+    {
+        var left = rules().holdTicks() - monument.getHeldTicks();
+        if (left == lastCallTicks && rules().holdTicks() > lastCallTicks)
+        {
+            tellEveryone(Utils.format("The monument of {} at {} wins the era in {} turns unless an army knocks it down", monument.getAllianceName(), monument.getSeat(), left));
         }
     }
 
@@ -183,10 +214,11 @@ public class MonumentService implements IMonumentFront {
     }
 
     @Override
-    public void assaultWon(MonumentEntity monument, String attacker)
+    public void assaultWon(MonumentEntity monument, String attacker, boolean brokeTheHold)
     {
         var dto = monument.toDto(rules());
-        tellEveryone(Utils.format("{} stormed the monument of {} at {} and knocked it down to stage {} of {}", attacker, monument.getAllianceName(), monument.getSeat(), MonumentEntity.stages(dto.stages()), dto.totalStages()));
+        var hold = brokeTheHold ? Utils.format(". Rebuilt, it must stand complete {} turns again to win the era", rules().holdTicks()) : "";
+        tellEveryone(Utils.format("{} stormed the monument of {} at {} and knocked it down to stage {} of {}{}", attacker, monument.getAllianceName(), monument.getSeat(), MonumentEntity.stages(dto.stages()), dto.totalStages(), hold));
     }
 
     @Override
@@ -240,7 +272,7 @@ public class MonumentService implements IMonumentFront {
         }
         if (stage == total)
         {
-            tellEveryone(Utils.format("{} has completed its monument at {}", monument.getAllianceName(), monument.getSeat()));
+            tellEveryone(Utils.format("{} has completed its monument at {}. If it stands complete and fed for {} turns, {} wins the era", monument.getAllianceName(), monument.getSeat(), rules().holdTicks(), monument.getAllianceName()));
         } else if (stage * 2 >= total)
         {
             tellEveryone(Utils.format("{} raised its monument at {} to stage {} of {}", monument.getAllianceName(), monument.getSeat(), stage, total));

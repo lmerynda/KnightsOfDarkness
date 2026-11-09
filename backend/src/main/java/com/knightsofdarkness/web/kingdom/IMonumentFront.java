@@ -15,7 +15,10 @@ public interface IMonumentFront {
      */
     Optional<MonumentEntity> findAtSeatForUpdate(String seat);
 
-    void assaultWon(MonumentEntity monument, String attacker);
+    /**
+     * @param brokeTheHold whether the monument stood complete before the assault, so that its hold must start again
+     */
+    void assaultWon(MonumentEntity monument, String attacker, boolean brokeTheHold);
 
     void assaultRepelled(MonumentEntity monument, String attacker);
 }

@@ -5,6 +5,7 @@ import type {
   Kingdom,
   KingdomDetails,
   MarketOffer,
+  Monument,
   MonumentLedger,
   TurnReport,
   UnitName,
@@ -14,7 +15,7 @@ import { militaryUnits } from "../api/types";
 import { formatNumber, plural, signed } from "../ui/format";
 import { art, buildingLore, unitLore } from "./lore";
 import { buildingPlans, fillFreePlaces, fillPlan, rememberedPlan } from "./plans";
-import { unitHome } from "./rules";
+import { monumentGarrison, unitHome } from "./rules";
 
 /** what one click carries out, an order the ruler could have written by hand */
 export type Chore = { kind: "build"; order: Partial<Counts<BuildingName>> } | { kind: "train"; order: Partial<Counts<UnitName>> };
@@ -109,7 +110,14 @@ const chores = (kingdom: Kingdom, details: KingdomDetails, config: GameConfig): 
  * what waits on the ruler this turn, most pressing first: only what costs something or will not wait, never how the game
  * works; every line is read from the kingdom and the server's forecast of the next turn
  */
-export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameConfig, coalition?: Coalition, limit = 6): Counsel[] => {
+export const counsel = (
+  kingdom: Kingdom,
+  details: KingdomDetails,
+  config: GameConfig,
+  coalition?: Coalition,
+  monuments: Monument[] = [],
+  limit = 6,
+): Counsel[] => {
   const lines: Counsel[] = [];
   const resources = kingdom.resources;
   const forecast = details.forecast;
@@ -118,6 +126,17 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
   const goldFrom = kingdom.allianceName
     ? { to: "/kingdom/alliance", label: "Ask allies for gold" }
     : { to: "/kingdom/train", label: "Train gold miners" };
+
+  // a rival's monument that stands complete ends the era for everyone unless an army knocks it down
+  for (const rival of monuments.filter(monument => monument.complete && monument.allianceName !== kingdom.allianceName)) {
+    const garrison = monumentGarrison(rival);
+    lines.push({
+      urgent: true,
+      text: `The monument of ${rival.allianceName} wins the era in ${plural(rival.ticksToWin ?? 0, "turn", "turns")}`,
+      detail: `Only a won assault knocks it down and makes it stand the whole hold again. ${garrison[0].toUpperCase()}${garrison.slice(1)} at ${rival.seat}.`,
+      link: { to: `/kingdom/war?assault=${encodeURIComponent(rival.seat)}`, label: "March on it" },
+    });
+  }
 
   for (const army of kingdom.incoming) {
     lines.push(
@@ -182,11 +201,21 @@ export const counsel = (kingdom: Kingdom, details: KingdomDetails, config: GameC
       link: { to: "/kingdom/alliance", label: "Pay in" },
     });
   }
+  if (monument?.monument.complete) {
+    lines.push({
+      urgent: false,
+      text: `Our monument wins the era in ${plural(monument.monument.ticksToWin ?? 0, "turn", "turns")}`,
+      detail: "If its store pays the upkeep every turn and no army knocks it down. Either one makes it stand the whole hold again.",
+      link: { to: "/kingdom/alliance", label: "Guard it" },
+    });
+  }
   if (monument && monument.monument.stages > 0 && monument.garrison.every(guard => guard.turnsLeft > 0)) {
     lines.push({
       urgent: false,
       text: "Nobody guards our monument",
-      detail: `Stage ${monument.monument.stages} of ${monument.monument.totalStages}. Any army that marches there wins and knocks down up to ${Math.round(config.monument.maxRazeRatio * 100)}% of it.`,
+      detail: monument.monument.complete
+        ? `It stands complete. Any army that marches there wins, knocks down up to ${Math.round(config.monument.maxRazeRatio * 100)}% of it, and makes it stand the whole hold again.`
+        : `Stage ${monument.monument.stages} of ${monument.monument.totalStages}. Any army that marches there wins and knocks down up to ${Math.round(config.monument.maxRazeRatio * 100)}% of it.`,
       link: { to: "/kingdom/alliance", label: "Send soldiers" },
     });
   }

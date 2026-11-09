@@ -493,6 +493,13 @@ export class Ruler {
     );
   }
 
+  /** a complete monument, and the turns it must still stand to win the era */
+  public async seesTheMonumentWinIn(allianceName: string, turns: number): Promise<void> {
+    await eventually(`${this.name} sees the monument of ${allianceName} win the era in ${turns} turns`, async () =>
+      (await this.act.monuments()).some(monument => monument.alliance === allianceName && monument.complete && monument.ticksToWin === turns),
+    );
+  }
+
   public async seesNoMonumentOf(allianceName: string): Promise<void> {
     await eventually(`${this.name} sees no monument of ${allianceName}`, async () => (await this.act.monuments()).every(monument => monument.alliance !== allianceName));
   }
@@ -536,8 +543,8 @@ export class Ruler {
   // the era
 
   /** the era is remembered as won by the alliance, or by no alliance at all, with the kingdom as its largest */
-  public async seesInTheHallOfFame(era: number, winner: string | null, largest: Ruler): Promise<void> {
-    const remembered: PastEra = { era, winner, largest: largest.name, endedBy: "clock" };
+  public async seesInTheHallOfFame(era: number, winner: string | null, largest: Ruler, endedBy: "clock" | "monument" = "clock"): Promise<void> {
+    const remembered: PastEra = { era, winner, largest: largest.name, endedBy };
     await eventually(`${this.name} sees era ${era} remembered as ${JSON.stringify(remembered)}`, async () =>
       (await this.act.pastEras()).some(past => JSON.stringify(past) === JSON.stringify(remembered)),
     );

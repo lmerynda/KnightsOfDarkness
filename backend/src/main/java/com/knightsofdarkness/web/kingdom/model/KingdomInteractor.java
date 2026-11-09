@@ -114,6 +114,7 @@ public class KingdomInteractor implements IKingdomInteractor
         var attackPower = detailsProvider.getAttackPower(attack.units);
         var defensePower = detailsProvider.getDefensePower(defenders);
         var attackerWon = attackPower > defensePower;
+        var stoodComplete = monument.isComplete(gameConfig.monument());
         var stagesRazed = attackerWon ? monument.raze(gameConfig.monument().maxRazeRatio() * getDominance(attackPower, defensePower)) : 0;
 
         returnSurvivors(attackerKingdom, attack.units);
@@ -122,19 +123,19 @@ public class KingdomInteractor implements IKingdomInteractor
                 unitsSent, difference(unitsSent, attack.units), difference(defenderUnitsBefore, defenders.snapshot()), attackerArrowLosses, defenderArrowLosses,
                 difference(alliesBefore, defenders.alliedSnapshot()), attackPower, defensePower, attackerWon, 0, new EnumMap<>(ResourceName.class), stagesRazed);
         warReportRepository.addBattleReport(report);
-        notifyAboutAssault(report, monument);
+        notifyAboutAssault(report, monument, stoodComplete);
         notifyMonumentGarrisons(report, garrisonsBefore);
 
         kingdomRepository.update(attackerKingdom);
         return Optional.of(report);
     }
 
-    private void notifyAboutAssault(BattleReportDto report, MonumentEntity monument)
+    private void notifyAboutAssault(BattleReportDto report, MonumentEntity monument, boolean stoodComplete)
     {
         if (report.attackerWon())
         {
             notificationSystem.create(report.attacker(), NotificationKind.victory, Utils.format("Victory! Our army stormed the monument of {} and knocked down {} stages", monument.getAllianceName(), MonumentEntity.stages(report.stagesRazed())));
-            monuments.assaultWon(monument, report.attacker());
+            monuments.assaultWon(monument, report.attacker(), stoodComplete && !monument.isComplete(gameConfig.monument()));
         } else
         {
             notificationSystem.create(report.attacker(), NotificationKind.defeat, Utils.format("Defeat! Our army was repelled at the monument of {}", monument.getAllianceName()));

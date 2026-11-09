@@ -15,8 +15,8 @@ const goodLabel: Record<Good, string> = { gold: "Gold", iron: "Iron", tools: "To
 
 const nothing: Record<Good, number> = { gold: 0, iron: 0, tools: 0, food: 0 };
 
-const help =
-  "An alliance raises one monument an era. Members pay goods into its store, and a stage rises as soon as the store covers it. Every stage eats gold and food each turn; when the store cannot pay, the monument crumbles and only the crumbled part needs paying again. Only soldiers the members send defend it, with no towers, castles or guards, and any kingdom outside the alliance may assault it. A won assault knocks down stages; what the store can cover is rebuilt with the next tick. Everyone can see how far it stands and roughly how many stand guard.";
+const help = (holdTicks: number): string =>
+  `An alliance raises one monument an era. Members pay goods into its store, and a stage rises as soon as the store covers it. Every stage eats gold and food each turn; when the store cannot pay, the monument crumbles and only the crumbled part needs paying again. Only soldiers the members send defend it, with no towers, castles or guards, and any kingdom outside the alliance may assault it. A won assault knocks down stages; what the store can cover is rebuilt with the next tick. Everyone can see how far it stands and roughly how many stand guard. Once complete, it wins the era if it stands complete and fed for ${holdTicks} turns; a won assault or an unpaid turn makes it start the hold again.`;
 
 /** the alliance's monument: founding it, paying into it, and what it costs to keep */
 export const MonumentPanel: React.FC<{ alliance: Alliance }> = ({ alliance }) => {
@@ -41,7 +41,7 @@ export const MonumentPanel: React.FC<{ alliance: Alliance }> = ({ alliance }) =>
     return (
       <Panel
         title="Monument"
-        help={help}
+        help={help(config.monument.holdTicks)}
         lede={`Your alliance has no monument. It takes ${stages} stages, each for ${formatNumber(stageCost.gold)} gold, ${formatNumber(stageCost.iron)} iron and ${formatNumber(stageCost.tools)} tools, and each eating ${formatNumber(upkeepPerStage.gold)} gold and ${formatNumber(upkeepPerStage.food)} food a turn.`}
       >
         {alliance.emperor === kingdom.name ? (
@@ -83,7 +83,15 @@ export const MonumentPanel: React.FC<{ alliance: Alliance }> = ({ alliance }) =>
   const sending = militaryUnits.reduce((sum, unit) => sum + (guard[unit] ?? 0), 0);
 
   return (
-    <Panel title="Monument" help={help} lede={`${monumentStanding(monument)} at ${monument.seat}.`}>
+    <Panel
+      title="Monument"
+      help={help(config.monument.holdTicks)}
+      lede={
+        monument.complete
+          ? `Stands complete at ${monument.seat}. Fed and unbroken for ${monument.ticksToWin === 1 ? "1 more turn" : `${monument.ticksToWin ?? 0} more turns`}, it wins the era.`
+          : `${monumentStanding(monument)} at ${monument.seat}.`
+      }
+    >
       <Meter value={monument.stages} max={monument.totalStages} label="Monument stages" />
       {ledger.upkeepUnpaid ? <p className="warning">The store cannot pay the upkeep, and the monument is crumbling.</p> : null}
       <div className="table-scroll">

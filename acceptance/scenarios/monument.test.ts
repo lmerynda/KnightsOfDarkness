@@ -15,6 +15,8 @@ playedOn({
   "monument.upkeepPerStage.gold": 10,
   "monument.upkeepPerStage.food": 2,
   "monument.decayRatio": 0.25,
+  // no monument wins the era here: winning.test.ts has a world of its own, since a won era starts every kingdom anew
+  "monument.holdTicks": 1_000_000,
 });
 
 const aStage = { gold: 1000, iron: 10, tools: 10 };

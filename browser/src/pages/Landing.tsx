@@ -119,8 +119,8 @@ export const Landing: React.FC = () => {
           <h2>{era ? `Era ${era.number}` : "The current era"}</h2>
           <p className="muted">
             {era
-              ? `The clock ends it in ${eraTimeLeft(era)}. The alliance holding the most land then wins the era, and every realm starts again from nothing.`
-              : "The clock ends an era after four months; the alliance holding the most land wins it and every realm starts again."}
+              ? `An alliance wins it by completing its monument and holding it. If none does, the clock ends it in ${eraTimeLeft(era)} and the alliance holding the most land wins. Then every realm starts again from nothing.`
+              : "An alliance wins an era by completing its monument and holding it. If none does within four months, the alliance holding the most land wins. Then every realm starts again."}
           </p>
           {monuments.map(monument => (
             <p className="muted" key={monument.allianceName}>

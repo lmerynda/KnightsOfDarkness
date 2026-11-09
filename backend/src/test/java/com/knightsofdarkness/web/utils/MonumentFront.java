@@ -24,9 +24,9 @@ public class MonumentFront implements IMonumentFront {
     }
 
     @Override
-    public void assaultWon(MonumentEntity monument, String attacker)
+    public void assaultWon(MonumentEntity monument, String attacker, boolean brokeTheHold)
     {
-        heard.add(attacker + " won at " + monument.getAllianceName());
+        heard.add(attacker + " won at " + monument.getAllianceName() + (brokeTheHold ? ", breaking the hold" : ""));
     }
 
     @Override

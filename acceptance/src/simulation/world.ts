@@ -109,6 +109,8 @@ export const runWorld = async (
      * the armies first, which in a war between coalitions decides more than the rules being measured
      */
     shuffle?: boolean;
+    /** ends the run early, asked after each tick: for a world that should stop once something has happened */
+    until?: () => boolean;
   } = {},
 ): Promise<WorldRun> => {
   const config = await world.config();
@@ -123,6 +125,7 @@ export const runWorld = async (
     await world.advance(1, options.bots ?? true);
     // a look at the world as the clock left it, before anyone plays
     await options.afterTick?.(turn);
+    if (options.until?.()) break;
     const rankings = await world.rankings();
     const order = [...rulers.entries()];
     if (options.shuffle) {

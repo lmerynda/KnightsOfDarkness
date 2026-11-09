@@ -1,6 +1,6 @@
 # Eras and the coalition monument
 
-Designed on 2026-11-07. An era ends when a coalition completes its monument. The era itself is built (2026-11-08): today it ends only by the clock, after 2,880 ticks (four months), and the alliance with the most land wins it. A monument can be founded, paid for, fed, watched (step 4), garrisoned and assaulted (step 5), but completing one does not end the era yet.
+Designed on 2026-11-07. An era ends when a coalition completes its monument and holds it. All of that is built (steps 3 to 6, 2026-11-08 and 2026-11-09): a monument can be founded, paid for, fed, watched, garrisoned and assaulted, and one that stands complete and fed for `monument.holdTicks` wins the era for its alliance. Otherwise the clock ends the era after 2,880 ticks (four months) and the alliance with the most land wins it. No simulated ruler builds or assaults a monument yet, and the prices are the starting ones: step 7.
 
 ## Why
 
@@ -54,7 +54,10 @@ Designed on 2026-11-07. An era ends when a coalition completes its monument. The
 ### Winning
 
 - A completed monument must stand `monument.holdTicks` (72 ticks, three days) with its upkeep paid. That gives rivals one last window to attack it.
-- A won assault in that window knocks it down below the final stage, and the hold starts again once it is rebuilt.
+- A won assault in that window knocks it down below the final stage, and the hold starts again once it is rebuilt. So does a tick its store cannot pay, since it crumbles.
+- Everyone sees how many ticks a complete monument has left (`ticksToWin` on `GET /game/monuments`), hears when it is complete with the length of the hold, and hears once more a day before it wins. Your turn puts a rival's complete monument first, with a link to march on it, and tells the members theirs is winning.
+- The hold counts ticks that a monument stood complete through, with its upkeep paid. One completed between ticks counts from the next tick on; one rebuilt by the tick itself counts from the tick after.
+- If two monuments reach the end of their hold on the same tick, the one that has stood longer wins. If both have stood equally long, the first alliance name in alphabetical order wins.
 
 ### Coalitions of coalitions
 
@@ -126,7 +129,7 @@ Each step lands with its scenarios, docs and checks, and is committed on its own
 3. **Era.** Done on 2026-11-08: round is renamed to era, the clock cap is 2,880 ticks, and the hall of fame records the winning alliance and the way the era ended. The `era` scenarios play a short era of 120 ticks, and `npm run test:long` plays two at full length.
 4. **Monument.** Done on 2026-11-08: `POST /alliance/monument/found` and `/contribute`, `GET /alliance/monument` for members and `GET /game/monuments` for everyone, a section on the Alliance page, listings on the rankings and the landing page, and the `monument` scenarios. Completing one does nothing yet, and the prices are the starting ones from "Measured": no simulated ruler builds one until step 7.
 5. **Garrison and assault.** Done on 2026-11-08: the `monument` attack type, soldiers standing guard at a monument, razing and joined assaults, battle reports, a Garrison section on the Alliance page, a goal on the Army page, a March on it link on the rankings, and the `assault` scenarios. Prices are still the starting ones: no simulated ruler garrisons or assaults one until step 7.
-6. **Winning.** Add the hold period. The era ends by monument and the next era begins. Add scenarios, and a `test:long` world that ends by monument.
+6. **Winning.** Done on 2026-11-09: `monument.holdTicks` (72), the era ending `monument` with its winner in the hall of fame, the countdown everywhere a monument shows, Your turn's warnings, the `winning` scenarios, and `npm run test:long`, whose first era ends by a monument that a simulated mason pays for. That monument is priced in gold alone, cheap enough for one economist, so the run checks the ending, not the balance.
 7. **Balance.** Add the builder and rival policies to the simulation, then the four balance targets as worlds. Tune the costs, upkeep, raze ratio and hold time, and record them in `BALANCE.md`.
 8. **Pacts**, only if step 7 shows that alliances striking separately can't stop a leader.
 
@@ -137,5 +140,5 @@ Each open one has a default the plan follows unless changed.
 1. **Clock cap.** Settled and built: a stalled era ends at four months, with the most land winning. Without a cap, a world where nobody builds never restarts.
 2. **What a won assault does.** Should it knock down a share of the stages, scaled by dominance, or raze the whole monument? The default is a share: one lucky strike shouldn't end a month of work, while repeated strikes by rivals who band together still bring it down.
 3. **Pacts.** Should pacts between alliances be a formal game feature? The default is no, until the simulations show a need: letters plus the lack of protection after a defeat may be enough.
-4. **Hold period.** How long must a completed monument stand: three days, or no hold? The default is three days, so players who come back once a day still get a chance to answer.
+4. **Hold period.** Built as the default: three days, so players who come back once a day still get a chance to answer. Step 7 tunes the length.
 5. **Naming.** Settled and built: "round" became "era" throughout.

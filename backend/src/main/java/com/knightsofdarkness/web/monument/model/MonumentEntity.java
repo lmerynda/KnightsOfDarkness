@@ -36,6 +36,8 @@ public class MonumentEntity {
     long food;
     int announcedStage;
     boolean upkeepUnpaid;
+    /** the ticks it has stood complete and fed since it last was not */
+    int heldTicks;
 
     /**
      * members' soldiers on the way to, or standing guard at, the monument
@@ -113,8 +115,7 @@ public class MonumentEntity {
             upkeepUnpaid = false;
             return false;
         }
-        stagesBuilt = Math.max(0, stagesBuilt - rules.decayRatio());
-        forgetFallenStages();
+        knockDown(Math.max(0, stagesBuilt - rules.decayRatio()));
         var begun = !upkeepUnpaid;
         upkeepUnpaid = true;
         return begun;
@@ -128,14 +129,37 @@ public class MonumentEntity {
     public double raze(double share)
     {
         var standing = rounded(stagesBuilt);
-        stagesBuilt = stagesBuilt * (1 - share);
-        forgetFallenStages();
+        knockDown(stagesBuilt * (1 - share));
         return rounded(standing - rounded(stagesBuilt));
     }
 
-    private void forgetFallenStages()
+    /**
+     * whatever falls ends the hold: a monument must stand complete again for the whole hold to win
+     */
+    private void knockDown(double stages)
     {
+        if (stages < stagesBuilt)
+        {
+            heldTicks = 0;
+        }
+        stagesBuilt = stages;
         announcedStage = Math.min(announcedStage, (int) Math.ceil(stagesBuilt - whole));
+    }
+
+    /**
+     * the clock's tick for a monument that stood complete through it with its upkeep paid
+     *
+     * @return whether it has now stood long enough to win the era
+     */
+    public boolean hold(Monument rules)
+    {
+        heldTicks++;
+        return heldTicks >= rules.holdTicks();
+    }
+
+    public int getHeldTicks()
+    {
+        return heldTicks;
     }
 
     /**
@@ -159,7 +183,8 @@ public class MonumentEntity {
     public MonumentDto toDto(Monument rules)
     {
         var soldiers = getStandingGarrison().stream().mapToInt(guard -> guard.getUnits().countMilitary()).sum();
-        return new MonumentDto(allianceName, seat, rounded(stagesBuilt), rules.stages(), isComplete(rules), KingdomOngoingAttackEntity.roughly(soldiers));
+        var complete = isComplete(rules);
+        return new MonumentDto(allianceName, seat, rounded(stagesBuilt), rules.stages(), complete, complete ? Math.max(0, rules.holdTicks() - heldTicks) : null, KingdomOngoingAttackEntity.roughly(soldiers));
     }
 
     public MonumentLedgerDto toLedgerDto(Monument rules)

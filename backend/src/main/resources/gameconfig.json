@@ -225,7 +225,8 @@
             "food": 15000
         },
         "decayRatio": 0.05,
-        "maxRazeRatio": 0.25
+        "maxRazeRatio": 0.25,
+        "holdTicks": 72
     },
     "bots": {
         "maxLand": 400,

@@ -11,6 +11,8 @@ pagesOn({
   "monument.stageCost.tools": 10,
   "monument.upkeepPerStage.gold": 0,
   "monument.upkeepPerStage.food": 0,
+  // no monument wins the era here, so that the world stays as the checks left it
+  "monument.holdTicks": 1_000_000,
 });
 
 const line = (page: Parameters<typeof toast>[0], text: string | RegExp) => page.locator(".counsel li").filter({ hasText: text });
@@ -96,9 +98,33 @@ pageCheck("an army marching on the monument warns every member", async ({ game, 
   await raider.marchesOnTheMonumentAt(emperor, { infantry: 10 });
 
   const seat = await open(emperor);
-  await shows(seat.locator(".counsel li.urgent"), `${raider} marches on our monument`);
+  await shows(seat.locator(".counsel li.urgent").filter({ hasText: "marches on our monument" }), `${raider} marches on our monument`);
   await squire.passesTurns(5);
   await squire.trains({ infantry: 1 });
   const member = await open(squire);
   await shows(member.locator(".counsel"), `${raider} marches on our monument at ${emperor}`);
+});
+
+// last: a complete monument stands in this world from here on, and every kingdom founded after it hears of it
+pageCheck("a complete monument tells its members to hold it, and every rival to march on it", async ({ game, open }) => {
+  const emperor = await game.foundsAKingdom("Emperor");
+  const name = `Finishers ${Math.random().toString(36).slice(2, 7)}`;
+  await emperor.foundsAlliance(name);
+  await emperor.foundsAMonumentAt(emperor);
+  await emperor.paysIntoTheMonument({ gold: 4000, iron: 40, tools: 40 });
+  const rival = await game.foundsAKingdom("Rival");
+
+  const theirs = await open(rival);
+  const warning = theirs.locator(".counsel li.urgent").filter({ hasText: `The monument of ${name} wins the era in` });
+  await shows(warning, "Only a won assault knocks it down");
+  assert.equal(await warning.getByRole("link", { name: "March on it" }).getAttribute("href"), `/kingdom/war?assault=${encodeURIComponent(emperor.name)}`);
+
+  const ours = await open(emperor);
+  await shows(line(ours, "Our monument wins the era in"), "If its store pays the upkeep every turn");
+  await shows(line(ours, "Nobody guards our monument"), "It stands complete. Any army that marches there wins, knocks down up to 25% of it, and makes it stand the whole hold again");
+  assert.equal(await ours.locator(".counsel li").filter({ hasText: "The monument of" }).count(), 0);
+
+  // the rankings say what will end the era first
+  await goTo(theirs, "Rankings");
+  await shows(theirs.locator("main"), new RegExp(`The monument of ${name} wins it in \\d+ turns unless an army knocks it down; otherwise the clock ends it in about`));
 });

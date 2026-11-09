@@ -14,7 +14,7 @@ import com.knightsofdarkness.web.common.alliance.MonumentGoodsDto;
 import com.knightsofdarkness.web.game.config.Monument;
 
 class MonumentEntityTest {
-    private final Monument rules = new Monument(4, new Monument.StageCost(1000, 100, 10), new Monument.Upkeep(50, 5), 0.25, 0.25);
+    private final Monument rules = new Monument(4, new Monument.StageCost(1000, 100, 10), new Monument.Upkeep(50, 5), 0.25, 0.25, 3);
 
     private MonumentEntity monument()
     {
@@ -182,5 +182,77 @@ class MonumentEntityTest {
         monument.payUpkeep(rules);
         assertEquals(1, monument.toDto(rules).stages());
         assertTrue(monument.announces(2), "a whole stage lost and risen again");
+    }
+    private MonumentEntity complete()
+    {
+        var monument = monument();
+        monument.pay(stages(4));
+        // goods to spare in the store, for upkeep and repairs
+        monument.pay(new MonumentContributionDto(10_000, 100, 10, 1000));
+        monument.raiseStages(rules);
+        return monument;
+    }
+
+    @Test
+    void aCompleteMonument_shouldWinOnceItHasStoodTheWholeHold()
+    {
+        var monument = complete();
+        assertEquals(3, monument.toDto(rules).ticksToWin());
+
+        assertFalse(monument.hold(rules));
+        assertFalse(monument.hold(rules));
+        assertEquals(1, monument.toDto(rules).ticksToWin());
+        assertTrue(monument.hold(rules));
+        assertEquals(0, monument.toDto(rules).ticksToWin());
+    }
+
+    @Test
+    void aMonumentNotYetComplete_shouldShowNoTimeToWin()
+    {
+        var monument = monument();
+        monument.pay(stages(3));
+        monument.raiseStages(rules);
+
+        assertNull(monument.toDto(rules).ticksToWin());
+    }
+
+    @Test
+    void aWonAssault_shouldStartTheHoldAgain()
+    {
+        var monument = complete();
+        monument.hold(rules);
+        monument.hold(rules);
+
+        monument.raze(0.01);
+        assertNull(monument.toDto(rules).ticksToWin(), "knocked below complete");
+        monument.raiseStages(rules);
+
+        assertEquals(3, monument.toDto(rules).ticksToWin(), "rebuilt, it must stand the whole hold again");
+        assertFalse(monument.hold(rules));
+    }
+
+    @Test
+    void aMonumentLeftUnfed_shouldCrumbleAndStartTheHoldAgain()
+    {
+        var monument = monument();
+        monument.pay(stages(4));
+        monument.raiseStages(rules);
+        monument.hold(rules);
+
+        assertTrue(monument.payUpkeep(rules));
+        monument.pay(new MonumentContributionDto(10_000, 100, 10, 1000));
+        monument.raiseStages(rules);
+
+        assertEquals(3, monument.toDto(rules).ticksToWin());
+    }
+
+    @Test
+    void anAssaultThatRazesNothing_shouldKeepTheHold()
+    {
+        var monument = complete();
+        monument.hold(rules);
+
+        assertEquals(0, monument.raze(0));
+        assertEquals(2, monument.toDto(rules).ticksToWin());
     }
 }
