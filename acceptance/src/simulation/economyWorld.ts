@@ -128,7 +128,7 @@ export const playEconomy = async ({ coalitions: makeUps, turns, overrides, monum
     // assaults are read as they happen, since the era's end clears every battle report
     const assaults = new Map<string, EraOutcome["assaults"][number]>();
     const readAssaults = async (turn: number): Promise<void> => {
-      for (const ruler of rulers.filter(candidate => candidate.player.name.includes(" warrior "))) {
+      for (const ruler of rulers) {
         for (const report of await ruler.player.battleReports()) {
           if (report.attackType !== "monument" || report.attacker !== ruler.player.name || assaults.has(report.id)) continue;
           assaults.set(report.id, {

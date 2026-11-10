@@ -133,8 +133,11 @@ export const simulationCredentials = (kingdomName: string): Credentials => ({
   password: "simulation-password",
 });
 
-/** how often a ruler playing alongside others tries one write before the conflict counts as a failure */
-const maxConflictAttempts = 8;
+/**
+ * how often a ruler playing alongside others tries one write before the conflict counts as a failure: at an era's start
+ * every ruler buys from the same merchants' offers at once, and eight tries ran out
+ */
+const maxConflictAttempts = 30;
 
 const signIn = async (url: string, credentials: Credentials): Promise<string> =>
   (await call<SignedIn>(`${url}/auth/authenticate`, { method: "POST", body: credentials })).token;
@@ -181,7 +184,7 @@ export class Player {
         return await this.signedIn(token => call<T>(`${this.url}${path}`, { method: "POST", body, token }));
       } catch (error) {
         if (!this.retryConflicts || !(error instanceof ApiError) || error.status !== 409 || attempt >= maxConflictAttempts) throw error;
-        await new Promise(wait => setTimeout(wait, Math.random() * 5 * attempt));
+        await new Promise(wait => setTimeout(wait, Math.random() * 10 * Math.min(attempt, 10)));
       }
     }
   }

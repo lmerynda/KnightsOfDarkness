@@ -1,7 +1,7 @@
 import type { Player } from "../api/client.ts";
 import { militaryUnits, type BuildingName, type Counts, type Kingdom, type MarketResource, type MarketTrade, type UnitName } from "../api/types.ts";
 import { developEconomy, fillBarracks, strikeLargest, walls, type Plan, type Strategy, type TurnContext } from "./strategies.ts";
-import { assaultRivals, foundWhenAhead, payIn, standGuard, type MonumentPolicy } from "./monuments.ts";
+import { assaultRivals, foundWhenAhead, monumentBarracks, payIn, standGuard, type MonumentPolicy } from "./monuments.ts";
 
 /**
  * Rulers of coalitions that trade: each lives by one trade and buys the rest, from its allies first and from anyone
@@ -278,9 +278,10 @@ const selfFeedBelowTurns = foodTurns;
  * what the ruler builds and staffs this turn: its calling, gold mines instead while its goods pile up unsold, and farms
  * of its own when it could not buy enough food, as a player does who will not starve waiting for the coalition's farmer
  */
-const thisTurn = async (context: TurnContext, calling: Calling, unsold: boolean): Promise<{ plan: Plan; workers: UnitName[] }> => {
+const thisTurn = async (context: TurnContext, calling: Calling, unsold: boolean, guards = 0): Promise<{ plan: Plan; workers: UnitName[] }> => {
   const { plan: craft, workers } = unsold ? callings.gold : calling;
-  const plan = calling.army ? { ...craft, ...walls(warriorBarracks * homeGuard, context.config) } : defended(context, craft);
+  const home = calling.army ? { ...craft, ...walls(warriorBarracks * homeGuard, context.config) } : defended(context, craft);
+  const plan = calling.army ? home : { ...home, barracks: (home.barracks ?? 0) + guards };
   const hungry = context.details.foodUpkeep - (context.details.forecast.resourcesProduced.food ?? 0);
   if ((await context.player.kingdom()).resources.food >= selfFeedBelowTurns * hungry) return { plan, workers };
   return { plan: { ...plan, farm: (plan.farm ?? 0) + selfFeedShare }, workers: [...workers, "farmer"] };
@@ -407,6 +408,16 @@ const marchers = (kingdom: Kingdom): Partial<Counts<UnitName>> => {
   return { infantry: Math.max(0, infantry - Math.max(0, guard - bowman)), cavalry };
 };
 
+/** the share of its soldiers a warrior leaves at home when it marches on a monument: the era is at stake */
+const monumentHomeGuard = 0.1;
+
+/** the infantry and cavalry a warrior marches on a monument with, all but a tenth of its soldiers, bowmen staying first */
+const allIn = (kingdom: Kingdom): Partial<Counts<UnitName>> => {
+  const { bowman, infantry, cavalry } = kingdom.units.availableUnits;
+  const guard = Math.ceil((bowman + infantry + cavalry) * monumentHomeGuard);
+  return { infantry: Math.max(0, infantry - Math.max(0, guard - bowman)), cavalry };
+};
+
 /**
  * lives by one craft and buys the rest; when its goods pile up unsold it grows gold mines instead of workplaces until
  * the market takes the stock, as a player would rather than make what nobody buys. A smith turns its forges to whichever
@@ -444,7 +455,7 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
       } else if (await fed(context)) {
         await raiseGarrison(context);
       }
-      const { plan, workers } = await thisTurn(context, calling, unsold);
+      const { plan, workers } = await thisTurn(context, calling, unsold, monumentBarracks(ledger.monument));
       await wallUp(context, plan);
       await developEconomy(await refreshed(context), plan, workers);
       if (ledger.monument) await payIn(context, ledger.monument, want);
@@ -458,7 +469,7 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
       if (ledger.monument) await standGuard(context, ledger.monument);
       if (calling.army) {
         const now = await refreshed(context);
-        if (!ledger.monument || !(await assaultRivals(now, ledger.monument, marchers(now.kingdom)))) await strikeLargest(now, { marchers });
+        if (!ledger.monument || !(await assaultRivals(now, ledger.monument, allIn(now.kingdom)))) await strikeLargest(now, { marchers });
       }
     },
   };
@@ -486,7 +497,7 @@ const cornerer = (good: Good, ledger: Ledger): Strategy => {
       await buy(context.player, good, Number.MAX_SAFE_INTEGER, (await context.player.kingdom()).resources.gold * spendShare, { fromAllies: false, maxPrice: ceiling });
       await hireCarriers(await refreshed(context), good, ledger);
       if (await fed(context)) await raiseGarrison(context);
-      const { plan, workers } = await thisTurn(context, calling, false);
+      const { plan, workers } = await thisTurn(context, calling, false, monumentBarracks(ledger.monument));
       await wallUp(context, plan);
       await developEconomy(await refreshed(context), plan, workers);
       if (ledger.monument) await payIn(context, ledger.monument, want);

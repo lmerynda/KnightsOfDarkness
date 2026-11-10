@@ -49,6 +49,16 @@ export type Lessons = { bars: Map<string, number>; read: Set<string> };
 
 export const freshLessons = (): Lessons => ({ bars: new Map(), read: new Set() });
 
+/**
+ * the share of its land each member of a builder turns into barracks once the monument stands, for soldiers to guard it:
+ * a lead in land is gold, not soldiers, and a garrison of the members' 1% home garrisons fell to rivals at any lead
+ */
+const guardBarracksShare = 0.02;
+
+/** the share of its land a member keeps in barracks for the monument's guard, as of the monuments it last saw */
+export const monumentBarracks = (policy: MonumentPolicy | undefined): number =>
+  policy?.seen?.monuments.some(monument => monument.allianceName === policy.alliance && monument.stages > 0) ? guardBarracksShare : 0;
+
 /** upkeep a builder keeps in the store beyond the next stage's cost: two days of hourly turns */
 const upkeepBufferTurns = 48;
 /**
@@ -58,6 +68,11 @@ const upkeepBufferTurns = 48;
 const firstBar = 0.5;
 const barAfterDefeat = 1.2;
 const barAfterVictory = 0.9;
+/**
+ * the most a bar rises to, every soldier on guard at the best defense: rivals who raised it with every repelled wave until
+ * their armies could never reach it stopped marching for good, where players rebuild and come back
+ */
+const highestBar = 1;
 const attackEvery = 6;
 
 const monuments = async (context: TurnContext, policy: MonumentPolicy): Promise<Monument[]> => {
@@ -147,7 +162,7 @@ const learn = async (context: TurnContext, lessons: Lessons, known: Monument[]):
     lessons.read.add(report.id);
     const alliance = known.find(monument => monument.seat === report.defender)?.allianceName;
     if (!alliance) continue;
-    lessons.bars.set(alliance, (lessons.bars.get(alliance) ?? firstBar) * (report.attackerWon ? barAfterVictory : barAfterDefeat));
+    lessons.bars.set(alliance, Math.min(highestBar, (lessons.bars.get(alliance) ?? firstBar) * (report.attackerWon ? barAfterVictory : barAfterDefeat)));
   }
 };
 
