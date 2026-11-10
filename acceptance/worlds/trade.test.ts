@@ -160,23 +160,36 @@ test("a craftsman struck by warriors keeps more barracks", async () => {
     const guild = await foundCoalition(world, "Guild", () => coalitionOf(selfSufficient));
     const horde = await foundCoalition(world, "Horde", () => coalitionOf(["gold", "gold", "food", "smith", "smith", "iron", "warrior", "warrior", "warrior"]));
     const turns = 60;
-    const run = await runWorld(world, [...guild.rulers, ...horde.rulers], turns, { shuffle: true });
+    const craftsmen = guild.rulers.filter(ruler => ruler.strategy.name !== "warrior");
+    // the turn each won strike on a craftsman was reported by; a strike lands during the warrior's turn, and a craftsman
+    // who plays after it in that round buys back more land than most strikes take, so its land alone hid them
+    const struckOn = new Map<string, { defender: string; turn: number }>();
+    /** each craftsman's barracks share of its land at the end of each turn */
+    const shareOn = new Map<string, number>();
+    const run = await runWorld(world, [...guild.rulers, ...horde.rulers], turns, {
+      shuffle: true,
+      afterTurn: async turn => {
+        for (const ruler of craftsmen) {
+          const kingdom = await ruler.player.kingdom();
+          shareOn.set(`${kingdom.name}@${turn}`, kingdom.buildings.barracks / kingdom.resources.land);
+          for (const report of await ruler.player.battleReports()) {
+            if (report.defender === kingdom.name && report.attackerWon && !struckOn.has(report.id)) struckOn.set(report.id, { defender: kingdom.name, turn });
+          }
+        }
+      },
+    });
     assert.deepEqual(run.violations, []);
 
-    const craftsmen = guild.rulers.filter(ruler => ruler.strategy.name !== "warrior").map(ruler => ruler.player.name);
-    const lostLand = (kingdom: string): boolean =>
-      run.timeline.some(entry => entry.kingdom === kingdom && entry.turn > turns - 20 && entry.land < (run.timeline.find(before => before.kingdom === kingdom && before.turn === entry.turn - 1)?.land ?? 0));
-    const struck = craftsmen.filter(lostLand);
-    assert.ok(struck.length > 0, "the warriors struck no craftsman late in the run");
-    const kingdoms = await world.kingdoms();
-    const share = (name: string): number => {
-      const kingdom = kingdoms.find(candidate => candidate.name === name);
-      return kingdom ? kingdom.buildings.barracks / kingdom.resources.land : 0;
-    };
-    // buildings cannot be torn down, so a craftsman struck on fully built land walls up only as it gains land; without
+    // a struck craftsman is judged by the share it reached in the turns after its first strike, so a strike early in the
+    // run counts as much as a late one; once every craftsman held its garrison, a run went twenty turns without a won strike
+    const firstStrike = new Map<string, number>();
+    for (const { defender, turn } of struckOn.values()) if (turn < turns) firstStrike.set(defender, Math.min(turn, firstStrike.get(defender) ?? turn));
+    assert.ok(firstStrike.size > 0, "the warriors struck no craftsman");
+    const highest = (name: string, after: number): number => Math.max(...Array.from({ length: turns - after }, (_, step) => shareOn.get(`${name}@${after + 1 + step}`) ?? 0));
+    // a craftsman struck on fully built land buys the acres for its walls rather than tear down its workplaces; without
     // walling up no craftsman keeps barracks on more than 1% of its land
-    const shares = struck.map(name => `${name}: ${share(name).toFixed(3)}`);
-    assert.ok(struck.some(name => share(name) > 0.015), `no struck craftsman walled up: ${shares.join(", ")}`);
+    const shares = [...firstStrike].map(([name, turn]) => `${name} struck on turn ${turn}: ${highest(name, turn).toFixed(3)}`);
+    assert.ok([...firstStrike].some(([name, turn]) => highest(name, turn) > 0.015), `no struck craftsman walled up: ${shares.join(", ")}`);
   } finally {
     await server.stop();
   }
