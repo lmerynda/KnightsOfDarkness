@@ -1,6 +1,7 @@
 import type { Player } from "../api/client.ts";
 import { militaryUnits, type BuildingName, type Counts, type Kingdom, type MarketResource, type MarketTrade, type UnitName } from "../api/types.ts";
 import { developEconomy, fillBarracks, strikeLargest, walls, type Plan, type Strategy, type TurnContext } from "./strategies.ts";
+import { assaultRivals, foundWhenAhead, payIn, standGuard, type MonumentPolicy } from "./monuments.ts";
 
 /**
  * Rulers of coalitions that trade: each lives by one trade and buys the rest, from its allies first and from anyone
@@ -221,6 +222,8 @@ const incoming = (context: TurnContext, resource: MarketResource): number =>
  * cornering price would charge its members too; a stand-in for players telling each other what they need
  */
 type Ledger = {
+  /** what the coalition does about monuments, when the run plays them */
+  monument?: MonumentPolicy;
   cornered: Good[];
   needs: Map<string, Partial<Record<Good, number>>>;
   /** gold each member owes each shipper for the loads it received, at the merchants' price: debtor, then shipper */
@@ -391,8 +394,9 @@ const hireCarriers = async (context: TurnContext, good: Good, ledger: Ledger): P
  * cornerer and from their own craftsmen of that good, and those ask the cornerer's dear price on the market, so rivals
  * cannot buy it cheaply from them
  */
-export const coalitionOf = (crafts: Craft[]): Strategy[] => {
-  const ledger: Ledger = { cornered: crafts.filter(craft => craft.startsWith("corner:")).map(craft => craft.slice("corner:".length) as Good), needs: new Map(), owed: new Map(), bills: new Map(), budgets: new Map() };
+export const coalitionOf = (crafts: Craft[], monument?: MonumentPolicy): Strategy[] => {
+  const ledger: Ledger = {
+    monument, cornered: crafts.filter(craft => craft.startsWith("corner:")).map(craft => craft.slice("corner:".length) as Good), needs: new Map(), owed: new Map(), bills: new Map(), budgets: new Map() };
   return crafts.map(craft => (craft.startsWith("corner:") ? cornerer(craft.slice("corner:".length) as Good, ledger) : craftsman(craft as CallingName, ledger)));
 };
 
@@ -417,6 +421,7 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
     weaponsPercentage: calling.sells.includes("weapons") ? 50 : 0,
     play: async context => {
       noteStrikes(context);
+      if (ledger.monument) await foundWhenAhead(context, ledger.monument);
       await disbandUnpaid(context);
       const want = wants(context, calling);
       await payBills(context, ledger);
@@ -442,6 +447,7 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
       const { plan, workers } = await thisTurn(context, calling, unsold);
       await wallUp(context, plan);
       await developEconomy(await refreshed(context), plan, workers);
+      if (ledger.monument) await payIn(context, ledger.monument, want);
       for (const good of calling.sells) {
         if (ships.includes(good)) await ship(context, good, want[good] ?? 0, ledger);
         const dear = ships.includes(good) ? cornerMarkup * merchantsPrice(context.config, good) : undefined;
@@ -449,7 +455,11 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
         if (ships.includes(good)) await bill(context, good, ledger);
       }
       await topUpFood(context, calling);
-      if (calling.army) await strikeLargest(await refreshed(context), { marchers });
+      if (ledger.monument) await standGuard(context, ledger.monument);
+      if (calling.army) {
+        const now = await refreshed(context);
+        if (!ledger.monument || !(await assaultRivals(now, ledger.monument, marchers(now.kingdom)))) await strikeLargest(now, { marchers });
+      }
     },
   };
   return strategy;
@@ -467,6 +477,7 @@ const cornerer = (good: Good, ledger: Ledger): Strategy => {
     weaponsPercentage: 0,
     play: async context => {
       noteStrikes(context);
+      if (ledger.monument) await foundWhenAhead(context, ledger.monument);
       await disbandUnpaid(context);
       const want = wants(context, calling);
       await payBills(context, ledger);
@@ -478,10 +489,12 @@ const cornerer = (good: Good, ledger: Ledger): Strategy => {
       const { plan, workers } = await thisTurn(context, calling, false);
       await wallUp(context, plan);
       await developEconomy(await refreshed(context), plan, workers);
+      if (ledger.monument) await payIn(context, ledger.monument, want);
       await ship(context, good, want[good] ?? 0, ledger);
       await sell(context, good, (want[good] ?? 0) + debtors(context, ledger).length, ceiling);
       await bill(context, good, ledger);
       await topUpFood(context, calling);
+      if (ledger.monument) await standGuard(context, ledger.monument);
     },
   };
 };

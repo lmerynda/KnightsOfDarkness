@@ -1,15 +1,14 @@
-import { appendFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
-import { World } from "../api/client.ts";
-import { militaryUnits, type MarketTrade } from "../api/types.ts";
-import { startServer, type ConfigOverrides } from "../server.ts";
-import { foundCoalition } from "./coalition.ts";
-import { coalitionOf, parseCraft, selfSufficient, tradeShares, type Craft } from "./trade.ts";
-import { finalSnapshot, runWorld, type WorldRun } from "./world.ts";
+import type { ConfigOverrides } from "../server.ts";
+import { playEconomy, ticksPerDay, type EconomyRun, type MonumentPlay } from "./economyWorld.ts";
+import { parseCraft, selfSufficient, tradeShares, type Craft } from "./trade.ts";
+import { finalSnapshot } from "./world.ts";
 
 const usage = `Play coalitions that trade goods, and report how each fares and where its market purchases came from.
 
   node src/simulation/economy.ts [--coalition Name=craft,craft,... ...] [--turns 120] [--set path=value ...] [--compare] [--out run.json] [--progress days.jsonl]
+      [--monuments [--found Name=lead ...] [--found-from 30] [--assault Name ...] [--band] [--assault-from stages] [--pay-share 0.5] [--guard-share 0.5]]
 
 Each --coalition founds one coalition with one kingdom per craft; without any, two self-sufficient coalitions play
 (Guild and Hanse, each ${selfSufficient.join(",")}). Crafts: gold producers buy what they eat and the tools they train
@@ -21,12 +20,23 @@ coalition's own craftsmen of that good ask that price too, and the coalition pas
 carriers instead, billed at the merchants' price. Every member but the warrior keeps a garrison of bowmen and infantry
 in barracks on 1% of its land, and 1% more for each strike it lost in the last 24 turns, up to 4%. A coalition may leave a craft out and rely on the market. Each buys
 from its allies first and from anyone else for the rest, and grows its own food when it cannot buy enough. Rulers play
-in a new random order every turn, so no coalition always meets the market and the armies first. The merchant bots play
+their turns at the same moment, as players do, so no coalition always meets the market and the armies first. The merchant bots play
 too. The report gives each kingdom's land, gold and army, each coalition's land and its craftsmen's land against its
 gold producers', and the pieces of every good each coalition bought from allies, from the bots and from other kingdoms.
 --progress appends one line per kingdom every 24 turns (a day of hourly turns) as the run goes: its land, gold, army,
 defense, the gold its soldiers cost and what it will produce next turn, so a run of months can be read while it plays and
-survives a crash.`;
+survives a crash.
+
+--monuments plays the era's monuments and ends the run when the era ends. Each --found lets that coalition's emperor
+found a monument in its own kingdom once the alliance's land leads the other alliances' average by the share given
+(0.2 for 20%), from day --found-from on (30 by default, since a lead in members shows before the economy can carry a
+monument); every member then pays --pay-share of what it can spare towards the next stage and two days of upkeep
+each turn, and keeps --guard-share of its soldiers standing guard there. The warriors of each --assault coalition (every
+coalition when none is named) march on any other alliance's monument from --assault-from stages on (half the stages by
+default) whenever their army beats the garrison as everyone counts it, each coalition two turns after the one before;
+with --band they march together instead, all on the same turn, whenever their armies together beat it.
+The report tells how the era ended, who won, and what happened to every monument; --progress adds a line a day with
+each alliance's lead and each monument's stages and garrison.`;
 
 const { values } = parseArgs({
   options: {
@@ -36,6 +46,14 @@ const { values } = parseArgs({
     compare: { type: "boolean", default: false },
     out: { type: "string" },
     progress: { type: "string" },
+    monuments: { type: "boolean", default: false },
+    found: { type: "string", multiple: true, default: [] },
+    "found-from": { type: "string", default: "30" },
+    assault: { type: "string", multiple: true, default: [] },
+    "assault-from": { type: "string" },
+    band: { type: "boolean", default: false },
+    "pay-share": { type: "string", default: "0.5" },
+    "guard-share": { type: "string", default: "0.5" },
     help: { type: "boolean", default: false },
   },
 });
@@ -57,7 +75,6 @@ try {
   process.exit(2);
 }
 const turns = Number(values.turns);
-const ticksPerDay = 24;
 const overrides: ConfigOverrides = Object.fromEntries(
   values.set.map(entry => {
     const [path, ...rest] = entry.split("=");
@@ -70,50 +87,41 @@ const overrides: ConfigOverrides = Object.fromEntries(
   }),
 );
 
-type EconomyRun = { run: WorldRun; trades: MarketTrade[]; groups: Record<string, string[]>; bots: string[] };
+const play: MonumentPlay | undefined = values.monuments
+  ? {
+      found: new Map(
+        values.found.map(entry => {
+          const [name, lead] = entry.split("=");
+          return [name.trim(), Number(lead)] as const;
+        }),
+      ),
+      foundFromDay: Number(values["found-from"]),
+      assault: values.assault.length ? values.assault : null,
+      band: values.band,
+      assaultFrom: values["assault-from"] === undefined ? undefined : Number(values["assault-from"]),
+      payShare: Number(values["pay-share"]),
+      guardShare: Number(values["guard-share"]),
+    }
+  : undefined;
 
-export const simulate = async (configOverrides: ConfigOverrides): Promise<EconomyRun> => {
-  const server = await startServer(configOverrides);
-  try {
-    const world = new World(server.url);
-    const coalitions = [];
-    for (const [name, crafts] of makeUps) coalitions.push(await foundCoalition(world, name, () => coalitionOf(crafts)));
-    const rulers = coalitions.flatMap(coalition => coalition.rulers);
-    const coalitionOfKingdom = new Map(coalitions.flatMap(coalition => coalition.rulers.map(ruler => [ruler.player.name, coalition.name] as const)));
-    const progress = values.progress;
-    const afterTurn = progress
-      ? async (turn: number): Promise<void> => {
-          if (turn % ticksPerDay !== 0) return;
-          const lines = [];
-          for (const ruler of rulers) {
-            const [kingdom, details] = await Promise.all([ruler.player.kingdom(), ruler.player.details(ruler.strategy.weaponsPercentage)]);
-            const produced = details.forecast.resourcesProduced;
-            lines.push(JSON.stringify({
-              turn,
-              coalition: coalitionOfKingdom.get(ruler.player.name),
-              kingdom: ruler.player.name,
-              land: kingdom.resources.land,
-              gold: kingdom.resources.gold,
-              army: militaryUnits.reduce((sum, unit) => sum + kingdom.units.availableUnits[unit] + kingdom.units.mobileUnits[unit], 0),
-              defense: details.defensePower,
-              goldUpkeep: details.forecast.goldUpkeep,
-              produced: { gold: produced.gold ?? 0, food: produced.food ?? 0, iron: produced.iron ?? 0, tools: produced.tools ?? 0, weapons: produced.weapons ?? 0 },
-            }));
-          }
-          appendFileSync(progress, lines.join("\n") + "\n");
-        }
-      : undefined;
-    const run = await runWorld(world, rulers, turns, { shuffle: true, afterTurn });
-    const bots = (await world.rankings()).kingdoms.filter(rank => rank.bot).map(rank => rank.kingdomName);
-    const groups = Object.fromEntries(coalitions.map(coalition => [coalition.name, coalition.rulers.map(ruler => ruler.player.name)]));
-    return { run, trades: await world.trades(), groups, bots };
-  } finally {
-    await server.stop();
-  }
-};
+const simulate = (configOverrides: ConfigOverrides): Promise<EconomyRun> => playEconomy({ coalitions: makeUps, turns, overrides: configOverrides, monuments: play, progress: values.progress });
 
-const report = (title: string, { run, trades, groups, bots }: EconomyRun): void => {
+const report = (title: string, { run, trades, groups, bots, era }: EconomyRun): void => {
   console.log(`\n${title}`);
+  if (era) {
+    console.log(era.endedOnTurn === null ? "The era did not end within the run." : `The era ended on turn ${era.endedOnTurn} (day ${Math.floor(era.endedOnTurn / ticksPerDay)}) by ${era.endedBy}, won by ${era.winner}.`);
+    for (const event of era.events.filter(candidate => !candidate.what.includes(" marched on "))) console.log(`  day ${Math.floor(event.turn / ticksPerDay)}: ${event.alliance} ${event.what}`);
+    const byAttacker = new Map<string, { won: number; lost: number; razed: number }>();
+    for (const assault of era.assaults) {
+      const entry = byAttacker.get(assault.attacker) ?? { won: 0, lost: 0, razed: 0 };
+      if (assault.won) entry.won++;
+      else entry.lost++;
+      entry.razed += assault.stagesRazed;
+      byAttacker.set(assault.attacker, entry);
+    }
+    for (const assault of era.assaults) console.log(`  day ${Math.floor(assault.turn / ticksPerDay)}: ${assault.attacker} ${assault.won ? "stormed" : "was repelled at"} ${assault.defender} with ${assault.sent} soldiers, attack ${assault.attackPower} against defense ${assault.defensePower}${assault.won ? `, ${assault.stagesRazed.toFixed(2)} stages razed` : ""}`);
+    for (const [attacker, entry] of byAttacker) console.log(`  ${attacker}: ${entry.won} assaults won, ${entry.lost} lost, ${entry.razed.toFixed(2)} stages razed`);
+  }
   console.table(
     Object.values(groups)
       .flat()
