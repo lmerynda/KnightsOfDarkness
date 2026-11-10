@@ -216,9 +216,9 @@
     "monument": {
         "stages": 10,
         "stageCost": {
-            "gold": 5000000000,
-            "iron": 1500000,
-            "tools": 200000
+            "gold": 4000000000,
+            "iron": 1200000,
+            "tools": 160000
         },
         "upkeepPerStage": {
             "gold": 7500000,

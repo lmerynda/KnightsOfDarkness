@@ -8,6 +8,7 @@
         "test": "node src/run.ts api",
         "test:browser": "node src/run.ts browser",
         "test:long": "node src/run.ts long",
+        "test:balance": "node src/run.ts balance",
         "sim": "node src/simulation/cli.ts",
         "stages": "node src/simulation/stages.ts",
         "coalitions": "node src/simulation/coalitions.ts",

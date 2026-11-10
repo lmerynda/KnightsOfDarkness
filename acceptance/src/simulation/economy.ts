@@ -8,7 +8,7 @@ import { finalSnapshot } from "./world.ts";
 const usage = `Play coalitions that trade goods, and report how each fares and where its market purchases came from.
 
   node src/simulation/economy.ts [--coalition Name=craft,craft,... ...] [--turns 120] [--set path=value ...] [--compare] [--out run.json] [--progress days.jsonl]
-      [--monuments [--found Name=lead ...] [--found-from 30] [--assault Name ...] [--band] [--assault-from stages] [--pay-share 0.5] [--guard-share 0.5]]
+      [--monuments [--found Name=lead ...] [--found-from 30] [--assault Name ...] [--band] [--assault-from stages] [--pay-share 0.5] [--guard-share 0.9]]
 
 Each --coalition founds one coalition with one kingdom per craft; without any, two self-sufficient coalitions play
 (Guild and Hanse, each ${selfSufficient.join(",")}). Crafts: gold producers buy what they eat and the tools they train
@@ -31,10 +31,11 @@ survives a crash.
 found a monument in its own kingdom once the alliance's land leads the other alliances' average by the share given
 (0.2 for 20%), from day --found-from on (30 by default, since a lead in members shows before the economy can carry a
 monument); every member then pays --pay-share of what it can spare towards the next stage and two days of upkeep
-each turn, and keeps --guard-share of its soldiers standing guard there. The warriors of each --assault coalition (every
-coalition when none is named) march on any other alliance's monument from --assault-from stages on (half the stages by
-default) whenever their army beats the garrison as everyone counts it, each coalition two turns after the one before;
-with --band they march together instead, all on the same turn, whenever their armies together beat it.
+each turn, puts 2% of its land into barracks for the guard, and keeps --guard-share of its soldiers standing guard
+there. Each --assault coalition (every coalition when none is named) marches on any other alliance's monument from
+--assault-from stages on (half the stages by default) as one army, its members joining whoever leads with all but a
+tenth of their soldiers, whenever its armies match what its battle reports taught it the garrison takes; coalitions
+march two turns apart, or with --band all on the same turn, counting their armies together.
 The report tells how the era ended, who won, and what happened to every monument; --progress adds a line a day with
 each alliance's lead and each monument's stages and garrison.`;
 
@@ -53,7 +54,7 @@ const { values } = parseArgs({
     "assault-from": { type: "string" },
     band: { type: "boolean", default: false },
     "pay-share": { type: "string", default: "0.5" },
-    "guard-share": { type: "string", default: "0.5" },
+    "guard-share": { type: "string", default: "0.9" },
     help: { type: "boolean", default: false },
   },
 });

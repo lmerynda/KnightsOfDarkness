@@ -15,6 +15,8 @@ const suites: Record<string, Suite> = {
   browser: { driver: "browser", files: ["scenarios/*.test.ts", "ui/*.test.ts"], ui: true },
   // months of eras played out, on demand
   long: { driver: "api", files: ["long/*.test.ts"], ui: false },
+  // the balance targets of backend/ERA.md, each a whole era of rival coalitions, on demand
+  balance: { driver: "api", files: ["balance/*.test.ts"], ui: false },
 };
 
 const [name, ...options] = process.argv.slice(2);

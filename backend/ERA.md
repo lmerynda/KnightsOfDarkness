@@ -1,6 +1,6 @@
 # Eras and the coalition monument
 
-Designed on 2026-11-07. An era ends when a coalition completes its monument and holds it. All of that is built (steps 3 to 6, 2026-11-08 and 2026-11-09): a monument can be founded, paid for, fed, watched, garrisoned and assaulted, and one that stands complete and fed for `monument.holdTicks` wins the era for its alliance. Otherwise the clock ends the era after 2,880 ticks (four months) and the alliance with the most land wins it. No simulated ruler builds or assaults a monument yet, and the prices are the starting ones: step 7.
+Designed on 2026-11-07. An era ends when a coalition completes its monument and holds it. All of that is built (steps 3 to 6, 2026-11-08 and 2026-11-09): a monument can be founded, paid for, fed, watched, garrisoned and assaulted, and one that stands complete and fed for `monument.holdTicks` wins the era for its alliance. Otherwise the clock ends the era after 2,880 ticks (four months) and the alliance with the most land wins it. Step 7 (2026-11-09 and 2026-11-10) played simulated coalitions that build and assault monuments over whole eras and tuned the prices on them; armies that join a strike now fight beside it as one army, and a monument is the prize for pulling far ahead.
 
 ## Why
 
@@ -31,7 +31,7 @@ Designed on 2026-11-07. An era ends when a coalition completes its monument and 
 ### Raising a monument
 
 - **One per alliance per era.** The emperor founds it in a member's kingdom, the seat. It does not use land or building points. Any alliance may try: the cost is what limits it.
-- **Stages.** It has `monument.stages` stages, 10 to start with. Each stage costs `monument.stageCost` in gold, iron and tools. That draws on every craft at once: gold producers, the iron miner and the smiths. A stage is 5 billion gold, more than a kingdom's store can hold, so a monument's store and costs count in `long`.
+- **Stages.** It has `monument.stages` stages, 10 to start with. Each stage costs `monument.stageCost` in gold, iron and tools. That draws on every craft at once: gold producers, the iron miner and the smiths. A stage is 4 billion gold (5 billion until step 7), more than a kingdom's store can hold, so a monument's store and costs count in `long`.
 - **Contributions.** Members pay resources straight into the monument's store with `POST /alliance/monument/contribute`. A stage is raised as soon as the store covers its cost.
   - I'd skip carriers. Carrying would add a delay and another strike target, but it isn't needed to make the monument costly.
 - **Upkeep.** Each tick the monument eats `monument.upkeepPerStage` in gold and food for every stage built, so a nearly finished monument costs the most to keep. When the store can't pay all of it, it pays nothing and loses `monument.decayRatio` of a stage that tick, 5% to start with. Holding a monument without feeding it decays it. Repairing a crumbled stage costs only the share that crumbled. Its members hear once when it starts to crumble. A stage that has fallen rises again with the next paid tick if the store covers it, so goods held back in the store rebuild a monument without anyone paying in again.
@@ -70,9 +70,9 @@ Designed on 2026-11-07. An era ends when a coalition completes its monument and 
 These start as acceptance worlds in `acceptance/worlds/`, then become `BALANCE.md` entries as the numbers are tuned. The lead is measured as the alliance's land against the average of the other alliances, so a lead of 40% means 1.4 times the average.
 
 1. **A small lead fails.** An alliance at a 10% lead that founds a monument does not complete it within the era, and ends the era smaller than it would have without trying. Either rivals raze it, or the upkeep and garrison starve its economy.
-2. **A large lead wins.** An alliance at a 40% lead completes and holds a monument within 4 to 6 weeks of founding it, while two rival alliances assault it.
+2. **A large lead wins.** An alliance at a 40% lead wins the era while two rival alliances assault its monument: by the monument now and then (one era in four measured, 85 days after founding), otherwise as the alliance with the most land when the clock runs out. Settled by the user on 2026-11-10 from "completes and holds it within 4 to 6 weeks": every price that brought a 40% lead home that fast let 10 and 20% leads win too.
 3. **Banding together works.** Two rival alliances that both assault a monument stop an alliance at a 20% lead. One rival alone does not.
-4. **Eras end by the monument.** A typical world of four alliances ends its era by monument within 2 to 4 months. The clock cap is a backstop that rarely fires.
+4. **A monument is the prize for pulling far ahead.** An era ends by monument only when one alliance leads the others by a wide margin; otherwise the clock ends it and the alliance with the most land wins. Relaxed by the user on 2026-11-09 from "a typical world of four alliances ends its era by monument within 2 to 4 months": step 7 showed that a typical leader, 20 to 25% ahead, is held down by rivals who band together, as target 3 asks, so the two could not both hold.
 
 The 10%, 20% and 40% leads are first guesses, to be tuned against what the long simulations show.
 
@@ -80,8 +80,8 @@ The 10%, 20% and 40% leads are first guesses, to be tuned against what the long 
 
 - **Long runs first.** Economy runs today play 30 to 60 turns, but an era is 1,440 to 2,880. Before setting any cost, play one long run to see what coalitions earn and how large they are at months 1, 2, 3 and 4. Monument costs are set in multiples of a leading coalition's income at that point.
   - If a full run is too slow, play a scaled world instead: a shorter era and a cheaper monument. Economies don't scale linearly, though, so check the scaled world against at least one full run.
-- **A builder policy for the simulated coalitions.** Found a monument when the alliance's lead passes a threshold. Each member pays in a share of its surplus each turn. Warriors and craftsmen send part of their army to the garrison.
-- **A rival policy.** Once a rival monument passes a set stage, warriors strike it first. Rival alliances stagger their strikes a few turns apart, which simulates agreeing by letter.
+- **A builder policy for the simulated coalitions.** Found a monument when the alliance's lead passes a threshold, from day 30 on. Each member pays in a share of its surplus each turn, puts 2% of its land into barracks for the guard, and keeps most of its soldiers at the monument.
+- **A rival policy.** Once a rival monument passes half its stages, the whole coalition marches on it as one army, its members joining whoever leads, with all but a tenth of their soldiers. Rival alliances land on the same turns, which simulates agreeing by letter. They learn from their battle reports how strong they must be, and never give up for good.
 - **Load.** Keep long runs to about six at a time, with no test suite alongside them (see the memory on parallel load).
 
 ## Measured
@@ -96,7 +96,7 @@ Step 1, on 2026-11-08: two runs of four coalitions of nine over an era, with no 
 | Iron a turn, with a miner | 93,000 | 92,000 | 68,000 to 85,000 |
 | Food a turn | 1.7M | 3.3M | 3.4 to 4.6M |
 
-The figures give these starting prices. Step 7 tunes them.
+The figures gave these starting prices, which step 7 tuned (see "Step 7" below).
 
 - **Stage cost:** 5 billion gold, 1.5 million iron and 200,000 tools a stage. Over 10 stages that is 50 billion gold, 15 million iron and 2 million tools. That's about a week of a leading coalition's whole output at day 60 for each good.
 - **How long that takes:** a coalition paying in a third of its output finishes in about:
@@ -120,6 +120,14 @@ Step 2, on 2026-11-08, on top of the two-week peace and the towers and castles w
 - **Rivals can now fight back.** At day 60 each rival's warrior holds 27,000 to 90,000 soldiers against 86,000 to 103,000 for each of the leader's two, where rivals' warriors often stood at nothing before.
 - **The prices above were measured before these changes.** A coalition's land and gold at day 60 changed by under 10%, so they stand as starting prices.
 
+Step 7, on 2026-11-09 and 2026-11-10: nineteen rounds of six eras, recorded in `BALANCE.md` under "Eras and monuments".
+
+- **The simulated rulers had to fight as players would.** Builders found from day 30, pay in half of what they spare, put 2% of their land into barracks for the guard and keep nine tenths of their soldiers there. Rival coalitions march as one army with nine tenths of theirs, land on the same turns as other rivals, and learn from their battle reports how strong they must be.
+- **Joined armies fight as one** (decided by the user). Fought one after the other, every army met the whole garrison alone, and the first clash decided an era whatever the lead.
+- **Prices:** 4 billion gold, 1.2 million iron and 160,000 tools a stage; a won assault razes up to 25% of the stages standing; upkeep (7.5 million gold and 15,000 food a stage each tick) and the 72-tick hold are unchanged.
+- **What holds:** a 10% lead that founds fails and falls behind; two rivals banded together stop a 20% lead and one alone does not. A 40% lead wins the era, by its monument in one era of four measured and otherwise on the clock with the most land. A typical world, whose leader is 20 to 25% ahead, ends on the clock.
+- **Every builder's lead collapses within a month of founding,** from 40% to about 10%: it pays and guards while its rivals keep growing. Cheaper stages, a smaller raze share and higher upkeep each moved strong and weak builders alike.
+
 ## Plan
 
 Each step lands with its scenarios, docs and checks, and is committed on its own.
@@ -130,8 +138,8 @@ Each step lands with its scenarios, docs and checks, and is committed on its own
 4. **Monument.** Done on 2026-11-08: `POST /alliance/monument/found` and `/contribute`, `GET /alliance/monument` for members and `GET /game/monuments` for everyone, a section on the Alliance page, listings on the rankings and the landing page, and the `monument` scenarios. Completing one does nothing yet, and the prices are the starting ones from "Measured": no simulated ruler builds one until step 7.
 5. **Garrison and assault.** Done on 2026-11-08: the `monument` attack type, soldiers standing guard at a monument, razing and joined assaults, battle reports, a Garrison section on the Alliance page, a goal on the Army page, a March on it link on the rankings, and the `assault` scenarios. Prices are still the starting ones: no simulated ruler garrisons or assaults one until step 7.
 6. **Winning.** Done on 2026-11-09: `monument.holdTicks` (72), the era ending `monument` with its winner in the hall of fame, the countdown everywhere a monument shows, Your turn's warnings, the `winning` scenarios, and `npm run test:long`, whose first era ends by a monument that a simulated mason pays for. That monument is priced in gold alone, cheap enough for one economist, so the run checks the ending, not the balance.
-7. **Balance.** Add the builder and rival policies to the simulation, then the four balance targets as worlds. Tune the costs, upkeep, raze ratio and hold time, and record them in `BALANCE.md`.
-8. **Pacts**, only if step 7 shows that alliances striking separately can't stop a leader.
+7. **Balance.** Done on 2026-11-09 and 2026-11-10: builder and rival policies in `acceptance/src/simulation/monuments.ts`, the targets as the `balance` suite (`npm run test:balance`, on demand), joined armies fighting as one, and the prices below. See "Step 7" above and `BALANCE.md`.
+8. **Pacts.** Not built: settled by the user on 2026-11-09, rival alliances coordinate by letter.
 
 ## Open decisions
 
