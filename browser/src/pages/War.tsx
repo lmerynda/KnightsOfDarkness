@@ -597,7 +597,7 @@ const AlliedMarches: React.FC<{ warRoom: WarRoom | undefined; onJoin: (march: On
   return (
     <Panel
       title="Allies on the march"
-      help={`Join a strike and your army marches as usual, then waits at the border and fights beside the ally's army when it lands, as one army in one battle, however fast either of you passes turns; after ${plural(config.attack.turnsToWaitAtBorder, "turn", "turns")} of yours at the border it fights alone, and if it is late it fights when it arrives. A beaten kingdom is protected only from armies sent after its defeat, so every army already on the road lands.`}
+      help={`Join a strike and your army marches as usual, then waits at the border and fights beside the ally's army when it lands, as one army in one battle, however fast either of you passes turns; after ${plural(config.attack.turnsToWaitAtBorder, "turn", "turns")} of yours at the border it fights alone, and if it is late it fights when it arrives. The ally's army waits for yours the same way, so armies sent together land together. A beaten kingdom is protected only from armies sent after its defeat, so every army already on the road lands.`}
     >
       <ul className="plain-list">
         {marches.map(march => (

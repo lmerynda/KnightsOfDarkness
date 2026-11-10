@@ -278,8 +278,18 @@ public class KingdomInteractor implements IKingdomInteractor
     @Override
     public boolean waitsAtBorder(KingdomOngoingAttackEntity attack)
     {
+        if (attack.turnsAtBorder >= gameConfig.attack().turnsToWaitAtBorder())
+        {
+            return false;
+        }
+        var marching = kingdomRepository.getAttacksOn(attack.getTargetKingdomName());
         var lead = attack.getJoinsAttackId();
-        return lead != null && attack.turnsAtBorder < gameConfig.attack().turnsToWaitAtBorder() && kingdomRepository.getAttacksOn(attack.getTargetKingdomName()).stream().anyMatch(other -> other.getId().equals(lead));
+        if (lead != null)
+        {
+            return marching.stream().anyMatch(other -> other.getId().equals(lead));
+        }
+        // a lead whose ruler passed its turns first waits for the allies' armies that set off with it
+        return marching.stream().anyMatch(other -> other.joins(attack) && other.turnsLeft > 0);
     }
 
     private void returnSurvivors(KingdomEntity attackerKingdom, UnitsMapDto survivors)

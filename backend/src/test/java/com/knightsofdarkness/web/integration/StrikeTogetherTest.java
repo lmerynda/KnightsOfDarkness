@@ -114,18 +114,43 @@ class StrikeTogetherTest
     }
 
     @Test
-    void aJoinedArmyThatArrivesAfterTheLead_shouldLandWhenItArrives()
+    void aLeadWhoseRulerPassesTurnsFirst_shouldWaitAtTheBorderForTheArmiesThatJoinedIt()
+    {
+        var lead = march(leader, null);
+        march(joiner, lead);
+
+        passTurns(leader, config.attack().turnsToArrive());
+        assertEquals(0, battlesBy(leader), "the joined army is a turn behind");
+
+        passTurns(joiner, config.attack().turnsToArrive());
+        passTurns(leader, 1);
+
+        assertThat(leader.getOngoingAttacks()).isEmpty();
+        assertThat(joiner.getOngoingAttacks()).isEmpty();
+        assertEquals(lastAttackPowerOf(leader), lastAttackPowerOf(joiner), "they fought one battle");
+    }
+
+    @Test
+    void aLead_shouldWaitForAJoinedArmyOnlyAFewTurns()
     {
         var lead = march(leader, null);
         passTurns(leader, config.attack().turnsToArrive() - 1);
         march(joiner, lead);
+
+        passTurns(leader, config.attack().turnsToWaitAtBorder());
+        assertEquals(0, battlesBy(leader));
         passTurns(leader, 1);
-        assertEquals(1, battlesBy(leader));
 
+        assertEquals(1, battlesBy(leader), "it waited as long as it may and fought alone");
+        assertThat(joiner.getOngoingAttacks()).hasSize(1);
         passTurns(joiner, config.attack().turnsToArrive());
-
         assertThat(joiner.getOngoingAttacks()).isEmpty();
-        assertEquals(1, battlesBy(joiner));
+        assertEquals(1, battlesBy(joiner), "the late army fights when it arrives");
+    }
+
+    private double lastAttackPowerOf(KingdomEntity kingdom)
+    {
+        return game.getWarReportRepository().getBattleReports(kingdom.getName(), 1).get(0).attackPower();
     }
 
     @Test
