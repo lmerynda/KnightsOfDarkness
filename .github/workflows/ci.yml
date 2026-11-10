@@ -105,6 +105,10 @@ jobs:
       - name: Scenarios and worlds through the API
         run: npm test
         working-directory: acceptance
+      # the same races and hostile requests on PostgreSQL, which locks as production does; the runner's Docker holds it
+      - name: Races and hostile requests on PostgreSQL
+        run: npm run test:pg
+        working-directory: acceptance
       - name: Scenarios and page checks through Chrome
         run: npm run test:browser
         working-directory: acceptance

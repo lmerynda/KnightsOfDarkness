@@ -9,6 +9,7 @@
         "test:browser": "node src/run.ts browser",
         "test:long": "node src/run.ts long",
         "test:balance": "node src/run.ts balance",
+        "test:pg": "node src/run.ts robustness-pg",
         "sim": "node src/simulation/cli.ts",
         "stages": "node src/simulation/stages.ts",
         "coalitions": "node src/simulation/coalitions.ts",
