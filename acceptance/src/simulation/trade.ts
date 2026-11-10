@@ -300,21 +300,38 @@ const defended = ({ config, memory, turn }: TurnContext, plan: Plan): Plan => {
 };
 
 /**
- * builds the barracks, towers and castles its plan calls for before anything else; built in turn with the rest of the
- * plan, the garrison's small share was always the smallest shortfall and came last, so a smith ended with barracks on
- * 0.3% of its land instead of 1%
+ * builds the barracks, towers and castles its plan calls for before anything else, on land bought for them when its land
+ * is all built on, as far as half the treasury pays; built in turn with the rest of the plan, the garrison's small share
+ * was always the smallest shortfall and came last, so a smith ended with barracks on 0.3% of its land instead of 1%. A
+ * farmer, a smith or an iron miner builds its land full every turn, and one that waited for free land kept the barracks
+ * of turn 25 to the end of the run, on 0.5% of its land however often it was struck
  */
 const wallUp = async (context: TurnContext, plan: Plan): Promise<void> => {
-  const { kingdom } = await refreshed(context);
+  const { player, kingdom } = await refreshed(context);
   const missing = (building: "barracks" | "tower" | "castle"): number => Math.max(0, Math.floor((plan[building] ?? 0) * kingdom.resources.land) - kingdom.buildings[building]);
-  if (missing("barracks") + missing("tower") + missing("castle") > 0) await context.player.build({ barracks: missing("barracks"), tower: missing("tower"), castle: missing("castle") });
+  const walls = missing("barracks") + missing("tower") + missing("castle");
+  if (walls <= 0) return;
+  const built = Object.values(kingdom.buildings).reduce((sum, count) => sum + count, 0);
+  for (let acres = walls - Math.max(0, kingdom.resources.land - built); acres > 0; acres = Math.floor(acres / 2)) {
+    const quote = await player.landQuote(acres);
+    if (quote.count === acres && quote.cost <= kingdom.resources.gold * spendShare) {
+      await player.buyLand(acres);
+      break;
+    }
+  }
+  await player.build({ barracks: missing("barracks"), tower: missing("tower"), castle: missing("castle") });
 };
 
-/** notes the turns on which the ruler's land shrank, which is when a strike on it won */
-const noteStrikes = ({ kingdom, memory, turn }: TurnContext): void => {
-  const before = memory.land as number | undefined;
-  if (before !== undefined && kingdom.resources.land < before) memory.struck = [...((memory.struck as number[] | undefined) ?? []), turn];
-  memory.land = kingdom.resources.land;
+/**
+ * notes the turn on which the ruler reads each new report of a strike on it that won; judged by its land shrinking since
+ * its last turn, it missed every strike that took fewer acres than it had bought that turn, and walled up for none of them
+ */
+const noteStrikes = async ({ player, kingdom, memory, turn }: TurnContext): Promise<void> => {
+  const read = new Set((memory.reports as string[] | undefined) ?? []);
+  const won = (await player.battleReports()).filter(report => report.defender === kingdom.name && report.attackerWon && !read.has(report.id));
+  if (won.length === 0) return;
+  memory.struck = [...((memory.struck as number[] | undefined) ?? []), ...won.map(() => turn)];
+  memory.reports = [...read, ...won.map(report => report.id)];
 };
 
 /** ships the good to the members who wrote down they lack it, most lacking first, keeping what the shipper needs itself */
@@ -416,7 +433,7 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
     name: craft,
     weaponsPercentage: calling.sells.includes("weapons") ? 50 : 0,
     play: async context => {
-      noteStrikes(context);
+      await noteStrikes(context);
       await disbandUnpaid(context);
       const want = wants(context, calling);
       await payBills(context, ledger);
@@ -466,7 +483,7 @@ const cornerer = (good: Good, ledger: Ledger): Strategy => {
     name: `corner ${good}`,
     weaponsPercentage: 0,
     play: async context => {
-      noteStrikes(context);
+      await noteStrikes(context);
       await disbandUnpaid(context);
       const want = wants(context, calling);
       await payBills(context, ledger);
