@@ -71,8 +71,8 @@ test("allied warlords at uneven paces join one strike", async () => {
       "no warlord ever joined an ally's strike",
     );
     assert.ok(
-      joined.some(message => / struck .* right after our army/.test(message)),
-      "no joined army ever fought right after its lead",
+      joined.some(message => /Our army with /.test(message)),
+      "no joined army ever fought beside its lead",
     );
   } finally {
     await server.stop();

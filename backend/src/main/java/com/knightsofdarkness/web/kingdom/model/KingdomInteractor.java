@@ -1,10 +1,11 @@
 package com.knightsofdarkness.web.kingdom.model;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -67,86 +68,122 @@ public class KingdomInteractor implements IKingdomInteractor
         notificationSystem.create(to, NotificationKind.delivery, Utils.format("{} carriers delivered {} {}", from.getName(), count, resource));
     }
 
+    /**
+     * the army has landed: the allies' armies waiting at the border for it fight in the same battle, as one army
+     */
     @Override
     public void resolveAttack(KingdomEntity attackerKingdom, KingdomOngoingAttackEntity attack)
     {
-        fight(attackerKingdom, attack);
-        landJoinedArmies(attack);
+        var joined = kingdomRepository.getAttacksOn(attack.getTargetKingdomName()).stream().filter(other -> other.joins(attack) && other.turnsLeft <= 0).toList();
+        joined.forEach(other -> other.getKingdom().getOngoingAttacks().remove(other));
+        var attackers = AttackingForces.of(attackerKingdom, attack, joined);
+        if (attack.attackType == AttackType.monument)
+        {
+            assaultMonument(attackers, attack.targetKingdomName);
+        } else
+        {
+            strikeKingdom(attackers, attack.targetKingdomName, attack.attackType);
+        }
     }
 
-    private Optional<BattleReportDto> fight(KingdomEntity attackerKingdom, KingdomOngoingAttackEntity attack)
+    /** who fought on the attacking side, for the defender and everyone who hears of the battle: "a", "a and b", "a, b and c" */
+    private static String side(AttackingForces attackers)
     {
-        return attack.attackType == AttackType.monument ? assaultMonument(attackerKingdom, attack) : strikeKingdom(attackerKingdom, attack);
+        var names = attackers.armies().stream().map(AttackingForces.Army::name).toList();
+        return names.size() == 1 ? names.get(0) : String.join(", ", names.subList(0, names.size() - 1)) + " and " + names.get(names.size() - 1);
+    }
+
+    /** the allies an army fought beside, for its own victory or defeat: "" alone, " with b and c" together */
+    private static String beside(AttackingForces attackers, AttackingForces.Army army)
+    {
+        var others = attackers.armies().stream().filter(other -> other != army).map(AttackingForces.Army::name).toList();
+        if (others.isEmpty())
+        {
+            return "";
+        }
+        return " with " + (others.size() == 1 ? others.get(0) : String.join(", ", others.subList(0, others.size() - 1)) + " and " + others.get(others.size() - 1));
+    }
+
+    private void returnSurvivors(AttackingForces attackers)
+    {
+        attackers.armies().forEach(army -> returnSurvivors(army.kingdom(), army.attack().units));
+    }
+
+    private void updateAll(AttackingForces attackers)
+    {
+        attackers.armies().forEach(army -> kingdomRepository.update(army.kingdom()));
     }
 
     /**
      * The usual battle, against the garrison alone: no towers, castles, guards or the seat's own army. Winning knocks down
      * stages, scaled by dominance, and takes nothing else. A monument has no protection, so the next army may strike at once.
      */
-    private Optional<BattleReportDto> assaultMonument(KingdomEntity attackerKingdom, KingdomOngoingAttackEntity attack)
+    private void assaultMonument(AttackingForces attackers, String seat)
     {
-        log.info("[KingdomInteractor] Resolving assault from {} on the monument at {}", attackerKingdom.getName(), attack.targetKingdomName);
+        log.info("[KingdomInteractor] Resolving assault from {} on the monument at {}", side(attackers), seat);
 
-        var ownAlliance = attackerKingdom.getAlliance().map(alliance -> alliance.getName());
-        var maybeMonument = monuments.findAtSeatForUpdate(attack.targetKingdomName).filter(found -> ownAlliance.filter(found.getAllianceName()::equals).isEmpty());
+        var ownAlliance = attackers.lead().kingdom().getAlliance().map(alliance -> alliance.getName());
+        var maybeMonument = monuments.findAtSeatForUpdate(seat).filter(found -> ownAlliance.filter(found.getAllianceName()::equals).isEmpty());
         if (maybeMonument.isEmpty())
         {
-            // it fell while the army marched, or its alliance has since taken the attacker in
-            returnSurvivors(attackerKingdom, attack.units);
-            notificationSystem.create(attackerKingdom.getName(), NotificationKind.defeat, Utils.format("Our army found no enemy monument to assault at {} and came home", attack.targetKingdomName));
-            kingdomRepository.update(attackerKingdom);
-            return Optional.empty();
+            // it fell while the army marched, or its alliance has since taken the attackers in
+            returnSurvivors(attackers);
+            attackers.armies().forEach(army -> notificationSystem.create(army.name(), NotificationKind.defeat, Utils.format("Our army found no enemy monument to assault at {} and came home", seat)));
+            updateAll(attackers);
+            return;
         }
 
         var monument = maybeMonument.get();
-        var unitsSent = new UnitsMapDto(attack.units);
         var defenders = DefendingForces.atMonument(monument.getStandingGarrison());
         var defenderUnitsBefore = defenders.snapshot();
         var alliesBefore = defenders.alliedSnapshot();
         var garrisonsBefore = defenders.garrisons().stream().collect(Collectors.toMap(garrison -> garrison, garrison -> garrison.getUnits().countMilitary()));
 
-        takeArrows(attackerKingdom, attack, defenders.count(UnitName.bowman));
-        looseArrows(attack, defenders);
-        var attackerArrowLosses = difference(unitsSent, attack.units);
+        takeArrows(attackers, defenders.count(UnitName.bowman));
+        looseArrows(attackers, defenders);
+        var attackerArrowLosses = attackers.armies().stream().map(army -> difference(army.sent(), army.attack().units)).toList();
         var defenderArrowLosses = difference(defenderUnitsBefore, defenders.snapshot());
-        melee(attackerKingdom, attack, defenders, Map.of());
+        melee(attackers, defenders, Map.of());
 
-        var attackPower = detailsProvider.getAttackPower(attack.units);
+        var attackPower = detailsProvider.getAttackPower(attackers.units());
         var defensePower = detailsProvider.getDefensePower(defenders);
         var attackerWon = attackPower > defensePower;
         var stoodComplete = monument.isComplete(gameConfig.monument());
         var stagesRazed = attackerWon ? monument.raze(gameConfig.monument().maxRazeRatio() * getDominance(attackPower, defensePower)) : 0;
+        var weights = attackers.weights(detailsProvider);
+        var totalWeight = Arrays.stream(weights).sum();
 
-        returnSurvivors(attackerKingdom, attack.units);
+        returnSurvivors(attackers);
 
-        var report = new BattleReportDto(Id.generate(), Instant.now(), attackerKingdom.getName(), attack.targetKingdomName, attack.attackType,
-                unitsSent, difference(unitsSent, attack.units), difference(defenderUnitsBefore, defenders.snapshot()), attackerArrowLosses, defenderArrowLosses,
-                difference(alliesBefore, defenders.alliedSnapshot()), attackPower, defensePower, attackerWon, 0, new EnumMap<>(ResourceName.class), stagesRazed);
-        warReportRepository.addBattleReport(report);
-        notifyAboutAssault(report, monument, stoodComplete);
-        notifyMonumentGarrisons(report, garrisonsBefore);
-
-        kingdomRepository.update(attackerKingdom);
-        return Optional.of(report);
-    }
-
-    private void notifyAboutAssault(BattleReportDto report, MonumentEntity monument, boolean stoodComplete)
-    {
-        if (report.attackerWon())
+        var defenderLosses = difference(defenderUnitsBefore, defenders.snapshot());
+        var alliedLosses = difference(alliesBefore, defenders.alliedSnapshot());
+        for (int index = 0; index < attackers.armies().size(); index++)
         {
-            notificationSystem.create(report.attacker(), NotificationKind.victory, Utils.format("Victory! Our army stormed the monument of {} and knocked down {} stages", monument.getAllianceName(), MonumentEntity.stages(report.stagesRazed())));
-            monuments.assaultWon(monument, report.attacker(), stoodComplete && !monument.isComplete(gameConfig.monument()));
+            var army = attackers.armies().get(index);
+            var report = new BattleReportDto(Id.generate(), Instant.now(), army.name(), seat, AttackType.monument, army.sent(), difference(army.sent(), army.attack().units), defenderLosses,
+                    attackerArrowLosses.get(index), defenderArrowLosses, alliedLosses, attackPower, defensePower, attackerWon, 0, new EnumMap<>(ResourceName.class),
+                    stagesRazed * weights[index] / totalWeight);
+            warReportRepository.addBattleReport(report);
+            notificationSystem.create(army.name(), attackerWon ? NotificationKind.victory : NotificationKind.defeat, attackerWon
+                    ? Utils.format("Victory! Our army{} stormed the monument of {} and knocked down {} stages", beside(attackers, army), monument.getAllianceName(), MonumentEntity.stages(stagesRazed))
+                    : Utils.format("Defeat! Our army{} was repelled at the monument of {}", beside(attackers, army), monument.getAllianceName()));
+        }
+        if (attackerWon)
+        {
+            monuments.assaultWon(monument, side(attackers), stoodComplete && !monument.isComplete(gameConfig.monument()));
         } else
         {
-            notificationSystem.create(report.attacker(), NotificationKind.defeat, Utils.format("Defeat! Our army was repelled at the monument of {}", monument.getAllianceName()));
-            monuments.assaultRepelled(monument, report.attacker());
+            monuments.assaultRepelled(monument, side(attackers));
         }
+        notifyMonumentGarrisons(side(attackers), seat, garrisonsBefore);
+
+        updateAll(attackers);
     }
 
     /**
      * every member whose soldiers fell hears how many; an emptied garrison is gone
      */
-    private void notifyMonumentGarrisons(BattleReportDto report, Map<KingdomReinforcementEntity, Integer> garrisonsBefore)
+    private void notifyMonumentGarrisons(String attackers, String seat, Map<KingdomReinforcementEntity, Integer> garrisonsBefore)
     {
         garrisonsBefore.forEach((garrison, before) ->
         {
@@ -154,7 +191,7 @@ public class KingdomInteractor implements IKingdomInteractor
             var fallen = before - garrison.getUnits().countMilitary();
             if (fallen > 0)
             {
-                notificationSystem.create(owner.getName(), NotificationKind.alliance, Utils.format("{} of our soldiers fell at the monument at {}, against {}", fallen, report.defender(), report.attacker()));
+                notificationSystem.create(owner.getName(), NotificationKind.alliance, Utils.format("{} of our soldiers fell at the monument at {}, against {}", fallen, seat, attackers));
             }
             if (garrison.getUnits().countMilitary() == 0)
             {
@@ -164,62 +201,78 @@ public class KingdomInteractor implements IKingdomInteractor
         });
     }
 
-    private Optional<BattleReportDto> strikeKingdom(KingdomEntity attackerKingdom, KingdomOngoingAttackEntity attack)
+    private void strikeKingdom(AttackingForces attackers, String target, AttackType attackType)
     {
-        log.info("[KingdomInteractor] Resolving attack from {} on {}", attackerKingdom.getName(), attack.targetKingdomName);
+        log.info("[KingdomInteractor] Resolving attack from {} on {}", side(attackers), target);
 
-        var maybeDefendantKingdom = kingdomRepository.getKingdomByName(attack.targetKingdomName);
+        var maybeDefendantKingdom = kingdomRepository.getKingdomByName(target);
         if (maybeDefendantKingdom.isEmpty())
         {
-            log.warn("[KingdomInteractor] Kingdom with name {} not found", attack.targetKingdomName);
-            returnSurvivors(attackerKingdom, attack.units);
-            return Optional.empty();
+            log.warn("[KingdomInteractor] Kingdom with name {} not found", target);
+            returnSurvivors(attackers);
+            updateAll(attackers);
+            return;
         }
 
         var defendantKingdom = maybeDefendantKingdom.get();
-        var unitsSent = new UnitsMapDto(attack.units);
         var defenders = new DefendingForces(defendantKingdom);
         var defenderUnitsBefore = defenders.snapshot();
         var alliesBefore = defenders.alliedSnapshot();
         var garrisonsBefore = defenders.garrisons().stream().collect(Collectors.toMap(garrison -> garrison, garrison -> garrison.getUnits().countMilitary()));
 
-        processDefenseSalvo(attackerKingdom, defendantKingdom, attack);
-        processAttackSalvo(defendantKingdom, attack);
-        var attackerArrowLosses = difference(unitsSent, attack.units);
+        takeArrows(attackers, detailsProvider.getSalvoArrows(defendantKingdom));
+        looseArrows(attackers, defenders);
+        var attackerArrowLosses = attackers.armies().stream().map(army -> difference(army.sent(), army.attack().units)).toList();
         var defenderArrowLosses = difference(defenderUnitsBefore, defenders.snapshot());
-        processMelee(attackerKingdom, defendantKingdom, attack);
+        melee(attackers, defenders, defenders.shelteredInCastles(detailsProvider.getBuildingCapacity(defendantKingdom, BuildingName.castle)));
 
-        var attackPower = detailsProvider.getAttackPower(attack.units);
+        var attackPower = detailsProvider.getAttackPower(attackers.units());
         var defensePower = detailsProvider.getDefensePower(defendantKingdom);
         var attackerWon = attackPower > defensePower;
         processGuardLosses(defendantKingdom, attackPower, defensePower);
-        var landCaptured = 0;
-        Map<ResourceName, Integer> plunder = new EnumMap<>(ResourceName.class);
+        var landCaptured = new int[attackers.armies().size()];
+        List<Map<ResourceName, Integer>> plunder = attackers.armies().stream().map(army -> (Map<ResourceName, Integer>) new EnumMap<ResourceName, Integer>(ResourceName.class)).toList();
         if (attackerWon)
         {
             defendantKingdom.setProtectionTicks(gameConfig.attack().protectionTicksAfterDefeat());
             var dominance = getDominance(attackPower, defensePower);
-            if (attack.attackType == AttackType.land)
+            if (attackType == AttackType.land)
             {
-                landCaptured = captureLand(attackerKingdom, defendantKingdom, dominance);
+                landCaptured = captureLand(attackers, defendantKingdom, dominance);
             } else
             {
-                plunder = plunder(attackerKingdom, defendantKingdom, dominance);
+                plunder = plunder(attackers, defendantKingdom, dominance);
             }
         }
 
-        returnSurvivors(attackerKingdom, attack.units);
+        returnSurvivors(attackers);
 
-        var report = new BattleReportDto(Id.generate(), Instant.now(), attackerKingdom.getName(), defendantKingdom.getName(), attack.attackType,
-                unitsSent, difference(unitsSent, attack.units), difference(defenderUnitsBefore, defenders.snapshot()), attackerArrowLosses, defenderArrowLosses,
-                difference(alliesBefore, defenders.alliedSnapshot()), attackPower, defensePower, attackerWon, landCaptured, plunder, 0);
-        warReportRepository.addBattleReport(report);
-        notifyAboutBattle(report);
-        notifyGarrisons(report, garrisonsBefore);
+        var defenderLosses = difference(defenderUnitsBefore, defenders.snapshot());
+        var alliedLosses = difference(alliesBefore, defenders.alliedSnapshot());
+        var reports = new ArrayList<BattleReportDto>();
+        for (int index = 0; index < attackers.armies().size(); index++)
+        {
+            var army = attackers.armies().get(index);
+            var report = new BattleReportDto(Id.generate(), Instant.now(), army.name(), defendantKingdom.getName(), attackType, army.sent(), difference(army.sent(), army.attack().units),
+                    defenderLosses, attackerArrowLosses.get(index), defenderArrowLosses, alliedLosses, attackPower, defensePower, attackerWon, landCaptured[index], plunder.get(index), 0);
+            warReportRepository.addBattleReport(report);
+            reports.add(report);
+            notificationSystem.create(army.name(), attackerWon ? NotificationKind.victory : NotificationKind.defeat,
+                    attackerWon ? Utils.format("Victory! Our army{} defeated {} and took {}", beside(attackers, army), report.defender(), spoils(report))
+                            : Utils.format("Defeat! Our army{} was repelled by {}", beside(attackers, army), report.defender()));
+        }
+        var lost = spoils(attackType, Arrays.stream(landCaptured).sum(), plunder.stream().mapToInt(taken -> taken.getOrDefault(ResourceName.gold, 0)).sum(), 0);
+        if (attackerWon)
+        {
+            notificationSystem.create(defendantKingdom.getName(), NotificationKind.breached, Utils.format("{} attacked us and won, we lost {}", side(attackers), lost));
+        } else
+        {
+            notificationSystem.create(defendantKingdom.getName(), NotificationKind.repelled, Utils.format("We repelled an attack from {}", side(attackers)));
+        }
+        notifyGarrisons(side(attackers), defendantKingdom.getName(), attackerWon, garrisonsBefore);
 
-        kingdomRepository.update(attackerKingdom);
+        updateAll(attackers);
         kingdomRepository.update(defendantKingdom);
-        return Optional.of(report);
     }
 
     @Override
@@ -227,22 +280,6 @@ public class KingdomInteractor implements IKingdomInteractor
     {
         var lead = attack.getJoinsAttackId();
         return lead != null && attack.turnsAtBorder < gameConfig.attack().turnsToWaitAtBorder() && kingdomRepository.getAttacksOn(attack.getTargetKingdomName()).stream().anyMatch(other -> other.getId().equals(lead));
-    }
-
-    /**
-     * allies' armies waiting at the border fight right after the army whose strike they joined, each in its own battle; the leader hears how each went
-     */
-    private void landJoinedArmies(KingdomOngoingAttackEntity lead)
-    {
-        var waiting = kingdomRepository.getAttacksOn(lead.getTargetKingdomName()).stream().filter(attack -> attack.joins(lead) && attack.turnsLeft <= 0).toList();
-        for (var attack : waiting)
-        {
-            var ally = attack.getKingdom();
-            ally.getOngoingAttacks().remove(attack);
-            fight(ally, attack).ifPresent(report -> notificationSystem.create(lead.getKingdom().getName(), NotificationKind.alliance,
-                    report.attackerWon() ? Utils.format("{} struck {} right after our army and won, taking {}", report.attacker(), report.defender(), spoils(report))
-                            : Utils.format("{} struck {} right after our army and was repelled", report.attacker(), report.defender())));
-        }
     }
 
     private void returnSurvivors(KingdomEntity attackerKingdom, UnitsMapDto survivors)
@@ -255,45 +292,36 @@ public class KingdomInteractor implements IKingdomInteractor
 
     private static String spoils(BattleReportDto report)
     {
-        return switch (report.attackType())
-        {
-            case land -> Utils.format("{} land", report.landCaptured());
-            case economy -> Utils.format("{} gold and supplies", report.plunder().getOrDefault(ResourceName.gold, 0));
-            case monument -> Utils.format("{} stages of its monument", MonumentEntity.stages(report.stagesRazed()));
-        };
+        return spoils(report.attackType(), report.landCaptured(), report.plunder().getOrDefault(ResourceName.gold, 0), report.stagesRazed());
     }
 
-    private void notifyAboutBattle(BattleReportDto report)
+    private static String spoils(AttackType attackType, int land, int gold, double stages)
     {
-        var spoils = spoils(report);
-        if (report.attackerWon())
+        return switch (attackType)
         {
-            notificationSystem.create(report.attacker(), NotificationKind.victory, Utils.format("Victory! Our army defeated {} and took {}", report.defender(), spoils));
-            notificationSystem.create(report.defender(), NotificationKind.breached, Utils.format("{} attacked us and won, we lost {}", report.attacker(), spoils));
-        } else
-        {
-            notificationSystem.create(report.attacker(), NotificationKind.defeat, Utils.format("Defeat! Our army was repelled by {}", report.defender()));
-            notificationSystem.create(report.defender(), NotificationKind.repelled, Utils.format("We repelled an attack from {}", report.attacker()));
-        }
+            case land -> Utils.format("{} land", land);
+            case economy -> Utils.format("{} gold and supplies", gold);
+            case monument -> Utils.format("{} stages of its monument", MonumentEntity.stages(stages));
+        };
     }
 
     /**
      * every ally whose soldiers stood in the battle hears how it went and what it cost them; an emptied garrison is gone
      */
-    private void notifyGarrisons(BattleReportDto report, Map<KingdomReinforcementEntity, Integer> garrisonsBefore)
+    private void notifyGarrisons(String attackers, String defender, boolean attackerWon, Map<KingdomReinforcementEntity, Integer> garrisonsBefore)
     {
         garrisonsBefore.forEach((garrison, before) ->
         {
             var owner = garrison.getKingdom();
             var fallen = before - garrison.getUnits().countMilitary();
-            if (report.attackerWon())
+            if (attackerWon)
             {
                 notificationSystem.create(owner.getName(), NotificationKind.breached,
-                        Utils.format("{} broke through at {}, where {} of our soldiers fell", report.attacker(), report.defender(), fallen));
+                        Utils.format("{} broke through at {}, where {} of our soldiers fell", attackers, defender, fallen));
             } else
             {
                 notificationSystem.create(owner.getName(), NotificationKind.repelled,
-                        Utils.format("Our soldiers at {} helped repel {}, {} of them fell", report.defender(), report.attacker(), fallen));
+                        Utils.format("Our soldiers at {} helped repel {}, {} of them fell", defender, attackers, fallen));
             }
             if (garrison.getUnits().countMilitary() == 0)
             {
@@ -369,10 +397,24 @@ public class KingdomInteractor implements IKingdomInteractor
         return Math.pow(relativeSize, gameConfig.attack().smallerTargetCaptureExponent());
     }
 
-    int captureLand(KingdomEntity attacker, KingdomEntity defender, double dominance)
+    /**
+     * takes the defender's land and shares it by the attack power each army brought; the defender's size is weighed against
+     * the attackers' land averaged by that power, so allies of one size take what one of them would, and many large kingdoms
+     * beating a small one gain as little together as each would alone
+     *
+     * @return the land each army took
+     */
+    int[] captureLand(AttackingForces attackers, KingdomEntity defender, double dominance)
     {
+        var weights = attackers.weights(detailsProvider);
+        var totalWeight = Arrays.stream(weights).sum();
+        var attackerLand = 0.0;
+        for (int index = 0; index < weights.length; index++)
+        {
+            attackerLand += attackers.armies().get(index).kingdom().getResources().getCount(ResourceName.land) * weights[index] / totalWeight;
+        }
         var defenderLand = defender.getResources().getCount(ResourceName.land);
-        var sizeFactor = sizeCaptureFactor(attacker.getResources().getCount(ResourceName.land), defenderLand);
+        var sizeFactor = sizeCaptureFactor((int) Math.round(attackerLand), defenderLand);
         var landCaptured = Math.max(1, (int) Math.floor(defenderLand * gameConfig.attack().maxLandCaptureRatio() * dominance * sizeFactor));
         landCaptured = Math.min(landCaptured, defenderLand);
 
@@ -383,8 +425,19 @@ public class KingdomInteractor implements IKingdomInteractor
         }
 
         defender.getResources().subtractCount(ResourceName.land, landCaptured);
-        attacker.getResources().addCount(ResourceName.land, landCaptured);
-        return landCaptured;
+        var shares = AttackingForces.share(landCaptured, weights, unlimited(weights.length));
+        for (int index = 0; index < shares.length; index++)
+        {
+            attackers.armies().get(index).kingdom().getResources().addCount(ResourceName.land, shares[index]);
+        }
+        return shares;
+    }
+
+    private static int[] unlimited(int count)
+    {
+        var caps = new int[count];
+        Arrays.fill(caps, Integer.MAX_VALUE);
+        return caps;
     }
 
     /**
@@ -416,62 +469,67 @@ public class KingdomInteractor implements IKingdomInteractor
         }
     }
 
-    Map<ResourceName, Integer> plunder(KingdomEntity attacker, KingdomEntity defender, double dominance)
+    /**
+     * takes a share of the defender's stores and shares it by the attack power each army brought
+     *
+     * @return what each army took
+     */
+    List<Map<ResourceName, Integer>> plunder(AttackingForces attackers, KingdomEntity defender, double dominance)
     {
         var attackConfig = gameConfig.attack();
         var warehouseLevels = defender.getSpecialBuildings().stream().filter(building -> building.buildingType == SpecialBuildingType.warehouse).mapToInt(building -> building.level).sum();
         var protection = Math.min(attackConfig.maxWarehousePlunderProtection(), warehouseLevels * attackConfig.warehousePlunderProtectionPerLevel());
         var plunderRatio = attackConfig.maxPlunderRatio() * dominance * (1 - protection);
+        var weights = attackers.weights(detailsProvider);
 
-        Map<ResourceName, Integer> plunder = new EnumMap<>(ResourceName.class);
+        var plunder = attackers.armies().stream().map(army -> (Map<ResourceName, Integer>) new EnumMap<ResourceName, Integer>(ResourceName.class)).toList();
         for (var resource : plunderableResources)
         {
             var count = (int) Math.floor(defender.getResources().getCount(resource) * plunderRatio);
             defender.getResources().subtractCount(resource, count);
-            attacker.getResources().addCount(resource, count);
-            plunder.put(resource, count);
+            var shares = AttackingForces.share(count, weights, unlimited(weights.length));
+            for (int index = 0; index < shares.length; index++)
+            {
+                attackers.armies().get(index).kingdom().getResources().addCount(resource, shares[index]);
+                plunder.get(index).put(resource, shares[index]);
+            }
         }
         return plunder;
     }
 
     void processDefenseSalvo(KingdomEntity attackerKingdom, KingdomEntity defenderKingdom, KingdomOngoingAttackEntity attack)
     {
-        takeArrows(attackerKingdom, attack, detailsProvider.getSalvoArrows(defenderKingdom));
+        takeArrows(AttackingForces.alone(attackerKingdom, attack), detailsProvider.getSalvoArrows(defenderKingdom));
     }
 
-    private void takeArrows(KingdomEntity attackerKingdom, KingdomOngoingAttackEntity attack, int arrows)
+    private void takeArrows(AttackingForces attackers, int arrows)
     {
-        var attackerUnits = attack.units;
-        var attackerUnitsRatios = attack.units.getMilitaryUnitsRatios();
+        var attackerUnitsRatios = attackers.militaryRatios();
 
         var bowmenHittingBowmen = (int) Math.ceil(attackerUnitsRatios.get(UnitName.bowman) * arrows);
         var bowmenHittingInfantry = (int) Math.ceil(attackerUnitsRatios.get(UnitName.infantry) * arrows);
         var bowmenHittingCavarly = (int) Math.ceil(attackerUnitsRatios.get(UnitName.cavalry) * arrows);
 
         // TODO move consts to configuration
-        var killedAttackingBowmen = Math.min(bowmenHittingBowmen / 3, attackerUnits.getCount(UnitName.bowman));
-        var killedAttackingInfantry = Math.min(bowmenHittingInfantry / 5, attackerUnits.getCount(UnitName.infantry));
-        var killedAttackingCavalry = Math.min(bowmenHittingCavarly / 7, attackerUnits.getCount(UnitName.cavalry));
+        var killedAttackingBowmen = Math.min(bowmenHittingBowmen / 3, attackers.count(UnitName.bowman));
+        var killedAttackingInfantry = Math.min(bowmenHittingInfantry / 5, attackers.count(UnitName.infantry));
+        var killedAttackingCavalry = Math.min(bowmenHittingCavarly / 7, attackers.count(UnitName.cavalry));
 
-        attackerUnits.subtractCount(UnitName.bowman, killedAttackingBowmen);
-        attackerUnits.subtractCount(UnitName.infantry, killedAttackingInfantry);
-        attackerUnits.subtractCount(UnitName.cavalry, killedAttackingCavalry);
+        attackers.lose(UnitName.bowman, killedAttackingBowmen);
+        attackers.lose(UnitName.infantry, killedAttackingInfantry);
+        attackers.lose(UnitName.cavalry, killedAttackingCavalry);
 
-        attackerKingdom.getUnits().subtractMobileCount(UnitName.bowman, killedAttackingBowmen);
-        attackerKingdom.getUnits().subtractMobileCount(UnitName.infantry, killedAttackingInfantry);
-        attackerKingdom.getUnits().subtractMobileCount(UnitName.cavalry, killedAttackingCavalry);
-
-        log.info("[KingdomInteractor] Defender bowmen salvo killed {} bowmen, {} infantry, {} cavalry from attacking kingdom {}", killedAttackingBowmen, killedAttackingInfantry, killedAttackingCavalry, attackerKingdom.getName());
+        log.info("[KingdomInteractor] Defender bowmen salvo killed {} bowmen, {} infantry, {} cavalry from the army of {}", killedAttackingBowmen, killedAttackingInfantry, killedAttackingCavalry, side(attackers));
     }
 
     void processAttackSalvo(KingdomEntity defendantKingdom, KingdomOngoingAttackEntity attack)
     {
-        looseArrows(attack, new DefendingForces(defendantKingdom));
+        looseArrows(AttackingForces.alone(attack.getKingdom(), attack), new DefendingForces(defendantKingdom));
     }
 
-    private void looseArrows(KingdomOngoingAttackEntity attack, DefendingForces defenders)
+    private void looseArrows(AttackingForces attackers, DefendingForces defenders)
     {
-        var attackerBowmenCount = attack.units.getCount(UnitName.bowman);
+        var attackerBowmenCount = attackers.count(UnitName.bowman);
         var defenderUnitsRatios = defenders.militaryRatios();
 
         var bowmenHittingBowmen = (int) Math.ceil(defenderUnitsRatios.get(UnitName.bowman) * attackerBowmenCount);
@@ -486,7 +544,7 @@ public class KingdomInteractor implements IKingdomInteractor
         defenders.lose(UnitName.infantry, killedDefendingInfantry);
         defenders.lose(UnitName.cavalry, killedDefendingCavalry);
 
-        log.info("[KingdomInteractor] Attacker bowmen salvo killed {} bowmen, {} infantry, {} cavalry from the defenders of {}", killedDefendingBowmen, killedDefendingInfantry, killedDefendingCavalry, attack.targetKingdomName);
+        log.info("[KingdomInteractor] Attacker bowmen salvo killed {} bowmen, {} infantry, {} cavalry from the defenders, against {}", killedDefendingBowmen, killedDefendingInfantry, killedDefendingCavalry, side(attackers));
     }
 
     /**
@@ -496,26 +554,24 @@ public class KingdomInteractor implements IKingdomInteractor
     void processMelee(KingdomEntity attackerKingdom, KingdomEntity defendantKingdom, KingdomOngoingAttackEntity attack)
     {
         var defenders = new DefendingForces(defendantKingdom);
-        melee(attackerKingdom, attack, defenders, defenders.shelteredInCastles(detailsProvider.getBuildingCapacity(defendantKingdom, BuildingName.castle)));
+        melee(AttackingForces.alone(attackerKingdom, attack), defenders, defenders.shelteredInCastles(detailsProvider.getBuildingCapacity(defendantKingdom, BuildingName.castle)));
     }
 
-    private void melee(KingdomEntity attackerKingdom, KingdomOngoingAttackEntity attack, DefendingForces defenders, Map<UnitName, Integer> sheltered)
+    private void melee(AttackingForces attackers, DefendingForces defenders, Map<UnitName, Integer> sheltered)
     {
-        var attackingUnits = attack.units;
-        var attackerStrikers = attackingUnits.getCount(UnitName.infantry) + attackingUnits.getCount(UnitName.cavalry);
+        var attackerStrikers = attackers.count(UnitName.infantry) + attackers.count(UnitName.cavalry);
         var defenderStrikers = defenders.count(UnitName.infantry) + defenders.count(UnitName.cavalry);
-        var attackingUnitsRatios = attackingUnits.getMilitaryUnitsRatios();
+        var attackingUnitsRatios = attackers.militaryRatios();
         var defenderUnitsRatios = defenders.militaryRatios();
 
         for (var unit : UnitName.getMilitaryUnits())
         {
             var blowsToFall = meleeBlowsToFall.get(unit);
             var blowsOnDefenders = (int) Math.ceil(attackerStrikers * defenderUnitsRatios.get(unit));
-            var killedAttacking = Math.min((int) Math.ceil(defenderStrikers * attackingUnitsRatios.get(unit)) / blowsToFall, attackingUnits.getCount(unit));
+            var killedAttacking = Math.min((int) Math.ceil(defenderStrikers * attackingUnitsRatios.get(unit)) / blowsToFall, attackers.count(unit));
             var killedDefending = Math.min(defendersFalling(blowsOnDefenders, blowsToFall, sheltered.getOrDefault(unit, 0), defenders.count(unit)), defenders.count(unit));
 
-            attackingUnits.subtractCount(unit, killedAttacking);
-            attackerKingdom.getUnits().subtractMobileCount(unit, killedAttacking);
+            attackers.lose(unit, killedAttacking);
             defenders.lose(unit, killedDefending);
         }
     }

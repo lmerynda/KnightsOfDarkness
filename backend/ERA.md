@@ -12,7 +12,7 @@ Designed on 2026-11-07. An era ends when a coalition completes its monument and 
 ## What exists to build on
 
 - Alliances of up to 10 kingdoms (`common.allianceMaxMembers`). Allies cannot attack each other, and each alliance has a war room.
-- Joined strikes (`joins` on `POST /kingdom/send-attack`): armies land one right after the other.
+- Joined strikes (`joins` on `POST /kingdom/send-attack`): armies landed one right after the other, each in its own battle, until 2026-11-09; now they fight as one army in one battle.
 - Reinforcements: soldiers stand guard with an ally after 2 turns. The sender pays and feeds them.
 - Attack types `land` and `economy` (plunder), with 24 turns of protection after a defeat.
 - Kingdoms are ranked by land and alliances by their members' land (`RankingCalculator`). An era's winning alliance, its ending and its final rankings go into the hall of fame, and `EraReset` starts every kingdom anew while alliances are kept.
@@ -62,8 +62,8 @@ Designed on 2026-11-07. An era ends when a coalition completes its monument and 
 ### Coalitions of coalitions
 
 - **No pact feature at first.** Rival alliances coordinate by letter, which every kingdom can already write to every other.
-- **Joined strikes stay within an alliance**, but two alliances don't need them here. A monument has no protection after a defeat, and its garrison regrows only as members send more soldiers, so assaults landing a few turns apart each count.
-- **Add pacts only if the simulations show a need:** if alliances that strike separately can't stop a leader they would stop with joined strikes. A pact would allow joined strikes across the two alliances and a shared enemy list in both war rooms. See decision 3.
+- **Joined strikes stay within an alliance, and fight as one army** (since 2026-11-09). Step 7 showed that armies fought one after the other each met the whole garrison alone and were crushed in turn, so a monument stood or fell on whether one army could beat it, whatever the lead. Now an alliance's members pool their soldiers behind one assault, and a richer alliance fields a bigger army.
+- **No pacts** (settled by the user on 2026-11-09): rival alliances coordinate by letter and land their assaults on the same turns; the game needs no feature for it.
 
 ## Balance targets
 
@@ -139,6 +139,6 @@ Each open one has a default the plan follows unless changed.
 
 1. **Clock cap.** Settled and built: a stalled era ends at four months, with the most land winning. Without a cap, a world where nobody builds never restarts.
 2. **What a won assault does.** Should it knock down a share of the stages, scaled by dominance, or raze the whole monument? The default is a share: one lucky strike shouldn't end a month of work, while repeated strikes by rivals who band together still bring it down.
-3. **Pacts.** Should pacts between alliances be a formal game feature? The default is no, until the simulations show a need: letters plus the lack of protection after a defeat may be enough.
+3. **Pacts.** Settled on 2026-11-09: no pact feature. Players coordinate by letter. Joined strikes within an alliance fight as one army instead, which step 7 showed was what stopping a leader needs.
 4. **Hold period.** Built as the default: three days, so players who come back once a day still get a chance to answer. Step 7 tunes the length.
 5. **Naming.** Settled and built: "round" became "era" throughout.

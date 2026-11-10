@@ -93,7 +93,7 @@ export interface RulerDriver {
   march(target: string, units: Units, goal: Goal): Promise<Outcome>;
   /** calls back the army on the march to the target */
   recallArmy(target: string): Promise<Outcome>;
-  /** sends an army to wait at the target's border and strike right after an ally's army lands */
+  /** sends an army to wait at the target's border and strike beside an ally's army when it lands, in one battle */
   joinStrike(leader: string, target: string, units: Units, goal?: Goal): Promise<Outcome>;
   /** armies marching on this kingdom, as its scouts report them */
   armiesComing(): Promise<{ from: string; soldiers: number }[]>;

@@ -112,7 +112,7 @@ scenario("a monument has no protection: the next army strikes it at once", async
   await emperor.seesTheMonumentOf(name, emperor, 2.25);
 });
 
-scenario("allies join an assault, and their armies land right after the first", async game => {
+scenario("allies join an assault, and their armies storm it as one army in one battle", async game => {
   const { name, emperor } = await alliance(game, "Besieged");
   await emperor.foundsAMonumentAt(emperor);
   await emperor.paysIntoTheMonument(fourStages);
@@ -129,9 +129,10 @@ scenario("allies join an assault, and their armies land right after the first", 
   await ally.hasNotFoughtAt(emperor);
 
   await leader.passesTurns(4);
-  await leader.hasStormedTheMonumentAt(emperor, 1);
-  await ally.hasStormedTheMonumentAt(emperor, 0.75);
-  await emperor.seesTheMonumentOf(name, emperor, 2.25);
+  // one battle razes a quarter of the four stages once, shared by the two equal armies
+  await leader.hasStormedTheMonumentAt(emperor, 0.5);
+  await ally.hasStormedTheMonumentAt(emperor, 0.5);
+  await emperor.seesTheMonumentOf(name, emperor, 3);
 });
 
 scenario("what the store can cover is rebuilt with the next tick", async game => {

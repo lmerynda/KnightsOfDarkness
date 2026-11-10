@@ -53,12 +53,12 @@ scenario("allies see each other's armies and strike together", async game => {
   await emperor.trains({ infantry: 10 });
   await emperor.seesInTheWarRoom(squire, target);
   await emperor.joinsTheStrike(squire, target, { infantry: 10 });
-  // the joined army waits at the border however many turns the emperor passes, and fights right after the squire's lands
+  // the joined army waits at the border however many turns the emperor passes, and fights beside the squire's when it lands
   await emperor.passesTurns(5);
   await emperor.waitsAtTheBorderOf(target, squire);
   await squire.passesTurns(4);
   await squire.hasFoughtAt(target);
-  await squire.readsInTheChronicle(new RegExp(`${emperor} struck ${target} right after our army`));
+  await squire.readsInTheChronicle(new RegExp(`Our army with ${emperor}`));
   await emperor.hasFoughtAt(target);
   await emperor.hasNoArmyOut();
 });

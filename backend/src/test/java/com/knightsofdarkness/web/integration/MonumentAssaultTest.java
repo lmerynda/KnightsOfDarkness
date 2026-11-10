@@ -308,7 +308,7 @@ class MonumentAssaultTest {
     }
 
     @Test
-    void joinedArmies_shouldAssaultRightAfterTheirLead()
+    void joinedArmies_shouldAssaultBesideTheirLeadInOneBattle()
     {
         var ally = new KingdomBuilder(game).withName("ally").withUnit(UnitName.cavalry, 100).build();
         game.addKingdom(ally);
@@ -324,8 +324,12 @@ class MonumentAssaultTest {
         assertThat(game.getWarReportRepository().getBattleReports("ally", 1)).as("it waits at the border").isEmpty();
         passTurns(raider, config.attack().turnsToArrive());
 
-        assertThat(game.getWarReportRepository().getBattleReports("ally", 1)).singleElement().satisfies(report -> assertEquals(AttackType.monument, report.attackType()));
-        assertEquals(4 * 0.75 * 0.75, stagesStanding(), 0.001);
+        var allys = game.getWarReportRepository().getBattleReports("ally", 1);
+        assertThat(allys).singleElement().satisfies(report -> assertEquals(AttackType.monument, report.attackType()));
+        var raiders = game.getWarReportRepository().getBattleReports("raider", 1).get(0);
+        assertEquals(4 * 0.75, stagesStanding(), 0.001, "one battle razes once");
+        assertEquals(1, allys.get(0).stagesRazed() + raiders.stagesRazed(), 0.001, "the razed stage is shared between the armies");
+        assertEquals(allys.get(0).stagesRazed(), raiders.stagesRazed(), 0.001, "equal armies share it equally");
     }
 
     @Test

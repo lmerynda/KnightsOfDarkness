@@ -253,7 +253,7 @@ export class Player {
     return this.post("/kingdom/buy-land", count);
   }
 
-  /** joins is an ally's army on the march against the same target: ours waits at the border and fights right after it lands */
+  /** joins is an ally's army on the march against the same target: ours waits at the border and fights beside it when it lands, in one battle */
   public sendAttack(target: string, attackType: AttackType, units: Partial<Counts<UnitName>>, joins?: string): Promise<ActionResult> {
     return this.post("/kingdom/send-attack", { destinationKingdomName: target, attackType, units, joins });
   }

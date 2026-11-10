@@ -36,7 +36,7 @@ public class KingdomOngoingAttackEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     UnitsMapDto units;
 
-    // the ally's army this one joins: it waits at the border and fights right after that army lands
+    // the ally's army this one joins: it waits at the border and fights beside that army when it lands, in one battle
     UUID joinsAttackId;
 
     int turnsAtBorder;

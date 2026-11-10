@@ -231,8 +231,8 @@ export const counsel = (
       lines.push({
         urgent: false,
         text: atBorder.length
-          ? `${atBorder.join(", ")} ${atBorder.length === 1 ? "waits" : "wait"} at the border of ${led.to}; they fight right after our army lands, in ${plural(led.turnsLeft, "turn", "turns")}.`
-          : `${names} joined our strike on ${led.to}; they fight right after our army lands, in ${plural(led.turnsLeft, "turn", "turns")}.`,
+          ? `${atBorder.join(", ")} ${atBorder.length === 1 ? "waits" : "wait"} at the border of ${led.to}; they fight beside our army when it lands, in ${plural(led.turnsLeft, "turn", "turns")}.`
+          : `${names} joined our strike on ${led.to}; they fight beside our army when it lands, in ${plural(led.turnsLeft, "turn", "turns")}.`,
         link: { to: "/kingdom/war", label: "See the march" },
       });
     }

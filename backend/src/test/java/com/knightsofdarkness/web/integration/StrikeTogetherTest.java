@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.knightsofdarkness.web.Game;
 import com.knightsofdarkness.web.alliance.model.AllianceEntity;
 import com.knightsofdarkness.web.common.kingdom.AttackType;
+import com.knightsofdarkness.web.common.kingdom.BuildingName;
 import com.knightsofdarkness.web.common.kingdom.ResourceName;
 import com.knightsofdarkness.web.common.kingdom.SendAttackDto;
 import com.knightsofdarkness.web.common.kingdom.UnitName;
@@ -27,7 +28,8 @@ import com.knightsofdarkness.web.legacy.TestGame;
 import com.knightsofdarkness.web.utils.KingdomBuilder;
 
 /**
- * an army that joins an ally's strike waits at the border and fights right after that army lands, however fast either ruler passes turns
+ * an army that joins an ally's strike waits at the border and fights beside that army when it lands, in one battle as one
+ * army, however fast either ruler passes turns
  */
 class StrikeTogetherTest
 {
@@ -104,7 +106,9 @@ class StrikeTogetherTest
         assertEquals(1, battlesBy(leader));
         assertEquals(1, battlesBy(joiner));
         assertThat(game.getNotificationSystem().getNotifications("leader")).extracting(NotificationDto::message)
-                .anyMatch(message -> message.startsWith("joiner struck target right after our army"));
+                .anyMatch(message -> message.contains("Our army with joiner"));
+        assertThat(game.getNotificationSystem().getNotifications("joiner")).extracting(NotificationDto::message)
+                .anyMatch(message -> message.contains("Our army with leader"));
         assertEquals(100, joiner.getUnits().getAvailableCount(UnitName.cavalry) + joiner.getUnits().getMobileCount(UnitName.cavalry)
                 + game.getWarReportRepository().getBattleReports("joiner", 1).get(0).attackerLosses().getCount(UnitName.cavalry));
     }
@@ -154,6 +158,89 @@ class StrikeTogetherTest
         assertThat(joiner.getOngoingAttacks()).isEmpty();
         assertEquals(1, battlesBy(joiner));
         assertThat(leader.getOngoingAttacks()).hasSize(1);
+    }
+
+    /** a kingdom of 30 infantry and nothing else that shoots or shelters: 20 riders alone are repelled, 40 win */
+    private KingdomEntity fort()
+    {
+        var fort = new KingdomBuilder(game).withName("fort").withUnit(UnitName.bowman, 0).withUnit(UnitName.infantry, 30).withUnit(UnitName.cavalry, 0).withUnit(UnitName.guard, 0)
+                .withBuilding(BuildingName.tower, 0).withBuilding(BuildingName.castle, 0).build();
+        game.addKingdom(fort);
+        return fort;
+    }
+
+    private KingdomOngoingAttackEntity marchOn(KingdomEntity kingdom, KingdomEntity on, int riders, KingdomOngoingAttackEntity lead)
+    {
+        var sent = new KingdomMilitaryAction(kingdom, config).sendAttack(new SendAttackDto(on.getName(), AttackType.land, cavalry(riders)), on, lead);
+        assertTrue(sent.success(), sent.message());
+        return kingdom.getOngoingAttacks().get(kingdom.getOngoingAttacks().size() - 1);
+    }
+
+    private BattleReportDto lastBattleOf(KingdomEntity kingdom)
+    {
+        return game.getWarReportRepository().getBattleReports(kingdom.getName(), 1).get(0);
+    }
+
+    @Test
+    void anArmyTooWeakAlone_shouldBeRepelled()
+    {
+        var fort = fort();
+        marchOn(leader, fort, 20, null);
+
+        passTurns(leader, config.attack().turnsToArrive());
+
+        assertFalse(lastBattleOf(leader).attackerWon());
+    }
+
+    @Test
+    void joinedArmies_shouldFightAsOneArmyInOneBattle()
+    {
+        var fort = fort();
+        var lead = marchOn(leader, fort, 20, null);
+        marchOn(joiner, fort, 20, lead);
+        passTurns(joiner, config.attack().turnsToArrive());
+
+        passTurns(leader, config.attack().turnsToArrive());
+
+        var leaders = lastBattleOf(leader);
+        var joiners = lastBattleOf(joiner);
+        assertTrue(leaders.attackerWon(), "together the two armies beat what each loses to alone");
+        assertTrue(joiners.attackerWon());
+        assertEquals(leaders.attackPower(), joiners.attackPower(), "both report the one battle's attack");
+        assertEquals(leaders.defensePower(), joiners.defensePower());
+        assertEquals(leaders.defenderLosses().getCount(UnitName.infantry), joiners.defenderLosses().getCount(UnitName.infantry));
+        assertEquals(20, leaders.unitsSent().getCount(UnitName.cavalry));
+        assertEquals(20, joiners.unitsSent().getCount(UnitName.cavalry));
+        assertEquals(30 - leaders.defenderLosses().getCount(UnitName.infantry), fort.getUnits().getAvailableCount(UnitName.infantry), "the fort lost its soldiers once");
+        var fallen = leaders.attackerLosses().getCount(UnitName.cavalry) + joiners.attackerLosses().getCount(UnitName.cavalry);
+        assertThat(fallen).isPositive();
+        assertThat(Math.abs(leaders.attackerLosses().getCount(UnitName.cavalry) - joiners.attackerLosses().getCount(UnitName.cavalry))).as("equal armies share the losses").isLessThanOrEqualTo(1);
+        assertEquals(1, game.getNotificationSystem().getNotifications("fort").stream().filter(notification -> notification.message().startsWith("leader and joiner attacked us and won")).count());
+    }
+
+    @Test
+    void joinedArmies_shouldShareTheLandTheyTakeByTheAttackEachBrought()
+    {
+        var farm = new KingdomBuilder(game).withName("farm").withUnit(UnitName.bowman, 0).withUnit(UnitName.infantry, 0).withUnit(UnitName.cavalry, 0).withUnit(UnitName.guard, 0)
+                .withBuilding(BuildingName.tower, 0).withBuilding(BuildingName.castle, 0).build();
+        game.addKingdom(farm);
+        var landBefore = farm.getResources().getCount(ResourceName.land);
+        var leaderBefore = leader.getResources().getCount(ResourceName.land);
+        var joinerBefore = joiner.getResources().getCount(ResourceName.land);
+        var lead = marchOn(leader, farm, 20, null);
+        marchOn(joiner, farm, 60, lead);
+        passTurns(joiner, config.attack().turnsToArrive());
+
+        passTurns(leader, config.attack().turnsToArrive());
+
+        var lost = landBefore - farm.getResources().getCount(ResourceName.land);
+        var leaderTook = leader.getResources().getCount(ResourceName.land) - leaderBefore;
+        var joinerTook = joiner.getResources().getCount(ResourceName.land) - joinerBefore;
+        assertThat(lost).isPositive();
+        assertEquals(lost, leaderTook + joinerTook, "every acre lost is taken by one of them");
+        assertEquals(leaderTook, lastBattleOf(leader).landCaptured());
+        assertEquals(joinerTook, lastBattleOf(joiner).landCaptured());
+        assertThat(Math.abs(joinerTook - 3 * leaderTook)).as("three times the riders take three times the land").isLessThanOrEqualTo(3);
     }
 
     @Test

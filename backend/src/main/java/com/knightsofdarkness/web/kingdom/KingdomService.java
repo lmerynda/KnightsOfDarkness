@@ -454,7 +454,7 @@ public class KingdomService
             if (lead != null)
             {
                 notificationSystem.create(lead.getKingdom().getName(), NotificationKind.alliance,
-                        Utils.format("{} joins our strike on {} with {} soldiers, they wait at the border and fight right after our army lands", kingdomName, army.to(),
+                        Utils.format("{} joins our strike on {} with {} soldiers, they wait at the border and fight beside our army when it lands", kingdomName, army.to(),
                                 army.soldiers()));
             }
         }
