@@ -269,6 +269,35 @@ class StrikeTogetherTest
     }
 
     @Test
+    void aWholeAlliancesArmy_shouldBeNamedInMessagesThatFitTheChronicle()
+    {
+        var alliance = leader.getAlliance().orElseThrow();
+        var lead = marchOn(leader, target, 20, null);
+        var names = new java.util.ArrayList<String>();
+        for (int index = 0; index < 6; index++)
+        {
+            var name = "a kingdom with a long long name " + index;
+            var ally = new KingdomBuilder(game).withName(name).withUnit(UnitName.cavalry, 100).build();
+            game.addKingdom(ally);
+            alliance.addKingdom(ally);
+            marchOn(ally, target, 20, lead);
+            passTurns(ally, config.attack().turnsToArrive());
+            names.add(name);
+        }
+
+        passTurns(leader, config.attack().turnsToArrive());
+
+        var everyone = new java.util.ArrayList<>(names);
+        everyone.add("leader");
+        everyone.add("target");
+        for (var kingdom : everyone)
+        {
+            assertThat(game.getNotificationSystem().getNotifications(kingdom)).extracting(NotificationDto::message).allSatisfy(message -> assertThat(message).hasSizeLessThanOrEqualTo(255));
+        }
+        assertThat(game.getNotificationSystem().getNotifications("target")).extracting(NotificationDto::message).anyMatch(message -> message.contains("and 5 of their allies"));
+    }
+
+    @Test
     void onlyAnAllysStrikeOnTheSameTarget_canBeJoined()
     {
         var lead = march(leader, null);

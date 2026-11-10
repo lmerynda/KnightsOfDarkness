@@ -86,22 +86,31 @@ public class KingdomInteractor implements IKingdomInteractor
         }
     }
 
-    /** who fought on the attacking side, for the defender and everyone who hears of the battle: "a", "a and b", "a, b and c" */
+    /** who fought on the attacking side, for the defender and everyone who hears of the battle */
     private static String side(AttackingForces attackers)
     {
-        var names = attackers.armies().stream().map(AttackingForces.Army::name).toList();
-        return names.size() == 1 ? names.get(0) : String.join(", ", names.subList(0, names.size() - 1)) + " and " + names.get(names.size() - 1);
+        return names(attackers.armies().stream().map(AttackingForces.Army::name).toList());
     }
 
-    /** the allies an army fought beside, for its own victory or defeat: "" alone, " with b and c" together */
+    /** the allies an army fought beside, for its own victory or defeat: "" alone, " with b" together */
     private static String beside(AttackingForces attackers, AttackingForces.Army army)
     {
         var others = attackers.armies().stream().filter(other -> other != army).map(AttackingForces.Army::name).toList();
-        if (others.isEmpty())
+        return others.isEmpty() ? "" : " with " + names(others);
+    }
+
+    /**
+     * "a", "a and b", or "a, b and 4 of their allies": a whole alliance's names would not fit a message, which holds 255
+     * characters
+     */
+    private static String names(List<String> names)
+    {
+        return switch (names.size())
         {
-            return "";
-        }
-        return " with " + (others.size() == 1 ? others.get(0) : String.join(", ", others.subList(0, others.size() - 1)) + " and " + others.get(others.size() - 1));
+            case 1 -> names.get(0);
+            case 2 -> names.get(0) + " and " + names.get(1);
+            default -> Utils.format("{}, {} and {} of their allies", names.get(0), names.get(1), names.size() - 2);
+        };
     }
 
     private void returnSurvivors(AttackingForces attackers)

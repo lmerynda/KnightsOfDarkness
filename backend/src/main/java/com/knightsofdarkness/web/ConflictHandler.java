@@ -46,7 +46,8 @@ public class ConflictHandler {
         {
             throw exception;
         }
-        log.info("Name claimed at the same moment: {}", exception.getMessage());
+        // a warning, so that a key claimed twice anywhere but a name shows in the log instead of passing for a race
+        log.warn("Name claimed at the same moment: {}", exception.getMostSpecificCause().getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Someone claimed that name at the same moment, try again"));
     }
 }
