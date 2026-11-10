@@ -29,6 +29,10 @@ export type MonumentPolicy = {
   band?: Band;
   /** what its warriors learned from their own assaults, when they do not share a band's */
   lessons: Lessons;
+  /** what each member could march with, as it last said */
+  armies: Map<string, number>;
+  /** the assault the coalition set off this turn, which its other members join */
+  assault?: { turn: number; lead: Promise<{ seat: string; id: string } | null> };
   /** what happened, for the report */
   events: MonumentEvent[];
   /** the monuments as the world saw them this turn, fetched once a turn for the whole coalition */
@@ -147,14 +151,6 @@ export const standGuard = async (context: TurnContext, policy: MonumentPolicy): 
   await context.player.sendToMonument(units);
 };
 
-/**
- * on its coalition's assault turns a warrior marches on the most advanced rival monument from the policy's stage on, if
- * its army matches the bar learned for that monument against the garrison everyone sees; in a band it counts the armies
- * of every banded warrior outside the monument's alliance, since they march the same turn and a repelled army still
- * kills soldiers on guard
- *
- * @return whether an army marched
- */
 /** raises the bar for a monument after each of the warrior's repelled assaults on it, and lowers it after each won one */
 const learn = async (context: TurnContext, lessons: Lessons, known: Monument[]): Promise<void> => {
   for (const report of await context.player.battleReports()) {
@@ -166,26 +162,54 @@ const learn = async (context: TurnContext, lessons: Lessons, known: Monument[]):
   }
 };
 
+/**
+ * on its coalition's assault turns every member marches on the most advanced rival monument from the policy's stage on,
+ * as one army: the first member to play sets off the assault and the others join its strike. It marches if the armies
+ * match the bar learned for that monument against the garrison everyone sees, counting the whole coalition, or in a band
+ * every banded coalition outside the monument's alliance, since they land on the same turn
+ *
+ * @return whether the member's army marched
+ */
 export const assaultRivals = async (context: TurnContext, policy: MonumentPolicy, army: Partial<Counts<UnitName>>): Promise<boolean> => {
   if (policy.assaultFromStage === null) return false;
   const power = armyPower(army, context.config);
+  policy.armies.set(context.kingdom.name, power);
   policy.band?.armies.set(context.kingdom.name, { alliance: policy.alliance, power });
   if ((context.turn + policy.assaultOffset) % attackEvery !== 0) return false;
-  if (context.kingdom.ongoingAttacks.length > 0) return false;
-  const fromStage = policy.assaultFromStage;
+  if (power <= 0 || context.kingdom.ongoingAttacks.length > 0) return false;
+  if (policy.assault?.turn !== context.turn) {
+    // decided before anything is awaited, so that members playing at the same moment join rather than lead
+    const lead = leadAssault(context, policy, army, power);
+    policy.assault = { turn: context.turn, lead };
+    return (await lead) !== null;
+  }
+  const lead = await policy.assault.lead;
+  if (!lead) return false;
+  const joined = await context.player.sendAttack(lead.seat, "monument", army, lead.id);
+  return joined.success;
+};
+
+/** sets off the coalition's assault, if the armies it can count match the bar */
+const leadAssault = async (context: TurnContext, policy: MonumentPolicy, army: Partial<Counts<UnitName>>, power: number): Promise<{ seat: string; id: string } | null> => {
+  const fromStage = policy.assaultFromStage ?? Infinity;
   const targets = (await monuments(context, policy))
     .filter(monument => monument.allianceName !== policy.alliance && monument.allianceName !== context.kingdom.allianceName)
     .filter(monument => monument.complete || monument.stages >= fromStage)
     .sort((one, other) => other.stages - one.stages);
   const target = targets[0];
-  if (!target) return false;
+  if (!target) return null;
   const lessons = policy.band?.lessons ?? policy.lessons;
   await learn(context, lessons, await monuments(context, policy));
   const bar = lessons.bars.get(target.allianceName) ?? firstBar;
   const bestDefense = Math.max(...militaryUnits.map(unit => context.config.attack.unitDefensePower[unit] ?? 0));
-  const together = policy.band ? [...policy.band.armies.values()].filter(entry => entry.alliance !== target.allianceName).reduce((sum, entry) => sum + entry.power, 0) : power;
-  if (power <= 0 || together <= target.garrison * bestDefense * bar) return false;
+  const together = policy.band
+    ? [...policy.band.armies.values()].filter(entry => entry.alliance !== target.allianceName).reduce((sum, entry) => sum + entry.power, 0)
+    : [...policy.armies.values()].reduce((sum, each) => sum + each, 0);
+  if (together <= target.garrison * bestDefense * bar) return null;
   const sent = await context.player.sendAttack(target.seat, "monument", army);
-  if (sent.success) policy.events.push({ turn: context.turn, alliance: policy.alliance, what: `${context.kingdom.name} marched on the monument of ${target.allianceName} at stage ${target.stages} with power ${power}${policy.band ? ` (${together} banded)` : ""} against about ${target.garrison} on guard` });
-  return sent.success;
+  if (!sent.success) return null;
+  const id = (await context.player.kingdom()).ongoingAttacks.find(attack => attack.to === target.seat && attack.attackType === "monument")?.id;
+  if (!id) return null;
+  policy.events.push({ turn: context.turn, alliance: policy.alliance, what: `${context.kingdom.name} led an assault on the monument of ${target.allianceName} at stage ${target.stages} with power ${power} of ${together} counted against about ${target.garrison} on guard` });
+  return { seat: target.seat, id };
 };

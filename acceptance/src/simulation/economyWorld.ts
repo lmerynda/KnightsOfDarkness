@@ -76,6 +76,7 @@ export const playEconomy = async ({ coalitions: makeUps, turns, overrides, monum
             assaultOffset: play.band ? 0 : 2 * index,
             band: play.band ? band : undefined,
             lessons: freshLessons(),
+            armies: new Map(),
             events: [],
           }
         : undefined;

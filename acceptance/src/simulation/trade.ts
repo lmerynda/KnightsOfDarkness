@@ -470,6 +470,10 @@ const craftsman = (craft: CallingName, ledger: Ledger): Strategy => {
       if (calling.army) {
         const now = await refreshed(context);
         if (!ledger.monument || !(await assaultRivals(now, ledger.monument, allIn(now.kingdom)))) await strikeLargest(now, { marchers });
+      } else if (ledger.monument) {
+        // the whole coalition marches on a rival's monument as one army, as its whole coalition stands guard at its own
+        const now = await refreshed(context);
+        await assaultRivals(now, ledger.monument, allIn(now.kingdom));
       }
     },
   };
