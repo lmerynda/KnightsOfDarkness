@@ -1,0 +1,1181 @@
+{
+  "title": "Knights of Darkness",
+  "nodes": [
+    {
+      "id": "player",
+      "kind": "actor",
+      "title": "Player",
+      "description": "Rules a kingdom: builds, trains, trades, spies, marches armies, joins an alliance and competes for land each era."
+    },
+    {
+      "id": "developer",
+      "kind": "actor",
+      "title": "Developer",
+      "description": "Tests the whole game from the outside and simulates worlds to check balance."
+    },
+    {
+      "id": "backend",
+      "kind": "app",
+      "title": "Game server",
+      "technology": "Java 25 · Spring Boot",
+      "description": "Holds every kingdom and the rules: the REST API, the turn clock, battles, the market, monuments, merchant bots and the era."
+    },
+    {
+      "id": "backend.kingdom",
+      "kind": "component",
+      "title": "Kingdom",
+      "description": "A kingdom at home: its state, building, training, buying land, carriers and passing turns."
+    },
+    {
+      "id": "backend.kingdom.api",
+      "kind": "component",
+      "title": "Kingdom API",
+      "description": "The /kingdom endpoints and the service that runs each action in a transaction.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomService.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/KingdomDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/KingdomDetailsDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomDetailsCalculator.java"
+      ]
+    },
+    {
+      "id": "backend.kingdom.state",
+      "kind": "component",
+      "title": "Kingdom state and storage",
+      "description": "The kingdom entity with its resources, creating new kingdoms, derived capacities, and the kingdom repositories.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/IKingdomRepository.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomEntity.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomResourcesEntity.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomCreator.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomDetailsProvider.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomRepository.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomReadRepository.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomJpaRepository.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/KingdomResourcesDto.java"
+      ]
+    },
+    {
+      "id": "backend.kingdom.construction",
+      "kind": "component",
+      "title": "Buildings and land",
+      "description": "Building and demolishing, great works and their levels, and buying land.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomBuildAction.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomBuildingsEntity.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomSpecialBuildingAction.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomSpecialBuildingEntity.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomOtherAction.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/KingdomBuildingsDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/KingdomSpecialBuildingDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/KingdomSpecialBuildingStartDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/KingdomSpecialBuildingBuildDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/KingdomSpecialBuildingDemolishDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/SpecialBuildingType.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/LandTransaction.java"
+      ]
+    },
+    {
+      "id": "backend.kingdom.army",
+      "kind": "component",
+      "title": "Training",
+      "description": "Training and dismissing workers and soldiers, and the kingdom's unit counts.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomTrainAction.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomUnitsEntity.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/KingdomUnitsDto.java"
+      ]
+    },
+    {
+      "id": "backend.kingdom.carriers",
+      "kind": "component",
+      "title": "Carriers",
+      "description": "Sending goods to another kingdom by carrier and calling carriers back.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomCarriersAction.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomCarriersOnTheMoveEntity.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/CarriersOnTheMoveDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/SendCarriersDto.java"
+      ]
+    },
+    {
+      "id": "backend.kingdom.turns",
+      "kind": "component",
+      "title": "Turns",
+      "description": "Hands every kingdom a new turn on the wall clock's whole periods and runs a passed turn: harvest, upkeep, production, arrivals, fortune and the turn report.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/scheduler/SchedulerConfig.java",
+        "backend/src/main/java/com/knightsofdarkness/web/scheduler/TurnAdd.java",
+        "backend/src/main/java/com/knightsofdarkness/web/scheduler/WallClockTrigger.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomTurnAction.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomEvents.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomEvent.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/KingdomTurnReport.java"
+      ]
+    },
+    {
+      "id": "backend.military",
+      "kind": "component",
+      "title": "War",
+      "description": "Armies, allied garrisons, spies, and the battle and spy reports."
+    },
+    {
+      "id": "backend.military.armies",
+      "kind": "component",
+      "title": "Armies and battles",
+      "description": "Sending and recalling attacks, joined strikes, reinforcements standing guard with allies, and resolving battles when armies land.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/KingdomInteractorService.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/IKingdomInteractor.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomInteractor.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomMilitaryAction.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/DefendingForces.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomOngoingAttackEntity.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomOngoingAttackJpaRepository.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomReinforcementEntity.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/AttackType.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/OngoingAttackDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/IncomingArmyDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/SendAttackDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/ReinforcementDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/SendReinforcementsDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/AttackingForces.java"
+      ]
+    },
+    {
+      "id": "backend.military.intel",
+      "kind": "component",
+      "title": "Spies and reports",
+      "description": "Spy missions and the stored battle and spy reports, served at /war.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/war/**",
+        "backend/src/main/java/com/knightsofdarkness/web/common/war/**",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomSpyAction.java"
+      ]
+    },
+    {
+      "id": "backend.market",
+      "kind": "component",
+      "title": "Market and merchant bots",
+      "description": "Player-to-player trade, and the merchant bots that trade there."
+    },
+    {
+      "id": "backend.market.offers",
+      "kind": "component",
+      "title": "Market",
+      "description": "Posting, buying and withdrawing offers, allies' offers, transactions and price averages on a timer.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/market/**",
+        "backend/src/main/java/com/knightsofdarkness/web/common/market/**",
+        "backend/src/main/java/com/knightsofdarkness/web/GameMarketService.java",
+        "backend/src/main/java/com/knightsofdarkness/web/scheduler/MarketDataUpdater.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomMarketAction.java"
+      ]
+    },
+    {
+      "id": "backend.market.bots",
+      "kind": "component",
+      "title": "Merchant bots",
+      "description": "Farmer, gold miner, iron miner and blacksmith kingdoms that build, train and trade every few seconds, under caps.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/bots/**"
+      ]
+    },
+    {
+      "id": "backend.alliances",
+      "kind": "component",
+      "title": "Alliances and monuments",
+      "description": "Coalitions of up to ten kingdoms, and the monument an alliance raises together."
+    },
+    {
+      "id": "backend.alliances.members",
+      "kind": "component",
+      "title": "Alliances",
+      "description": "Founding and leaving alliances, invitations, members and bots, and the war room an alliance shares.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/**",
+        "backend/src/main/java/com/knightsofdarkness/web/common/alliance/**"
+      ]
+    },
+    {
+      "id": "backend.alliances.monuments",
+      "kind": "component",
+      "title": "Monuments",
+      "description": "The monument an emperor founds once an era: contributions, stages that rise and crumble, its garrison and assaults on it.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/monument/**",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/IMonumentFront.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/alliance/FoundMonumentDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/alliance/MonumentContributionDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/alliance/MonumentDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/alliance/MonumentGarrisonDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/alliance/MonumentGoodsDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/alliance/MonumentLedgerDto.java"
+      ]
+    },
+    {
+      "id": "backend.notifications",
+      "kind": "component",
+      "title": "Letters and chronicle",
+      "description": "Letters between rulers and to a whole alliance, and the chronicle of what happened to a kingdom.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/**",
+        "backend/src/main/java/com/knightsofdarkness/web/common/messaging/**"
+      ]
+    },
+    {
+      "id": "backend.eras",
+      "kind": "component",
+      "title": "Eras and rankings",
+      "description": "Ends an era when its clock runs out, records the winning alliance in the hall of fame, resets every realm, and serves the rankings.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/era/**",
+        "backend/src/main/java/com/knightsofdarkness/web/common/game/**",
+        "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java"
+      ]
+    },
+    {
+      "id": "backend.auth",
+      "kind": "component",
+      "title": "Accounts and sign-in",
+      "description": "Registration, play-now trial accounts and keeping them, login with JWT, the token filter and CORS.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/security/**",
+        "backend/src/main/java/com/knightsofdarkness/web/user/**"
+      ]
+    },
+    {
+      "id": "backend.rules",
+      "kind": "component",
+      "title": "Game rules and shared model",
+      "description": "The balance numbers from gameconfig.json, and the names, ids and answer shape every feature shares."
+    },
+    {
+      "id": "backend.rules.config",
+      "kind": "component",
+      "title": "Balance config",
+      "description": "gameconfig.json read into typed settings: costs, production, battle, espionage, events, monuments, era length and bot caps.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/game/config/**",
+        "backend/src/main/java/com/knightsofdarkness/web/GameConfigService.java"
+      ]
+    },
+    {
+      "id": "backend.rules.shared",
+      "kind": "component",
+      "title": "Shared model",
+      "description": "Resource, building and unit names, unit counts, ids, the action answer, the API description and the conflict handler.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/utils/**",
+        "backend/src/main/java/com/knightsofdarkness/web/common/ActionResult.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/ApiDescription.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/EveryKey.java",
+        "backend/src/main/java/com/knightsofdarkness/web/ConflictHandler.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/ResourceName.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/BuildingName.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/UnitName.java",
+        "backend/src/main/java/com/knightsofdarkness/web/common/kingdom/UnitsMapDto.java"
+      ]
+    },
+    {
+      "id": "backend.startup",
+      "kind": "component",
+      "title": "Startup and world seeding",
+      "description": "Boots the server, answers /health, and seeds the bots, starting kingdoms and, locally only, the development accounts.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/GameApplication.java",
+        "backend/src/main/java/com/knightsofdarkness/web/MaintenanceController.java",
+        "backend/src/main/java/com/knightsofdarkness/web/initializer/**"
+      ]
+    },
+    {
+      "id": "backend.simulation",
+      "kind": "component",
+      "title": "Simulation edge",
+      "description": "Only in the simulation profile: moves the clock, ends the era and lists kingdoms for the acceptance tools.",
+      "files": [
+        "backend/src/main/java/com/knightsofdarkness/web/simulation/**"
+      ]
+    },
+    {
+      "id": "browser",
+      "kind": "webapp",
+      "title": "Game client",
+      "technology": "React · Vite · nginx",
+      "description": "The browser game: the landing page, sign-in, and the kingdom's pages, refreshed from the game server."
+    },
+    {
+      "id": "browser.shell",
+      "kind": "component",
+      "title": "App shell",
+      "description": "Starts the app, routes between pages, and frames them with the side rail, the top bar of every store with its next-turn forecast, and a thumb bar on phones.",
+      "files": [
+        "browser/src/main.tsx",
+        "browser/src/App.tsx",
+        "browser/src/shell/**"
+      ]
+    },
+    {
+      "id": "browser.signin",
+      "kind": "component",
+      "title": "Sign-in and play now",
+      "description": "The landing page, sign-in and registration, play now with only a kingdom name, and keeping a trial kingdom.",
+      "files": [
+        "browser/src/pages/Landing.tsx",
+        "browser/src/pages/Auth.tsx",
+        "browser/src/pages/Keep.tsx"
+      ]
+    },
+    {
+      "id": "browser.pages",
+      "kind": "component",
+      "title": "Pages",
+      "description": "One page per part of the game: your turn, build, train, war, spies, market, carriers, alliance and its monument, letters, chronicle and rankings.",
+      "files": [
+        "browser/src/pages/**"
+      ]
+    },
+    {
+      "id": "browser.game",
+      "kind": "component",
+      "title": "Game state and advice",
+      "description": "The kingdom kept fresh for every page, what waits on the ruler this turn, building plans, rule mirrors and the game's words.",
+      "files": [
+        "browser/src/game/**"
+      ]
+    },
+    {
+      "id": "browser.api",
+      "kind": "component",
+      "title": "API client",
+      "description": "Every server call, the token and trial session, and the types generated from the server's OpenAPI description.",
+      "files": [
+        "browser/src/api/**"
+      ]
+    },
+    {
+      "id": "browser.ui",
+      "kind": "component",
+      "title": "UI kit",
+      "description": "Icons, crests, tooltips, shared page parts and number formatting.",
+      "files": [
+        "browser/src/ui/**"
+      ]
+    },
+    {
+      "id": "db",
+      "kind": "database",
+      "title": "Game database",
+      "technology": "PostgreSQL · Flyway (in-memory H2 for simulations, unless the suite runs them on PostgreSQL)",
+      "description": "The world: accounts, kingdoms, armies, alliances, monuments, bots, market, letters, chronicle, reports and eras."
+    },
+    {
+      "id": "devtools",
+      "kind": "system",
+      "title": "Development tools",
+      "technology": "TypeScript · Node · Vitest · Chrome",
+      "description": "Acceptance tools: the server and pages started for tests, the API client, and the world simulations for balance and A/B reports.",
+      "files": [
+        "acceptance/src/**"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "title": "Turns",
+      "nodes": [
+        "backend.kingdom.turns",
+        "browser/src/pages/Overview.tsx"
+      ]
+    },
+    {
+      "title": "Building",
+      "nodes": [
+        "backend.kingdom.construction",
+        "browser/src/pages/Build.tsx"
+      ]
+    },
+    {
+      "title": "Training",
+      "nodes": [
+        "backend.kingdom.army",
+        "browser/src/pages/Train.tsx"
+      ]
+    },
+    {
+      "title": "War",
+      "nodes": [
+        "backend.military.armies",
+        "browser/src/pages/War.tsx"
+      ]
+    },
+    {
+      "title": "Spies",
+      "nodes": [
+        "backend.military.intel",
+        "browser/src/pages/Spies.tsx"
+      ]
+    },
+    {
+      "title": "Market",
+      "nodes": [
+        "backend.market.offers",
+        "browser/src/pages/Market.tsx"
+      ]
+    },
+    {
+      "title": "Carriers",
+      "nodes": [
+        "backend.kingdom.carriers",
+        "browser/src/pages/Carriers.tsx"
+      ]
+    },
+    {
+      "title": "Alliances",
+      "nodes": [
+        "backend.alliances.members",
+        "browser/src/pages/Alliance.tsx"
+      ]
+    },
+    {
+      "title": "Monuments",
+      "nodes": [
+        "backend.alliances.monuments",
+        "browser/src/pages/MonumentPanel.tsx"
+      ]
+    },
+    {
+      "title": "Winning the era",
+      "nodes": [
+        "backend/src/main/java/com/knightsofdarkness/web/era/EraService.java",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentService.java",
+        "browser/src/pages/Rankings.tsx"
+      ]
+    },
+    {
+      "title": "Reinforcements",
+      "nodes": [
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomMilitaryAction.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomReinforcementEntity.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/DefendingForces.java",
+        "browser/src/pages/War.tsx"
+      ]
+    },
+    {
+      "title": "Joining a strike",
+      "nodes": [
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomInteractor.java",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/AttackingForces.java",
+        "browser/src/pages/War.tsx"
+      ]
+    },
+    {
+      "title": "War room",
+      "nodes": [
+        "backend/src/main/java/com/knightsofdarkness/web/common/alliance/AllianceWarRoomDto.java",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceService.java",
+        "browser/src/pages/Alliance.tsx"
+      ]
+    },
+    {
+      "title": "Letters",
+      "nodes": [
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/MessagesController.java",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/MessageService.java",
+        "browser/src/pages/Letters.tsx"
+      ]
+    },
+    {
+      "title": "Chronicle",
+      "nodes": [
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/NotificationsController.java",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/NotificationSystem.java",
+        "browser/src/pages/Chronicle.tsx",
+        "browser/src/game/chronicle.tsx"
+      ]
+    },
+    {
+      "title": "Eras and the hall of fame",
+      "nodes": [
+        "backend.eras",
+        "browser/src/pages/Rankings.tsx"
+      ]
+    },
+    {
+      "title": "Play now",
+      "nodes": [
+        "backend/src/main/java/com/knightsofdarkness/web/user/RegistrationService.java",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java",
+        "browser.signin"
+      ]
+    },
+    {
+      "title": "Merchant bots",
+      "nodes": [
+        "backend.market.bots"
+      ]
+    },
+    {
+      "title": "Fortune",
+      "nodes": [
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomEvents.java"
+      ]
+    },
+    {
+      "title": "Your turn",
+      "nodes": [
+        "browser/src/game/advice.ts",
+        "browser/src/pages/Overview.tsx"
+      ]
+    },
+    {
+      "title": "Building plans",
+      "nodes": [
+        "browser/src/game/plans.ts",
+        "browser/src/pages/Build.tsx",
+        "browser/src/pages/Train.tsx"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "player",
+      "to": "browser",
+      "title": "plays in a browser"
+    },
+    {
+      "from": "developer",
+      "to": "devtools",
+      "title": "runs acceptance tests and world simulations"
+    },
+    {
+      "from": "browser/src/api/endpoints.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java",
+      "title": "sign in, register, play now, keep, account (/auth)",
+      "via": "HTTP",
+      "evidence": [
+        "browser/src/api/endpoints.ts:39",
+        "browser/src/api/endpoints.ts:43",
+        "browser/src/api/endpoints.ts:46",
+        "browser/src/api/endpoints.ts:59",
+        "browser/src/api/endpoints.ts:64",
+        "browser/src/api/endpoints.ts:71",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:38",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:55",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:77",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:94",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:110",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:120",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:131"
+      ]
+    },
+    {
+      "from": "browser/src/api/client.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java",
+      "title": "renew a trial session, refresh the token",
+      "via": "HTTP",
+      "evidence": [
+        "browser/src/api/client.ts:66",
+        "browser/src/api/client.ts:138",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:38",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:55",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:77",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:94",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:110",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:120",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:131"
+      ]
+    },
+    {
+      "from": "browser/src/api/endpoints.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java",
+      "title": "config, the era, the hall of fame, rankings",
+      "via": "HTTP",
+      "evidence": [
+        "browser/src/api/endpoints.ts:77",
+        "browser/src/api/endpoints.ts:78",
+        "browser/src/api/endpoints.ts:79",
+        "browser/src/api/endpoints.ts:80",
+        "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java:32",
+        "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java:47",
+        "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java:53",
+        "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java:59"
+      ]
+    },
+    {
+      "from": "browser/src/api/endpoints.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java",
+      "title": "kingdom actions, /kingdom/*",
+      "via": "HTTP",
+      "evidence": [
+        "browser/src/api/endpoints.ts:83",
+        "browser/src/api/endpoints.ts:84",
+        "browser/src/api/endpoints.ts:85",
+        "browser/src/api/endpoints.ts:86",
+        "browser/src/api/endpoints.ts:87",
+        "browser/src/api/endpoints.ts:88",
+        "browser/src/api/endpoints.ts:89",
+        "browser/src/api/endpoints.ts:90",
+        "browser/src/api/endpoints.ts:91",
+        "browser/src/api/endpoints.ts:93",
+        "browser/src/api/endpoints.ts:95",
+        "browser/src/api/endpoints.ts:96",
+        "browser/src/api/endpoints.ts:99",
+        "browser/src/api/endpoints.ts:100",
+        "browser/src/api/endpoints.ts:107",
+        "browser/src/api/endpoints.ts:108",
+        "browser/src/api/endpoints.ts:110",
+        "browser/src/api/endpoints.ts:111",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:34",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:45",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:59",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:72",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:86",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:100",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:114",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:128",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:142",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:156",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:173",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:190",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:204",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:218",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:232",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:246",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:260",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:274",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:288"
+      ]
+    },
+    {
+      "from": "browser/src/api/endpoints.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/war/WarController.java",
+      "title": "send spies, battle and spy reports (/war)",
+      "via": "HTTP",
+      "evidence": [
+        "browser/src/api/endpoints.ts:114",
+        "browser/src/api/endpoints.ts:115",
+        "browser/src/api/endpoints.ts:116",
+        "backend/src/main/java/com/knightsofdarkness/web/war/WarController.java:23",
+        "backend/src/main/java/com/knightsofdarkness/web/war/WarController.java:33",
+        "backend/src/main/java/com/knightsofdarkness/web/war/WarController.java:47",
+        "backend/src/main/java/com/knightsofdarkness/web/war/WarController.java:59"
+      ]
+    },
+    {
+      "from": "browser/src/api/endpoints.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java",
+      "title": "offers, allies' offers, post, buy, withdraw (/market)",
+      "via": "HTTP",
+      "evidence": [
+        "browser/src/api/endpoints.ts:118",
+        "browser/src/api/endpoints.ts:120",
+        "browser/src/api/endpoints.ts:122",
+        "browser/src/api/endpoints.ts:123",
+        "browser/src/api/endpoints.ts:124",
+        "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java:34",
+        "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java:48",
+        "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java:60",
+        "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java:66",
+        "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java:78"
+      ]
+    },
+    {
+      "from": "browser/src/api/endpoints.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/messaging/NotificationsController.java",
+      "title": "the chronicle, its unread count, mark read",
+      "via": "HTTP",
+      "evidence": [
+        "browser/src/api/endpoints.ts:126",
+        "browser/src/api/endpoints.ts:127",
+        "browser/src/api/endpoints.ts:128",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/NotificationsController.java:32",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/NotificationsController.java:44",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/NotificationsController.java:56"
+      ]
+    },
+    {
+      "from": "browser/src/api/endpoints.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/messaging/MessagesController.java",
+      "title": "letters: inbox, sent, send, to the alliance (/messages)",
+      "via": "HTTP",
+      "evidence": [
+        "browser/src/api/endpoints.ts:130",
+        "browser/src/api/endpoints.ts:131",
+        "browser/src/api/endpoints.ts:132",
+        "browser/src/api/endpoints.ts:133",
+        "browser/src/api/endpoints.ts:134",
+        "browser/src/api/endpoints.ts:135",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/MessagesController.java:24",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/MessagesController.java:34",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/MessagesController.java:45",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/MessagesController.java:56",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/MessagesController.java:67",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/MessagesController.java:78",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/MessagesController.java:89"
+      ]
+    },
+    {
+      "from": "browser/src/api/endpoints.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java",
+      "title": "alliance, war room, invitations, members (/alliance)",
+      "via": "HTTP",
+      "evidence": [
+        "browser/src/api/endpoints.ts:139",
+        "browser/src/api/endpoints.ts:149",
+        "browser/src/api/endpoints.ts:157",
+        "browser/src/api/endpoints.ts:158",
+        "browser/src/api/endpoints.ts:159",
+        "browser/src/api/endpoints.ts:165",
+        "browser/src/api/endpoints.ts:167",
+        "browser/src/api/endpoints.ts:168",
+        "browser/src/api/endpoints.ts:169",
+        "browser/src/api/endpoints.ts:170",
+        "browser/src/api/endpoints.ts:171",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:28",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:38",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:52",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:66",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:80",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:92",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:104",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:118",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:132",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:146",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:153",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:167"
+      ]
+    },
+    {
+      "from": "browser/src/api/endpoints.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java",
+      "title": "found, fund, garrison and see monuments",
+      "via": "HTTP",
+      "evidence": [
+        "browser/src/api/endpoints.ts:81",
+        "browser/src/api/endpoints.ts:161",
+        "browser/src/api/endpoints.ts:162",
+        "browser/src/api/endpoints.ts:164",
+        "browser/src/api/endpoints.ts:166",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java:32",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java:38",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java:44",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java:50",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java:59"
+      ]
+    },
+    {
+      "from": "acceptance/src/server.ts",
+      "to": "backend",
+      "title": "builds and starts the server in the simulation profile",
+      "via": "Process",
+      "evidence": [
+        "acceptance/src/server.ts:46",
+        "acceptance/src/server.ts:104",
+        "acceptance/src/server.ts:112"
+      ]
+    },
+    {
+      "from": "acceptance/src/server.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/MaintenanceController.java",
+      "title": "waits for /health",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/server.ts:85",
+        "backend/src/main/java/com/knightsofdarkness/web/MaintenanceController.java:24"
+      ]
+    },
+    {
+      "from": "acceptance/src/api/client.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/simulation/SimulationController.java",
+      "title": "move the clock, end the era, list kingdoms (/simulation)",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/api/client.ts:92",
+        "acceptance/src/api/client.ts:96",
+        "acceptance/src/api/client.ts:100",
+        "acceptance/src/api/client.ts:105",
+        "backend/src/main/java/com/knightsofdarkness/web/simulation/SimulationController.java:28",
+        "backend/src/main/java/com/knightsofdarkness/web/simulation/SimulationController.java:50",
+        "backend/src/main/java/com/knightsofdarkness/web/simulation/SimulationController.java:68",
+        "backend/src/main/java/com/knightsofdarkness/web/simulation/SimulationController.java:77",
+        "backend/src/main/java/com/knightsofdarkness/web/simulation/SimulationController.java:83"
+      ]
+    },
+    {
+      "from": "acceptance/src/api/client.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java",
+      "title": "registers and signs in each ruler",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/api/client.ts:123",
+        "acceptance/src/api/client.ts:143",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:38",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:55",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:77",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:94",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:110",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:120",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:131"
+      ]
+    },
+    {
+      "from": "acceptance/src/api/client.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java",
+      "title": "plays kingdoms: turns, build, train, land, armies, reinforcements",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/api/client.ts:198",
+        "acceptance/src/api/client.ts:202",
+        "acceptance/src/api/client.ts:215",
+        "acceptance/src/api/client.ts:219",
+        "acceptance/src/api/client.ts:223",
+        "acceptance/src/api/client.ts:228",
+        "acceptance/src/api/client.ts:232",
+        "acceptance/src/api/client.ts:236",
+        "acceptance/src/api/client.ts:241",
+        "acceptance/src/api/client.ts:245",
+        "acceptance/src/api/client.ts:249",
+        "acceptance/src/api/client.ts:253",
+        "acceptance/src/api/client.ts:258",
+        "acceptance/src/api/client.ts:287",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:34",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:45",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:59",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:72",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:86",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:100",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:114",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:128",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:142",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:156",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:173",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:190",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:204",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:218",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:232",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:246",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:260",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:274",
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/KingdomController.java:288"
+      ]
+    },
+    {
+      "from": "acceptance/src/api/client.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/war/WarController.java",
+      "title": "sends spies, reads battle reports",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/api/client.ts:262",
+        "acceptance/src/api/client.ts:270",
+        "backend/src/main/java/com/knightsofdarkness/web/war/WarController.java:23",
+        "backend/src/main/java/com/knightsofdarkness/web/war/WarController.java:33",
+        "backend/src/main/java/com/knightsofdarkness/web/war/WarController.java:47",
+        "backend/src/main/java/com/knightsofdarkness/web/war/WarController.java:59"
+      ]
+    },
+    {
+      "from": "acceptance/src/api/client.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/messaging/NotificationsController.java",
+      "title": "reads the chronicle",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/api/client.ts:266",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/NotificationsController.java:32",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/NotificationsController.java:44",
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/NotificationsController.java:56"
+      ]
+    },
+    {
+      "from": "acceptance/src/api/client.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java",
+      "title": "trades on the market",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/api/client.ts:211",
+        "acceptance/src/api/client.ts:274",
+        "acceptance/src/api/client.ts:278",
+        "acceptance/src/api/client.ts:282",
+        "acceptance/src/api/client.ts:292",
+        "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java:34",
+        "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java:48",
+        "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java:60",
+        "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java:66",
+        "backend/src/main/java/com/knightsofdarkness/web/market/MarketController.java:78"
+      ]
+    },
+    {
+      "from": "acceptance/src/api/client.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java",
+      "title": "forms coalitions",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/api/client.ts:296",
+        "acceptance/src/api/client.ts:300",
+        "acceptance/src/api/client.ts:320",
+        "acceptance/src/api/client.ts:324",
+        "acceptance/src/api/client.ts:328",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:28",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:38",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:52",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:66",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:80",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:92",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:104",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:118",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:132",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:146",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:153",
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/AllianceController.java:167"
+      ]
+    },
+    {
+      "from": "acceptance/src/api/client.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java",
+      "title": "founds and funds monuments",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/api/client.ts:117",
+        "acceptance/src/api/client.ts:304",
+        "acceptance/src/api/client.ts:308",
+        "acceptance/src/api/client.ts:312",
+        "acceptance/src/api/client.ts:316",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java:32",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java:38",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java:44",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java:50",
+        "backend/src/main/java/com/knightsofdarkness/web/monument/MonumentController.java:59"
+      ]
+    },
+    {
+      "from": "acceptance/src/api/client.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java",
+      "title": "reads the era and rankings",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/api/client.ts:109",
+        "acceptance/src/api/client.ts:113",
+        "acceptance/src/api/client.ts:207",
+        "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java:32",
+        "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java:47",
+        "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java:53",
+        "backend/src/main/java/com/knightsofdarkness/web/game/GameController.java:59"
+      ]
+    },
+    {
+      "from": "acceptance/src/ui.ts",
+      "to": "browser",
+      "title": "builds the pages and serves them for photographs",
+      "via": "Process",
+      "evidence": [
+        "acceptance/src/ui.ts:14",
+        "acceptance/src/ui.ts:84"
+      ]
+    },
+    {
+      "from": "acceptance/src/simulation/stages.ts",
+      "to": "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java",
+      "title": "signs a ruler in for the photographs",
+      "via": "HTTP",
+      "evidence": [
+        "acceptance/src/simulation/stages.ts:43",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:38",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:55",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:77",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:94",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:110",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:120",
+        "backend/src/main/java/com/knightsofdarkness/web/user/AuthController.java:131"
+      ]
+    },
+    {
+      "from": "acceptance/src/postgres.ts",
+      "to": "db",
+      "title": "runs PostgreSQL in Docker, a fresh database for each world",
+      "via": "Process",
+      "evidence": [
+        "acceptance/src/postgres.ts:25",
+        "acceptance/src/postgres.ts:39",
+        "acceptance/src/postgres.ts:51",
+        "acceptance/src/server.ts:110-112"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/user/model/UserJpaRepository.java",
+      "to": "db",
+      "title": "accounts",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/user/model/UserJpaRepository.java:7",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomJpaRepository.java",
+      "to": "db",
+      "title": "kingdoms",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomJpaRepository.java:12",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomOngoingAttackJpaRepository.java",
+      "to": "db",
+      "title": "armies on the march",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/kingdom/model/KingdomOngoingAttackJpaRepository.java:10",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/alliance/model/AllianceJpaRepository.java",
+      "to": "db",
+      "title": "alliances",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/model/AllianceJpaRepository.java:13",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/alliance/model/AllianceInvitationJpaRepository.java",
+      "to": "db",
+      "title": "alliance invitations",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/alliance/model/AllianceInvitationJpaRepository.java:9",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/monument/model/MonumentJpaRepository.java",
+      "to": "db",
+      "title": "monuments",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/monument/model/MonumentJpaRepository.java:17",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/bots/model/BotJpaRepository.java",
+      "to": "db",
+      "title": "bots",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/bots/model/BotJpaRepository.java:7",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/market/model/MarketOfferJpaRepository.java",
+      "to": "db",
+      "title": "market offers",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/market/model/MarketOfferJpaRepository.java:15",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/market/model/MarketTransactionJpaRepository.java",
+      "to": "db",
+      "title": "market transactions",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/market/model/MarketTransactionJpaRepository.java:15",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/market/model/MarketTransactionTimeRangeAveragesJpaRepository.java",
+      "to": "db",
+      "title": "market price averages",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/market/model/MarketTransactionTimeRangeAveragesJpaRepository.java:15",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/messaging/model/MessageJpaRepository.java",
+      "to": "db",
+      "title": "letters",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/model/MessageJpaRepository.java:11",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/messaging/model/NotificationJpaRepository.java",
+      "to": "db",
+      "title": "chronicle",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/messaging/model/NotificationJpaRepository.java:11",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/era/model/GameEraJpaRepository.java",
+      "to": "db",
+      "title": "eras",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/era/model/GameEraJpaRepository.java:10",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/war/model/BattleReportJpaRepository.java",
+      "to": "db",
+      "title": "battle reports",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/war/model/BattleReportJpaRepository.java:12",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    },
+    {
+      "from": "backend/src/main/java/com/knightsofdarkness/web/war/model/SpyReportJpaRepository.java",
+      "to": "db",
+      "title": "spy reports",
+      "via": "JPA",
+      "evidence": [
+        "backend/src/main/java/com/knightsofdarkness/web/war/model/SpyReportJpaRepository.java:11",
+        "backend/src/main/resources/application-prod.yaml:8-12",
+        "backend/compose.yaml:6-11"
+      ]
+    }
+  ],
+  "accepted": {
+    "acceptance/src/api/client.ts:92": "return call(`${this.url}/simulation/advance?ticks=${ticks}&bots=${bots}`, { method: \"POST\" });",
+    "acceptance/src/api/client.ts:96": "return call(`${this.url}/simulation/kingdoms`);",
+    "acceptance/src/api/client.ts:100": "return call(`${this.url}/simulation/config`);",
+    "acceptance/src/api/client.ts:105": "return call(`${this.url}/simulation/trades`);",
+    "acceptance/src/api/client.ts:123": "await call(`${this.url}/auth/register`, { method: \"POST\", body: { ...credentials, kingdomName } });",
+    "acceptance/src/api/client.ts:143": "(await call<SignedIn>(`${url}/auth/authenticate`, { method: \"POST\", body: credentials })).token;",
+    "acceptance/src/api/client.ts:117": "return call(`${this.url}/game/monuments`);",
+    "acceptance/src/api/client.ts:109": "return call(`${this.url}/game/rankings`);",
+    "acceptance/src/api/client.ts:113": "return call(`${this.url}/game/era`);"
+  }
+}
