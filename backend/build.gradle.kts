@@ -3,7 +3,7 @@ import com.adarshr.gradle.testlogger.theme.ThemeType
 plugins {
     id("java")
     id("com.adarshr.test-logger") version "4.0.0"
-    id("org.springframework.boot") version "4.1.2"
+    id("org.springframework.boot") version "4.2.0"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -42,7 +42,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
     // the API described as OpenAPI, from which the browser and the simulation generate their types
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.2.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.2.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
@@ -52,7 +52,7 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-postgresql")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core:3.27.7")
-    runtimeOnly("org.postgresql:postgresql:42.7.14")
+    runtimeOnly("org.postgresql:postgresql:42.7.15")
     // simulations run many short throwaway worlds of the shipped jar, each in its own in-memory database
     runtimeOnly("com.h2database:h2")
     // bootRun starts the local PostgreSQL from compose.yaml; the jar never carries this
